@@ -30,7 +30,7 @@
 )
 
 (define-read-only (get-symbol)
-  (ok "sticky")
+  (ok "STICKY")
 )
 
 (define-read-only (get-decimals)

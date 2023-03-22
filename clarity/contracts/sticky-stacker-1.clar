@@ -91,10 +91,7 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .sticky-core get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
-    (if (> additional-tokens-to-stack stx-balance)
-      (try! (contract-call? .sticky-core request-stx-to-stack (- additional-tokens-to-stack stx-balance)))
-      true
-    )
+    (try! (contract-call? .sticky-core request-stx-to-stack additional-tokens-to-stack))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))
       result (begin
         (print result)
