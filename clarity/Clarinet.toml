@@ -1,0 +1,31 @@
+
+[project]
+name = "sticky"
+description = ""
+authors = []
+telemetry = true
+cache_dir = "./.cache"
+
+[contracts.sip-010-trait-ft-standard]
+path = "contracts/sip-010-trait-ft-standard.clar"
+
+[contracts.ststx-token]
+path = "contracts/ststx-token.clar"
+
+[contracts.sticky-core]
+path = "contracts/sticky-core.clar"
+
+[contracts.sticky-stacker-1]
+path = "contracts/sticky-stacker-1.clar"
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+
+# Check-checker settings:
+# trusted_sender: if true, inputs are trusted after tx_sender has been checked.
+# trusted_caller: if true, inputs are trusted after contract-caller has been checked.
+# callee_filter: if true, untrusted data may be passed into a private function without a
+# warning, if it gets checked inside. This check will also propagate up to the
+# caller.
+# More informations: https://www.hiro.so/blog/new-safety-checks-in-clarinet
