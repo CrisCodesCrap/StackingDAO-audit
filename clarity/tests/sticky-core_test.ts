@@ -23,14 +23,12 @@ Clarinet.test({
         types.uint(1000000 * 1000000),
       ], deployer.address),
     ]);
-    console.log(block.receipts[0]);
     let result = block.receipts[0].result;
-    // console.log(result)
+    result.expectOk().expectBool(true);
 
     // Check STX to stSTX ratio
     let call = await chain.callReadOnlyFn("sticky-core", "stx-per-ststx", [], wallet_1.address);
-    console.log(call);
-
+    call.result.expectUint(1000000); // This means you can trade 1 STX for 1 stSTX
 
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
       types.principal(deployer.address),
@@ -45,20 +43,25 @@ Clarinet.test({
         types.uint(10000 * 1000000),
       ], deployer.address),
     ]);
-    console.log(block.receipts[0]);
     result = block.receipts[0].result;
-    console.log(result);
+    call = await chain.callReadOnlyFn("sticky-core", "get-total-rewards", [], wallet_1.address);
+    call.result.expectUint(10000000000);
 
     // Now let's see what the stSTX to STX ratio is
-    call = await chain.callReadOnlyFn("sticky-core", "get-burn-height", [], wallet_1.address);
-    console.log(call.result);
-    call = await chain.callReadOnlyFn("sticky-core", "get-pox-cycle", [], wallet_1.address);
-    console.log(call.result);
-    call = await chain.callReadOnlyFn("sticky-core", "get-total-rewards", [], wallet_1.address);
-    console.log(call.result);
-
     call = await chain.callReadOnlyFn("sticky-core", "stx-per-ststx", [], wallet_1.address);
-    console.log(call);
     call.result.expectUint(1010000); // This means you can trade 1.01 STX for 1 stSTX
+
+    block = chain.mineBlock([
+      Tx.contractCall("sticky-core", "deposit", [
+        types.uint(1000000 * 1000000), // 1M STX
+      ], wallet_1.address),
+    ]);
+    result = block.receipts[0].result;
+    result.expectOk().expectBool(true);
+
+    call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
+      types.principal(wallet_1.address),
+    ], wallet_1.address);
+    call.result.expectOk().expectUint(995024875621); // Depositing 1M STX gives you 995K stSTX
   },
 });
