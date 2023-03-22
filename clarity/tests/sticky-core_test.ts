@@ -113,5 +113,10 @@ Clarinet.test({
 
     call = await chain.callReadOnlyFn("sticky-core", "get-stx-balance", [types.principal(deployer.address)], wallet_1.address);
     call.result.expectUint(100013300000000); // 100M + 13.3K STX (so 13.3K STX yield was earned)
+
+    // After deployer pulled all their capital + rewards, stSTX backing stays the same at 1.0133 STX per stSTX
+    // That means the claimable rewards for wallet_1 should be still be u995272455834 * u1013300 / u1000000
+    call = await chain.callReadOnlyFn("sticky-core", "stx-per-ststx", [], wallet_1.address);
+    call.result.expectUint(1013300);
   },
 });
