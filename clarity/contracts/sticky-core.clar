@@ -75,42 +75,51 @@
   )
 )
 
-(define-read-only (ststx-to-stx)
+(define-read-only (get-burn-height)
+  burn-block-height
+)
+
+(define-read-only (get-total-rewards)
+  (var-get total-rewards)
+)
+
+(define-read-only (get-pox-cycle)
+  (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height)
+)
+
+;;(define-read-only (ststx-per-stx)
+;;  (let (
+;;    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
+;;    (deposit-entry (get-deposits-by-cycle cycle-id))
+;;    (deposit-amount
+;;      (if (> (var-get total-deposits) (get amount deposit-entry))
+;;        (- (var-get total-deposits) (get amount deposit-entry))
+;;        (var-get total-deposits)
+;;      )
+;;    )
+;;  )
+;;    (print deposit-entry)
+;;    (print deposit-amount)
+;;    (print (var-get total-rewards))
+;;    (* u1000000 (/ (+ (var-get total-rewards) deposit-amount) deposit-amount))
+;;  )
+;;)
+
+(define-read-only (stx-per-ststx)
   (let (
-    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
-    (deposit-entry (get-deposits-by-cycle cycle-id))
-    (deposit-amount
-      (if (> (var-get total-deposits) (get amount deposit-entry))
-        (- (var-get total-deposits) (get amount deposit-entry))
-        (var-get total-deposits)
-      )
-    )
+    (deposit-amount (var-get total-deposits))
+    (num (* u1000000 (+ (var-get total-rewards) deposit-amount)))
   )
-    (print deposit-entry)
-    (print deposit-amount)
-    (print (var-get total-rewards))
-    (/ (+ (var-get total-rewards) deposit-amount) deposit-amount)
+    (if (> deposit-amount u0)
+      (/ num deposit-amount)
+      u1000000
+    )
   )
 )
 
-(define-read-only (stx-to-ststx)
-  (let (
-    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
-    (deposit-entry (get-deposits-by-cycle cycle-id))
-    (deposit-amount
-      (if (> (var-get total-deposits) (get amount deposit-entry))
-        (- (var-get total-deposits) (get amount deposit-entry))
-        (var-get total-deposits)
-      )
-    )
-  )
-    (/ (+ (var-get total-rewards) deposit-amount) deposit-amount)
-  )
-)
-
-;;;;;;;;;;;;;;;;;;;;;;;;
-;; Public Functions   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+;; Public Functions ;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 (define-public (request-stx-to-stack (name (string-ascii 256)) (requested-ustx uint))
   (let (
@@ -158,23 +167,17 @@
   )
 )
 
-(define-public (add-rewards (amount uint))
-  (begin
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
-    (ok true)
-  )
-)
-
 ;; #[allow(unchecked_params)]
 (define-public (deposit (amount uint))
   (let (
-    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
+    (cycle-id (get-pox-cycle))
     (deposit-entry (get-deposits-by-cycle cycle-id))
   )
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
     (map-set deposits { cycle-id: cycle-id } { amount: (+ (get amount deposit-entry) amount) })
     (var-set total-deposits (+ amount (var-get total-deposits)))
-    (try! (contract-call? .ststx-token mint-for-sticky (* amount (ststx-to-stx)) tx-sender))
+    (print (stx-per-ststx))
+    (try! (contract-call? .ststx-token mint-for-sticky (/ (* u1000000 amount) (stx-per-ststx)) tx-sender))
 
     (ok true)
   )
@@ -183,7 +186,7 @@
 ;; #[allow(unchecked_params)]
 (define-public (init-withdraw (amount uint) (withdrawal-cycle uint))
   (let (
-    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
+    (cycle-id (get-pox-cycle))
     (withdrawal-entry (get-withdrawals-by-cycle (+ cycle-id u1)))
   )
     (asserts! (> withdrawal-cycle cycle-id) (err ERR-WRONG-CYCLE-ID))
@@ -194,7 +197,7 @@
     (map-set withdrawals-by-address { address: tx-sender } {
       minimum-cycle-id: withdrawal-cycle,
       ;; #[allow(unchecked_data)]
-      amount: amount ;; TODO: add current pending amount
+      amount: amount ;; TODO: add current pending amount? or only allow 1 withdrawal per cycle?
     })
     (try! (contract-call? .ststx-token burn-for-sticky amount tx-sender))
     (ok true)
@@ -204,10 +207,23 @@
 ;; #[allow(unchecked_params)]
 (define-public (withdraw (amount uint))
   (let (
-    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
+    (cycle-id (get-pox-cycle))
     (withdrawal-entry (get-withdrawals-by-address tx-sender))
   )
     (asserts! (>= cycle-id (get minimum-cycle-id withdrawal-entry)) (err ERR-NOT-AUTHORIZED))
+
+    (ok true)
+  )
+)
+
+;; add rewards in STX
+;; amount is in micro STX
+(define-public (add-rewards (amount uint))
+  (let (
+    (rewards (var-get total-rewards))
+  )
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+    (var-set total-rewards (+ rewards amount))
 
     (ok true)
   )
