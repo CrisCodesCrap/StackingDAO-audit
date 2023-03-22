@@ -32,6 +32,11 @@
   }
 )
 
+(define-map stx-ratios
+  { cycle-id: uint }
+  { ratio: uint }
+)
+
 (define-map tokens-to-stack
   { stacker-name: (string-ascii 256) }
   {
@@ -73,6 +78,10 @@
     }
     (map-get? withdrawals-by-address { address: address })
   )
+)
+
+(define-read-only (get-stx-balance (address principal))
+  (stx-get-balance address)
 )
 
 (define-read-only (get-burn-height)
@@ -197,7 +206,7 @@
     (map-set withdrawals-by-address { address: tx-sender } {
       minimum-cycle-id: withdrawal-cycle,
       ;; #[allow(unchecked_data)]
-      amount: amount ;; TODO: add current pending amount? or only allow 1 withdrawal per cycle?
+      amount: amount, ;; TODO: add current pending amount? or only allow 1 withdrawal per cycle?
     })
     (try! (contract-call? .ststx-token burn-for-sticky amount tx-sender))
     (ok true)
@@ -205,12 +214,16 @@
 )
 
 ;; #[allow(unchecked_params)]
-(define-public (withdraw (amount uint))
+(define-public (withdraw)
   (let (
     (cycle-id (get-pox-cycle))
     (withdrawal-entry (get-withdrawals-by-address tx-sender))
+    (multiplier (stx-per-ststx))
+    (receiver tx-sender)
   )
     (asserts! (>= cycle-id (get minimum-cycle-id withdrawal-entry)) (err ERR-NOT-AUTHORIZED))
+    (print multiplier)
+    (try! (as-contract (stx-transfer? (/ (* multiplier (get amount withdrawal-entry)) u1000000) tx-sender receiver)))
 
     (ok true)
   )
@@ -221,9 +234,11 @@
 (define-public (add-rewards (amount uint))
   (let (
     (rewards (var-get total-rewards))
+    (cycle-id (get-pox-cycle)) ;; TODO: convert to param for flexibility
   )
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
     (var-set total-rewards (+ rewards amount))
+    (map-set stx-ratios { cycle-id: cycle-id } { ratio: (stx-per-ststx) })
 
     (ok true)
   )
