@@ -6,6 +6,8 @@
 (define-constant CONTRACT-OWNER tx-sender)
 (define-data-var guardian-address principal tx-sender)
 (define-data-var withdrawal-treshold-per-cycle uint u500) ;; 5% in basis points
+(define-data-var commission uint u500) ;; 5% in basis points
+(define-data-var commission-accrued uint u0) ;; keeps track of commission
 (define-data-var total-deposits uint u0)
 (define-data-var total-rewards uint u0)
 (define-data-var shutdown-activated bool false)
@@ -235,11 +237,14 @@
   (let (
     (rewards (var-get total-rewards))
     (cycle-id (get-pox-cycle)) ;; TODO: convert to param for flexibility
+    (commission-amount (/ (* amount (var-get commission)) u10000))
   )
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
-    (var-set total-rewards (+ rewards amount))
+    (var-set total-rewards (+ rewards (- amount commission-amount)))
     (map-set stx-ratios { cycle-id: cycle-id } { ratio: (stx-per-ststx) })
+    (var-set commission-accrued (+ commission-amount (var-get commission-accrued)))
 
     (ok true)
   )
 )
+

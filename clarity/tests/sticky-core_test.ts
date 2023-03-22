@@ -46,11 +46,11 @@ Clarinet.test({
     ]);
     result = block.receipts[0].result;
     call = await chain.callReadOnlyFn("sticky-core", "get-total-rewards", [], wallet_1.address);
-    call.result.expectUint(10000000000);
+    call.result.expectUint(9500000000); // 10K STX minus 500 STX commission (5%)
 
     // Now let's see what the stSTX to STX ratio is
     call = await chain.callReadOnlyFn("sticky-core", "stx-per-ststx", [], wallet_1.address);
-    call.result.expectUint(1010000); // This means you can trade 1.01 STX for 1 stSTX
+    call.result.expectUint(1009500); // This means you can trade 1.095 STX for 1 stSTX
 
     block = chain.mineBlock([
       Tx.contractCall("sticky-core", "deposit", [
@@ -63,7 +63,7 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
       types.principal(wallet_1.address),
     ], wallet_1.address);
-    call.result.expectOk().expectUint(995024875621); // Depositing 1M STX gives you 995K stSTX
+    call.result.expectOk().expectUint(995272455834); // Depositing 1M STX gives you 995K stSTX
 
     // Now imagine 2M STX is stacking (1M from deployer and 1M from wallet_1)
     // Rewards go to 18K STX per cycle (as an example)
@@ -75,11 +75,11 @@ Clarinet.test({
     ]);
     result = block.receipts[0].result;
     call = await chain.callReadOnlyFn("sticky-core", "get-total-rewards", [], wallet_1.address);
-    call.result.expectUint(28000000000); // 28K STX in total rewards
+    call.result.expectUint(26600000000); // 28K STX in total rewards with 1440 STX commission as part of it
 
-    // Now you get 1.014 STX for 1 stSTX
+    // Now you get 1.0133 STX for 1 stSTX
     call = await chain.callReadOnlyFn("sticky-core", "stx-per-ststx", [], wallet_1.address);
-    call.result.expectUint(1014000);
+    call.result.expectUint(1013300);
 
     // Let's test withdrawals
     // A withdrawal can be applied for and then you need to wait 1 cycle (~2100 blocks) for it to unlock
@@ -112,6 +112,6 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     call = await chain.callReadOnlyFn("sticky-core", "get-stx-balance", [types.principal(deployer.address)], wallet_1.address);
-    call.result.expectUint(100014000000000); // 100M + 14K STX (so 14K STX yield was earned)
+    call.result.expectUint(100013300000000); // 100M + 13.3K STX (so 13.3K STX yield was earned)
   },
 });
