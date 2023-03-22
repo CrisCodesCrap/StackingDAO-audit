@@ -13,7 +13,6 @@
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 (define-data-var stacker-shutdown-activated bool false)
-(define-data-var stacker-name (string-ascii 256) "stacker")
 
 (define-read-only (get-stacking-unlock-burn-height)
   (ok (var-get stacking-unlock-burn-height))
@@ -61,7 +60,7 @@
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
       success (begin
         (if (> tokens-to-stack stx-balance)
-          (try! (contract-call? .sticky-core request-stx-to-stack (var-get stacker-name) (- tokens-to-stack stx-balance)))
+          (try! (contract-call? .sticky-core request-stx-to-stack (- tokens-to-stack stx-balance)))
           true
         )
         (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
@@ -93,7 +92,7 @@
     (asserts! (is-eq tx-sender (contract-call? .sticky-core get-guardian-address)) (err ERR-NOT-AUTHORIZED))
 
     (if (> additional-tokens-to-stack stx-balance)
-      (try! (contract-call? .sticky-core request-stx-to-stack for-stacker (- additional-tokens-to-stack stx-balance)))
+      (try! (contract-call? .sticky-core request-stx-to-stack (- additional-tokens-to-stack stx-balance)))
       true
     )
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))

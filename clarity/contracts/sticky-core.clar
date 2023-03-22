@@ -40,9 +40,17 @@
 )
 
 (define-map tokens-to-stack
-  { stacker-name: (string-ascii 256) }
+  { stacker-name: principal }
   {
     amount: uint
+  }
+)
+
+(define-map contracts
+  { name: (string-ascii 256) }
+  {
+    address: principal, ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+    qualified-name: principal ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-core
   }
 )
 
@@ -98,24 +106,6 @@
   (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height)
 )
 
-;;(define-read-only (ststx-per-stx)
-;;  (let (
-;;    (cycle-id (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height))
-;;    (deposit-entry (get-deposits-by-cycle cycle-id))
-;;    (deposit-amount
-;;      (if (> (var-get total-deposits) (get amount deposit-entry))
-;;        (- (var-get total-deposits) (get amount deposit-entry))
-;;        (var-get total-deposits)
-;;      )
-;;    )
-;;  )
-;;    (print deposit-entry)
-;;    (print deposit-amount)
-;;    (print (var-get total-rewards))
-;;    (* u1000000 (/ (+ (var-get total-rewards) deposit-amount) deposit-amount))
-;;  )
-;;)
-
 (define-read-only (stx-per-ststx)
   (let (
     (deposit-amount (var-get total-deposits))
@@ -128,29 +118,33 @@
   )
 )
 
+(define-read-only (get-qualified-name-by-name (name (string-ascii 256)))
+  (get qualified-name (map-get? contracts { name: name }))
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Public Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(define-public (request-stx-to-stack (name (string-ascii 256)) (requested-ustx uint))
-  (let (
-    (stacker (unwrap-panic (map-get? tokens-to-stack { stacker-name: name })))
-  )
-    ;; TODO: authorization
-    ;; (asserts!
-    ;;   (or
-    ;;     (is-eq contract-caller (unwrap-panic (contract-call? .sticky-core get-qualified-name-by-name "stacker")))
-    ;;     (is-eq contract-caller (unwrap-panic (contract-call? .sticky-core get-qualified-name-by-name "stacker-2")))
-    ;;     (is-eq contract-caller (unwrap-panic (contract-call? .sticky-core get-qualified-name-by-name "stacker-3")))
-    ;;     (is-eq contract-caller (unwrap-panic (contract-call? .sticky-core get-qualified-name-by-name "stacker-4")))
-    ;;   )
-    ;;   (err ERR-NOT-AUTHORIZED)
-    ;; )
-    (asserts! (<= requested-ustx (get amount stacker)) (err ERR-NOT-AUTHORIZED))
-
-    (as-contract
-      (stx-transfer? requested-ustx tx-sender .sticky-stacker-1) ;; TODO: make dynamic
+(define-public (request-stx-to-stack (requested-ustx uint))
+  (begin
+    (asserts!
+      (or
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-1")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-2")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-3")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-4")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-5")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-6")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-7")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-8")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-9")))
+       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-10")))
+      )
+      (err ERR-NOT-AUTHORIZED)
     )
+
+    (as-contract (stx-transfer? requested-ustx tx-sender contract-caller))
   )
 )
 
@@ -248,3 +242,76 @@
   )
 )
 
+;; TODO: update for mainnet
+(begin
+  (map-set contracts
+    { name: "stacker-1" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-1
+    }
+  )
+  (map-set contracts
+    { name: "stacker-2" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-2
+    }
+  )
+  (map-set contracts
+    { name: "stacker-3" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-3
+    }
+  )
+  (map-set contracts
+    { name: "stacker-4" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-4
+    }
+  )
+  (map-set contracts
+    { name: "stacker-5" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-5
+    }
+  )
+  (map-set contracts
+    { name: "stacker-6" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-6
+    }
+  )
+  (map-set contracts
+    { name: "stacker-7" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-7
+    }
+  )
+  (map-set contracts
+    { name: "stacker-8" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-8
+    }
+  )
+  (map-set contracts
+    { name: "stacker-9" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-9
+    }
+  )
+  (map-set contracts
+    { name: "stacker-10" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-10
+    }
+  )
+)
