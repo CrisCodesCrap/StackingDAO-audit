@@ -85,7 +85,7 @@
 ;; before calling this, consolidate the new amount of tokens to stack in PoX in stx-reserve `set-tokens-to-stack`
 ;; then call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
-(define-public (stack-increase (for-stacker (string-ascii 256)) (additional-tokens-to-stack uint))
+(define-public (stack-increase (additional-tokens-to-stack uint))
   (let (
     (stx-balance (get-stx-balance))
   )
