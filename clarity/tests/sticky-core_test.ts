@@ -34,7 +34,7 @@ Clarinet.test({
 
     // STX to stSTX ratio remains 1
     let call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1);
+    call.result.expectOk().expectUintWithDecimals(1);
 
     // Add 100 STX as rewards
     result = await stickyCore.addRewards(wallet_2, 100, 0);
@@ -44,7 +44,7 @@ Clarinet.test({
     // There are now 3100 STX in pool, for 3000 stSTX in supply
     // 3100/3000=1.0033333
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.033333);
+    call.result.expectOk().expectUintWithDecimals(1.033333);
 
     // Deposit 1000 STX
     // 1000*1.0033333=967.742247
@@ -57,7 +57,7 @@ Clarinet.test({
 
     // After deposits, STX to stSTX did not change
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.033333);
+    call.result.expectOk().expectUintWithDecimals(1.033333);
 
     // Add 200 STX as rewards
     result = await stickyCore.addRewards(wallet_2, 200, 0);
@@ -66,7 +66,7 @@ Clarinet.test({
     // There is now 6300 STX in pool, 5903 stSTX in supply
     // 6300/5903=1.067212
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.067212);
+    call.result.expectOk().expectUintWithDecimals(1.067212);
 
     // Withdraw 1000 stSTX tokens
     result = await stickyCore.initWithdraw(deployer, 1000, 1);
@@ -113,7 +113,7 @@ Clarinet.test({
 
     // STX per stSTX ratio increased
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.01);
+    call.result.expectOk().expectUintWithDecimals(1.01);
 
     // Deposit 1M STX
     result = await stickyCore.deposit(wallet_1, 1000000);
@@ -128,7 +128,7 @@ Clarinet.test({
 
     // Now let's see what the stSTX to STX ratio is
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.019044); 
+    call.result.expectOk().expectUintWithDecimals(1.019044); 
 
     // Let's test withdrawals
     // We are in cycle 4, so cycle 5 is the first we can withdraw (hence u5 as second param)
@@ -158,6 +158,6 @@ Clarinet.test({
 
     // After deployer pulled all their capital + rewards, the ratio remains the same
     call = await stickyCore.getStxPerStstx();
-    call.result.expectUintWithDecimals(1.019045);
+    call.result.expectOk().expectUintWithDecimals(1.019045);
   },
 });

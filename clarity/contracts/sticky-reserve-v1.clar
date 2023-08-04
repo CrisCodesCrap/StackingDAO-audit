@@ -1,6 +1,8 @@
 ;; @contract Sticky Reserve
 ;; @version 1
 
+(impl-trait .sticky-reserve-trait-v1.sticky-reserve-trait)
+
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
@@ -12,15 +14,15 @@
 ;;-------------------------------------
 
 (define-read-only (get-stx-in-use)
-  (var-get stx-in-use)
+  (ok (var-get stx-in-use))
 )
 
 (define-read-only (get-stx-idle)
-  (stx-get-balance (as-contract tx-sender))
+  (ok (stx-get-balance (as-contract tx-sender)))
 )
 
 (define-read-only (get-total-stx)
-  (+ (get-stx-idle) (get-stx-in-use))
+  (ok (+ (unwrap-panic (get-stx-idle)) (unwrap-panic (get-stx-in-use))))
 )
 
 ;;-------------------------------------
@@ -31,7 +33,8 @@
   (begin
     (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
 
-    (as-contract (stx-transfer? requested-stx tx-sender receiver))
+    (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
+    (ok requested-stx)
   )
 )
 
@@ -43,15 +46,17 @@
   (begin
     (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
 
-    (var-set stx-in-use (+ (get-stx-in-use) requested-stx))
-    (as-contract (stx-transfer? requested-stx tx-sender contract-caller))
+    (var-set stx-in-use (+ (unwrap-panic (get-stx-in-use)) requested-stx))
+    (try! (as-contract (stx-transfer? requested-stx tx-sender contract-caller)))
+    (ok requested-stx)
   )
 )
 
 (define-public (return-stx-from-stacking (stx-amount uint))
   (begin
-    (var-set stx-in-use (- (get-stx-in-use) stx-amount))
-    (stx-transfer? stx-amount tx-sender (as-contract tx-sender))
+    (var-set stx-in-use (- (unwrap-panic (get-stx-in-use)) stx-amount))
+    (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
+    (ok stx-amount)
   )
 )
 
@@ -63,6 +68,7 @@
   (begin
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
-    (as-contract (stx-transfer? amount tx-sender receiver))
+    (try! (as-contract (stx-transfer? amount tx-sender receiver)))
+    (ok amount)
   )
 )

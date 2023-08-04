@@ -55,7 +55,9 @@ class StickyCore {
   }
 
   getStxPerStstx() {
-    return this.chain.callReadOnlyFn("sticky-core-v1", "get-stx-per-ststx", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-stx-per-ststx", [
+      types.principal(qualifiedName("sticky-reserve-v1"))
+    ], this.deployer.address);
   }
 
   setWithdrawalTreshold(caller: Account, treshold: number) {
@@ -96,6 +98,7 @@ class StickyCore {
   deposit(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core-v1", "deposit", [
+        types.principal(qualifiedName("sticky-reserve-v1")),
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
@@ -115,6 +118,7 @@ class StickyCore {
   withdraw(caller: Account, cycle: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core-v1", "withdraw", [
+        types.principal(qualifiedName("sticky-reserve-v1")),
         types.uint(cycle)
       ], caller.address)
     ]);
@@ -124,6 +128,7 @@ class StickyCore {
   addRewards(caller: Account, amount: number, cycle: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core-v1", "add-rewards", [
+        types.principal(qualifiedName("sticky-reserve-v1")),
         types.uint(amount * 1000000),
         types.uint(cycle)
       ], caller.address)
