@@ -27,26 +27,33 @@
 ;;-------------------------------------
 
 (define-map cycle-info
-  { cycle-id: uint }
+  { 
+    cycle-id: uint 
+  }
   {
-    deposited: uint,
-    withdrawn: uint,
-    rewards: uint
+    deposited: uint,        ;; STX
+    withdraw-init: uint,    ;; stSTX
+    withdraw-in: uint,      ;; stSTX
+    withdraw-out: uint,     ;; STX
+    rewards: uint,          ;; STX
   }
 )
 
-;; TODO: should be able to withdraw multiple times, in different cycles
 (define-map withdrawals-by-address
-  { address: principal }
+  { 
+    address: principal,
+    cycle-id: uint 
+  }
   {
-    minimum-cycle-id: uint,
-    amount: uint
+    ststx-amount: uint      ;; stSTX
   }
 )
 
 
 (define-map contracts
-  { name: (string-ascii 256) }
+  { 
+    name: (string-ascii 256) 
+  }
   {
     address: principal, ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
     qualified-name: principal ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-core
@@ -69,20 +76,21 @@
   (default-to
     {
       deposited: u0,
-      withdrawn: u0,
+      withdraw-init: u0,
+      withdraw-in: u0,
+      withdraw-out: u0,
       rewards: u0
     }
     (map-get? cycle-info { cycle-id: cycle-id })
   )
 )
 
-(define-read-only (get-withdrawals-by-address (address principal))
+(define-read-only (get-withdrawals-by-address (address principal) (cycle-id uint))
   (default-to
     {
-      minimum-cycle-id: u999999999999999,
-      amount: u0
+      ststx-amount: u0
     }
-    (map-get? withdrawals-by-address { address: address })
+    (map-get? withdrawals-by-address { address: address, cycle-id: cycle-id })
   )
 )
 
@@ -147,89 +155,94 @@
 ;; User  
 ;;-------------------------------------
 
-;; #[allow(unchecked_params)]
-(define-public (deposit (amount uint))
+;; 
+(define-public (deposit (stx-amount uint))
   (let (
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info cycle-id))
 
     (stx-ststx (get-stx-per-ststx))
-    (ststx-to-receive (/ (* amount u1000000) stx-ststx))
+    (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
-    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) amount) }))
+    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
 
     ;; TODO: keep STX in other contract
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+    (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
     (try! (contract-call? .ststx-token mint-for-sticky ststx-to-receive tx-sender))
 
     (ok ststx-to-receive)
   )
 )
 
-;; #[allow(unchecked_params)]
-;; TODO: amount = stSTX amount
-(define-public (init-withdraw (amount uint) (withdrawal-cycle uint))
+;; Initiate withdrawal, given stSTX amount and cycle
+;; Can update amount as long as cycle not started
+(define-public (init-withdraw (ststx-amount uint) (withdrawal-cycle uint))
   (let (
     (cycle-id (get-pox-cycle))
-    (current-cycle-info (get-cycle-info cycle-id))
+    (current-cycle-info (get-cycle-info withdrawal-cycle))
+    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
+
+    (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get ststx-amount withdrawal-entry)) ststx-amount))
   )
     (asserts! (> withdrawal-cycle cycle-id) (err ERR-WRONG-CYCLE-ID))
     ;; TODO: check the amount of withdrawals already pending
     ;; if > 5% of stacking, no withdrawal is possible in next cycle (do one after?)
 
-    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdrawn: (+ (get withdrawn current-cycle-info) amount) }))
+    ;; Update maps
+    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: ststx-amount })
+    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdraw-init: new-withdraw-init }))
 
-    (map-set withdrawals-by-address { address: tx-sender } {
-      minimum-cycle-id: withdrawal-cycle,
-      amount: amount, ;; TODO: add current pending amount? 
-    })
+    ;; Transfer stSTX token to contract, only burn on actual withdraw
+    (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
 
-    ;; Transfer token to contract, only burn on actual withdraw
-    (try! (contract-call? .ststx-token transfer amount tx-sender (as-contract tx-sender) none))
-
-    (ok true)
+    (ok ststx-amount)
   )
 )
 
-;; #[allow(unchecked_params)]
-(define-public (withdraw)
+;; Actual withdrawal for given cycle
+(define-public (withdraw (withdrawal-cycle uint))
   (let (
     (cycle-id (get-pox-cycle))
-    (withdrawal-entry (get-withdrawals-by-address tx-sender))
+    (current-cycle-info (get-cycle-info withdrawal-cycle))
+    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
 
     (receiver tx-sender)
     (stx-ststx (get-stx-per-ststx))
-    (stx-to-receive (/ (* (get amount withdrawal-entry) stx-ststx) u1000000))
+    (stx-to-receive (/ (* (get ststx-amount withdrawal-entry) stx-ststx) u1000000))
   )
-    (asserts! (>= cycle-id (get minimum-cycle-id withdrawal-entry)) (err ERR-WRONG-CYCLE-ID))
+    (asserts! (>= cycle-id withdrawal-cycle) (err ERR-WRONG-CYCLE-ID))
+
+    ;; Update withdrawals maps so user can not withdraw again
+    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: u0 })
+    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { 
+      withdraw-in: (+ (get withdraw-in current-cycle-info) (get ststx-amount withdrawal-entry)),
+      withdraw-out: (+ (get withdraw-out current-cycle-info) stx-to-receive),
+    }))
+
+    ;; STX to user, burn stSTX
     (try! (as-contract (stx-transfer? stx-to-receive tx-sender receiver)))
-
-    ;; TODO: update withdraw entry so can not withdraw again.
-
-    (try! (contract-call? .ststx-token burn-for-sticky (get amount withdrawal-entry) (as-contract tx-sender)))
+    (try! (contract-call? .ststx-token burn-for-sticky (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
 
     (ok stx-to-receive)
   )
 )
 
-;; add rewards in STX
-;; amount is in micro STX
-(define-public (add-rewards (amount uint))
+;; Add rewards in STX for given cycle
+(define-public (add-rewards (stx-amount uint) (cycle-id uint))
   (let (
-    (cycle-id (get-pox-cycle)) ;; TODO: convert to param for flexibility
     (current-cycle-info (get-cycle-info cycle-id))
-    (commission-amount (/ (* amount (var-get commission)) u10000))
+    (commission-amount (/ (* stx-amount (var-get commission)) u10000))
   )
 
     ;; TODO: need to track commission and take into account in stSTX/STX ratio
     ;; Just send comission to address immediately? Can be contract (need trait)
 
     (var-set commission-accrued (+ commission-amount (var-get commission-accrued)))
-    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { rewards: (+ (get rewards current-cycle-info) amount) }))
+    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { rewards: (+ (get rewards current-cycle-info) stx-amount) }))
 
-    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+    (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
 
-    (ok amount)
+    (ok stx-amount)
   )
 )
 
@@ -237,20 +250,29 @@
 ;; Admin
 ;;-------------------------------------
 
-(define-public (set-withdrawal-treshold (treshold uint))
+(define-public (set-withdrawal-treshold (new-treshold uint))
   (begin
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
 
-    (var-set withdrawal-treshold-per-cycle treshold)
+    (var-set withdrawal-treshold-per-cycle new-treshold)
     (ok true)
   )
 )
 
-(define-public (set-guardian-address (guardian principal))
+(define-public (set-guardian-address (new-guardian principal))
   (begin
     (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
 
-    (var-set guardian-address guardian)
+    (var-set guardian-address new-guardian)
+    (ok true)
+  )
+)
+
+(define-public (set-commission (new-commission uint))
+  (begin
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set commission new-commission)
     (ok true)
   )
 )

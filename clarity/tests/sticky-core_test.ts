@@ -33,7 +33,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(1);
 
     // Add 100 STX as rewards
-    result = await stickyCore.addRewards(wallet_2, 100);
+    result = await stickyCore.addRewards(wallet_2, 100, 0);
     result.expectOk().expectUintWithDecimals(100);
 
     // STX to stSTX ratio increased
@@ -56,7 +56,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(1.033333);
 
     // Add 200 STX as rewards
-    result = await stickyCore.addRewards(wallet_2, 200);
+    result = await stickyCore.addRewards(wallet_2, 200, 0);
     result.expectOk().expectUintWithDecimals(200);
 
     // There is now 6300 STX in pool, 5903 stSTX in supply
@@ -66,13 +66,13 @@ Clarinet.test({
 
     // Withdraw 1000 stSTX tokens
     result = await stickyCore.initWithdraw(deployer, 1000, 1);
-    result.expectOk().expectBool(true);
+    result.expectOk().expectUintWithDecimals(1000);
 
     // Advance to next cycle
     chain.mineEmptyBlock(2001);
 
     // 1000 stSTX * 1.067212 = 1067.212 STX
-    result = stickyCore.withdraw(deployer);
+    result = stickyCore.withdraw(deployer, 1);
     result.expectOk().expectUintWithDecimals(1067.212);
   },
 });
@@ -100,7 +100,7 @@ Clarinet.test({
     chain.mineEmptyBlock(2101);
 
     // Add rewards
-    result = await stickyCore.addRewards(wallet_2, 10000);
+    result = await stickyCore.addRewards(wallet_2, 10000, 0);
     result.expectOk().expectUintWithDecimals(10000);
 
     // STX per stSTX ratio increased
@@ -115,7 +115,7 @@ Clarinet.test({
     chain.mineEmptyBlock(2101);
 
     // Add rewards
-    result = await stickyCore.addRewards(wallet_2, 18000);
+    result = await stickyCore.addRewards(wallet_2, 18000, 1);
     result.expectOk().expectUintWithDecimals(18000);
 
     // Now let's see what the stSTX to STX ratio is
@@ -125,7 +125,7 @@ Clarinet.test({
     // Let's test withdrawals
     // We are in cycle 4, so cycle 5 is the first we can withdraw (hence u5 as second param)
     result = await stickyCore.initWithdraw(deployer, 1000000, 5);
-    result.expectOk().expectBool(true);
+    result.expectOk().expectUintWithDecimals(1000000);
 
     // Deployer should have 0 stSTX left
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
@@ -141,7 +141,7 @@ Clarinet.test({
     chain.mineEmptyBlock(2001);
 
     // Withdraw
-    result = stickyCore.withdraw(deployer);
+    result = stickyCore.withdraw(deployer, 5);
     result.expectOk().expectUintWithDecimals(1019044);
 
     // STX balance

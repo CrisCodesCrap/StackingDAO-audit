@@ -103,18 +103,20 @@ class StickyCore {
     return block.receipts[0].result;
   }
 
-  withdraw(caller: Account) {
+  withdraw(caller: Account, cycle: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core", "withdraw", [
+        types.uint(cycle)
       ], caller.address)
     ]);
     return block.receipts[0].result;
   }
 
-  addRewards(caller: Account, amount: number) {
+  addRewards(caller: Account, amount: number, cycle: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core", "add-rewards", [
-        types.uint(amount * 1000000)
+        types.uint(amount * 1000000),
+        types.uint(cycle)
       ], caller.address)
     ]);
     return block.receipts[0].result;
