@@ -36,6 +36,7 @@
     withdraw-in: uint,      ;; stSTX
     withdraw-out: uint,     ;; STX
     rewards: uint,          ;; STX
+    commission: uint        ;; STX
   }
 )
 
@@ -64,12 +65,24 @@
 ;; Getters 
 ;;-------------------------------------
 
-(define-read-only (get-shutdown-activated)
-  (var-get shutdown-activated)
-)
-
 (define-read-only (get-guardian-address)
   (var-get guardian-address)
+)
+
+(define-read-only (get-withdrawal-treshold-per-cycle)
+  (var-get withdrawal-treshold-per-cycle)
+)
+
+(define-read-only (get-commission)
+  (var-get commission)
+)
+
+(define-read-only (get-commission-accrued)
+  (var-get commission-accrued)
+)
+
+(define-read-only (get-shutdown-activated)
+  (var-get shutdown-activated)
 )
 
 (define-read-only (get-cycle-info (cycle-id uint))
@@ -79,7 +92,8 @@
       withdraw-init: u0,
       withdraw-in: u0,
       withdraw-out: u0,
-      rewards: u0
+      rewards: u0,
+      commission: u0
     }
     (map-get? cycle-info { cycle-id: cycle-id })
   )
@@ -106,7 +120,7 @@
 (define-read-only (get-stx-per-ststx)
   (let (
     (ststx-supply (unwrap-panic (contract-call? .ststx-token get-total-supply)))
-    (stx-supply (stx-get-balance (as-contract tx-sender)))
+    (stx-supply (- (stx-get-balance (as-contract tx-sender)) (var-get commission-accrued)))
   )
     (if (is-eq ststx-supply u0)
       ;; TODO: more decimals?
@@ -232,13 +246,13 @@
   (let (
     (current-cycle-info (get-cycle-info cycle-id))
     (commission-amount (/ (* stx-amount (var-get commission)) u10000))
+    (rewards-left (- stx-amount commission-amount))
   )
-
-    ;; TODO: need to track commission and take into account in stSTX/STX ratio
-    ;; Just send comission to address immediately? Can be contract (need trait)
-
     (var-set commission-accrued (+ commission-amount (var-get commission-accrued)))
-    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { rewards: (+ (get rewards current-cycle-info) stx-amount) }))
+    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
+      rewards: (+ (get rewards current-cycle-info) rewards-left),
+      commission: (+ (get commission current-cycle-info) commission-amount)
+    }))
 
     (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
 
@@ -285,6 +299,19 @@
   )
 )
 
+(define-public (withdraw-commission)
+  (let (
+    (commission-amount (get-commission-accrued))
+  )
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+
+    (var-set commission-accrued u0)
+
+    (try! (stx-transfer? commission-amount (as-contract tx-sender) tx-sender))
+
+    (ok commission-amount)
+  )
+)
 
 ;; TODO: update for mainnet
 (begin

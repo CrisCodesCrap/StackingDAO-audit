@@ -20,8 +20,12 @@ Clarinet.test({
 
     let stickyCore = new StickyCore(chain, deployer);
 
+    // Set commission to 0 so it does not influence STX per stSTX
+    let result = await stickyCore.setCommission(deployer, 0);
+    result.expectOk().expectBool(true);
+
     // Deposit 1000 STX
-    let result = await stickyCore.deposit(deployer, 1000);
+    result = await stickyCore.deposit(deployer, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     // Deposit 2000 STX
@@ -86,8 +90,12 @@ Clarinet.test({
 
     let stickyCore = new StickyCore(chain, deployer);
 
+    // Set commission to 0 so it does not influence STX per stSTX
+    let result = await stickyCore.setCommission(deployer, 0);
+    result.expectOk().expectBool(true);
+
     // Deposit 1,000,000 STX
-    let result = await stickyCore.deposit(deployer, 1000000);
+    result = await stickyCore.deposit(deployer, 1000000);
     result.expectOk().expectUintWithDecimals(1000000);
 
     // Got 1,000,000 stSTX

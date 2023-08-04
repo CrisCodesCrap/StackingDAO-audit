@@ -67,6 +67,15 @@ class StickyCore {
     return block.receipts[0].result;
   }
 
+  setCommission(caller: Account, commission: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("sticky-core", "set-commission", [
+        types.uint(commission * 10000),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   setGuardianAddress(caller: Account, address: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core", "set-guardian-address", [
