@@ -16,7 +16,6 @@
 (define-constant CONTRACT-OWNER tx-sender)
 (define-data-var guardian-address principal tx-sender)
 (define-data-var withdrawal-treshold-per-cycle uint u500) ;; 5% in basis points
-;; TODO: set/get commission
 (define-data-var commission uint u500) ;; 5% in basis points
 (define-data-var commission-accrued uint u0) ;; keeps track of commission
 
@@ -123,7 +122,6 @@
     (stx-supply (- (stx-get-balance (as-contract tx-sender)) (var-get commission-accrued)))
   )
     (if (is-eq ststx-supply u0)
-      ;; TODO: more decimals?
       u1000000
       (/ (* stx-supply u1000000) ststx-supply)
     )
