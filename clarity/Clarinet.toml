@@ -12,6 +12,9 @@ path = "contracts/sip-010-trait-ft-standard.clar"
 [contracts.sticky-reserve-trait-v1]
 path = "contracts/sticky-reserve-trait-v1.clar"
 
+[contracts.sticky-commission-trait-v1]
+path = "contracts/sticky-commission-trait-v1.clar"
+
 [contracts.ststx-token]
 path = "contracts/ststx-token.clar"
 
@@ -23,6 +26,9 @@ path = "contracts/sticky-dao.clar"
 
 [contracts.sticky-reserve-v1]
 path = "contracts/sticky-reserve-v1.clar"
+
+[contracts.sticky-commission-v1]
+path = "contracts/sticky-commission-v1.clar"
 
 [contracts.sticky-governance-v0]
 path = "contracts/sticky-governance-v0.clar"

@@ -23,6 +23,8 @@
 ;;-------------------------------------
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
+
+;; TODO: set to 0 if stacking not extended??
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 
 ;;-------------------------------------

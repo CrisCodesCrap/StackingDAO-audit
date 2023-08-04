@@ -2,6 +2,7 @@
 ;; @version 1
 
 (use-trait sticky-reserve-trait .sticky-reserve-trait-v1.sticky-reserve-trait)
+(use-trait sticky-commission-trait .sticky-commission-trait-v1.sticky-commission-trait)
 
 ;;-------------------------------------
 ;; Constants 
@@ -215,7 +216,7 @@
 )
 
 ;; Add rewards in STX for given cycle
-(define-public (add-rewards (reserve principal) (stx-amount uint) (cycle-id uint))
+(define-public (add-rewards (commission-trait <sticky-commission-trait>) (reserve principal) (stx-amount uint) (cycle-id uint))
   (let (
     (current-cycle-info (get-cycle-info cycle-id))
     (commission-amount (/ (* stx-amount (var-get commission)) u10000))
@@ -223,6 +224,7 @@
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name reserve "reserve"))
+    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of commission-trait) "commission"))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
       rewards: (+ (get rewards current-cycle-info) rewards-left),
@@ -230,8 +232,8 @@
     }))
 
     (if (> commission-amount u0)
-      (try! (stx-transfer? commission-amount tx-sender (as-contract tx-sender)))
-      true
+      (try! (as-contract (contract-call? commission-trait add-commission commission-amount)))
+      u0
     )
     (try! (stx-transfer? rewards-left tx-sender reserve))
 
@@ -276,18 +278,5 @@
 
     (var-set shutdown-withdrawals shutdown)
     (ok true)
-  )
-)
-
-(define-public (withdraw-commission)
-  (let (
-    (receiver tx-sender)
-    (amount (stx-get-balance (as-contract tx-sender)))
-  )
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
-
-    (try! (as-contract (stx-transfer? amount tx-sender receiver)))
-
-    (ok amount)
   )
 )
