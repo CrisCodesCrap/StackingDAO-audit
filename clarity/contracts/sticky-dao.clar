@@ -5,16 +5,16 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u20401)
-(define-constant ERR_CONTRACTS_DISABLED u20001)
-(define-constant ERR_INACTIVE_CONTRACT u20002)
+(define-constant ERR_NOT_ADMIN u20001)
+(define-constant ERR_CONTRACTS_DISABLED u20002)
+(define-constant ERR_INACTIVE_CONTRACT u20003)
 
 ;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
 
-;; TODO: need to be able to turn off guardian (move to full governance)
 (define-data-var active-guardian principal tx-sender)
+(define-data-var enabled-guardian bool true)
 
 (define-data-var contracts-enabled bool true)
 
@@ -38,6 +38,10 @@
 
 (define-read-only (get-active-guardian)
   (var-get active-guardian)
+)
+
+(define-read-only (get-enabled-guardian)
+  (var-get enabled-guardian)
 )
 
 (define-read-only (get-contracts-enabled)
@@ -68,7 +72,10 @@
 
 (define-public (check-is-admin (sender principal))
   (begin
-    (asserts! (or (is-eq (get-contract-name sender) "governance") (is-eq sender (var-get active-guardian))) (err ERR_NOT_AUTHORIZED))
+    (asserts! (or 
+      (is-eq (get-contract-name sender) "governance") 
+      (and (is-eq sender (var-get active-guardian)) (get-enabled-guardian))
+    ) (err ERR_NOT_ADMIN))
     (ok true)
   )
 )
@@ -102,6 +109,14 @@
   (begin
     (try! (check-is-admin tx-sender))
     (var-set active-guardian guardian)
+    (ok true)
+  )
+)
+
+(define-public (set-enabled-guardian (enabled bool))
+  (begin
+    (try! (check-is-admin tx-sender))
+    (var-set enabled-guardian enabled)
     (ok true)
   )
 )
