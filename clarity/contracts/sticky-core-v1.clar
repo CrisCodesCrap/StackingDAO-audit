@@ -9,6 +9,8 @@
 
 (define-constant ERR_NOT_AUTHORIZED u19401)
 (define-constant ERR_WRONG_CYCLE_ID u19001)
+(define-constant ERR_SHUTDOWN u19002)
+(define-constant ERR_WITHDRAW_EXCEEDED u19003)
 
 ;;-------------------------------------
 ;; Variables
@@ -18,8 +20,8 @@
 (define-data-var commission uint u500) ;; 5% in basis points
 (define-data-var commission-accrued uint u0) ;; keeps track of commission
 
-;; TODO: only shutdown deposits
-(define-data-var shutdown-activated bool false)
+(define-data-var shutdown-deposits bool false)
+(define-data-var shutdown-withdrawals bool false)
 
 ;;-------------------------------------
 ;; Maps 
@@ -65,8 +67,12 @@
   (var-get commission-accrued)
 )
 
-(define-read-only (get-shutdown-activated)
-  (var-get shutdown-activated)
+(define-read-only (get-shutdown-deposits)
+  (var-get shutdown-deposits)
+)
+
+(define-read-only (get-shutdown-withdrawals)
+  (var-get shutdown-withdrawals)
 )
 
 (define-read-only (get-cycle-info (cycle-id uint))
@@ -140,6 +146,7 @@
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
 
@@ -157,13 +164,14 @@
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info withdrawal-cycle))
     (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
+    (ststx-supply (unwrap-panic (contract-call? .ststx-token get-total-supply)))
 
     (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get ststx-amount withdrawal-entry)) ststx-amount))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
+    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
-    ;; TODO: check the amount of withdrawals already pending
-    ;; if > 5% of stacking, no withdrawal is possible in next cycle (do one after?)
+    (asserts! (< (* (get withdraw-init current-cycle-info) u10000) (get-withdrawal-treshold-per-cycle)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
     (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: ststx-amount })
@@ -189,6 +197,7 @@
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; Update withdrawals maps so user can not withdraw again
@@ -254,11 +263,21 @@
   )
 )
 
-(define-public (toggle-shutdown)
+(define-public (set-shutdown-deposits (shutdown bool))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    
+    (var-set shutdown-deposits shutdown)
+    (ok true)
+  )
+)
+
+(define-public (set-shutdown-withdrawals (shutdown bool))
   (begin
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
-    (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
+    (var-set shutdown-withdrawals shutdown)
+    (ok true)
   )
 )
 
