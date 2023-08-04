@@ -1,8 +1,6 @@
 ;; @contract Sticky Core
 ;; @version 1
 
-(impl-trait .sticky-core-trait-v1.sticky-core-trait)
-
 ;;-------------------------------------
 ;; Constants 
 ;;-------------------------------------
@@ -104,7 +102,7 @@
 (define-read-only (get-stx-per-ststx)
   (let (
     (ststx-supply (unwrap-panic (contract-call? .ststx-token get-total-supply)))
-    (stx-supply (- (stx-get-balance (as-contract tx-sender)) (var-get commission-accrued)))
+    (stx-supply (contract-call? .sticky-reserve get-total-stx))
   )
     (if (is-eq ststx-supply u0)
       u1000000
@@ -115,18 +113,6 @@
 
 (define-read-only (get-stx-balance (address principal))
   (stx-get-balance address)
-)
-
-;;-------------------------------------
-;; Trait 
-;;-------------------------------------
-
-(define-public (request-stx-to-stack (requested-stx uint))
-  (begin
-    ;; TODO: keep amount of STX used, need for stx/ststx
-    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
-    (as-contract (stx-transfer? requested-stx tx-sender contract-caller))
-  )
 )
 
 ;;-------------------------------------
@@ -146,8 +132,7 @@
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
 
-    ;; TODO: keep STX in other contract
-    (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
+    (try! (stx-transfer? stx-amount tx-sender .sticky-reserve))
     (try! (contract-call? .ststx-token mint-for-sticky ststx-to-receive tx-sender))
 
     (ok ststx-to-receive)
@@ -202,7 +187,7 @@
     }))
 
     ;; STX to user, burn stSTX
-    (try! (as-contract (stx-transfer? stx-to-receive tx-sender receiver)))
+    (try! (as-contract (contract-call? .sticky-reserve request-stx stx-to-receive receiver)))
     (try! (contract-call? .ststx-token burn-for-sticky (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
 
     (ok stx-to-receive)
@@ -223,7 +208,11 @@
       commission: (+ (get commission current-cycle-info) commission-amount)
     }))
 
-    (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
+    (if (> commission-amount u0)
+      (try! (stx-transfer? commission-amount tx-sender (as-contract tx-sender)))
+      true
+    )
+    (try! (stx-transfer? rewards-left tx-sender .sticky-reserve))
 
     (ok stx-amount)
   )

@@ -9,8 +9,6 @@
 ;; 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac
 ;; 0x00
 
-(use-trait sticky-core-trait .sticky-core-trait-v1.sticky-core-trait)
-
 ;;-------------------------------------
 ;; Constants 
 ;;-------------------------------------
@@ -49,7 +47,6 @@
 ;; additional calls should be made with `stack-extend` and `stack-increase` in this contract
 ;; lock-period should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
 (define-public (initiate-stacking 
-    (sticky-core <sticky-core-trait>)
     (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
     (tokens-to-stack uint)
     (start-burn-ht uint)
@@ -62,13 +59,12 @@
   )
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of sticky-core) "core"))
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with tokens-to-stack
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
       success (begin
         (if (> tokens-to-stack stx-balance)
-          (try! (contract-call? sticky-core request-stx-to-stack (- tokens-to-stack stx-balance)))
+          (try! (contract-call? .sticky-reserve request-stx-to-stack (- tokens-to-stack stx-balance)))
           true
         )
         (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-stx tokens-to-stack pox-addr start-burn-ht lock-period))
@@ -93,15 +89,14 @@
 ;; before calling this, consolidate the new amount of tokens to stack in PoX in stx-reserve `set-tokens-to-stack`
 ;; then call this first, before a new cycle starts (every 2100 blocks)
 ;; after calling this, call `stack-extend`
-(define-public (stack-increase (sticky-core <sticky-core-trait>) (additional-tokens-to-stack uint))
+(define-public (stack-increase (additional-tokens-to-stack uint))
   (let (
     (stx-balance (get-stx-balance))
   )
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of sticky-core) "core"))
 
-    (try! (contract-call? sticky-core request-stx-to-stack additional-tokens-to-stack))
+    (try! (contract-call? .sticky-reserve request-stx-to-stack additional-tokens-to-stack))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))
       result (begin
         (print result)
@@ -143,11 +138,9 @@
 
 ;; return STX to the STX reserve
 ;; can be used when deprecating this stacker logic
-(define-public (return-stx (stx-amount uint) (receiver principal) )
+(define-public (return-stx (stx-amount uint))
   (begin
     (try! (contract-call? .sticky-dao check-is-enabled))
-    ;; TODO: move to pool instead of core?
-    (try! (contract-call? .sticky-dao check-is-contract-name receiver "core"))
-    (as-contract (stx-transfer? stx-amount tx-sender receiver))
+    (as-contract (stx-transfer? stx-amount tx-sender .sticky-reserve))
   )
 )
