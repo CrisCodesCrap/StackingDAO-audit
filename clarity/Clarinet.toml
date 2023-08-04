@@ -9,11 +9,23 @@ cache_dir = "./.cache"
 [contracts.sip-010-trait-ft-standard]
 path = "contracts/sip-010-trait-ft-standard.clar"
 
+[contracts.sticky-core-trait-v1]
+path = "contracts/sticky-core-trait-v1.clar"
+
 [contracts.ststx-token]
 path = "contracts/ststx-token.clar"
 
-[contracts.sticky-core]
-path = "contracts/sticky-core.clar"
+[contracts.sticky-token]
+path = "contracts/sticky-token.clar"
+
+[contracts.sticky-dao]
+path = "contracts/sticky-dao.clar"
+
+[contracts.sticky-governance-v0]
+path = "contracts/sticky-governance-v0.clar"
+
+[contracts.sticky-core-v1]
+path = "contracts/sticky-core-v1.clar"
 
 [contracts.sticky-stacker-1]
 path = "contracts/sticky-stacker-1.clar"

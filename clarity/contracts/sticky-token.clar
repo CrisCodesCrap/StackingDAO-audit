@@ -3,23 +3,13 @@
 ;; Defines the Sticky token according to the SIP010 Standard
 (define-fungible-token sticky)
 
+(define-constant ERR_NOT_AUTHORIZED u1401)
+
 (define-data-var token-uri (string-utf8 256) u"")
-(define-data-var contract-owner principal tx-sender)
 
-;; errors
-(define-constant ERR-NOT-AUTHORIZED u1401)
-
-(define-public (set-contract-owner (owner principal))
-  (begin
-    (asserts! (is-eq tx-sender (var-get contract-owner)) (err ERR-NOT-AUTHORIZED))
-
-    (ok (var-set contract-owner owner))
-  )
-)
-
-;; ---------------------------------------------------------
-;; SIP-10 Functions
-;; ---------------------------------------------------------
+;;-------------------------------------
+;; SIP-10 
+;;-------------------------------------
 
 (define-read-only (get-total-supply)
   (ok (ft-get-supply sticky))
@@ -42,9 +32,9 @@
 )
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (var-get contract-owner))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (ok (var-set token-uri value))
-    (err ERR-NOT-AUTHORIZED)
   )
 )
 
@@ -54,7 +44,7 @@
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
   (begin
-    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
 
     (match (ft-transfer? sticky amount sender recipient)
       response (begin
@@ -66,10 +56,14 @@
   )
 )
 
+;;-------------------------------------
+;; Mint / Burn
+;;-------------------------------------
+
 ;; Mint method
 (define-public (mint-for-sticky (amount uint) (recipient principal))
   (begin
-    (asserts! (is-eq contract-caller .sticky-core) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
     (ft-mint? sticky amount recipient)
   )
 )
@@ -77,7 +71,7 @@
 ;; Burn method
 (define-public (burn-for-sticky (amount uint) (sender principal))
   (begin
-    (asserts! (is-eq contract-caller .sticky-core) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
     (ft-burn? sticky amount sender)
   )
 )
@@ -85,7 +79,7 @@
 ;; Burn external
 (define-public (burn (amount uint) (sender principal))
   (begin
-    (asserts! (is-eq tx-sender sender) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
     (ft-burn? sticky amount sender)
   )
 )

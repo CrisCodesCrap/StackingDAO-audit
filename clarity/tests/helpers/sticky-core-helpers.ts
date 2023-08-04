@@ -15,52 +15,52 @@ class StickyCore {
   }
 
   getShutdownActivated() {
-    return this.chain.callReadOnlyFn("sticky-core", "get-shutdown-activated", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-shutdown-activated", [], this.deployer.address);
   }
 
   getGuardianAddress() {
-    return this.chain.callReadOnlyFn("sticky-core", "get-guardian-address", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-guardian-address", [], this.deployer.address);
   }
 
   getDepositsByCycle(cycle: number) {
-    return this.chain.callReadOnlyFn("sticky-core", "get-deposits-by-cycle", [
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-deposits-by-cycle", [
       types.uint(cycle),
     ], this.deployer.address);
   }
 
   getWithdrawalsByCycle(cycle: number) {
-    return this.chain.callReadOnlyFn("sticky-core", "get-withdrawals-by-cycle", [
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-withdrawals-by-cycle", [
       types.uint(cycle),
     ], this.deployer.address);
   }
 
   getWithdrawalsByAddress(address: string) {
-    return this.chain.callReadOnlyFn("sticky-core", "get-withdrawals-by-address", [
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-withdrawals-by-address", [
       types.principal(address),
     ], this.deployer.address);
   }
 
   getStxBalance(address: string) {
-    return this.chain.callReadOnlyFn("sticky-core", "get-stx-balance", [
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-stx-balance", [
       types.principal(address),
     ], this.deployer.address);
   }
 
   getBurnHeight() {
-    return this.chain.callReadOnlyFn("sticky-core", "get-burn-height", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-burn-height", [], this.deployer.address);
   }
 
   getPoxCycle() {
-    return this.chain.callReadOnlyFn("sticky-core", "get-pox-cycle", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-pox-cycle", [], this.deployer.address);
   }
 
   getStxPerStstx() {
-    return this.chain.callReadOnlyFn("sticky-core", "get-stx-per-ststx", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-stx-per-ststx", [], this.deployer.address);
   }
 
   setWithdrawalTreshold(caller: Account, treshold: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "set-withdrawal-treshold", [
+      Tx.contractCall("sticky-core-v1", "set-withdrawal-treshold", [
         types.uint(treshold * 1000000),
       ], caller.address)
     ]);
@@ -69,7 +69,7 @@ class StickyCore {
 
   setCommission(caller: Account, commission: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "set-commission", [
+      Tx.contractCall("sticky-core-v1", "set-commission", [
         types.uint(commission * 10000),
       ], caller.address)
     ]);
@@ -78,7 +78,7 @@ class StickyCore {
 
   setGuardianAddress(caller: Account, address: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "set-guardian-address", [
+      Tx.contractCall("sticky-core-v1", "set-guardian-address", [
         types.principal(address),
       ], caller.address)
     ]);
@@ -87,7 +87,7 @@ class StickyCore {
 
   toggleShutdown(caller: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "toggle-shutdown", [
+      Tx.contractCall("sticky-core-v1", "toggle-shutdown", [
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -95,7 +95,7 @@ class StickyCore {
 
   deposit(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "deposit", [
+      Tx.contractCall("sticky-core-v1", "deposit", [
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
@@ -104,7 +104,7 @@ class StickyCore {
 
   initWithdraw(caller: Account, amount: number, cycle: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "init-withdraw", [
+      Tx.contractCall("sticky-core-v1", "init-withdraw", [
         types.uint(amount * 1000000),
         types.uint(cycle),
       ], caller.address)
@@ -114,7 +114,7 @@ class StickyCore {
 
   withdraw(caller: Account, cycle: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "withdraw", [
+      Tx.contractCall("sticky-core-v1", "withdraw", [
         types.uint(cycle)
       ], caller.address)
     ]);
@@ -123,7 +123,7 @@ class StickyCore {
 
   addRewards(caller: Account, amount: number, cycle: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-core", "add-rewards", [
+      Tx.contractCall("sticky-core-v1", "add-rewards", [
         types.uint(amount * 1000000),
         types.uint(cycle)
       ], caller.address)

@@ -1,24 +1,24 @@
-;; Sticky Core
-;;
+;; @contract Sticky Core
+;; @version 1
+
+(impl-trait .sticky-core-trait-v1.sticky-core-trait)
 
 ;;-------------------------------------
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR-NOT-AUTHORIZED u19401)
-(define-constant ERR-WRONG-CYCLE-ID u19001)
+(define-constant ERR_NOT_AUTHORIZED u19401)
+(define-constant ERR_WRONG_CYCLE_ID u19001)
 
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
-;; TODO: create governance contract
-(define-constant CONTRACT-OWNER tx-sender)
-(define-data-var guardian-address principal tx-sender)
 (define-data-var withdrawal-treshold-per-cycle uint u500) ;; 5% in basis points
 (define-data-var commission uint u500) ;; 5% in basis points
 (define-data-var commission-accrued uint u0) ;; keeps track of commission
 
+;; TODO: only shutdown deposits
 (define-data-var shutdown-activated bool false)
 
 ;;-------------------------------------
@@ -49,24 +49,9 @@
   }
 )
 
-
-(define-map contracts
-  { 
-    name: (string-ascii 256) 
-  }
-  {
-    address: principal, ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-    qualified-name: principal ;; e.g. 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-core
-  }
-)
-
 ;;-------------------------------------
 ;; Getters 
 ;;-------------------------------------
-
-(define-read-only (get-guardian-address)
-  (var-get guardian-address)
-)
 
 (define-read-only (get-withdrawal-treshold-per-cycle)
   (var-get withdrawal-treshold-per-cycle)
@@ -132,34 +117,15 @@
   (stx-get-balance address)
 )
 
-;; TODO: move to DAO contract
-(define-read-only (get-qualified-name-by-name (name (string-ascii 256)))
-  (get qualified-name (map-get? contracts { name: name }))
-)
-
 ;;-------------------------------------
-;; Helpers 
+;; Trait 
 ;;-------------------------------------
 
-(define-public (request-stx-to-stack (requested-ustx uint))
+(define-public (request-stx-to-stack (requested-stx uint))
   (begin
-    (asserts!
-      (or
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-1")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-2")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-3")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-4")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-5")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-6")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-7")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-8")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-9")))
-       (is-eq contract-caller (unwrap-panic (get-qualified-name-by-name "stacker-10")))
-      )
-      (err ERR-NOT-AUTHORIZED)
-    )
-
-    (as-contract (stx-transfer? requested-ustx tx-sender contract-caller))
+    ;; TODO: keep amount of STX used, need for stx/ststx
+    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
+    (as-contract (stx-transfer? requested-stx tx-sender contract-caller))
   )
 )
 
@@ -176,6 +142,8 @@
     (stx-ststx (get-stx-per-ststx))
     (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
+    (try! (contract-call? .sticky-dao check-is-enabled))
+
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
 
     ;; TODO: keep STX in other contract
@@ -196,7 +164,8 @@
 
     (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get ststx-amount withdrawal-entry)) ststx-amount))
   )
-    (asserts! (> withdrawal-cycle cycle-id) (err ERR-WRONG-CYCLE-ID))
+    (try! (contract-call? .sticky-dao check-is-enabled))
+    (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
     ;; TODO: check the amount of withdrawals already pending
     ;; if > 5% of stacking, no withdrawal is possible in next cycle (do one after?)
 
@@ -222,7 +191,8 @@
     (stx-ststx (get-stx-per-ststx))
     (stx-to-receive (/ (* (get ststx-amount withdrawal-entry) stx-ststx) u1000000))
   )
-    (asserts! (>= cycle-id withdrawal-cycle) (err ERR-WRONG-CYCLE-ID))
+    (try! (contract-call? .sticky-dao check-is-enabled))
+    (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; Update withdrawals maps so user can not withdraw again
     (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: u0 })
@@ -246,6 +216,7 @@
     (commission-amount (/ (* stx-amount (var-get commission)) u10000))
     (rewards-left (- stx-amount commission-amount))
   )
+    (try! (contract-call? .sticky-dao check-is-enabled))
     (var-set commission-accrued (+ commission-amount (var-get commission-accrued)))
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
       rewards: (+ (get rewards current-cycle-info) rewards-left),
@@ -264,25 +235,16 @@
 
 (define-public (set-withdrawal-treshold (new-treshold uint))
   (begin
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
     (var-set withdrawal-treshold-per-cycle new-treshold)
     (ok true)
   )
 )
 
-(define-public (set-guardian-address (new-guardian principal))
-  (begin
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
-
-    (var-set guardian-address new-guardian)
-    (ok true)
-  )
-)
-
 (define-public (set-commission (new-commission uint))
   (begin
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
     (var-set commission new-commission)
     (ok true)
@@ -291,7 +253,7 @@
 
 (define-public (toggle-shutdown)
   (begin
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
     (ok (var-set shutdown-activated (not (var-get shutdown-activated))))
   )
@@ -301,86 +263,12 @@
   (let (
     (commission-amount (get-commission-accrued))
   )
-    (asserts! (is-eq tx-sender CONTRACT-OWNER) (err ERR-NOT-AUTHORIZED))
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
     (var-set commission-accrued u0)
 
     (try! (stx-transfer? commission-amount (as-contract tx-sender) tx-sender))
 
     (ok commission-amount)
-  )
-)
-
-;; TODO: update for mainnet
-(begin
-  (map-set contracts
-    { name: "stacker-1" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-1
-    }
-  )
-  (map-set contracts
-    { name: "stacker-2" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-2
-    }
-  )
-  (map-set contracts
-    { name: "stacker-3" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-3
-    }
-  )
-  (map-set contracts
-    { name: "stacker-4" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-4
-    }
-  )
-  (map-set contracts
-    { name: "stacker-5" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-5
-    }
-  )
-  (map-set contracts
-    { name: "stacker-6" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-6
-    }
-  )
-  (map-set contracts
-    { name: "stacker-7" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-7
-    }
-  )
-  (map-set contracts
-    { name: "stacker-8" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-8
-    }
-  )
-  (map-set contracts
-    { name: "stacker-9" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-9
-    }
-  )
-  (map-set contracts
-    { name: "stacker-10" }
-    {
-      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
-      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-10
-    }
   )
 )
