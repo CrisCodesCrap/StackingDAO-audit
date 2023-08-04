@@ -18,7 +18,6 @@
 
 (define-data-var withdrawal-treshold-per-cycle uint u500) ;; 5% in basis points
 (define-data-var commission uint u500) ;; 5% in basis points
-(define-data-var commission-accrued uint u0) ;; keeps track of commission
 
 (define-data-var shutdown-deposits bool false)
 (define-data-var shutdown-withdrawals bool false)
@@ -63,10 +62,6 @@
   (var-get commission)
 )
 
-(define-read-only (get-commission-accrued)
-  (var-get commission-accrued)
-)
-
 (define-read-only (get-shutdown-deposits)
   (var-get shutdown-deposits)
 )
@@ -107,6 +102,14 @@
   (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height)
 )
 
+(define-read-only (get-stx-balance (address principal))
+  (stx-get-balance address)
+)
+
+;;-------------------------------------
+;; STX per stSTX  
+;;-------------------------------------
+
 (define-public (get-stx-per-ststx (reserve-trait <sticky-reserve-trait>))
   (let (
     (stx-amount (unwrap-panic (contract-call? reserve-trait get-total-stx)))
@@ -125,10 +128,6 @@
       (/ (* stx-amount u1000000) ststx-supply)
     )
   )
-)
-
-(define-read-only (get-stx-balance (address principal))
-  (stx-get-balance address)
 )
 
 ;;-------------------------------------
@@ -225,7 +224,6 @@
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name reserve "reserve"))
 
-    (var-set commission-accrued (+ commission-amount (var-get commission-accrued)))
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
       rewards: (+ (get rewards current-cycle-info) rewards-left),
       commission: (+ (get commission current-cycle-info) commission-amount)
@@ -283,14 +281,13 @@
 
 (define-public (withdraw-commission)
   (let (
-    (commission-amount (get-commission-accrued))
+    (receiver tx-sender)
+    (amount (stx-get-balance (as-contract tx-sender)))
   )
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
 
-    (var-set commission-accrued u0)
+    (try! (as-contract (stx-transfer? amount tx-sender receiver)))
 
-    (try! (stx-transfer? commission-amount (as-contract tx-sender) tx-sender))
-
-    (ok commission-amount)
+    (ok amount)
   )
 )
