@@ -33,8 +33,7 @@
   }
   {
     deposited: uint,        ;; STX
-    withdraw-init: uint,    ;; stSTX
-    withdraw-in: uint,      ;; stSTX
+    withdraw-init: uint,    ;; STX
     withdraw-out: uint,     ;; STX
     rewards: uint,          ;; STX
     commission: uint        ;; STX
@@ -47,7 +46,8 @@
     cycle-id: uint 
   }
   {
-    ststx-amount: uint      ;; stSTX
+    stx-amount: uint,
+    ststx-amount: uint
   }
 )
 
@@ -76,7 +76,6 @@
     {
       deposited: u0,
       withdraw-init: u0,
-      withdraw-in: u0,
       withdraw-out: u0,
       rewards: u0,
       commission: u0
@@ -88,6 +87,7 @@
 (define-read-only (get-withdrawals-by-address (address principal) (cycle-id uint))
   (default-to
     {
+      stx-amount: u0,
       ststx-amount: u0
     }
     (map-get? withdrawals-by-address { address: address, cycle-id: cycle-id })
@@ -159,22 +159,25 @@
 
 ;; Initiate withdrawal, given stSTX amount and cycle
 ;; Can update amount as long as cycle not started
-(define-public (init-withdraw (ststx-amount uint) (withdrawal-cycle uint))
+(define-public (init-withdraw (reserve-trait <sticky-reserve-trait>) (ststx-amount uint) (withdrawal-cycle uint))
   (let (
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info withdrawal-cycle))
-    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
-    (ststx-supply (unwrap-panic (contract-call? .ststx-token get-total-supply)))
 
-    (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get ststx-amount withdrawal-entry)) ststx-amount))
+    (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-trait)))
+    (stx-to-receive (/ (* ststx-amount stx-ststx) u1000000))
+
+    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
+    (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get stx-amount withdrawal-entry)) stx-to-receive))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
+    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
     (asserts! (< (* (get withdraw-init current-cycle-info) u10000) (get-withdrawal-treshold-per-cycle)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
-    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: ststx-amount })
+    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: stx-to-receive, ststx-amount: ststx-amount })
     (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdraw-init: new-withdraw-init }))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
@@ -192,8 +195,7 @@
     (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
 
     (receiver tx-sender)
-    (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-trait)))
-    (stx-to-receive (/ (* (get ststx-amount withdrawal-entry) stx-ststx) u1000000))
+    (stx-to-receive (get stx-amount withdrawal-entry))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
@@ -201,9 +203,8 @@
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; Update withdrawals maps so user can not withdraw again
-    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { ststx-amount: u0 })
+    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: u0, ststx-amount: u0 })
     (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { 
-      withdraw-in: (+ (get withdraw-in current-cycle-info) (get ststx-amount withdrawal-entry)),
       withdraw-out: (+ (get withdraw-out current-cycle-info) stx-to-receive),
     }))
 
