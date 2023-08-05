@@ -3,7 +3,6 @@
 
 (impl-trait .sticky-commission-trait-v1.sticky-commission-trait)
 
-
 ;;-------------------------------------
 ;; Trait 
 ;;-------------------------------------

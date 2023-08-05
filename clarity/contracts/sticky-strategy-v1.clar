@@ -135,6 +135,8 @@
     (outflow (get outflow outflow-inflow))
     (inflow (get inflow outflow-inflow))
   )
+    (try! (contract-call? .sticky-dao check-is-enabled))
+
     ;; TOOD: should only be able to perform once at end of cycle
     (if (> outflow u0)
       (perform-stacking-outflow outflow)
