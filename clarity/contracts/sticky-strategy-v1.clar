@@ -83,6 +83,11 @@
   (contract-call? 'ST000000000000000000002AMW42H.pox-2 current-pox-reward-cycle)
 )
 
+(define-read-only (get-next-cycle-start-burn-height)
+  ;; TODO: update for mainnet
+  (contract-call? 'ST000000000000000000002AMW42H.pox-2 reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
+)
+
 ;;-------------------------------------
 ;; Inflow/outflow info 
 ;;-------------------------------------
@@ -280,9 +285,7 @@
   )
     (if (is-eq stacking-amount u0)
       ;; If stacker is not stacking, initiate
-      ;; TODO: need to set burn height
-      ;; TODO: do we call initiate every time stacking stopped?
-      (try! (stackers-initiate-stacking stacker-id (get pox-address info) (get extra inflow) u0))
+      (try! (stackers-initiate-stacking stacker-id (get pox-address info) (get extra inflow) (get-next-cycle-start-burn-height)))
 
       (if (> (get extra inflow) u0)
         ;; Extra inflow, so increase and extend
@@ -325,7 +328,6 @@
 )
 
 ;; TODO: update stacker contracts
-;; TODO: what should start-burn-height be??
 (define-private (stackers-initiate-stacking (stacker-id uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }) (amount uint) (start-burn-height uint))
   (if (is-eq stacker-id u1) (contract-call? .sticky-stacker-1 initiate-stacking .sticky-reserve-v1 pox-address amount start-burn-height u1)
   (if (is-eq stacker-id u2) (contract-call? .sticky-stacker-1 initiate-stacking .sticky-reserve-v1 pox-address amount start-burn-height u1)
