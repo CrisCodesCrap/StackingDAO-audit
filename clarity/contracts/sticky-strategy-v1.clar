@@ -281,6 +281,7 @@
     (if (is-eq stacking-amount u0)
       ;; If stacker is not stacking, initiate
       ;; TODO: need to set burn height
+      ;; TODO: do we call initiate every time stacking stopped?
       (try! (stackers-initiate-stacking stacker-id (get pox-address info) (get extra inflow) u0))
 
       (if (> (get extra inflow) u0)

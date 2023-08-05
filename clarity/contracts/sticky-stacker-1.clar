@@ -1,7 +1,6 @@
 ;; @contract Sticky Stacker Contract
 ;; @version 1
-;; Stacker can initiate stacking for the STX reserve
-;; The amount to stack is kept as a data var in the stx reserve
+;; Stacker can initiate stacking, increase or extend
 ;; Stacks the STX tokens in PoX-2
 ;; mainnet pox contract: SP000000000000000000002Q6VF78.pox-2 TODO: update
 ;; https://github.com/stacks-network/stacks-blockchain/blob/next/src/chainstate/stacks/boot/pox-2.clar
@@ -15,8 +14,7 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u19401)
-(define-constant ERR_EMERGENCY_SHUTDOWN_ACTIVATED u195)
+(define-constant ERR_NOT_AUTHORIZED u14401)
 
 ;;-------------------------------------
 ;; Variables 
@@ -52,9 +50,9 @@
 ;; Stacking 
 ;;-------------------------------------
 
-;; this should be called only once in Stacks 2.1
-;; additional calls should be made with `stack-extend` and `stack-increase` in this contract
-;; lock-period should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
+;; This should be called only once in Stacks 2.1
+;; Additional calls should be made with `stack-extend` and `stack-increase` in this contract
+;; The parameter `lock-period` should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
 (define-public (initiate-stacking 
     (reserve-trait <sticky-reserve-trait>)
     (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
@@ -62,8 +60,6 @@
     (start-burn-ht uint)
     (lock-period uint)
   )
-  ;; 1. check `get-stacking-minimum` or `can-stack-stx` to see if we have > minimum tokens
-  ;; 2. call `stack-stx` for `lock-period` periods
   (let (
     (stx-balance (get-stx-balance))
   )
@@ -125,9 +121,9 @@
   )
 )
 
-;; this should be called just before a new cycle starts to extend with another cycle
-;; `extend-count` should always be 1 (if all is well)
-;; we can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
+;; Should be called just before a new cycle starts to extend with another cycle
+;; The `extend-count` parameter should always be 1 (if all is well)
+;; We can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (begin
     ;; TODO: strategy should also be able to call this method
