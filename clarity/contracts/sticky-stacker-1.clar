@@ -63,8 +63,13 @@
   (let (
     (stx-balance (get-stx-balance))
   )
-    ;; TODO: strategy should also be able to call this method
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
 
@@ -101,8 +106,13 @@
   (let (
     (stx-balance (get-stx-balance))
   )
-    ;; TODO: strategy should also be able to call this method
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
 
@@ -126,8 +136,13 @@
 ;; We can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (begin
-    ;; TODO: strategy should also be able to call this method
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
 
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))

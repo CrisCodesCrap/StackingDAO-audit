@@ -70,12 +70,16 @@
 ;; Checks 
 ;;-------------------------------------
 
+(define-read-only (is-admin (sender principal))
+  (or 
+    (is-eq (get-contract-name sender) "governance") 
+    (and (is-eq sender (var-get active-guardian)) (get-enabled-guardian))
+  )
+)
+
 (define-public (check-is-admin (sender principal))
   (begin
-    (asserts! (or 
-      (is-eq (get-contract-name sender) "governance") 
-      (and (is-eq sender (var-get active-guardian)) (get-enabled-guardian))
-    ) (err ERR_NOT_ADMIN))
+    (asserts! (is-admin sender) (err ERR_NOT_ADMIN))
     (ok true)
   )
 )
