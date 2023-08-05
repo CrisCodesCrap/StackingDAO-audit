@@ -23,8 +23,6 @@
 ;;-------------------------------------
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
-
-;; TODO: set to 0 if stacking not extended??
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 
 ;;-------------------------------------
@@ -32,15 +30,22 @@
 ;;-------------------------------------
 
 (define-read-only (get-stacking-unlock-burn-height)
-  (ok (var-get stacking-unlock-burn-height))
+  (var-get stacking-unlock-burn-height)
 )
 
 (define-read-only (get-stacking-stx-stacked)
-  (ok (var-get stacking-stx-stacked))
+  (var-get stacking-stx-stacked)
 )
 
 (define-read-only (get-stx-balance)
   (stx-get-balance (as-contract tx-sender))
+)
+
+(define-read-only (get-stx-stacked)
+  (if (> burn-block-height (get-stacking-unlock-burn-height))
+    u0
+    (var-get stacking-stx-stacked)
+  )
 )
 
 ;;-------------------------------------
@@ -62,6 +67,7 @@
   (let (
     (stx-balance (get-stx-balance))
   )
+    ;; TODO: strategy should also be able to call this method
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
@@ -99,6 +105,7 @@
   (let (
     (stx-balance (get-stx-balance))
   )
+    ;; TODO: strategy should also be able to call this method
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
@@ -123,6 +130,7 @@
 ;; we can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (begin
+    ;; TODO: strategy should also be able to call this method
     (try! (contract-call? .sticky-dao check-is-admin tx-sender))
     (try! (contract-call? .sticky-dao check-is-enabled))
 
@@ -143,12 +151,15 @@
 ;; Admin 
 ;;-------------------------------------
 
-;; return STX to the STX reserve
-;; can be used when deprecating this stacker logic
-(define-public (return-stx (reserve principal) (stx-amount uint))
-  (begin
+;; Return STX to the STX reserve
+(define-public (return-stx (reserve-trait <sticky-reserve-trait>))
+  (let (
+    (stx-amount (stx-get-balance (as-contract tx-sender)))
+  )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name reserve "reserve"))
-    (as-contract (stx-transfer? stx-amount tx-sender reserve))
+    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+
+    (try! (as-contract (contract-call? reserve-trait return-stx-from-stacking stx-amount)))
+    (ok stx-amount)
   )
 )

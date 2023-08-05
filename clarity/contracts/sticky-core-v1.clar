@@ -100,6 +100,8 @@
 
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
+
+  ;; TODO: what if we have already set up for next cycle, and user deposits?
   (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height)
 )
 
