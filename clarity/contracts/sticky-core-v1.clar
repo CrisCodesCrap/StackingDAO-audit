@@ -176,7 +176,7 @@
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
-    (asserts! (< (* (get withdraw-init current-cycle-info) u10000) (get-withdrawal-treshold-per-cycle)) (err ERR_WITHDRAW_EXCEEDED))
+    (asserts! (< (* new-withdraw-init u10000) (get-withdrawal-treshold-per-cycle)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
     (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: stx-to-receive, ststx-amount: ststx-amount })

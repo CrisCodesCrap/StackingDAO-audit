@@ -2,13 +2,13 @@
 ;; @version 1
 
 ;;-------------------------------------
-;; Variables
+;; Constants
 ;;-------------------------------------
 
-(define-data-var stacker-ids (list 5 uint) (list u1 u2 u3 u4 u5))
+(define-constant stacker-ids (list u1 u2 u3 u4 u5))
 
 ;;-------------------------------------
-;; Maps
+;; Stackers info
 ;;-------------------------------------
 
 (define-map stacker-info
@@ -21,10 +21,6 @@
   }
 )
 
-;;-------------------------------------
-;; Getters
-;;-------------------------------------
-
 (define-read-only (get-stacker-info (id uint))
   (unwrap-panic (map-get? stacker-info { id: id }))
 )
@@ -35,20 +31,21 @@
 
 (define-data-var total-stacked-new uint u0)
 
+(define-read-only (get-total-stacked-new)
+  (var-get total-stacked-new)
+)
+
 ;;
 ;; Inflow
 ;;
 
 (define-data-var inflow-to-assign uint u0)
 
-(define-map stacker-inflow
-  { 
-    id: uint
-  }
-  {
-    extra: uint
-  }
+(define-read-only (get-inflow-to-assign)
+  (var-get inflow-to-assign)
 )
+
+(define-map stacker-inflow { id: uint } { extra: uint })
 
 (define-read-only (get-stacker-inflow (id uint))
   (unwrap-panic (map-get? stacker-inflow { id: id }))
@@ -57,6 +54,24 @@
 ;;
 ;; Outflow
 ;;
+
+(define-data-var total-outflow uint u0)
+
+(define-read-only (get-total-outflow)
+  (var-get total-outflow)
+)
+
+(define-data-var minimum-leftover uint u0)
+
+(define-read-only (get-minimum-leftover)
+  (var-get minimum-leftover)
+)
+
+(define-data-var stackers-to-stop (list 3 uint) (list ))
+
+(define-read-only (get-stackers-to-stop)
+  (var-get stackers-to-stop)
+)
 
 
 ;;-------------------------------------
@@ -108,7 +123,7 @@
   (let (
     ;; Need to return all idle STX from stackers to reserve first
     ;; So all reserve info is up to date
-    (result-return (map stackers-return-stx (var-get stacker-ids)))
+    (result-return (map stackers-return-stx stacker-ids))
 
     ;; Calculate outflow/inflow
     (outflow-inflow (get-outflow-inflow))
@@ -127,12 +142,72 @@
 ;; Perform outflow 
 ;;-------------------------------------
 
-(define-private (perform-stacking-outflow (outflow uint))
+(define-public (calculate-stacking-outflow (outflow uint))
   (begin
+    (var-set total-outflow outflow)
     (var-set total-stacked-new (- (get-total-stacking) outflow))
+    (var-set minimum-leftover (get-total-stacking))
+    (var-set stackers-to-stop (list ))
 
-    ;; TODO
+    ;; Try different combinations, find most efficient one
+    ;; Outflow per cycle can be max 5%, so stopping one or two stackers should always be sufficient
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u1) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u2) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u3) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u4) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u5) outflow))
 
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u1 u2) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u2 u3) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u3 u4) outflow))
+    (unwrap-panic (calculate-and-set-minimum-leftover (list u4 u5) outflow))
+
+    (ok true)
+  )
+)
+
+(define-private (perform-stacking-outflow (outflow uint))
+  (let (
+    (result-calculate (calculate-stacking-outflow outflow))
+    (result-perform (map perform-stacking-outflow-for-stacker stacker-ids))
+  )
+    (ok true)
+  )
+)
+
+(define-private (perform-stacking-outflow-for-stacker (stacker-id uint))
+  (let (
+    (info (get-stacker-info stacker-id))
+  )
+    (if (is-eq (index-of (var-get stackers-to-stop) stacker-id) none)
+      (try! (stackers-stack-extend stacker-id (get pox-address info)))
+      u0
+    )
+    (ok true)
+  )
+)
+
+(define-public (calculate-and-set-minimum-leftover (ids (list 3 uint)) (outflow uint))
+  (let (
+    (stacking-amounts (map stackers-get-total-stacking ids))
+    (stacking-amount (fold + stacking-amounts u0))
+  )
+    ;; Total stacking amount more than outflow
+    (if (> stacking-amount outflow)
+      (let (
+        (leftover (- stacking-amount outflow))
+      )
+        ;; Set minimum-leftover if leftover is smallest
+        (if (< leftover (var-get minimum-leftover))
+          (begin
+            (var-set stackers-to-stop ids)
+            (var-set minimum-leftover leftover)
+          )
+          false
+        )
+      )
+      false
+    )
     (ok true)
   )
 )
@@ -141,17 +216,25 @@
 ;; Perform inflow
 ;;-------------------------------------
 
-(define-private (perform-stacking-inflow (inflow uint))
+(define-public (calculate-stacking-inflow (inflow uint))
   (begin
     (var-set total-stacked-new (+ (get-total-stacking) inflow))
     (var-set inflow-to-assign inflow)
     
     (let (
-      (result-calculate (map calculate-stacking-inflow-for-stacker (var-get stacker-ids)))
-      (result-perform (map perform-stacking-inflow-for-stacker (var-get stacker-ids)))
+      (result-calculate (map calculate-stacking-inflow-for-stacker stacker-ids))
     )
       (ok true)
     )
+  )
+)
+
+(define-private (perform-stacking-inflow (inflow uint))
+  (let (
+    (result-calculate (calculate-stacking-inflow inflow))
+    (result-perform (map perform-stacking-inflow-for-stacker stacker-ids))
+  )
+    (ok true)
   )
 )
 
@@ -272,4 +355,16 @@
   (if (is-eq stacker-id u5) (contract-call? .sticky-stacker-1 stack-extend u1 pox-address)
    (ok u0)
   )))))
+)
+
+;;-------------------------------------
+;; Init
+;;-------------------------------------
+
+(begin
+  (map-set stacker-info { id: u1 } { percentage: u5000, pox-address: { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac } })
+  (map-set stacker-info { id: u2 } { percentage: u2500, pox-address: { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac } })
+  (map-set stacker-info { id: u3 } { percentage: u1500, pox-address: { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac } })
+  (map-set stacker-info { id: u4 } { percentage: u500, pox-address: { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac } })
+  (map-set stacker-info { id: u5 } { percentage: u500, pox-address: { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac } })
 )
