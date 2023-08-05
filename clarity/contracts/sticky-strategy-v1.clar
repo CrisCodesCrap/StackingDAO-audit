@@ -239,7 +239,7 @@
 )
 
 ;; Calculate amount of extra tokens to stack for stacker and save
-(define-private (calculate-stacking-inflow-for-stacker (stacker-id uint))
+(define-public (calculate-stacking-inflow-for-stacker (stacker-id uint))
   (let (
     (inflow-assign (var-get inflow-to-assign))
     (info (get-stacker-info stacker-id))
@@ -326,7 +326,7 @@
 
 ;; TODO: update stacker contracts
 ;; TODO: what should start-burn-height be??
-(define-public (stackers-initiate-stacking (stacker-id uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }) (amount uint) (start-burn-height uint))
+(define-private (stackers-initiate-stacking (stacker-id uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }) (amount uint) (start-burn-height uint))
   (if (is-eq stacker-id u1) (contract-call? .sticky-stacker-1 initiate-stacking .sticky-reserve-v1 pox-address amount start-burn-height u1)
   (if (is-eq stacker-id u2) (contract-call? .sticky-stacker-1 initiate-stacking .sticky-reserve-v1 pox-address amount start-burn-height u1)
   (if (is-eq stacker-id u3) (contract-call? .sticky-stacker-1 initiate-stacking .sticky-reserve-v1 pox-address amount start-burn-height u1)
@@ -337,7 +337,7 @@
 )
 
 ;; TODO: update stacker contracts
-(define-public (stackers-stack-increase (stacker-id uint) (additional-amount uint))
+(define-private (stackers-stack-increase (stacker-id uint) (additional-amount uint))
   (if (is-eq stacker-id u1) (contract-call? .sticky-stacker-1 stack-increase .sticky-reserve-v1 additional-amount)
   (if (is-eq stacker-id u2) (contract-call? .sticky-stacker-1 stack-increase .sticky-reserve-v1 additional-amount)
   (if (is-eq stacker-id u3) (contract-call? .sticky-stacker-1 stack-increase .sticky-reserve-v1 additional-amount)
@@ -348,7 +348,7 @@
 )
 
 ;; TODO: update stacker contracts
-(define-public (stackers-stack-extend (stacker-id uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }))
+(define-private (stackers-stack-extend (stacker-id uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }))
   (if (is-eq stacker-id u1) (contract-call? .sticky-stacker-1 stack-extend u1 pox-address)
   (if (is-eq stacker-id u2) (contract-call? .sticky-stacker-1 stack-extend u1 pox-address)
   (if (is-eq stacker-id u3) (contract-call? .sticky-stacker-1 stack-extend u1 pox-address)
