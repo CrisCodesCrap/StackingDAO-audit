@@ -148,6 +148,7 @@
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-governance-v0 } { active: true, name: "governance" })
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-reserve-v1 } { active: true, name: "reserve" })
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-commission-v1 } { active: true, name: "commission" })
+  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-tax-v1 } { active: true, name: "tax" })
 
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sticky-stacker-1 } { active: true, name: "stacker-1" })
 )

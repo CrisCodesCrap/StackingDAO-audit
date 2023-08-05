@@ -5,7 +5,15 @@
 
 (define-constant ERR_NOT_AUTHORIZED u1401)
 
+;;-------------------------------------
+;; Variables
+;;-------------------------------------
+
 (define-data-var token-uri (string-utf8 256) u"")
+
+(define-data-var amm-addresses (list 5 principal) (list ))
+(define-data-var buy-tax uint u400) ;; 4% in basis points
+(define-data-var sell-tax uint u400) ;; 4% in basis points
 
 ;;-------------------------------------
 ;; SIP-10 
@@ -43,16 +51,29 @@
 )
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34))))
-  (begin
+  (let (
+    (sender-is-amm (is-amm-address sender))
+    (recipient-is-amm (is-amm-address recipient))
+
+    (tax-amount
+      (if (is-amm-address sender)
+        (/ (* amount (var-get buy-tax)) u10000)
+        (if (is-amm-address recipient)
+          (/ (* amount (var-get sell-tax)) u10000)
+          u0
+        )
+      )
+    )
+  )
     (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
 
-    (match (ft-transfer? sticky amount sender recipient)
-      response (begin
-        (print memo)
-        (ok response)
-      )
-      error (err error)
+    (if (> tax-amount u0)
+      (try! (ft-transfer? sticky tax-amount sender (as-contract tx-sender)))
+      true
     )
+    (try! (ft-transfer? sticky (- amount tax-amount) sender recipient))
+
+    (ok true)
   )
 )
 
@@ -83,6 +104,59 @@
     (ft-burn? sticky amount sender)
   )
 )
+
+;;-------------------------------------
+;; Tax
+;;-------------------------------------
+
+(define-read-only (is-amm-address (address principal))
+  (is-some (index-of (var-get amm-addresses) address))
+)
+
+(define-public (set-amm-addresses (addresses (list 5 principal)))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+
+    (var-set amm-addresses addresses)
+    (ok true)
+  )
+)
+
+(define-read-only (get-buy-tax)
+  (var-get buy-tax)
+)
+
+(define-read-only (get-sell-tax)
+  (var-get sell-tax)
+)
+
+(define-public (set-tax (new-buy-tax uint) (new-sell-tax uint))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+
+    (var-set buy-tax new-buy-tax)
+    (var-set sell-tax new-sell-tax)
+    (ok true)
+  )
+)
+
+(define-read-only (get-tax-balance)
+  (unwrap-panic (get-balance (as-contract tx-sender)))
+)
+
+(define-public (withdraw-tax)
+  (let (
+    (amount (get-tax-balance))
+    (receiver contract-caller)
+  )
+    (try! (contract-call? .sticky-dao check-is-contract-name contract-caller "tax"))
+    
+    (try! (as-contract (transfer amount tx-sender receiver none)))
+    (ok amount)
+  )
+)
+
+
 
 ;; Test environments
 (begin

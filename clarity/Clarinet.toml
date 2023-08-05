@@ -24,6 +24,9 @@ path = "contracts/sticky-token.clar"
 [contracts.sticky-dao]
 path = "contracts/sticky-dao.clar"
 
+[contracts.sticky-tax-v1]
+path = "contracts/sticky-tax-v1.clar"
+
 [contracts.sticky-reserve-v1]
 path = "contracts/sticky-reserve-v1.clar"
 
