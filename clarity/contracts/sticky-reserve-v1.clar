@@ -38,7 +38,6 @@
 (define-public (request-stx (requested-stx uint) (receiver principal))
   (begin
     (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
-    (try! (contract-call? .sticky-dao check-is-enabled))
 
     (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
     (ok requested-stx)
@@ -50,12 +49,14 @@
 ;;-------------------------------------
 
 (define-public (request-stx-to-stack (requested-stx uint))
-  (begin
+  (let (
+    (receiver contract-caller)
+  )
     (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
 
     (var-set stx-in-use (+ (unwrap-panic (get-stx-in-use)) requested-stx))
-    (try! (as-contract (stx-transfer? requested-stx tx-sender contract-caller)))
+    (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
     (ok requested-stx)
   )
 )
@@ -68,18 +69,5 @@
     (var-set stx-in-use (- (unwrap-panic (get-stx-in-use)) stx-amount))
     (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
     (ok stx-amount)
-  )
-)
-
-;;-------------------------------------
-;; Admin 
-;;-------------------------------------
-
-(define-public (get-stx (amount uint) (receiver principal))
-  (begin
-    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
-
-    (try! (as-contract (stx-transfer? amount tx-sender receiver)))
-    (ok amount)
   )
 )

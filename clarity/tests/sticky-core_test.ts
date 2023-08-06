@@ -1,10 +1,4 @@
-import {
-  Account,
-  Chain,
-  Clarinet,
-  Tx,
-  types,
-} from "https://deno.land/x/clarinet/index.ts";
+import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
 
 import { StickyCore } from './helpers/sticky-core-helpers.ts';
 import { qualifiedName } from './helpers/sticky-tests-utils.ts';
@@ -68,14 +62,14 @@ Clarinet.test({
     call = await stickyCore.getStxPerStstx();
     call.result.expectOk().expectUintWithDecimals(1.067212);
 
-    // Withdraw 1000 stSTX tokens
-    result = await stickyCore.initWithdraw(deployer, 1000, 1);
-    result.expectOk().expectUintWithDecimals(1000);
+    // Withdraw 300 stSTX tokens
+    result = await stickyCore.initWithdraw(deployer, 250, 1);
+    result.expectOk().expectUintWithDecimals(300);
 
     // Advance to next cycle
     chain.mineEmptyBlock(2001);
 
-    // 1000 stSTX * 1.067212 = 1067.212 STX
+    // 300 stSTX * 1.067212 = 1067.212 STX
     result = stickyCore.withdraw(deployer, 1);
     result.expectOk().expectUintWithDecimals(1067.212);
   },
