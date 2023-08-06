@@ -23,7 +23,7 @@
     (receiver tx-sender)
     (amount (stx-get-balance (as-contract tx-sender)))
   )
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
     (try! (as-contract (stx-transfer? amount tx-sender receiver)))
 

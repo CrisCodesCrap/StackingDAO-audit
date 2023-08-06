@@ -30,7 +30,7 @@
     (balance (unwrap-panic (contract-call? .sticky-token get-balance (as-contract tx-sender))))
     (receiver contract-caller)
   )
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
     (try! (as-contract (contract-call? .sticky-token transfer balance tx-sender receiver none)))
     (ok balance)

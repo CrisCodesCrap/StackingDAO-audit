@@ -117,7 +117,7 @@
   (let (
     (stx-amount (unwrap-panic (contract-call? reserve-trait get-total-stx)))
   )
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (ok (get-stx-per-ststx-helper stx-amount))
   )
 )
@@ -147,7 +147,7 @@
     (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
@@ -168,15 +168,16 @@
 
     (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-trait)))
     (stx-to-receive (/ (* ststx-amount stx-ststx) u1000000))
+    (stx-in-use (unwrap-panic (contract-call? reserve-trait get-stx-in-use)))
 
     (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
     (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get stx-amount withdrawal-entry)) stx-to-receive))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
-    (asserts! (< (* new-withdraw-init u10000) (get-withdrawal-treshold-per-cycle)) (err ERR_WITHDRAW_EXCEEDED))
+    (asserts! (< new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) stx-in-use) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
     (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: stx-to-receive, ststx-amount: ststx-amount })
@@ -200,7 +201,7 @@
     (stx-to-receive (get stx-amount withdrawal-entry))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
@@ -226,8 +227,8 @@
     (rewards-left (- stx-amount commission-amount))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name reserve "reserve"))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of commission-trait) "commission"))
+    (try! (contract-call? .sticky-dao check-is-protocol reserve))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of commission-trait)))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
       rewards: (+ (get rewards current-cycle-info) rewards-left),
@@ -250,7 +251,7 @@
 
 (define-public (set-withdrawal-treshold (new-treshold uint))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
     (var-set withdrawal-treshold-per-cycle new-treshold)
     (ok true)
@@ -259,7 +260,7 @@
 
 (define-public (set-commission (new-commission uint))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
     (var-set commission new-commission)
     (ok true)
@@ -268,7 +269,7 @@
 
 (define-public (set-shutdown-deposits (shutdown bool))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
     
     (var-set shutdown-deposits shutdown)
     (ok true)
@@ -277,7 +278,7 @@
 
 (define-public (set-shutdown-withdrawals (shutdown bool))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
     (var-set shutdown-withdrawals shutdown)
     (ok true)

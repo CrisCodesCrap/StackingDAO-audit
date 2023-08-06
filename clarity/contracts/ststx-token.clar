@@ -33,7 +33,7 @@
 
 (define-public (set-token-uri (value (string-utf8 256)))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
     (ok (var-set token-uri value))
   )
 )
@@ -63,7 +63,7 @@
 ;; Mint method
 (define-public (mint-for-sticky (amount uint) (recipient principal))
   (begin
-    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (ft-mint? ststx amount recipient)
   )
 )
@@ -71,7 +71,7 @@
 ;; Burn method
 (define-public (burn-for-sticky (amount uint) (sender principal))
   (begin
-    (try! (contract-call? .sticky-dao check-is-contract-active contract-caller))
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (ft-burn? ststx amount sender)
   )
 )

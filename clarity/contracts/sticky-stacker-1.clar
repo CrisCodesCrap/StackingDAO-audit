@@ -63,15 +63,9 @@
   (let (
     (stx-balance (get-stx-balance))
   )
-    (asserts! 
-      (or
-        (contract-call? .sticky-dao is-admin tx-sender)
-        (contract-call? .sticky-dao get-contract-active contract-caller)
-      ) 
-      (err ERR_NOT_AUTHORIZED)
-    )
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
 
     ;; check if we can stack - if not, then probably cause we have not reached the minimum with tokens-to-stack
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 can-stack-stx pox-addr tokens-to-stack start-burn-ht lock-period))
@@ -106,15 +100,9 @@
   (let (
     (stx-balance (get-stx-balance))
   )
-    (asserts! 
-      (or
-        (contract-call? .sticky-dao is-admin tx-sender)
-        (contract-call? .sticky-dao get-contract-active contract-caller)
-      ) 
-      (err ERR_NOT_AUTHORIZED)
-    )
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
 
     (try! (contract-call? reserve-trait request-stx-to-stack additional-tokens-to-stack))
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-increase additional-tokens-to-stack))
@@ -136,13 +124,7 @@
 ;; We can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (begin
-    (asserts! 
-      (or
-        (contract-call? .sticky-dao is-admin tx-sender)
-        (contract-call? .sticky-dao get-contract-active contract-caller)
-      ) 
-      (err ERR_NOT_AUTHORIZED)
-    )
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
 
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
@@ -168,7 +150,7 @@
     (stx-amount (stx-get-balance (as-contract tx-sender)))
   )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
 
     (try! (as-contract (contract-call? reserve-trait return-stx-from-stacking stx-amount)))
     (ok stx-amount)

@@ -2,9 +2,12 @@
 ;; @version 0
 
 ;;-------------------------------------
-;; Set 
+;; Core 
 ;;-------------------------------------
 
-(define-public (set-contract-active (address principal) (active bool) (name (string-ascii 256)))
-  (contract-call? .sticky-dao set-contract-active address active name)
+(define-public (set-commission (new-commission uint))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
+    (as-contract (contract-call? .sticky-core-v1 set-commission new-commission))
+  )
 )
