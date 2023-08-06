@@ -39,6 +39,9 @@ path = "contracts/sticky-governance-v0.clar"
 [contracts.sticky-core-v1]
 path = "contracts/sticky-core-v1.clar"
 
+[contracts.sticky-strategy-v1]
+path = "contracts/sticky-strategy-v1.clar"
+
 [contracts.sticky-stacker-1]
 path = "contracts/sticky-stacker-1.clar"
 

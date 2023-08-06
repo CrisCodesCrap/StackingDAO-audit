@@ -1,7 +1,6 @@
 ;; @contract Sticky Stacker Contract
 ;; @version 1
-;; Stacker can initiate stacking for the STX reserve
-;; The amount to stack is kept as a data var in the stx reserve
+;; Stacker can initiate stacking, increase or extend
 ;; Stacks the STX tokens in PoX-2
 ;; mainnet pox contract: SP000000000000000000002Q6VF78.pox-2 TODO: update
 ;; https://github.com/stacks-network/stacks-blockchain/blob/next/src/chainstate/stacks/boot/pox-2.clar
@@ -15,16 +14,13 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u19401)
-(define-constant ERR_EMERGENCY_SHUTDOWN_ACTIVATED u195)
+(define-constant ERR_NOT_AUTHORIZED u14401)
 
 ;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
 
 (define-data-var stacking-unlock-burn-height uint u0) ;; when is this cycle over
-
-;; TODO: set to 0 if stacking not extended??
 (define-data-var stacking-stx-stacked uint u0) ;; how many stx did we stack in this cycle
 
 ;;-------------------------------------
@@ -32,24 +28,31 @@
 ;;-------------------------------------
 
 (define-read-only (get-stacking-unlock-burn-height)
-  (ok (var-get stacking-unlock-burn-height))
+  (var-get stacking-unlock-burn-height)
 )
 
 (define-read-only (get-stacking-stx-stacked)
-  (ok (var-get stacking-stx-stacked))
+  (var-get stacking-stx-stacked)
 )
 
 (define-read-only (get-stx-balance)
   (stx-get-balance (as-contract tx-sender))
 )
 
+(define-read-only (get-stx-stacked)
+  (if (> burn-block-height (get-stacking-unlock-burn-height))
+    u0
+    (var-get stacking-stx-stacked)
+  )
+)
+
 ;;-------------------------------------
 ;; Stacking 
 ;;-------------------------------------
 
-;; this should be called only once in Stacks 2.1
-;; additional calls should be made with `stack-extend` and `stack-increase` in this contract
-;; lock-period should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
+;; This should be called only once in Stacks 2.1
+;; Additional calls should be made with `stack-extend` and `stack-increase` in this contract
+;; The parameter `lock-period` should be u1 and when it runs out, `stack-extend` should be called to extend with 1 period
 (define-public (initiate-stacking 
     (reserve-trait <sticky-reserve-trait>)
     (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
@@ -57,12 +60,16 @@
     (start-burn-ht uint)
     (lock-period uint)
   )
-  ;; 1. check `get-stacking-minimum` or `can-stack-stx` to see if we have > minimum tokens
-  ;; 2. call `stack-stx` for `lock-period` periods
   (let (
     (stx-balance (get-stx-balance))
   )
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
 
@@ -99,7 +106,13 @@
   (let (
     (stx-balance (get-stx-balance))
   )
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
 
@@ -118,12 +131,18 @@
   )
 )
 
-;; this should be called just before a new cycle starts to extend with another cycle
-;; `extend-count` should always be 1 (if all is well)
-;; we can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
+;; Should be called just before a new cycle starts to extend with another cycle
+;; The `extend-count` parameter should always be 1 (if all is well)
+;; We can extend by 1 cycle each 2100 blocks, that way everyone can always unstack if they want (after a cycle ends)
 (define-public (stack-extend (extend-count uint) (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
   (begin
-    (try! (contract-call? .sticky-dao check-is-admin tx-sender))
+    (asserts! 
+      (or
+        (contract-call? .sticky-dao is-admin tx-sender)
+        (contract-call? .sticky-dao get-contract-active contract-caller)
+      ) 
+      (err ERR_NOT_AUTHORIZED)
+    )
     (try! (contract-call? .sticky-dao check-is-enabled))
 
     (match (as-contract (contract-call? 'ST000000000000000000002AMW42H.pox-2 stack-extend extend-count pox-addr))
@@ -143,12 +162,15 @@
 ;; Admin 
 ;;-------------------------------------
 
-;; return STX to the STX reserve
-;; can be used when deprecating this stacker logic
-(define-public (return-stx (reserve principal) (stx-amount uint))
-  (begin
+;; Return STX to the STX reserve
+(define-public (return-stx (reserve-trait <sticky-reserve-trait>))
+  (let (
+    (stx-amount (stx-get-balance (as-contract tx-sender)))
+  )
     (try! (contract-call? .sticky-dao check-is-enabled))
-    (try! (contract-call? .sticky-dao check-is-contract-name reserve "reserve"))
-    (as-contract (stx-transfer? stx-amount tx-sender reserve))
+    (try! (contract-call? .sticky-dao check-is-contract-name (contract-of reserve-trait) "reserve"))
+
+    (try! (as-contract (contract-call? reserve-trait return-stx-from-stacking stx-amount)))
+    (ok stx-amount)
   )
 )
