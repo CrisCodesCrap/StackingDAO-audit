@@ -62,16 +62,16 @@ Clarinet.test({
     call = await stickyCore.getStxPerStstx();
     call.result.expectOk().expectUintWithDecimals(1.067212);
 
-    // Withdraw 300 stSTX tokens
+    // Withdraw 250 stSTX tokens
     result = await stickyCore.initWithdraw(deployer, 250, 1);
-    result.expectOk().expectUintWithDecimals(300);
+    result.expectOk().expectUintWithDecimals(250);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2001);
+    chain.mineEmptyBlock(500 + 2001);
 
-    // 300 stSTX * 1.067212 = 1067.212 STX
+    // 250 stSTX * 1.067212 = 266.803 STX
     result = stickyCore.withdraw(deployer, 1);
-    result.expectOk().expectUintWithDecimals(1067.212);
+    result.expectOk().expectUintWithDecimals(266.803);
   },
 });
 
@@ -124,34 +124,42 @@ Clarinet.test({
     call = await stickyCore.getStxPerStstx();
     call.result.expectOk().expectUintWithDecimals(1.019044); 
 
-    // Let's test withdrawals
-    // We are in cycle 4, so cycle 5 is the first we can withdraw (hence u5 as second param)
-    result = await stickyCore.initWithdraw(deployer, 1000000, 5);
-    result.expectOk().expectUintWithDecimals(1000000);
+    // Current PoX cycle
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(2); 
 
-    // Deployer should have 0 stSTX left
+    // Let's test withdrawals
+    // We are in cycle 2, so cycle 3 is the first we can withdraw (hence u5 as second param)
+    result = await stickyCore.initWithdraw(deployer, 10000, 3);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Deployer should have 10k stSTX less
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
       types.principal(deployer.address),
     ], wallet_1.address);
-    call.result.expectOk().expectUint(0);
+    call.result.expectOk().expectUintWithDecimals(990000);
 
     // Deployer did not get STX back
     call = await stickyCore.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(99000000); // 99M
 
     // Let's go 1 cycle further now
-    chain.mineEmptyBlock(2001);
+    chain.mineEmptyBlock(2100);
+
+    // Current PoX cycle
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(3); 
 
     // Withdraw
-    result = stickyCore.withdraw(deployer, 5);
-    result.expectOk().expectUintWithDecimals(1019044);
+    result = stickyCore.withdraw(deployer, 3);
+    result.expectOk().expectUintWithDecimals(10190.44);
 
     // STX balance
     call = stickyCore.getStxBalance(deployer.address);
-    call.result.expectUintWithDecimals(100019044);
+    call.result.expectUintWithDecimals(99010190.44);
 
     // After deployer pulled all their capital + rewards, the ratio remains the same
     call = await stickyCore.getStxPerStstx();
-    call.result.expectOk().expectUintWithDecimals(1.019045);
+    call.result.expectOk().expectUintWithDecimals(1.019044);
   },
 });

@@ -9,6 +9,7 @@
 
 (define-public (add-commission (stx-amount uint))
   (begin
+    ;; TODO: send part to sticky staking contract
     (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
     (ok stx-amount)
   )

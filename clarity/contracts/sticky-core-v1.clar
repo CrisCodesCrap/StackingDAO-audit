@@ -101,8 +101,8 @@
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
 
-  ;; TODO: what if we have already set up for next cycle, and user deposits?
-  (contract-call? 'ST000000000000000000002AMW42H.pox-2 burn-height-to-reward-cycle burn-block-height)
+  ;; TODO: Check get-pox-info to know prepare phase. Once phase started, withdraw for next cycle is already blocked
+  (contract-call? .pox-3-mock burn-height-to-reward-cycle burn-block-height)
 )
 
 (define-read-only (get-stx-balance (address principal))
@@ -168,7 +168,7 @@
 
     (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-trait)))
     (stx-to-receive (/ (* ststx-amount stx-ststx) u1000000))
-    (stx-in-use (unwrap-panic (contract-call? reserve-trait get-stx-in-use)))
+    (total-stx (unwrap-panic (contract-call? reserve-trait get-total-stx)))
 
     (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
     (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get stx-amount withdrawal-entry)) stx-to-receive))
@@ -177,7 +177,7 @@
     (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
-    (asserts! (< new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) stx-in-use) u10000)) (err ERR_WITHDRAW_EXCEEDED))
+    (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
     (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: stx-to-receive, ststx-amount: ststx-amount })

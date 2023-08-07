@@ -6,53 +6,131 @@ authors = []
 telemetry = true
 cache_dir = "./.cache"
 
+[contracts.pox-3-mock]
+path = "contracts/tests/pox-3-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.sip-010-trait-ft-standard]
 path = "contracts/sip-010-trait-ft-standard.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-reserve-trait-v1]
 path = "contracts/sticky-reserve-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-commission-trait-v1]
 path = "contracts/sticky-commission-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.ststx-token]
 path = "contracts/ststx-token.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-token]
 path = "contracts/sticky-token.clar"
-
-[contracts.sticky-dao]
-path = "contracts/sticky-dao.clar"
-
-[contracts.sticky-tax-v1]
-path = "contracts/sticky-tax-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-reserve-v1]
 path = "contracts/sticky-reserve-v1.clar"
-
-[contracts.sticky-commission-v1]
-path = "contracts/sticky-commission-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-governance-v0]
 path = "contracts/sticky-governance-v0.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-core-v1]
 path = "contracts/sticky-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
-[contracts.sticky-strategy-v1]
-path = "contracts/sticky-strategy-v1.clar"
+[contracts.sticky-tax-v1]
+path = "contracts/sticky-tax-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-commission-v1]
+path = "contracts/sticky-commission-v1.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.sticky-stacker-1]
 path = "contracts/sticky-stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-2]
+path = "contracts/sticky-stacker-2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-3]
+path = "contracts/sticky-stacker-3.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-4]
+path = "contracts/sticky-stacker-4.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-5]
+path = "contracts/sticky-stacker-5.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-6]
+path = "contracts/sticky-stacker-6.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-7]
+path = "contracts/sticky-stacker-7.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-8]
+path = "contracts/sticky-stacker-8.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-9]
+path = "contracts/sticky-stacker-9.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-stacker-10]
+path = "contracts/sticky-stacker-10.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-dao]
+path = "contracts/sticky-dao.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-strategy-v1]
+path = "contracts/sticky-strategy-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-reserve]
+path = "contracts/tests/fake-reserve.clar"
+clarity_version = 2
+epoch = 2.4
 
 [repl.analysis]
-passes = ["check_checker"]
-check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
+passes = ['check_checker']
 
-# Check-checker settings:
-# trusted_sender: if true, inputs are trusted after tx_sender has been checked.
-# trusted_caller: if true, inputs are trusted after contract-caller has been checked.
-# callee_filter: if true, untrusted data may be passed into a private function without a
-# warning, if it gets checked inside. This check will also propagate up to the
-# caller.
-# More informations: https://www.hiro.so/blog/new-safety-checks-in-clarinet
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false

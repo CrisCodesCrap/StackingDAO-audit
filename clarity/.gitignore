@@ -3,3 +3,6 @@
 **/settings/Testnet.toml
 .cache/**
 history.txt
+
+/coverage/
+coverage.lcov
