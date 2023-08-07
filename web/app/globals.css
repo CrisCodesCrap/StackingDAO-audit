@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+.tooltip {
+  @apply invisible absolute;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible z-50
+}
+
+.text-stacks {
+  color: rgb(85, 70, 255);
+}
+
+.bg-stacks {
+  background-color: rgb(85, 70, 255);
+}
+
+.button-stacks {
+  color: #fff;
+  cursor: pointer;
+  background-color: #7a40ee;
+  background-image: linear-gradient(135deg, #5546ff, rgba(122, 64, 238, 0));
+  border-radius: 0.75rem;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  transition: background-color .2s ease-in-out;
+}
+
+.text-tertiary-text {
+  --tw-text-opacity: 1;
+  color: rgb(133 150 161/var(--tw-text-opacity));
+}
+
+.text-warning-text {
+  --tw-text-opacity: 1;
+  color: rgb(85 70 255/var(--tw-text-opacity));
+}
+
+.text-primary {
+  --tw-text-opacity: 1;
+  color: rgb(85 70 255/var(--tw-text-opacity));
+}
+
+.bg-primary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(85 70 255/var(--tw-bg-opacity));
+}
+
+.bg-primary\/10 {
+  background-color: rgba(85,70,255,.1);
+}
