@@ -2,8 +2,6 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "./helpers/sticky-tests-utils.ts";
 qualifiedName("")
 
-import { StickyDAO } from './helpers/sticky-dao-helpers.ts';
-import { StickyStaking } from './helpers/sticky-staking-helpers.ts';
 import { StStxToken } from './helpers/ststx-token-helpers.ts';
 
 //-------------------------------------
@@ -11,7 +9,7 @@ import { StStxToken } from './helpers/ststx-token-helpers.ts';
 //-------------------------------------
 
 Clarinet.test({
-  name: "stSTX token: can get token info",
+  name: "ststx-token: can get token info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -42,7 +40,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "stSTX token: can mint/burn as protocol",
+  name: "ststx-token: can mint/burn as protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -85,7 +83,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "stSTX token: can transfer token",
+  name: "ststx-token: can transfer token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -115,7 +113,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "stSTX token: can set token URI",
+  name: "ststx-token: can set token URI",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -137,7 +135,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "stSTX token: can not transfer is sender is not tx-sender, or sender has not enough balance",
+  name: "ststx-token: can not transfer is sender is not tx-sender, or sender has not enough",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -165,7 +163,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "stSTX token: only protocol can set token URI, mint and burn for protocol",
+  name: "ststx-token: only protocol can set token URI, mint and burn for protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
