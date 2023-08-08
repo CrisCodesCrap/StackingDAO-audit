@@ -56,6 +56,11 @@ class StickyCore {
     ], this.deployer.address);
   }
 
+  getNextWithdrawCycle() {
+    return this.chain.callReadOnlyFn("sticky-core-v1", "get-next-withdraw-cycle", [
+    ], this.deployer.address);
+  }
+
   getStxPerStstx() {
     return this.chain.callReadOnlyFn("sticky-core-v1", "get-stx-per-ststx", [
       types.principal(qualifiedName("sticky-reserve-v1"))

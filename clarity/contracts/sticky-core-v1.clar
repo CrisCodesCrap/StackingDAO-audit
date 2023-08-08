@@ -100,13 +100,28 @@
 
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
-
-  ;; TODO: Check get-pox-info to know prepare phase. Once phase started, withdraw for next cycle is already blocked
-  (contract-call? .pox-3-mock burn-height-to-reward-cycle burn-block-height)
+  (contract-call? .pox-3-mock current-pox-reward-cycle)
 )
 
 (define-read-only (get-stx-balance (address principal))
   (stx-get-balance address)
+)
+
+;; Get first cycle in which user can withdraw
+;; It's the current cycle if prepare phase not started, otherwise the next cycle
+(define-read-only (get-next-withdraw-cycle)
+  (let (
+    (current-cycle (get-pox-cycle))
+    (prepare-length (get prepare-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+    (start-block-next-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+  )
+    (if (> burn-block-height (- start-block-next-cycle prepare-length))
+      ;; Prepare phase
+      (+ current-cycle u2)
+      ;; Normal
+      (+ current-cycle u1)
+    )
+  )
 )
 
 ;;-------------------------------------
@@ -176,7 +191,7 @@
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
-    (asserts! (> withdrawal-cycle cycle-id) (err ERR_WRONG_CYCLE_ID))
+    (asserts! (>= withdrawal-cycle (get-next-withdraw-cycle)) (err ERR_WRONG_CYCLE_ID))
     (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps

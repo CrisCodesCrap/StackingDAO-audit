@@ -343,7 +343,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: cycle id checks",
+  name: "core: check if can init withdarw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -360,6 +360,30 @@ Clarinet.test({
     call = await stickyCore.getPoxCycle();
     call.result.expectUint(1); 
 
+    // We are in cycle 1, so next cycle to withdraw in is 2
+    call = await stickyCore.getNextWithdrawCycle();
+    call.result.expectUint(2); 
+
+    // Deposit some STX
+    let result = await stickyCore.deposit(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Can not withdraw in cycle 0 as it's over
+    result = await stickyCore.initWithdraw(deployer, 10, 0);
+    result.expectErr().expectUint(19001);
+
+    // Can not withdraw in cycle 1 as it's in progress
+    result = await stickyCore.initWithdraw(deployer, 10, 1);
+    result.expectErr().expectUint(19001);
+
+    // Can withdraw in cycle 2
+    result = await stickyCore.initWithdraw(deployer, 10, 2);
+    result.expectOk().expectUintWithDecimals(10);
+
+    // Can not withdraw as still in cycle 1
+    result = await stickyCore.withdraw(deployer, 2);
+    result.expectErr().expectUint(19001);
+
     // Advance to next cycle
     chain.mineEmptyBlock(2100);
 
@@ -367,24 +391,83 @@ Clarinet.test({
     call = await stickyCore.getPoxCycle();
     call.result.expectUint(2); 
 
+    // Can withdraw
+    result = await stickyCore.withdraw(deployer, 2);
+    result.expectOk().expectUintWithDecimals(10);
+  },
+});
+
+Clarinet.test({
+  name: "core: check if can init withdarw, taking into account prepare phase",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    // PoX cycle 0
+    let call = await stickyCore.getPoxCycle();
+    call.result.expectUint(0); 
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2100);
+
+    // PoX cycle 1
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(1); 
+
+    // Advance to prepare phase
+    chain.mineEmptyBlock(2050);
+
+    // Still in cycle 1
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(1); 
+
+    // In prepare phase, so can not withdraw in next cycle (2)
+    // Need to withdraw in cycle after (3)
+    call = await stickyCore.getNextWithdrawCycle();
+    call.result.expectUint(3); 
+
     // Deposit some STX
     let result = await stickyCore.deposit(deployer, 10000);
     result.expectOk().expectUintWithDecimals(10000);
 
-    // Try to withdraw in current cycle fails
+    // Can not withdraw in cycle 0 as it's over
+    result = await stickyCore.initWithdraw(deployer, 10, 0);
+    result.expectErr().expectUint(19001);
+
+    // Can not withdraw in cycle 1 as it's in progress
+    result = await stickyCore.initWithdraw(deployer, 10, 1);
+    result.expectErr().expectUint(19001);
+
+    // Can not withdraw in cycle 2, as it's prepare phase started
     result = await stickyCore.initWithdraw(deployer, 10, 2);
     result.expectErr().expectUint(19001);
 
-    // Can withdraw for next cycle
+    // Can withdraw in cycle 3
     result = await stickyCore.initWithdraw(deployer, 10, 3);
     result.expectOk().expectUintWithDecimals(10);
 
-    // Can not withdraw for next cycle
+    // Can not withdraw as still in cycle 1
     result = await stickyCore.withdraw(deployer, 3);
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
     chain.mineEmptyBlock(2100);
+
+    // PoX cycle 2
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(2); 
+
+    // Can withdraw as cycle 3 not started
+    result = await stickyCore.withdraw(deployer, 3);
+    result.expectErr().expectUint(19001);
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2100);
+
+    // PoX cycle 3
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(3); 
 
     // Can withdraw
     result = await stickyCore.withdraw(deployer, 3);
