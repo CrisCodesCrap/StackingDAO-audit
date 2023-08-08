@@ -28,11 +28,43 @@ Clarinet.test({
     call = await stickyCore.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(100000000);
 
+    // Can withdraw 20% of total commission
+    // 20% of 5000 STX = 1000 STX
     result = await stickyCommission.withdrawCommission(deployer);
-    result.expectOk().expectUintWithDecimals(5000);
+    result.expectOk().expectUintWithDecimals(1000);
 
     call = await stickyCore.getStxBalance(deployer.address);
-    call.result.expectUintWithDecimals(100005000);
+    call.result.expectUintWithDecimals(100001000);
+  }
+});
+
+Clarinet.test({
+  name: "commission: can set staking percentage",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+    let stickyCommission = new StickyCommission(chain, deployer);
+
+    let result = await stickyCommission.addCommission(wallet_1, 5000);
+    result.expectOk().expectUintWithDecimals(5000);
+
+    // Can withdraw 20% of total commission
+    // 20% of 5000 STX = 1000 STX
+    result = await stickyCommission.withdrawCommission(deployer);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    result = await stickyCommission.setStakingPercentage(deployer, 0.2);
+    result.expectOk().expectBool(true);
+
+    result = await stickyCommission.addCommission(wallet_1, 5000);
+    result.expectOk().expectUintWithDecimals(5000);
+
+    // Can withdraw 80% of total commission
+    // 80% of 5000 STX = 1000 STX
+    result = await stickyCommission.withdrawCommission(deployer);
+    result.expectOk().expectUintWithDecimals(4000);
   }
 });
 
@@ -49,6 +81,19 @@ Clarinet.test({
     let stickyCommission = new StickyCommission(chain, deployer);
 
     let result = await stickyCommission.withdrawCommission(wallet_1);
+    result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "commission: only protocol can set staking percentage",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stickyCommission = new StickyCommission(chain, deployer);
+
+    let result = await stickyCommission.setStakingPercentage(wallet_1, 10);
     result.expectErr().expectUint(20003);
   }
 });

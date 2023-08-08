@@ -130,6 +130,7 @@ class StickyCore {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core-v1", "add-rewards", [
         types.principal(qualifiedName("sticky-commission-v1")),
+        types.principal(qualifiedName("sticky-staking-v1")),
         types.principal(qualifiedName("sticky-reserve-v1")),
         types.uint(amount * 1000000),
         types.uint(cycle)

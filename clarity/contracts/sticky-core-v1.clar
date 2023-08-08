@@ -3,6 +3,7 @@
 
 (use-trait sticky-reserve-trait .sticky-reserve-trait-v1.sticky-reserve-trait)
 (use-trait sticky-commission-trait .sticky-commission-trait-v1.sticky-commission-trait)
+(use-trait sticky-staking-trait .sticky-staking-trait-v1.sticky-staking-trait)
 
 ;;-------------------------------------
 ;; Constants 
@@ -220,7 +221,13 @@
 )
 
 ;; Add rewards in STX for given cycle
-(define-public (add-rewards (commission-trait <sticky-commission-trait>) (reserve principal) (stx-amount uint) (cycle-id uint))
+(define-public (add-rewards 
+  (commission-trait <sticky-commission-trait>) 
+  (staking-trait <sticky-staking-trait>) 
+  (reserve principal) 
+  (stx-amount uint) 
+  (cycle-id uint)
+)
   (let (
     (current-cycle-info (get-cycle-info cycle-id))
     (commission-amount (/ (* stx-amount (var-get commission)) u10000))
@@ -229,6 +236,7 @@
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-protocol reserve))
     (try! (contract-call? .sticky-dao check-is-protocol (contract-of commission-trait)))
+    (try! (contract-call? .sticky-dao check-is-protocol (contract-of staking-trait)))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { 
       rewards: (+ (get rewards current-cycle-info) rewards-left),
@@ -236,7 +244,7 @@
     }))
 
     (if (> commission-amount u0)
-      (try! (as-contract (contract-call? commission-trait add-commission commission-amount)))
+      (try! (as-contract (contract-call? commission-trait add-commission staking-trait commission-amount)))
       u0
     )
     (try! (stx-transfer? rewards-left tx-sender reserve))

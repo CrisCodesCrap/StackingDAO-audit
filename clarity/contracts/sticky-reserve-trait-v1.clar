@@ -1,3 +1,6 @@
+;; @contract Sticky Reserve Trait
+;; @version 1
+
 (define-trait sticky-reserve-trait
   (
     (get-stx-in-use () (response uint uint))

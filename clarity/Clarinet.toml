@@ -26,6 +26,11 @@ path = "contracts/sticky-commission-trait-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.sticky-staking-trait-v1]
+path = "contracts/sticky-staking-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.ststx-token]
 path = "contracts/ststx-token.clar"
 clarity_version = 2
@@ -118,6 +123,11 @@ epoch = 2.4
 
 [contracts.sticky-strategy-v1]
 path = "contracts/sticky-strategy-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sticky-staking-v1]
+path = "contracts/sticky-staking-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
