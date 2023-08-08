@@ -9,7 +9,6 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_NOT_AUTHORIZED u19401)
 (define-constant ERR_WRONG_CYCLE_ID u19001)
 (define-constant ERR_SHUTDOWN u19002)
 (define-constant ERR_WITHDRAW_EXCEEDED u19003)
@@ -244,7 +243,7 @@
     }))
 
     (if (> commission-amount u0)
-      (try! (as-contract (contract-call? commission-trait add-commission staking-trait commission-amount)))
+      (try! (contract-call? commission-trait add-commission staking-trait commission-amount))
       u0
     )
     (try! (stx-transfer? rewards-left tx-sender reserve))

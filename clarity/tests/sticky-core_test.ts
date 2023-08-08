@@ -2,7 +2,32 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 
 import { StickyCore } from './helpers/sticky-core-helpers.ts';
 import { qualifiedName } from './helpers/sticky-tests-utils.ts';
-qualifiedName("");
+import { StickyDAO } from './helpers/sticky-dao-helpers.ts';
+
+//-------------------------------------
+// Getters 
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: can get burn height",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    let call = await stickyCore.getBurnHeight();
+    call.result.expectUint(1);
+
+    chain.mineEmptyBlock(500);
+
+    call = await stickyCore.getBurnHeight();
+    call.result.expectUint(501);
+  },
+});
+
+//-------------------------------------
+// Core
+//-------------------------------------
 
 Clarinet.test({
   name: "core: test STX to stSTX ratio",
@@ -161,5 +186,263 @@ Clarinet.test({
     // After deployer pulled all their capital + rewards, the ratio remains the same
     call = await stickyCore.getStxPerStstx();
     call.result.expectOk().expectUintWithDecimals(1.019044);
+  },
+});
+
+//-------------------------------------
+// Admin 
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: protocol can set commission",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    let call = await stickyCore.getCommission();
+    call.result.expectUint(500);
+
+    let result = await stickyCore.setCommission(deployer, 0.5);
+    result.expectOk().expectBool(true);
+
+    call = await stickyCore.getCommission();
+    call.result.expectUint(0.5 * 10000);
+
+    result = await stickyCore.addRewards(deployer, 100, 0);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // 100 STX added as rewards, 50% taken as commission
+    // Commission contract keeps 20 %
+    // 100 * 0.5 * 0.2 = 10 STX
+    call = await stickyCore.getStxBalance(qualifiedName("sticky-commission-v1"));
+    call.result.expectUintWithDecimals(10);
+  },
+});
+
+Clarinet.test({
+  name: "core: protocol can set withdrawal treshold",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    let call = await stickyCore.getWithdrawalTresholdPerCycle();
+    call.result.expectUint(500);
+
+    // Deposit 1,000,000 STX
+    let result = await stickyCore.deposit(deployer, 1000000);
+    result.expectOk().expectUintWithDecimals(1000000);
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2101);
+
+    // Can not withdraw 50%
+    result = await stickyCore.initWithdraw(deployer, 500000, 2);
+    result.expectErr().expectUint(19003);
+
+    // 5% treshold of 1M tokens = 50k STX
+    // So withdrawing 50k + 1 STX does not work
+    result = await stickyCore.initWithdraw(deployer, 50001, 2);
+    result.expectErr().expectUint(19003);
+
+    // Can withdraw 50k
+    result = await stickyCore.initWithdraw(deployer, 50000, 2);
+    result.expectOk().expectUintWithDecimals(50000);
+
+    // Set treshold
+    result = await stickyCore.setWithdrawalTreshold(deployer, 0.5);
+    result.expectOk().expectBool(true);
+
+    // Treshold is set
+    call = await stickyCore.getWithdrawalTresholdPerCycle();
+    call.result.expectUint(0.5 * 10000);
+
+    // Can not withdraw more than 50%
+    result = await stickyCore.initWithdraw(deployer, 500001, 2);
+    result.expectErr().expectUint(19003);
+    
+    // Can withdraw 50%
+    result = await stickyCore.initWithdraw(deployer, 500000, 2);
+    result.expectOk().expectUintWithDecimals(500000);
+  },
+});
+
+Clarinet.test({
+  name: "core: protocol can set shut down deposits / withdrawals",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    let call = await stickyCore.getWithdrawalTresholdPerCycle();
+    call.result.expectUint(500);
+
+    // Deposit 1,000,000 STX
+    let result = await stickyCore.deposit(deployer, 1000000);
+    result.expectOk().expectUintWithDecimals(1000000);
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2101);
+
+    // Init withdraw
+    result = await stickyCore.initWithdraw(deployer, 100, 2);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // Check shutdowns
+    call = await stickyCore.getShutdownDeposits();
+    call.result.expectBool(false);
+    call = await stickyCore.getShutdownWithdrawals();
+    call.result.expectBool(false);
+
+    // Shutdown deposits
+    result = await stickyCore.setShutdownDeposits(deployer, true);
+    result.expectOk().expectBool(true)
+
+    // Can not deposit anymore
+    result = await stickyCore.deposit(deployer, 1000000);
+    result.expectErr().expectUint(19002);
+
+    // Enable deposits
+    result = await stickyCore.setShutdownDeposits(deployer, false);
+    result.expectOk().expectBool(true)
+
+    // Can not deposit again
+    result = await stickyCore.deposit(deployer, 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    // Shutdown withdrawals
+    result = await stickyCore.setShutdownWithdrawals(deployer, true);
+    result.expectOk().expectBool(true)
+
+    // Can not withdraw anymore
+    result = await stickyCore.initWithdraw(deployer, 50, 2);
+    result.expectErr().expectUint(19002);
+
+    result = await stickyCore.withdraw(deployer, 1);
+    result.expectErr().expectUint(19002);
+
+    // Enable withdrawals
+    result = await stickyCore.setShutdownWithdrawals(deployer, false);
+    result.expectOk().expectBool(true)
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2101);
+
+    // Can withdraw again
+    result = await stickyCore.initWithdraw(deployer, 50, 3);
+    result.expectOk().expectUintWithDecimals(50);
+
+    result = await stickyCore.withdraw(deployer, 2);
+    result.expectOk().expectUintWithDecimals(100);
+  },
+});
+
+//-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: cycle id checks",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    // PoX cycle 0
+    let call = await stickyCore.getPoxCycle();
+    call.result.expectUint(0); 
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2100);
+
+    // PoX cycle 1
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(1); 
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2100);
+
+    // PoX cycle 2
+    call = await stickyCore.getPoxCycle();
+    call.result.expectUint(2); 
+
+    // Deposit some STX
+    let result = await stickyCore.deposit(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    // Try to withdraw in current cycle fails
+    result = await stickyCore.initWithdraw(deployer, 10, 2);
+    result.expectErr().expectUint(19001);
+
+    // Can withdraw for next cycle
+    result = await stickyCore.initWithdraw(deployer, 10, 3);
+    result.expectOk().expectUintWithDecimals(10);
+
+    // Can not withdraw for next cycle
+    result = await stickyCore.withdraw(deployer, 3);
+    result.expectErr().expectUint(19001);
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2100);
+
+    // Can withdraw
+    result = await stickyCore.withdraw(deployer, 3);
+    result.expectOk().expectUintWithDecimals(10);
+
+    // Can not withdraw again
+    result = await stickyCore.withdraw(deployer, 3);
+    result.expectErr().expectUint(3);
+  },
+});
+
+Clarinet.test({
+  name: "core: can not deposit, withdraw or add rewards if protocol not enabled",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+    let stickyDao = new StickyDAO(chain, deployer);
+
+    let result = await stickyDao.setContractsEnabled(deployer, false);
+    result.expectOk().expectBool(true);
+
+    result = await stickyCore.deposit(deployer, 1000);
+    result.expectErr().expectUint(20002);
+
+    result = await stickyCore.addRewards(deployer, 100, 0);
+    result.expectErr().expectUint(20002);
+
+    result = await stickyCore.initWithdraw(deployer, 10, 0);
+    result.expectErr().expectUint(20002);
+
+    result = await stickyCore.withdraw(deployer, 0);
+    result.expectErr().expectUint(20002);
+  },
+});
+
+//-------------------------------------
+// Access 
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: only protocol can use admin functions",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stickyCore = new StickyCore(chain, deployer);
+
+    let result = await stickyCore.setWithdrawalTreshold(wallet_1, 0.1);
+    result.expectErr().expectUint(20003);
+
+    result = await stickyCore.setCommission(wallet_1, 0.1);
+    result.expectErr().expectUint(20003);
+
+    result = await stickyCore.setShutdownDeposits(wallet_1, true);
+    result.expectErr().expectUint(20003);
+
+    result = await stickyCore.setShutdownWithdrawals(wallet_1, true);
+    result.expectErr().expectUint(20003);
   },
 });
