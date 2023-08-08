@@ -31,13 +31,6 @@
   (ok (ft-get-balance ststx account))
 )
 
-(define-public (set-token-uri (value (string-utf8 256)))
-  (begin
-    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
-    (ok (var-set token-uri value))
-  )
-)
-
 (define-read-only (get-token-uri)
   (ok (some (var-get token-uri)))
 )
@@ -53,6 +46,17 @@
       )
       error (err error)
     )
+  )
+)
+
+;;-------------------------------------
+;; Admin
+;;-------------------------------------
+
+(define-public (set-token-uri (value (string-utf8 256)))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
+    (ok (var-set token-uri value))
   )
 )
 
@@ -77,9 +81,8 @@
 )
 
 ;; Burn external
-(define-public (burn (amount uint) (sender principal))
+(define-public (burn (amount uint))
   (begin
-    (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
-    (ft-burn? ststx amount sender)
+    (ft-burn? ststx amount tx-sender)
   )
 )
