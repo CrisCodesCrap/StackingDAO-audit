@@ -5,13 +5,14 @@
 ;; Handle tax 
 ;;-------------------------------------
 
+;; Need to be called by keeper
 (define-public (handle-tax)
   (let (
     (tax-amount (contract-call? .sticky-token get-tax-balance))
   )
     (if (> tax-amount u0)
       (begin
-        (try! (contract-call? .sticky-token withdraw-tax))
+        (try! (contract-call? .sticky-token withdraw-tax (as-contract tx-sender)))
         ;; TODO: handle tax
         true
       )
@@ -27,8 +28,8 @@
 
 (define-public (retreive-tokens)
   (let (
-    (balance (unwrap-panic (contract-call? .sticky-token get-balance (as-contract tx-sender))))
-    (receiver contract-caller)
+    (balance (unwrap-panic (as-contract (contract-call? .sticky-token get-balance tx-sender))))
+    (receiver tx-sender)
   )
     (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
 
