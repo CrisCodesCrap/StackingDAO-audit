@@ -6,15 +6,16 @@ authors = []
 telemetry = true
 cache_dir = "./.cache"
 
-[contracts.pox-3-mock]
-path = "contracts/tests/pox-3-mock.clar"
-clarity_version = 2
-epoch = 2.4
+# ------------------------------
+# Mocks
+# ------------------------------
 
-[contracts.sip-010-trait-ft-standard]
-path = "contracts/sip-010-trait-ft-standard.clar"
-clarity_version = 2
-epoch = 2.4
+[[project.requirements]]
+contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
+
+# ------------------------------
+# Protocol
+# ------------------------------
 
 [contracts.tax-token-trait-v1]
 path = "contracts/tax-token-trait-v1.clar"
@@ -141,10 +142,20 @@ path = "contracts/staking-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+# ------------------------------
+# Tests
+# ------------------------------
+
+[contracts.pox-3-mock]
+path = "contracts/tests/pox-3-mock.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.fake-reserve]
 path = "contracts/tests/fake-reserve.clar"
 clarity_version = 2
 epoch = 2.4
+
 
 [repl.analysis]
 passes = ['check_checker']

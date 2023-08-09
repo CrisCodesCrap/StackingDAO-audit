@@ -16,12 +16,12 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getBurnHeight();
-    call.result.expectUint(1);
+    call.result.expectUint(2);
 
     chain.mineEmptyBlock(500);
 
     call = await core.getBurnHeight();
-    call.result.expectUint(501);
+    call.result.expectUint(502);
   },
 });
 

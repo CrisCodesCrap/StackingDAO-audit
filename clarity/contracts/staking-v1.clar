@@ -9,7 +9,7 @@
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
 
 (impl-trait .staking-trait-v1.staking-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 ;;-------------------------------------
 ;; Constants 
