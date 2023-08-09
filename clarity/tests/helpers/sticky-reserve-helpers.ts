@@ -14,12 +14,12 @@ class StickyReserve {
     this.deployer = deployer;
   }
 
-  getStxInUse() {
-    return this.chain.callReadOnlyFn("sticky-reserve-v1", "get-stx-in-use", [], this.deployer.address);
+  getStxStacking() {
+    return this.chain.callReadOnlyFn("sticky-reserve-v1", "get-stx-stacking", [], this.deployer.address);
   }
 
-  getStxIdle() {
-    return this.chain.callReadOnlyFn("sticky-reserve-v1", "get-stx-idle", [], this.deployer.address);
+  getStxBalance() {
+    return this.chain.callReadOnlyFn("sticky-reserve-v1", "get-stx-balance", [], this.deployer.address);
   }
 
   getTotalStx() {
@@ -30,9 +30,18 @@ class StickyReserve {
     return this.chain.callReadOnlyFn("sticky-reserve-v1", "get-shutdown-enabled", [], this.deployer.address);
   }
 
-  requestStx(caller: Account, amount: number, receiver: string) {
+  lockStxForWithdrawal(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("sticky-reserve-v1", "request-stx", [
+      Tx.contractCall("sticky-reserve-v1", "lock-stx-for-withdrawal", [
+        types.uint(amount * 1000000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  requestStxForWithdrawal(caller: Account, amount: number, receiver: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("sticky-reserve-v1", "request-stx-for-withdrawal", [
         types.uint(amount * 1000000),
         types.principal(receiver)
       ], caller.address)
@@ -58,5 +67,14 @@ class StickyReserve {
     return block.receipts[0].result;
   }
 
+  getStx(caller: Account, amount: number, receiver: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("sticky-reserve-v1", "get-stx", [
+        types.uint(amount * 1000000),
+        types.principal(receiver)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StickyReserve };

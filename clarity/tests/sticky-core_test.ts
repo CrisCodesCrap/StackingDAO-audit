@@ -88,7 +88,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1.067212);
 
     // Withdraw 250 stSTX tokens
-    result = await stickyCore.initWithdraw(deployer, 250, 1);
+    result = await stickyCore.initWithdraw(deployer, 250);
     result.expectOk().expectUintWithDecimals(250);
 
     // Advance to next cycle
@@ -155,7 +155,7 @@ Clarinet.test({
 
     // Let's test withdrawals
     // We are in cycle 2, so cycle 3 is the first we can withdraw (hence u5 as second param)
-    result = await stickyCore.initWithdraw(deployer, 10000, 3);
+    result = await stickyCore.initWithdraw(deployer, 10000);
     result.expectOk().expectUintWithDecimals(10000);
 
     // Deployer should have 10k stSTX less
@@ -238,16 +238,16 @@ Clarinet.test({
     chain.mineEmptyBlock(2101);
 
     // Can not withdraw 50%
-    result = await stickyCore.initWithdraw(deployer, 500000, 2);
+    result = await stickyCore.initWithdraw(deployer, 500000);
     result.expectErr().expectUint(19003);
 
     // 5% treshold of 1M tokens = 50k STX
     // So withdrawing 50k + 1 STX does not work
-    result = await stickyCore.initWithdraw(deployer, 50001, 2);
+    result = await stickyCore.initWithdraw(deployer, 50001);
     result.expectErr().expectUint(19003);
 
     // Can withdraw 50k
-    result = await stickyCore.initWithdraw(deployer, 50000, 2);
+    result = await stickyCore.initWithdraw(deployer, 50000);
     result.expectOk().expectUintWithDecimals(50000);
 
     // Set treshold
@@ -259,11 +259,11 @@ Clarinet.test({
     call.result.expectUint(0.5 * 10000);
 
     // Can not withdraw more than 50%
-    result = await stickyCore.initWithdraw(deployer, 500001, 2);
+    result = await stickyCore.initWithdraw(deployer, 500001);
     result.expectErr().expectUint(19003);
     
     // Can withdraw 50%
-    result = await stickyCore.initWithdraw(deployer, 500000, 2);
+    result = await stickyCore.initWithdraw(deployer, 500000);
     result.expectOk().expectUintWithDecimals(500000);
   },
 });
@@ -286,7 +286,7 @@ Clarinet.test({
     chain.mineEmptyBlock(2101);
 
     // Init withdraw
-    result = await stickyCore.initWithdraw(deployer, 100, 2);
+    result = await stickyCore.initWithdraw(deployer, 100);
     result.expectOk().expectUintWithDecimals(100);
 
     // Check shutdowns
@@ -316,7 +316,7 @@ Clarinet.test({
     result.expectOk().expectBool(true)
 
     // Can not withdraw anymore
-    result = await stickyCore.initWithdraw(deployer, 50, 2);
+    result = await stickyCore.initWithdraw(deployer, 50);
     result.expectErr().expectUint(19002);
 
     result = await stickyCore.withdraw(deployer, 1);
@@ -330,7 +330,7 @@ Clarinet.test({
     chain.mineEmptyBlock(2101);
 
     // Can withdraw again
-    result = await stickyCore.initWithdraw(deployer, 50, 3);
+    result = await stickyCore.initWithdraw(deployer, 50);
     result.expectOk().expectUintWithDecimals(50);
 
     result = await stickyCore.withdraw(deployer, 2);
@@ -343,7 +343,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: check if can init withdarw",
+  name: "core: check if can withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -368,16 +368,8 @@ Clarinet.test({
     let result = await stickyCore.deposit(deployer, 10000);
     result.expectOk().expectUintWithDecimals(10000);
 
-    // Can not withdraw in cycle 0 as it's over
-    result = await stickyCore.initWithdraw(deployer, 10, 0);
-    result.expectErr().expectUint(19001);
-
-    // Can not withdraw in cycle 1 as it's in progress
-    result = await stickyCore.initWithdraw(deployer, 10, 1);
-    result.expectErr().expectUint(19001);
-
-    // Can withdraw in cycle 2
-    result = await stickyCore.initWithdraw(deployer, 10, 2);
+    // Initiate withdraw (for cycle 2)
+    result = await stickyCore.initWithdraw(deployer, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     // Can not withdraw as still in cycle 1
@@ -398,7 +390,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: check if can init withdarw, taking into account prepare phase",
+  name: "core: check init withdraw, taking into account prepare phase",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -431,20 +423,8 @@ Clarinet.test({
     let result = await stickyCore.deposit(deployer, 10000);
     result.expectOk().expectUintWithDecimals(10000);
 
-    // Can not withdraw in cycle 0 as it's over
-    result = await stickyCore.initWithdraw(deployer, 10, 0);
-    result.expectErr().expectUint(19001);
-
-    // Can not withdraw in cycle 1 as it's in progress
-    result = await stickyCore.initWithdraw(deployer, 10, 1);
-    result.expectErr().expectUint(19001);
-
-    // Can not withdraw in cycle 2, as it's prepare phase started
-    result = await stickyCore.initWithdraw(deployer, 10, 2);
-    result.expectErr().expectUint(19001);
-
-    // Can withdraw in cycle 3
-    result = await stickyCore.initWithdraw(deployer, 10, 3);
+    // Init withdraw for cycle 3
+    result = await stickyCore.initWithdraw(deployer, 10);
     result.expectOk().expectUintWithDecimals(10);
 
     // Can not withdraw as still in cycle 1
@@ -458,7 +438,7 @@ Clarinet.test({
     call = await stickyCore.getPoxCycle();
     call.result.expectUint(2); 
 
-    // Can withdraw as cycle 3 not started
+    // Can not withdraw as cycle 3 not started
     result = await stickyCore.withdraw(deployer, 3);
     result.expectErr().expectUint(19001);
 
@@ -496,7 +476,7 @@ Clarinet.test({
     result = await stickyCore.addRewards(deployer, 100, 0);
     result.expectErr().expectUint(20002);
 
-    result = await stickyCore.initWithdraw(deployer, 10, 0);
+    result = await stickyCore.initWithdraw(deployer, 10);
     result.expectErr().expectUint(20002);
 
     result = await stickyCore.withdraw(deployer, 0);

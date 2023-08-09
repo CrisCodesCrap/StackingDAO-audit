@@ -77,12 +77,11 @@ class StickyCore {
     return block.receipts[0].result;
   }
 
-  initWithdraw(caller: Account, amount: number, cycle: number) {
+  initWithdraw(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-core-v1", "init-withdraw", [
         types.principal(qualifiedName("sticky-reserve-v1")),
-        types.uint(amount * 1000000),
-        types.uint(cycle),
+        types.uint(amount * 1000000)
       ], caller.address)
     ]);
     return block.receipts[0].result;

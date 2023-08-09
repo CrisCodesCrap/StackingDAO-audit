@@ -129,14 +129,14 @@
 ;;-------------------------------------
 
 (define-read-only (get-total-stacking)
-  (unwrap-panic (contract-call? .sticky-reserve-v1 get-stx-in-use))
+  (unwrap-panic (contract-call? .sticky-reserve-v1 get-stx-stacking))
 )
 
 (define-read-only (get-outflow-inflow)
   (let (
     (next-cycle-info (contract-call? .sticky-core-v1 get-cycle-info (+ (get-pox-cycle) u1)))
     (total-withdrawals (get withdraw-init next-cycle-info))
-    (total-idle (unwrap-panic (contract-call? .sticky-reserve-v1 get-stx-idle)))
+    (total-idle (unwrap-panic (contract-call? .sticky-reserve-v1 get-stx-balance)))
 
     (outflow 
       (if (> total-withdrawals total-idle)

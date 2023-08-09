@@ -176,9 +176,9 @@
 
 ;; Initiate withdrawal, given stSTX amount and cycle
 ;; Can update amount as long as cycle not started
-(define-public (init-withdraw (reserve-trait <sticky-reserve-trait>) (ststx-amount uint) (withdrawal-cycle uint))
+(define-public (init-withdraw (reserve-trait <sticky-reserve-trait>) (ststx-amount uint))
   (let (
-    (cycle-id (get-pox-cycle))
+    (withdrawal-cycle (get-next-withdraw-cycle))
     (current-cycle-info (get-cycle-info withdrawal-cycle))
 
     (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-trait)))
@@ -191,7 +191,6 @@
     (try! (contract-call? .sticky-dao check-is-enabled))
     (try! (contract-call? .sticky-dao check-is-protocol (contract-of reserve-trait)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
-    (asserts! (>= withdrawal-cycle (get-next-withdraw-cycle)) (err ERR_WRONG_CYCLE_ID))
     (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Update maps
@@ -199,6 +198,7 @@
     (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdraw-init: new-withdraw-init }))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
+    (try! (as-contract (contract-call? reserve-trait lock-stx-for-withdrawal stx-to-receive)))
     (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
 
     (ok ststx-amount)
@@ -227,7 +227,7 @@
     }))
 
     ;; STX to user, burn stSTX
-    (try! (as-contract (contract-call? reserve-trait request-stx stx-to-receive receiver)))
+    (try! (as-contract (contract-call? reserve-trait request-stx-for-withdrawal stx-to-receive receiver)))
     (try! (contract-call? .ststx-token burn-for-sticky (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
 
     (ok stx-to-receive)

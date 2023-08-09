@@ -198,10 +198,10 @@ Clarinet.test({
     call = await stickyReserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(150000);
 
-    call = await stickyReserve.getStxIdle();
+    call = await stickyReserve.getStxBalance();
     call.result.expectOk().expectUintWithDecimals(25000);
 
-    call = await stickyReserve.getStxInUse();
+    call = await stickyReserve.getStxStacking();
     call.result.expectOk().expectUintWithDecimals(125000);
 
     result = await stickyStacker1.returnStx(deployer);
@@ -213,10 +213,10 @@ Clarinet.test({
     call = await stickyReserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(150000);
 
-    call = await stickyReserve.getStxIdle();
+    call = await stickyReserve.getStxBalance();
     call.result.expectOk().expectUintWithDecimals(150000);
 
-    call = await stickyReserve.getStxInUse();
+    call = await stickyReserve.getStxStacking();
     call.result.expectOk().expectUintWithDecimals(0);
 
     // Account updated

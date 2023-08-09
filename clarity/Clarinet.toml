@@ -126,6 +126,11 @@ path = "contracts/sticky-dao.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.sticky-strategy-v0]
+path = "contracts/sticky-strategy-v0.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.sticky-strategy-v1]
 path = "contracts/sticky-strategy-v1.clar"
 clarity_version = 2

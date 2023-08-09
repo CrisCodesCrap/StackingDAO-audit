@@ -13,32 +13,51 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var stx-in-use uint u0)
+(define-data-var stx-stacking uint u0)
+(define-data-var stx-for-withdrawals uint u0)
 
 ;;-------------------------------------
 ;; Getters 
 ;;-------------------------------------
 
-(define-read-only (get-stx-in-use)
-  (ok (var-get stx-in-use))
+;; Amount of STX locked for withdrawals
+(define-read-only (get-stx-for-withdrawals)
+  (ok (var-get stx-for-withdrawals))
 )
 
-(define-read-only (get-stx-idle)
+;; Amount of STX currently used in stacking
+(define-read-only (get-stx-stacking)
+  (ok (var-get stx-stacking))
+)
+
+;; Contract balance
+(define-read-only (get-stx-balance)
   (ok (stx-get-balance (as-contract tx-sender)))
 )
 
+;; Total STX = contract balance + used in stacking
 (define-read-only (get-total-stx)
-  (ok (+ (unwrap-panic (get-stx-idle)) (unwrap-panic (get-stx-in-use))))
+  (ok (+ (unwrap-panic (get-stx-balance)) (unwrap-panic (get-stx-stacking))))
 )
 
 ;;-------------------------------------
-;; Get STX 
+;; Withdrawals
 ;;-------------------------------------
 
-(define-public (request-stx (requested-stx uint) (receiver principal))
+(define-public (lock-stx-for-withdrawal (stx-amount uint))
   (begin
     (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
 
+    (var-set stx-for-withdrawals (+ (var-get stx-for-withdrawals) stx-amount))
+    (ok stx-amount)
+  )
+)
+
+(define-public (request-stx-for-withdrawal (requested-stx uint) (receiver principal))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
+
+    (var-set stx-for-withdrawals (- (var-get stx-for-withdrawals) requested-stx))
     (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
     (ok requested-stx)
   )
@@ -55,7 +74,7 @@
     (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
 
-    (var-set stx-in-use (+ (unwrap-panic (get-stx-in-use)) requested-stx))
+    (var-set stx-stacking (+ (unwrap-panic (get-stx-stacking)) requested-stx))
     (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
     (ok requested-stx)
   )
@@ -66,8 +85,21 @@
     (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
     (try! (contract-call? .sticky-dao check-is-enabled))
 
-    (var-set stx-in-use (- (unwrap-panic (get-stx-in-use)) stx-amount))
+    (var-set stx-stacking (- (unwrap-panic (get-stx-stacking)) stx-amount))
     (try! (stx-transfer? stx-amount tx-sender (as-contract tx-sender)))
     (ok stx-amount)
+  )
+)
+
+;;-------------------------------------
+;; Get STX 
+;;-------------------------------------
+
+(define-public (get-stx (requested-stx uint) (receiver principal))
+  (begin
+    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
+
+    (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
+    (ok requested-stx)
   )
 )

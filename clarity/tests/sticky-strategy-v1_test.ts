@@ -2,7 +2,7 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "./helpers/sticky-tests-utils.ts";
 qualifiedName('')
 
-import { StickyStrategy } from './helpers/sticky-strategy-helpers.ts';
+import { StickyStrategyV1 as StickyStrategy } from './helpers/sticky-strategy-helpers.ts';
 import { StickyCore } from './helpers/sticky-core-helpers.ts';
 import { StickyReserve } from './helpers/sticky-reserve-helpers.ts';
 
@@ -10,13 +10,14 @@ import { StickyReserve } from './helpers/sticky-reserve-helpers.ts';
 // Getters
 //-------------------------------------
 
+
 //-------------------------------------
 // Calculations - Get inflow/outflow
 //-------------------------------------
 
 // TODO: focus on get inflow/outflow only
 Clarinet.test({
-  name: "strategy: get inflow/outflow",
+  name: "strategy-v1: get inflow/outflow",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -49,10 +50,10 @@ Clarinet.test({
     result = stickyStrategy.performStacking(deployer);
     result.expectOk().expectBool(true);
 
-    call = await stickyReserve.getStxInUse();
+    call = await stickyReserve.getStxStacking();
     call.result.expectOk().expectUintWithDecimals(50000 * 3);
 
-    call = await stickyReserve.getStxIdle();
+    call = await stickyReserve.getStxBalance();
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = await stickyReserve.getTotalStx();
@@ -65,7 +66,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy: calculate stacking outflow",
+  name: "strategy-v1: calculate stacking outflow",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -135,7 +136,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy: calculate stacking inflow - minimum",
+  name: "strategy-v1: calculate stacking inflow - minimum",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -169,7 +170,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy: perform inflow",
+  name: "strategy-v1: perform inflow",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -192,10 +193,10 @@ Clarinet.test({
     result = stickyStrategy.performStacking(deployer);
     result.expectOk().expectBool(true);
 
-    call = await stickyReserve.getStxInUse();
+    call = await stickyReserve.getStxStacking();
     call.result.expectOk().expectUintWithDecimals(50000 * 3);
 
-    call = await stickyReserve.getStxIdle();
+    call = await stickyReserve.getStxBalance();
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = await stickyReserve.getTotalStx();
@@ -253,10 +254,10 @@ Clarinet.test({
     result = stickyStrategy.performStacking(deployer);
     result.expectOk().expectBool(true);
 
-    call = await stickyReserve.getStxInUse();
+    call = await stickyReserve.getStxStacking();
     call.result.expectOk().expectUintWithDecimals(50000 * 13);
 
-    call = await stickyReserve.getStxIdle();
+    call = await stickyReserve.getStxBalance();
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = await stickyReserve.getTotalStx();
@@ -308,7 +309,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy: ....",
+  name: "strategy-v1: ....",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
