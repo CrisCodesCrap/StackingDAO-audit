@@ -2,10 +2,10 @@ import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts
 import { qualifiedName } from './tests-utils.ts';
 
 // ---------------------------------------------------------
-// PoX-3 Mock
+// Sticky Tax
 // ---------------------------------------------------------
 
-class Pox3Mock {
+class Tax {
   chain: Chain;
   deployer: Account;
 
@@ -14,14 +14,21 @@ class Pox3Mock {
     this.deployer = deployer;
   }
 
-  unlock(caller: Account, account: string) {
+  handleTax(caller: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("pox-3-mock", "unlock-mock", [
-        types.principal(account),
+      Tx.contractCall("tax-v1", "handle-tax", [
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  retreiveTokens(caller: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("tax-v1", "retreive-tokens", [
       ], caller.address)
     ]);
     return block.receipts[0].result;
   }
 
 }
-export { Pox3Mock };
+export { Tax };

@@ -1,6 +1,6 @@
 (impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 
-;; Defines the Sticky Stacked STX according to the SIP010 Standard
+;; Defines the Stacked STX according to the SIP010 Standard
 (define-fungible-token ststx)
 
 (define-constant ERR_NOT_AUTHORIZED u1401)
@@ -55,7 +55,7 @@
 
 (define-public (set-token-uri (value (string-utf8 256)))
   (begin
-    (try! (contract-call? .sticky-dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol tx-sender))
     (ok (var-set token-uri value))
   )
 )
@@ -65,17 +65,17 @@
 ;;-------------------------------------
 
 ;; Mint method
-(define-public (mint-for-sticky (amount uint) (recipient principal))
+(define-public (mint-for-protocol (amount uint) (recipient principal))
   (begin
-    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
     (ft-mint? ststx amount recipient)
   )
 )
 
 ;; Burn method
-(define-public (burn-for-sticky (amount uint) (sender principal))
+(define-public (burn-for-protocol (amount uint) (sender principal))
   (begin
-    (try! (contract-call? .sticky-dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
     (ft-burn? ststx amount sender)
   )
 )

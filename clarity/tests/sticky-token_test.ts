@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/sticky-tests-utils.ts";
+import { qualifiedName } from "./helpers/tests-utils.ts";
 qualifiedName("")
 
 import { StickyToken } from './helpers/sticky-token-helpers.ts';
@@ -57,7 +57,7 @@ Clarinet.test({
     call = await stickyToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
-    let result = await stickyToken.mintForSticky(deployer, 100, wallet_1.address);
+    let result = await stickyToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     call = await stickyToken.getTotalSupply();
@@ -66,7 +66,7 @@ Clarinet.test({
     call = await stickyToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10100);
 
-    result = await stickyToken.burnForSticky(deployer, 20, wallet_1.address);
+    result = await stickyToken.burnForProtocol(deployer, 20, wallet_1.address);
     result.expectOk().expectBool(true);
 
     call = await stickyToken.getTotalSupply();
@@ -95,7 +95,7 @@ Clarinet.test({
 
     let stickyToken = new StickyToken(chain, deployer);
 
-    let result = await stickyToken.mintForSticky(deployer, 100, wallet_1.address);
+    let result = await stickyToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     result = await stickyToken.transfer(wallet_1, 20, wallet_2.address);
@@ -330,10 +330,10 @@ Clarinet.test({
     let result = await stickyToken.setTokenUri(wallet_1, "test-uri");
     result.expectErr().expectUint(20003);
 
-    result = await stickyToken.mintForSticky(wallet_1, 100, wallet_1.address);
+    result = await stickyToken.mintForProtocol(wallet_1, 100, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await stickyToken.burnForSticky(wallet_1, 100, deployer.address);
+    result = await stickyToken.burnForProtocol(wallet_1, 100, deployer.address);
     result.expectErr().expectUint(20003);
   }
 });

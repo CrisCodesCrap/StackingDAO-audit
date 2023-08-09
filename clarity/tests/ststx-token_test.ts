@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/sticky-tests-utils.ts";
+import { qualifiedName } from "./helpers/tests-utils.ts";
 qualifiedName("")
 
 import { StStxToken } from './helpers/ststx-token-helpers.ts';
@@ -53,7 +53,7 @@ Clarinet.test({
     call = await stStxToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    let result = await stStxToken.mintForSticky(deployer, 100, wallet_1.address);
+    let result = await stStxToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     call = await stStxToken.getTotalSupply();
@@ -62,7 +62,7 @@ Clarinet.test({
     call = await stStxToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(100);
 
-    result = await stStxToken.burnForSticky(deployer, 20, wallet_1.address);
+    result = await stStxToken.burnForProtocol(deployer, 20, wallet_1.address);
     result.expectOk().expectBool(true);
 
     call = await stStxToken.getTotalSupply();
@@ -91,7 +91,7 @@ Clarinet.test({
 
     let stStxToken = new StStxToken(chain, deployer);
 
-    let result = await stStxToken.mintForSticky(deployer, 100, wallet_1.address);
+    let result = await stStxToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     result = await stStxToken.transfer(wallet_1, 20, wallet_2.address);
@@ -173,10 +173,10 @@ Clarinet.test({
     let result = await stStxToken.setTokenUri(wallet_1, "test-uri");
     result.expectErr().expectUint(20003);
 
-    result = await stStxToken.mintForSticky(wallet_1, 100, wallet_1.address);
+    result = await stStxToken.mintForProtocol(wallet_1, 100, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await stStxToken.burnForSticky(wallet_1, 100, deployer.address);
+    result = await stStxToken.burnForProtocol(wallet_1, 100, deployer.address);
     result.expectErr().expectUint(20003);
   }
 });

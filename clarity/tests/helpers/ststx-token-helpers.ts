@@ -1,5 +1,5 @@
 import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts';
-import { qualifiedName } from './sticky-tests-utils.ts';
+import { qualifiedName } from './tests-utils.ts';
 
 // ---------------------------------------------------------
 // stSTX token
@@ -61,9 +61,9 @@ class StStxToken {
     return block.receipts[0].result;
   }
 
-  mintForSticky(caller: Account, amount: number, receiver: string) {
+  mintForProtocol(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("ststx-token", "mint-for-sticky", [
+      Tx.contractCall("ststx-token", "mint-for-protocol", [
         types.uint(amount * 1000000),
         types.principal(receiver),
       ], caller.address)
@@ -71,9 +71,9 @@ class StStxToken {
     return block.receipts[0].result;
   }
 
-  burnForSticky(caller: Account, amount: number, receiver: string) {
+  burnForProtocol(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("ststx-token", "burn-for-sticky", [
+      Tx.contractCall("ststx-token", "burn-for-protocol", [
         types.uint(amount * 1000000),
         types.principal(receiver),
       ], caller.address)
