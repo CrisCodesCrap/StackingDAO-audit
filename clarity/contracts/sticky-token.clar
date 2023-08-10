@@ -13,11 +13,12 @@
 (define-data-var token-uri (string-utf8 256) u"")
 
 (define-data-var amm-addresses (list 5 principal) (list ))
+(define-data-var exclude-from-fees (list 5 principal) (list ))
 (define-data-var buy-tax uint u300) ;; 3% in basis points
 (define-data-var sell-tax uint u400) ;; 4% in basis points
 
 ;;-------------------------------------
-;; SIP-10 
+;; SIP-010 
 ;;-------------------------------------
 
 (define-read-only (get-total-supply)
@@ -50,11 +51,14 @@
     (recipient-is-amm (is-amm-address recipient))
 
     (tax-amount
-      (if (is-amm-address sender)
-        (/ (* amount (var-get buy-tax)) u10000)
-        (if (is-amm-address recipient)
-          (/ (* amount (var-get sell-tax)) u10000)
-          u0
+      (if (or (is-excluded-from-fees sender) (is-excluded-from-fees recipient))
+        u0
+        (if (is-amm-address sender)
+          (/ (* amount (var-get buy-tax)) u10000)
+          (if (is-amm-address recipient)
+            (/ (* amount (var-get sell-tax)) u10000)
+            u0
+          )
         )
       )
     )
@@ -140,6 +144,19 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
     (var-set amm-addresses addresses)
+    (ok true)
+  )
+)
+
+(define-read-only (is-excluded-from-fees (address principal))
+  (is-some (index-of (var-get exclude-from-fees) address))
+)
+
+(define-public (set-exclude-from-fees (addresses (list 5 principal)))
+  (begin
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (var-set exclude-from-fees addresses)
     (ok true)
   )
 )

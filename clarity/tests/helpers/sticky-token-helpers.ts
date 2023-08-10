@@ -46,6 +46,12 @@ class StickyToken {
     ], this.deployer.address);
   }
 
+  isExcludedFromFees(address: string) {
+    return this.chain.callReadOnlyFn("sticky-token", "is-excluded-from-fees", [
+      types.principal(address)
+    ], this.deployer.address);
+  }
+
   getBuyTax() {
     return this.chain.callReadOnlyFn("sticky-token", "get-buy-tax", [], this.deployer.address);
   }
@@ -121,6 +127,15 @@ class StickyToken {
   setAmmAddresses(caller: Account, addresses: string[]) {
     let block = this.chain.mineBlock([
       Tx.contractCall("sticky-token", "set-amm-addresses", [
+        types.list(addresses.map(address => types.principal(address))),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setExcludeFromFees(caller: Account, addresses: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("sticky-token", "set-exclude-from-fees", [
         types.list(addresses.map(address => types.principal(address))),
       ], caller.address)
     ]);

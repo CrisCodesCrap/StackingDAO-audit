@@ -117,6 +117,88 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
+  name: "sticky-token: no tax if not to/from amm",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let stickyToken = new StickyToken(chain, deployer);
+
+    // Set wallet_1 as AMM
+    let result = await stickyToken.setAmmAddresses(deployer, [deployer.address]);
+    result.expectOk().expectBool(true);
+
+    // AMM has 10k
+    let call = await stickyToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+
+    // User has 10k
+    call = await stickyToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+
+    // Buy = transfer from AMM to user
+    result = await stickyToken.transfer(wallet_1, 100, wallet_2.address);
+    result.expectOk().expectBool(true);
+
+    // AMM has send 100
+    call = await stickyToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(9900);
+
+    // User has got full 100
+    call = await stickyToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(10100);
+
+    // No taxes
+    call = await stickyToken.getTaxBalance();
+    call.result.expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
+  name: "sticky-token: no tax if address excluded from taxes",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let stickyToken = new StickyToken(chain, deployer);
+
+    // Set wallet_1 as AMM
+    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    result.expectOk().expectBool(true);
+
+    // Exclude address
+    result = await stickyToken.setExcludeFromFees(deployer, [wallet_1.address]);
+    result.expectOk().expectBool(true);
+
+    // AMM has 10k
+    let call = await stickyToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+
+    // User has 10k
+    call = await stickyToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+
+    // Buy = transfer from AMM to user
+    result = await stickyToken.transfer(wallet_1, 100, wallet_2.address);
+    result.expectOk().expectBool(true);
+
+    // AMM has send 100
+    call = await stickyToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(9900);
+
+    // User has got full 100 tokens
+    call = await stickyToken.getBalance(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(10100);
+
+    // No taxes
+    call = await stickyToken.getTaxBalance();
+    call.result.expectUintWithDecimals(0);
+  }
+});
+
+Clarinet.test({
   name: "sticky-token: buy tax",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

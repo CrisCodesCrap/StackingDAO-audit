@@ -162,7 +162,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(1);
+    call.result.expectUint(3);
 
     // Pending rewards should be 0
     call = await staking.getPendingRewards(wallet_1.address);
@@ -181,7 +181,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(4);
+    call.result.expectUint(5);
 
     // New stake amounts
     call = await staking.getStakeAmountOf(wallet_1.address);
@@ -266,7 +266,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(13);
+    call.result.expectUint(14);
 
     // New cumm reward per stake
     // Was 0.006333, adding 0.000333 (1 STX per block / 3000 STX staked)

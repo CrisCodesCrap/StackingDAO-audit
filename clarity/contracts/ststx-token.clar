@@ -8,7 +8,7 @@
 (define-data-var token-uri (string-utf8 256) u"")
 
 ;;-------------------------------------
-;; SIP-10 
+;; SIP-010 
 ;;-------------------------------------
 
 (define-read-only (get-total-supply)
