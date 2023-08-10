@@ -107,7 +107,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     result = core.initWithdraw(deployer, 30000);
-    result.expectOk().expectUintWithDecimals(30000);
+    result.expectOk().expectUint(0);
 
     call = strategy.getInflowOutflow();
     call.result.expectTuple()["inflow"].expectUintWithDecimals(0);
@@ -168,7 +168,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(30000);
 
     result = core.initWithdraw(deployer, 10000);
-    result.expectOk().expectUintWithDecimals(10000);
+    result.expectOk().expectUint(1);
 
     // 110k STX idle, of which 30k STX for withdrawals
     // Now there is a net inflow of 20k STX

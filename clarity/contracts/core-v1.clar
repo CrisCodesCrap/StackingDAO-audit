@@ -12,6 +12,8 @@
 (define-constant ERR_WRONG_CYCLE_ID u19001)
 (define-constant ERR_SHUTDOWN u19002)
 (define-constant ERR_WITHDRAW_EXCEEDED u19003)
+(define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
+(define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
 
 ;;-------------------------------------
 ;; Variables
@@ -40,12 +42,12 @@
   }
 )
 
-(define-map withdrawals-by-address
+(define-map withdrawals-by-nft
   { 
-    address: principal,
-    cycle-id: uint 
+    nft-id: uint
   }
   {
+    cycle-id: uint, 
     stx-amount: uint,
     ststx-amount: uint
   }
@@ -84,13 +86,14 @@
   )
 )
 
-(define-read-only (get-withdrawals-by-address (address principal) (cycle-id uint))
+(define-read-only (get-withdrawals-by-nft (nft-id uint))
   (default-to
     {
+      cycle-id: u0,
       stx-amount: u0,
       ststx-amount: u0
     }
-    (map-get? withdrawals-by-address { address: address, cycle-id: cycle-id })
+    (map-get? withdrawals-by-nft { nft-id: nft-id })
   )
 )
 
@@ -178,6 +181,7 @@
 ;; Can update amount as long as cycle not started
 (define-public (init-withdraw (reserve-contract <reserve-trait>) (ststx-amount uint))
   (let (
+    (sender tx-sender)
     (withdrawal-cycle (get-next-withdraw-cycle))
     (current-cycle-info (get-cycle-info withdrawal-cycle))
 
@@ -185,50 +189,58 @@
     (stx-to-receive (/ (* ststx-amount stx-ststx) u1000000))
     (total-stx (unwrap-panic (contract-call? reserve-contract get-total-stx)))
 
-    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
-    (new-withdraw-init (+ (- (get withdraw-init current-cycle-info) (get stx-amount withdrawal-entry)) stx-to-receive))
+    (new-withdraw-init (+ (get withdraw-init current-cycle-info) stx-to-receive))
+
+    (nft-id (unwrap-panic (contract-call? .ststx-withdraw-nft get-last-token-id)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
-    ;; Update maps
-    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: stx-to-receive, ststx-amount: ststx-amount })
-    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdraw-init: new-withdraw-init }))
-
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-to-receive)))
     (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
+    (try! (as-contract (contract-call? .ststx-withdraw-nft mint-for-protocol sender)))
 
-    (ok ststx-amount)
+    (map-set withdrawals-by-nft { nft-id: nft-id } { stx-amount: stx-to-receive, ststx-amount: ststx-amount, cycle-id: withdrawal-cycle })
+    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { withdraw-init: new-withdraw-init }))
+
+    (ok nft-id)
   )
 )
 
 ;; Actual withdrawal for given cycle
-(define-public (withdraw (reserve-contract <reserve-trait>) (withdrawal-cycle uint))
+(define-public (withdraw (reserve-contract <reserve-trait>) (nft-id uint))
   (let (
-    (cycle-id (get-pox-cycle))
-    (current-cycle-info (get-cycle-info withdrawal-cycle))
-    (withdrawal-entry (get-withdrawals-by-address tx-sender withdrawal-cycle))
-
     (receiver tx-sender)
+    (cycle-id (get-pox-cycle))
+
+    (withdrawal-entry (get-withdrawals-by-nft nft-id))
+    (withdrawal-cycle (get cycle-id withdrawal-entry))
+
+    (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
+
     (stx-to-receive (get stx-amount withdrawal-entry))
+    (nft-owner (unwrap-panic (contract-call? .ststx-withdraw-nft get-owner nft-id)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
+    (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
+    (asserts! (is-eq (unwrap-panic nft-owner) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
-
-    ;; Update withdrawals maps so user can not withdraw again
-    (map-set withdrawals-by-address { address: tx-sender, cycle-id: withdrawal-cycle } { stx-amount: u0, ststx-amount: u0 })
-    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge current-cycle-info { 
-      withdraw-out: (+ (get withdraw-out current-cycle-info) stx-to-receive),
-    }))
 
     ;; STX to user, burn stSTX
     (try! (as-contract (contract-call? reserve-contract request-stx-for-withdrawal stx-to-receive receiver)))
     (try! (contract-call? .ststx-token burn-for-protocol (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
+    (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
+
+    ;; Update withdrawals maps so user can not withdraw again
+    (map-delete withdrawals-by-nft { nft-id: nft-id })
+    (map-set cycle-info { cycle-id: withdrawal-cycle } (merge withdrawal-cycle-info { 
+      withdraw-out: (+ (get withdraw-out withdrawal-cycle-info) stx-to-receive),
+    }))
 
     (ok stx-to-receive)
   )
