@@ -24,9 +24,8 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Handle - no taxes yet
-    // Anyone can call this method
     result = await tax.handleTax(wallet_2);
-    result.expectOk().expectUintWithDecimals(0);
+    result.expectErr().expectUint(2101);
 
     // Sell = transfer from user to AMM
     result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
@@ -38,7 +37,7 @@ Clarinet.test({
 
     // Handle
     result = await tax.handleTax(deployer);
-    result.expectOk().expectUintWithDecimals(4);
+    result.expectOk().expectBool(true);
 
     call = await stickyToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(4);
@@ -56,6 +55,82 @@ Clarinet.test({
 });
 
 //-------------------------------------
+// Keeper 
+//-------------------------------------
+
+Clarinet.test({
+  name: "tax: keeper functions",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let tax = new Tax(chain, deployer);
+    let stickyToken = new StickyToken(chain, deployer);
+
+    // Set wallet_1 as AMM
+    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    result.expectOk().expectBool(true);
+    
+    let call = await tax.checkJob();
+    call.result.expectOk().expectBool(false);
+
+    result = await tax.initialize(deployer);
+    result.expectOk().expectBool(true);
+
+    result = await tax.runJob(deployer);
+    result.expectErr().expectUint(2101);
+
+    result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    call = await stickyToken.getTaxBalance();
+    call.result.expectUintWithDecimals(4);
+
+    call = await tax.checkJob();
+    call.result.expectOk().expectBool(true);
+
+    result = await tax.runJob(deployer);
+    result.expectOk().expectBool(true);
+  }
+});
+
+//-------------------------------------
+// Admin 
+//-------------------------------------
+
+Clarinet.test({
+  name: "tax: protocol can set min amount to handle",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let tax = new Tax(chain, deployer);
+
+    let result = await tax.setMinBalanceToHandle(deployer, 500);
+    result.expectOk().expectBool(true);
+
+    let call = await tax.getMinBalanceToHandle();
+    call.result.expectUintWithDecimals(500);
+  }
+});
+
+Clarinet.test({
+  name: "tax: protocol can set percentage to swap",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let tax = new Tax(chain, deployer);
+
+    let result = await tax.setPercentageToSwap(deployer, 0.2);
+    result.expectOk().expectBool(true);
+
+    let call = await tax.getPercentageToSwap();
+    call.result.expectUint(0.2 * 10000);
+  }
+});
+
+//-------------------------------------
 // Access 
 //-------------------------------------
 
@@ -68,6 +143,22 @@ Clarinet.test({
     let tax = new Tax(chain, deployer);
 
     let result = await tax.retreiveTokens(wallet_1);
+    result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "tax: only protocol can set min amount to handle and percentage to swap",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let tax = new Tax(chain, deployer);
+
+    let result = await tax.setMinBalanceToHandle(wallet_1, 500);
+    result.expectErr().expectUint(20003);
+
+    result = await tax.setPercentageToSwap(wallet_1, 0.2);
     result.expectErr().expectUint(20003);
   }
 });
