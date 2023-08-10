@@ -36,9 +36,9 @@ class Core {
     ], this.deployer.address);
   }
 
-  getWithdrawalsByAddress(address: string) {
-    return this.chain.callReadOnlyFn("core-v1", "get-withdrawals-by-address", [
-      types.principal(address),
+  getWithdrawalsByNft(nftId: number) {
+    return this.chain.callReadOnlyFn("core-v1", "get-withdrawals-by-nft", [
+      types.uint(nftId),
     ], this.deployer.address);
   }
 
@@ -87,11 +87,11 @@ class Core {
     return block.receipts[0].result;
   }
 
-  withdraw(caller: Account, cycle: number) {
+  withdraw(caller: Account, nftId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("core-v1", "withdraw", [
         types.principal(qualifiedName("reserve-v1")),
-        types.uint(cycle)
+        types.uint(nftId),
       ], caller.address)
     ]);
     return block.receipts[0].result;

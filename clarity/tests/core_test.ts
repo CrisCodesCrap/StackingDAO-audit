@@ -16,12 +16,12 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getBurnHeight();
-    call.result.expectUint(2);
+    call.result.expectUint(3);
 
     chain.mineEmptyBlock(500);
 
     call = await core.getBurnHeight();
-    call.result.expectUint(502);
+    call.result.expectUint(503);
   },
 });
 
@@ -87,15 +87,15 @@ Clarinet.test({
     call = await core.getStxPerStstx();
     call.result.expectOk().expectUintWithDecimals(1.067212);
 
-    // Withdraw 250 stSTX tokens
+    // Withdraw 250 stSTX tokens. Got NFT with ID 0.
     result = await core.initWithdraw(deployer, 250);
-    result.expectOk().expectUintWithDecimals(250);
+    result.expectOk().expectUint(0);
 
     // Advance to next cycle
     chain.mineEmptyBlock(500 + 2001);
 
     // 250 stSTX * 1.067212 = 266.803 STX
-    result = core.withdraw(deployer, 1);
+    result = core.withdraw(deployer, 0);
     result.expectOk().expectUintWithDecimals(266.803);
   },
 });
@@ -156,7 +156,7 @@ Clarinet.test({
     // Let's test withdrawals
     // We are in cycle 2, so cycle 3 is the first we can withdraw (hence u5 as second param)
     result = await core.initWithdraw(deployer, 10000);
-    result.expectOk().expectUintWithDecimals(10000);
+    result.expectOk().expectUint(0);
 
     // Deployer should have 10k stSTX less
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
@@ -176,7 +176,7 @@ Clarinet.test({
     call.result.expectUint(3); 
 
     // Withdraw
-    result = core.withdraw(deployer, 3);
+    result = core.withdraw(deployer, 0);
     result.expectOk().expectUintWithDecimals(10190.44);
 
     // STX balance
@@ -241,14 +241,9 @@ Clarinet.test({
     result = await core.initWithdraw(deployer, 500000);
     result.expectErr().expectUint(19003);
 
-    // 5% treshold of 1M tokens = 50k STX
-    // So withdrawing 50k + 1 STX does not work
-    result = await core.initWithdraw(deployer, 50001);
-    result.expectErr().expectUint(19003);
-
-    // Can withdraw 50k
+    // Can withdraw 50k (5%)
     result = await core.initWithdraw(deployer, 50000);
-    result.expectOk().expectUintWithDecimals(50000);
+    result.expectOk().expectUint(0);
 
     // Set treshold
     result = await core.setWithdrawalTreshold(deployer, 0.5);
@@ -259,12 +254,14 @@ Clarinet.test({
     call.result.expectUint(0.5 * 10000);
 
     // Can not withdraw more than 50%
-    result = await core.initWithdraw(deployer, 500001);
+    result = await core.initWithdraw(deployer, 500000 - 50000 + 1);
     result.expectErr().expectUint(19003);
     
-    // Can withdraw 50%
-    result = await core.initWithdraw(deployer, 500000);
-    result.expectOk().expectUintWithDecimals(500000);
+    // Can withdraw 50% (500k)
+    // But already 50k withdrawn
+    // Got NFT with ID 1 
+    result = await core.initWithdraw(deployer, 500000 - 50000);
+    result.expectOk().expectUint(1);
   },
 });
 
@@ -287,7 +284,7 @@ Clarinet.test({
 
     // Init withdraw
     result = await core.initWithdraw(deployer, 100);
-    result.expectOk().expectUintWithDecimals(100);
+    result.expectOk().expectUint(0);
 
     // Check shutdowns
     call = await core.getShutdownDeposits();
@@ -319,7 +316,7 @@ Clarinet.test({
     result = await core.initWithdraw(deployer, 50);
     result.expectErr().expectUint(19002);
 
-    result = await core.withdraw(deployer, 1);
+    result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(19002);
 
     // Enable withdrawals
@@ -329,12 +326,18 @@ Clarinet.test({
     // Advance to next cycle
     chain.mineEmptyBlock(2101);
 
-    // Can withdraw again
+    // Can withdraw again (withdrawal NFT has ID 1)
     result = await core.initWithdraw(deployer, 50);
-    result.expectOk().expectUintWithDecimals(50);
+    result.expectOk().expectUint(1);
 
-    result = await core.withdraw(deployer, 2);
+    result = await core.withdraw(deployer, 0);
     result.expectOk().expectUintWithDecimals(100);
+
+    // Advance to next cycle
+    chain.mineEmptyBlock(2101);
+
+    result = await core.withdraw(deployer, 1);
+    result.expectOk().expectUintWithDecimals(50);
   },
 });
 
@@ -346,6 +349,7 @@ Clarinet.test({
   name: "core: check if can withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
     let core = new Core(chain, deployer);
 
@@ -370,10 +374,10 @@ Clarinet.test({
 
     // Initiate withdraw (for cycle 2)
     result = await core.initWithdraw(deployer, 10);
-    result.expectOk().expectUintWithDecimals(10);
+    result.expectOk().expectUint(0);
 
     // Can not withdraw as still in cycle 1
-    result = await core.withdraw(deployer, 2);
+    result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
@@ -383,9 +387,17 @@ Clarinet.test({
     call = await core.getPoxCycle();
     call.result.expectUint(2); 
 
+    // Can not withdraw as not owner of NFT
+    result = await core.withdraw(wallet_1, 0);
+    result.expectErr().expectUint(19004);
+
     // Can withdraw
-    result = await core.withdraw(deployer, 2);
+    result = await core.withdraw(deployer, 0);
     result.expectOk().expectUintWithDecimals(10);
+
+    // Can not withdraw again
+    result = await core.withdraw(deployer, 0);
+    result.expectErr().expectUint(19005);
   },
 });
 
@@ -425,10 +437,10 @@ Clarinet.test({
 
     // Init withdraw for cycle 3
     result = await core.initWithdraw(deployer, 10);
-    result.expectOk().expectUintWithDecimals(10);
+    result.expectOk().expectUint(0);
 
     // Can not withdraw as still in cycle 1
-    result = await core.withdraw(deployer, 3);
+    result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
@@ -439,7 +451,7 @@ Clarinet.test({
     call.result.expectUint(2); 
 
     // Can not withdraw as cycle 3 not started
-    result = await core.withdraw(deployer, 3);
+    result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
@@ -450,12 +462,8 @@ Clarinet.test({
     call.result.expectUint(3); 
 
     // Can withdraw
-    result = await core.withdraw(deployer, 3);
+    result = await core.withdraw(deployer, 0);
     result.expectOk().expectUintWithDecimals(10);
-
-    // Can not withdraw again
-    result = await core.withdraw(deployer, 3);
-    result.expectErr().expectUint(3);
   },
 });
 
