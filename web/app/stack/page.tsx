@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Container } from '../components/Container'
 import { Stack } from '../components/Stack'
 import { PoX } from '../components/PoX'

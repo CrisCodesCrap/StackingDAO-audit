@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import { Container } from './components/Container'
 import { Stacking } from './components/Stacking'
+import { Positions } from './components/Positions'
 import { PoX } from './components/PoX'
 
 export default async function Home() {
@@ -9,6 +9,9 @@ export default async function Home() {
       <Container className="mt-12">
         <div className="w-full min-h-full h-full flex flex-col items-center">
           <Stacking />
+
+          <Positions />
+
           <PoX />
         </div>
       </Container>

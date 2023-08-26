@@ -30,6 +30,13 @@
   (ok (var-get stx-stacking))
 )
 
+(define-read-only (get-stx-stacking-at-block (block uint))
+  (at-block
+    (unwrap-panic (get-block-info? id-header-hash block))
+    (get-stx-stacking)
+  )
+)
+
 ;; Contract balance
 (define-read-only (get-stx-balance)
   (ok (stx-get-balance (as-contract tx-sender)))

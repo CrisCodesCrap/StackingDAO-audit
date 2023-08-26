@@ -15,7 +15,7 @@ const activityItems = [
       name: 'ALEX AMM',
       imageUrl: '/alex.png'
     },
-    commit: 'STX/stSTX and STX/STICKY trading pools',
+    commit: 'STX/stSTX and STX/STDAO trading pools',
     status: 'Not Launched Yet',
   },
 ]
@@ -28,7 +28,7 @@ export default function Defi() {
   return (
     <Container className="mt-12">
       <div className="py-10">
-        <div className="w-full text-center hidden md:block font-semibold text-4xl my-8">Sticky DeFi Integrations</div>
+        <div className="w-full text-center hidden md:block font-semibold text-4xl my-8">StackingDAO DeFi Integrations</div>
 
         <div className="bg-white shadow sm:rounded-lg mt-8">
           <div className="px-4 py-5 sm:p-6">

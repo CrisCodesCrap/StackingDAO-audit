@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.16",
-    "@micro-stacks/client": "1.0.0",
-    "@micro-stacks/react": "1.0.0",
+    "@heroicons/react": "^1.0.6",
+    "@micro-stacks/react": "^1.0.9",
     "@stacks/network": "^6.5.5",
     "@stacks/rpc-client": "^0.8.18",
     "@types/node": "20.4.7",

@@ -2,17 +2,24 @@ import { RPCClient } from '@stacks/rpc-client';
 import { StacksMainnet, StacksTestnet } from '@stacks/network';
 require('dotenv').config();
 
-const env = process.env.REACT_APP_NETWORK_ENV || 'mainnet';
+const env = process.env.NEXT_PUBLIC_NETWORK_ENV || 'mainnet';
 
 let coreApiUrl = 'https://api.hiro.so';
 if (env.includes('mocknet')) {
-  coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
+  coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT || 3999}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
 } else if (env.includes('testnet')) {
   coreApiUrl = 'https://api.testnet.hiro.so';
 } else if (env.includes('regtest')) {
   coreApiUrl = 'https://stacks-node-api.regtest.stacks.co';
 }
+
+export function getExplorerLink(txId: string) {
+  const url = location.origin.includes('localhost')
+    ? `http://localhost:3999/extended/v1/tx/${txId}`
+    : `https://explorer.stacks.co/txid/${txId}?chain=testnet`;
+  return url;
+};
 
 export const getRPCClient = () => {
   return new RPCClient(coreApiUrl);

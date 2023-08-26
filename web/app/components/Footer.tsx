@@ -110,7 +110,7 @@ export function Footer() {
           <Logo className="h-8" fillOnHover />
         </Link>
         <p className="text-sm text-neutral-700">
-          © Sticky Inc. {new Date().getFullYear()}
+          © StackingDAO Inc. {new Date().getFullYear()}
         </p>
       </div>
     </Container>

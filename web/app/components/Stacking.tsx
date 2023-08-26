@@ -2,7 +2,7 @@
 
 import { useAuth, useAccount } from '@micro-stacks/react'
 import { useEffect, useState } from 'react'
-import { getRPCClient } from '../common/utils'
+import { useAppContext } from './AppContext';
 import { ApyModal } from './ApyModal';
 import { RatioModal } from './RatioModal';
 import Link from 'next/link'
@@ -10,43 +10,27 @@ import Link from 'next/link'
 export function Stacking() {
   const { stxAddress } = useAccount();
   const { openAuthRequest } = useAuth();
+  const { stStxBalance, stxBalance, stxRatio, stackingApy } = useAppContext();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [stxBalance, setStxBalance] = useState(0);
-  const [stStxBalance, setStStxBalance] = useState(0);
-  const [apy, setApy] = useState(0);
   const [yieldPerYear, setYieldPerYear] = useState(0);
   const [showApyInfo, setShowApyInfo] = useState(false);
   const [showRatioInfo, setShowRatioInfo] = useState(false);
+  const [stStxWidth, setStStxWidth] = useState(0);
 
   useEffect(() => {
     const fetchBalances = async () => {
-      const client = getRPCClient();
-      // TODO: set token in config/.env
-      const stStxAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-token::diko';
-      const url = `${client.url}/extended/v1/address/${stxAddress}/balances`;
-      const response = await fetch(url, { credentials: 'omit' });
-      const data = await response.json();
-
-      const balance = Number(data['stx']['balance']);
-      const lockedBalance = Number(data['stx']['locked']);
-      const totalBalance = (balance - lockedBalance) / 1000000;
-      setStxBalance(totalBalance);
-      setApy(7.11);
-
-      if (data['fungible_tokens'][stStxAddress]) {
-        const stackedBalance = data['fungible_tokens'][stStxAddress]['balance'] / 1000000;
-        setStStxBalance(stackedBalance);
-        setYieldPerYear(((7.11 / 100.0) * stackedBalance));
+      if (stStxBalance > 0) {
+        setYieldPerYear(((stackingApy / 100.0) * stStxBalance));
+        setStStxWidth(100.0 * stStxBalance / stxBalance);
       }
-
       setIsLoading(false);
     };
 
     if (stxAddress) {
       fetchBalances();
     }
-  }, [stxAddress]);
+  }, [stxAddress, stxBalance, stStxBalance]);
 
   return (
     <>
@@ -93,14 +77,14 @@ export function Stacking() {
               </div>
             </div>
             <div className="flex gap-0.5 h-5 w-full mt-3">
-              <div className="h-full rounded" style={{width: '82.8406%', backgroundImage: 'linear-gradient(45deg, rgb(85, 70, 255) 25%, rgb(85, 70, 255) 25%, rgb(85, 70, 255) 50%, rgb(85, 70, 255) 50%, rgb(85, 70, 255) 75%, rgb(85, 70, 255) 75%, rgb(85, 70, 255) 100%)', backgroundSize: '10px 10px'}}></div>
-              <div className="h-full rounded" style={{width: '16.15936%', backgroundImage: 'linear-gradient(45deg, rgb(210, 220, 227) 25%, rgb(202, 214, 211) 25%, rgb(202, 214, 211) 50%, rgb(210, 220, 227) 50%, rgb(210, 220, 227) 75%, rgb(202, 214, 211) 75%, rgb(202, 214, 211) 100%)', backgroundSize: '10px 10px'}}></div>
+              <div className="h-full rounded" style={{width: `${stStxWidth}%`, backgroundImage: 'linear-gradient(45deg, rgb(85, 70, 255) 25%, rgb(85, 70, 255) 25%, rgb(85, 70, 255) 50%, rgb(85, 70, 255) 50%, rgb(85, 70, 255) 75%, rgb(85, 70, 255) 75%, rgb(85, 70, 255) 100%)', backgroundSize: '10px 10px'}}></div>
+              <div className="h-full rounded" style={{width: `${100 - stStxWidth}%`, backgroundImage: 'linear-gradient(45deg, rgb(210, 220, 227) 25%, rgb(202, 214, 211) 25%, rgb(202, 214, 211) 50%, rgb(210, 220, 227) 50%, rgb(210, 220, 227) 75%, rgb(202, 214, 211) 75%, rgb(202, 214, 211) 100%)', backgroundSize: '10px 10px'}}></div>
             </div>
             <div className="mt-4 mb-4 flex justify-between">
               <div className="mt-1 flex gap-2 items-center font-semibold">
                 Projected yield
                 <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base w-fit flex gap-1 rounded-full px-2 items-center font-bold bg-primary/10 text-primary">
-                  APY {apy}%
+                  APY {stackingApy}%
                   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                     <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
                   </svg>
@@ -109,7 +93,7 @@ export function Stacking() {
               <div className="mt-1 flex gap-2 items-center font-semibold">
                 1 stSTX =
                 <button type="button" onClick={() => { setShowRatioInfo(true)}} className="text-base w-fit flex gap-1 rounded-full px-2 items-center font-bold bg-primary/10 text-primary">
-                  1.12727 STX
+                  {stxRatio} STX
                   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                     <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
                   </svg>
@@ -120,7 +104,7 @@ export function Stacking() {
               <span className="text-primary text-5xl font-semibold">~{yieldPerYear.toLocaleString()}</span>STX/per year
             </div>
             <Link href="/stack" className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-primary text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14">
-              Stack more STX
+              <span>{stStxBalance > 0 ? 'Stack more STX' : 'Start stacking STX'}</span>
             </Link>
             <div className="flex gap-2 justify-center items-center">
               <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="text-warning-text" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -135,7 +119,7 @@ export function Stacking() {
           </Link>
           <div className="bg-white rounded-xl w-full p-4 mt-2 hidden">
             <div className="py-1 px-2 flex gap-4 justify-start items-center">
-              <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/ilustrations/orange-checkmark.svg" style={{color: 'transparent'}} />
+              <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/orange-checkmark.svg" style={{color: 'transparent'}} />
               <div className="text-xl font-semibold">
                 Referral Code<span className="text-sm font-normal block">You clicked on the link using the promo code</span>
               </div>
