@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from './helpers/tests-utils.ts';
+import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from './helpers/tests-utils.ts';
 
 import { Core } from './helpers/core-helpers.ts';
 import { DAO } from './helpers/dao-helpers.ts';
@@ -124,7 +124,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1000000);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     // Add rewards
     result = await core.addRewards(wallet_2, 10000, 0);
@@ -139,7 +139,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(990099.0099);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     // Add rewards
     result = await core.addRewards(wallet_2, 18000, 1);
@@ -169,7 +169,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(99000000); // 99M
 
     // Let's go 1 cycle further now
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // Current PoX cycle
     call = await core.getPoxCycle();
@@ -235,7 +235,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1000000);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     // Can not withdraw 50%
     result = await core.initWithdraw(deployer, 500000);
@@ -280,7 +280,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1000000);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     // Init withdraw
     result = await core.initWithdraw(deployer, 100);
@@ -324,7 +324,7 @@ Clarinet.test({
     result.expectOk().expectBool(true)
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     // Can withdraw again (withdrawal NFT has ID 1)
     result = await core.initWithdraw(deployer, 50);
@@ -334,7 +334,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2101);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
     result = await core.withdraw(deployer, 1);
     result.expectOk().expectUintWithDecimals(50);
@@ -358,7 +358,7 @@ Clarinet.test({
     call.result.expectUint(0); 
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 1
     call = await core.getPoxCycle();
@@ -381,7 +381,7 @@ Clarinet.test({
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 2
     call = await core.getPoxCycle();
@@ -413,18 +413,18 @@ Clarinet.test({
     call.result.expectUint(0); 
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 1
     call = await core.getPoxCycle();
     call.result.expectUint(1); 
 
     // Advance to prepare phase
-    chain.mineEmptyBlock(2050);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH - PREPARE_PHASE_LENGTH - 1);
 
     // Still in cycle 1
     call = await core.getPoxCycle();
-    call.result.expectUint(1); 
+    call.result.expectUint(1);
 
     // In prepare phase, so can not withdraw in next cycle (2)
     // Need to withdraw in cycle after (3)
@@ -444,18 +444,18 @@ Clarinet.test({
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2100);
+    // chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 2
     call = await core.getPoxCycle();
-    call.result.expectUint(2); 
+    call.result.expectUint(2);
 
     // Can not withdraw as cycle 3 not started
     result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     // PoX cycle 3
     call = await core.getPoxCycle();

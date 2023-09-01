@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/tests-utils.ts";
+import { qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
 
 import { DAO } from './helpers/dao-helpers.ts';
 import { Reserve } from './helpers/reserve-helpers.ts';
@@ -22,7 +22,7 @@ Clarinet.test({
     // Check PoX info
     let call = await stacker1.getPoxInfo();
     call.result.expectTuple()["reward-cycle-id"].expectUint(0);
-    call.result.expectTuple()["reward-cycle-length"].expectUint(2100);
+    call.result.expectTuple()["reward-cycle-length"].expectUint(REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["min-amount-ustx"].expectUintWithDecimals(50000);
 
     // Deposit 150k STX to reserve
@@ -57,7 +57,7 @@ Clarinet.test({
 
     // Check if burn height updated
     call = await stacker1.getStackingUnlockBurnHeight();
-    call.result.expectUint(4200);
+    call.result.expectUint(2 * REWARD_CYCLE_LENGTH);
 
     // Check if STX stacked updated
     call = await stacker1.getStxStacked();
@@ -74,7 +74,7 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(125000);
-    call.result.expectTuple()["unlock-height"].expectUint(4200);
+    call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     //
@@ -85,7 +85,7 @@ Clarinet.test({
 
     // Check if burn height updated
     call = await stacker1.getStackingUnlockBurnHeight();
-    call.result.expectUint(6300);
+    call.result.expectUint(3 * REWARD_CYCLE_LENGTH);
 
     // Check if STX stacked updated
     call = await stacker1.getStxStacked();
@@ -96,10 +96,10 @@ Clarinet.test({
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(1);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(2);
 
-    // Tokens are now locked for extra 2100 blocks
+    // Tokens are now locked for extra <REWARD_CYCLE_LENGTH> blocks
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(125000);
-    call.result.expectTuple()["unlock-height"].expectUint(6300);
+    call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     //
@@ -110,7 +110,7 @@ Clarinet.test({
 
     // Check if burn height updated
     call = await stacker1.getStackingUnlockBurnHeight();
-    call.result.expectUint(6300);
+    call.result.expectUint(3 * REWARD_CYCLE_LENGTH);
 
     // Check if STX stacked updated
     call = await stacker1.getStxStacked();
@@ -124,7 +124,7 @@ Clarinet.test({
     // Locked increased
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(130000);
-    call.result.expectTuple()["unlock-height"].expectUint(6300);
+    call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
   }
 });
@@ -152,7 +152,7 @@ Clarinet.test({
     // Tokens are now locked
     let call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(125000);
-    call.result.expectTuple()["unlock-height"].expectUint(4200);
+    call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     //
@@ -160,7 +160,7 @@ Clarinet.test({
     //
 
     // Advance to unlock height
-    chain.mineEmptyBlock(4200);
+    chain.mineEmptyBlock(2 * REWARD_CYCLE_LENGTH);
 
     // Unlock (125k STX will be unlocked)
     result = await poxMock.unlock(deployer, qualifiedName("stacker-1"));
@@ -168,7 +168,7 @@ Clarinet.test({
 
     // Check if burn height updated
     call = await stacker1.getStackingUnlockBurnHeight();
-    call.result.expectUint(4200);
+    call.result.expectUint(2 * REWARD_CYCLE_LENGTH);
 
     // Check if STX stacked updated
     call = await stacker1.getStxStacked();

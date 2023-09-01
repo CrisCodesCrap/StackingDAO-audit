@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/tests-utils.ts";
+import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from "./helpers/tests-utils.ts";
 qualifiedName('')
 
 import { StrategyV1 as Strategy } from './helpers/strategy-helpers.ts';
@@ -26,14 +26,14 @@ Clarinet.test({
     let reserve = new Reserve(chain, deployer);
 
     // Advance 5 cycles
-    chain.mineEmptyBlock(500 + 2001 * 5);
+    chain.mineEmptyBlock(5 + REWARD_CYCLE_LENGTH * 5);
 
     // Now in cycle 5
     let call = await strategy.getPoxCycle();
     call.result.expectUint(5);
 
     call = await strategy.getPrepareCycleLength();
-    call.result.expectUint(100);
+    call.result.expectUint(PREPARE_PHASE_LENGTH);
 
     // Min stack amount is 50k STX
     call = await strategy.getStackingMinimum();

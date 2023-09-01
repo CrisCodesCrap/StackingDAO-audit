@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { hexToBytes, qualifiedName } from "./helpers/tests-utils.ts";
+import { hexToBytes, qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
 qualifiedName('')
 
 import { StrategyV0 as Strategy } from './helpers/strategy-helpers.ts';
@@ -66,7 +66,7 @@ Clarinet.test({
     call.result.expectTuple()["withdraw-init"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(1);
@@ -93,7 +93,7 @@ Clarinet.test({
     call.result.expectTuple()["withdraw-init"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(2);
@@ -130,7 +130,7 @@ Clarinet.test({
     call.result.expectTuple()["withdraw-init"].expectUintWithDecimals(30000);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(3);
@@ -197,7 +197,7 @@ Clarinet.test({
     call.result.expectTuple()["withdraw-init"].expectUintWithDecimals(10000);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(4);
@@ -239,11 +239,11 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
-    call.result.expectTuple()["unlock-height"].expectUint(4200);
+    call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(1);
@@ -264,11 +264,11 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(60000);
-    call.result.expectTuple()["unlock-height"].expectUint(6300);
+    call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(2);
@@ -289,7 +289,7 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(60000);
-    call.result.expectTuple()["unlock-height"].expectUint(8400);
+    call.result.expectTuple()["unlock-height"].expectUint(4 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
   }
 });
@@ -330,11 +330,11 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
-    call.result.expectTuple()["unlock-height"].expectUint(4200);
+    call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(1);
@@ -355,11 +355,11 @@ Clarinet.test({
     // Tokens are now locked
     call = await stacker1.getStxAccount();
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
-    call.result.expectTuple()["unlock-height"].expectUint(6300);
+    call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
 
     // Advance 1 cycle
-    chain.mineEmptyBlock(2100);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
 
     call = strategy.getPoxCycle()
     call.result.expectUint(2);
@@ -373,7 +373,7 @@ Clarinet.test({
     call.result.expectUint(3);
 
     // Advance to unlock height
-    chain.mineEmptyBlock(6300);
+    chain.mineEmptyBlock(3 * REWARD_CYCLE_LENGTH);
 
     // Need to unlock manually in tests
     // Stacked 50k initally + 50k second time = 100k total

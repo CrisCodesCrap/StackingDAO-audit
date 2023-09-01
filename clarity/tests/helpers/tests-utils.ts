@@ -21,6 +21,9 @@ export function hexToBytes(hex: string) {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
 }
 
+export const REWARD_CYCLE_LENGTH = 21; // pox-3 is 2100
+export const PREPARE_PHASE_LENGTH = 3; // pox-3 is 100
+
 function hexToBytesHelper(hex: string) {
   if (typeof hex !== 'string')
     throw new TypeError('hexToBytes: expected string, got ' + typeof hex);

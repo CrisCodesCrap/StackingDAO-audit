@@ -2,7 +2,7 @@
 ;; @version 1
 
 ;; It's not possible to have PoX fully working in unit tests.
-;; After stacking, the vaues in `stx-account` are not updated.
+;; After stacking, the values in `stx-account` are not updated.
 ;; This mock contract was created to solve this.
 ;; The `stx-account` info is kept in a seperate map.
 
@@ -65,10 +65,10 @@
 (define-constant MAX_POX_REWARD_CYCLES u12)
 
 ;; Default length of the PoX registration window, in burnchain blocks.
-(define-constant PREPARE_CYCLE_LENGTH u100)
+(define-constant PREPARE_CYCLE_LENGTH u3)
 
 ;; Default length of the PoX reward cycle, in burnchain blocks.
-(define-constant REWARD_CYCLE_LENGTH u2100)
+(define-constant REWARD_CYCLE_LENGTH u21)
 
 ;; Valid values for burnchain address versions.
 ;; These correspond to address hash modes in Stacks 2.0.
