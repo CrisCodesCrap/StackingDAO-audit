@@ -217,7 +217,7 @@ plan:
         - contract-publish:
             contract-name: stdao-token
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 46840
+            cost: 46750
             path: contracts/stdao-token.clar
             anchor-block-only: true
             clarity-version: 2
@@ -227,7 +227,7 @@ plan:
         - contract-publish:
             contract-name: staking-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 82460
+            cost: 82410
             path: contracts/staking-v1.clar
             anchor-block-only: true
             clarity-version: 2
@@ -248,7 +248,7 @@ plan:
         - contract-publish:
             contract-name: tax-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 33710
+            cost: 33620
             path: contracts/tax-v1.clar
             anchor-block-only: true
             clarity-version: 2

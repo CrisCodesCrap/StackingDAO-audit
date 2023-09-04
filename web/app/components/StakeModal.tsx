@@ -5,6 +5,12 @@ import { Alert } from './Alert';
 import { stacksNetwork as network } from '../common/utils';
 import { useAppContext } from './AppContext'
 import { useAccount, useOpenContractCall } from '@micro-stacks/react'
+import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import {
+  FungibleConditionCode,
+  createFungiblePostCondition,
+  createAssetInfo,
+} from 'micro-stacks/transactions'
 
 interface Props {
   showStakeModal: boolean;
@@ -25,15 +31,15 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
-    setStakeAmount((stDaoBalance / 1000000).toString());
+    setStakeAmount(stDaoBalance.toString());
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
-    if (value > stDaoBalance / 1000000) {
+    if (value > stDaoBalance) {
       if (errors.length < 1) {
         setErrors(
-          errors.concat([`You cannot stake more than ${stDaoBalance / 1000000} STDAO`])
+          errors.concat([`You cannot stake more than ${stDaoBalance} STDAO`])
         );
       }
       setIsStakeButtonDisabled(true);
@@ -46,11 +52,12 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
 
   const stake = async () => {
     const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    console.log()
     const postConditions = [
       createFungiblePostCondition(
         stxAddress!,
         FungibleConditionCode.LessEqual,
-        uintCV(amount).value,
+        amount.value,
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
           'stdao-token',
@@ -65,12 +72,13 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       functionName: 'stake',
       functionArgs: [
         contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'stdao-token'),
-        uintCV(stStxAmount)
+        amount
       ],
       postConditions,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
+        setShowStakeModal(false);
       }
     });
   };

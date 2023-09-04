@@ -5,6 +5,12 @@ import { stacksNetwork as network } from '../common/utils';
 import { Alert } from './Alert';
 import { useAppContext } from './AppContext'
 import { useAccount, useOpenContractCall } from '@micro-stacks/react'
+import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import {
+  FungibleConditionCode,
+  createFungiblePostCondition,
+  createAssetInfo,
+} from 'micro-stacks/transactions'
 
 export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const { stxAddress } = useAccount();
@@ -15,23 +21,21 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
   const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
   const inputRef = useRef<HTMLInputElement>(null);
-  const { stDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { setCurrentTxId, setCurrentTxStatus } = useAppContext();
 
   const unstake = async () => {
     const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
+      createFungiblePostCondition(
+        stxAddress!,
         FungibleConditionCode.LessEqual,
         amount.value,
         createAssetInfo(contractAddress, 'stdao-token', 'stdao')
       ),
     ];
 
-    await doContractCall({
-      network,
+    await openContractCall({
       contractAddress,
-      stxAddress,
       contractName: 'staking-v1',
       functionName: 'unstake',
       functionArgs: [
@@ -44,19 +48,18 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
         setShowUnstakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     });
   };
 
   const unstakeMaxAmount = () => {
-    setStakeAmount(stDaoBalance / 1000000);
+    setStakeAmount(stakedAmount);
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
     // trying to unstake
-    if (value > stDaoBalance / 1000000) {
+    if (value > stakedAmount) {
       if (errors.length < 1) {
         setErrors(errors.concat(['You cannot unstake more than currently staking']));
       }

@@ -100,7 +100,7 @@ export function Positions() {
                   <div className="flex-grow flex justify-between">
                     <div>
                       <span className="text-lg font-semibold line-clamp-1 text-ellipsis">stSTX</span>
-                      <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Sticky Stacked STX</span>
+                      <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stStxBalance.toLocaleString()} stSTX</div>

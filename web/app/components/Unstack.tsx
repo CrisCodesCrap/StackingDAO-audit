@@ -97,7 +97,7 @@ export function Unstack() {
               <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/stacks-stx-logo.png" style={{color: 'transparent'}} />
               <div className="flex-grow text-xl">
                 stSTX
-                <span className="text-tertiary-text text-base block">Balance: {stStxBalance} stSTX</span>
+                <span className="text-tertiary-text text-base block">Balance: {stStxBalance.toLocaleString()} stSTX</span>
               </div>
             </div>
             <div className="mt-10 mb-5 flex flex-col items-center relative max-w-full overflow-x-clip">
@@ -116,7 +116,7 @@ export function Unstack() {
                 </div>
                 <span className="absolute top-0 right-0 translate-x-full text-tertiary-text text-xl">stSTX</span>
               </div>
-              <span className="text-tertiary-text">~${amountInDollars}</span>
+              <span className="text-tertiary-text">~${amountInDollars.toLocaleString()}</span>
               <button
                 type="button"
                 className="absolute right-0 top-1/2 -translate-y-3 bg-white rounded-full border border-additional-text py-2.5 px-1"
@@ -134,7 +134,7 @@ export function Unstack() {
               Best price<span>1 stSTX = {stxRatio} STX</span>
             </div>
             <div className="flex justify-between items-start">
-              You will receive approximately<span>{stxReceived} STX</span>
+              You will receive approximately<span>{stxReceived.toLocaleString()} STX</span>
             </div>
           </div>
           <button

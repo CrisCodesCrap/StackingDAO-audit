@@ -6,7 +6,7 @@ import { StyledIcon } from './StyledIcon';
 import Link from 'next/link'
 import { Menu, Transition } from '@headlessui/react'
 import { useAppContext } from './AppContext'
-import { useAccount } from '@micro-stacks/react'
+import { useAccount, useOpenContractCall } from '@micro-stacks/react'
 import { callReadOnlyFunction } from 'micro-stacks/transactions';
 import { standardPrincipalCV } from 'micro-stacks/clarity';
 import { stacksNetwork } from '../common/utils';
@@ -15,6 +15,10 @@ import { UnstakeModal } from '../components/UnstakeModal';
 
 export function Stake() {
   const { stxAddress } = useAccount();
+  const { openContractCall } = useOpenContractCall();
+  const { stDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
+
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [earnedRewards, setEarnedRewards] = useState<number>(0);
   const [stakedTokens, setStakedTokens] = useState<number>(0);
@@ -23,9 +27,19 @@ export function Stake() {
   const [showStakeModal, setShowStakeModal] = useState<boolean>(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState<boolean>(false);
 
-  // TODO: remove
-  const stDaoBalance = 500;
-  // const { stDaoBalance } = useAppContext();
+  const claimRewards = async () => {
+    await openContractCall({
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+      contractName: 'staking-v1',
+      functionName: 'claim-pending-rewards',
+      functionArgs: [],
+      postConditionMode: 0x01,
+      onFinish: async data => {
+        setCurrentTxId(data.txId);
+        setCurrentTxStatus('pending');
+      }
+    });
+  };
 
   useEffect(() => {
     const fetchStakingData = async () => {
@@ -54,8 +68,6 @@ export function Stake() {
       });
 
       setStakedTokens(Number(result?.data?.amount?.value) / 1000000);
-      // TODO: remove
-      setStakedTokens(400);
     };
 
     const fetchTotalStakedTokens = async () => {
@@ -258,6 +270,29 @@ export function Stake() {
                                       className="mr-3 text-gray-400 group-hover:text-white"
                                     />
                                     Unstake
+                                  </>
+                                </button>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? 'bg-indigo-500 text-white'
+                                      : 'text-gray-900'
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                                  onClick={() => claimRewards()}
+                                  disabled={earnedRewards === 0}
+                                >
+                                  <>
+                                    <StyledIcon
+                                      as="CurrencyRupeeIcon"
+                                      size={5}
+                                      className="mr-3 text-gray-400 group-hover:text-white"
+                                    />
+                                    Claim STX Rewards
                                   </>
                                 </button>
                               )}
