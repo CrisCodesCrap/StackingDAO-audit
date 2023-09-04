@@ -53,8 +53,8 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
         uintCV(amount).value,
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'sticky-token',
-          'sticky'
+          'stdao-token',
+          'stdao'
         )
       )
     ];
@@ -64,7 +64,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       contractName: 'staking-v1',
       functionName: 'stake',
       functionArgs: [
-        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'sticky-token'),
+        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'stdao-token'),
         uintCV(stStxAmount)
       ],
       postConditions,

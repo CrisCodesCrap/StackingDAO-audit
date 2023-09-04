@@ -24,7 +24,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
         stxAddress || '',
         FungibleConditionCode.LessEqual,
         amount.value,
-        createAssetInfo(contractAddress, 'sticky-token', 'sticky')
+        createAssetInfo(contractAddress, 'stdao-token', 'stdao')
       ),
     ];
 
@@ -35,7 +35,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       contractName: 'staking-v1',
       functionName: 'unstake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'sticky-token'),
+        contractPrincipalCV(contractAddress, 'stdao-token'),
         amount,
       ],
       postConditionMode: 0x01,

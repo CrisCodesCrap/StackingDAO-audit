@@ -1,8 +1,8 @@
 (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (impl-trait .tax-token-trait-v1.tax-token-trait)
 
-;; Defines the Sticky token according to the SIP010 Standard
-(define-fungible-token sticky)
+;; Defines the STDAO token according to the SIP010 Standard
+(define-fungible-token stdao)
 
 (define-constant ERR_NOT_AUTHORIZED u1401)
 
@@ -22,15 +22,15 @@
 ;;-------------------------------------
 
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply sticky))
+  (ok (ft-get-supply stdao))
 )
 
 (define-read-only (get-name)
-  (ok "Sticky Token")
+  (ok "StackingDAO Token")
 )
 
 (define-read-only (get-symbol)
-  (ok "STICKY")
+  (ok "STDAO")
 )
 
 (define-read-only (get-decimals)
@@ -38,7 +38,7 @@
 )
 
 (define-read-only (get-balance (account principal))
-  (ok (ft-get-balance sticky account))
+  (ok (ft-get-balance stdao account))
 )
 
 (define-read-only (get-token-uri)
@@ -66,10 +66,10 @@
     (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
 
     (if (> tax-amount u0)
-      (try! (ft-transfer? sticky tax-amount sender (as-contract tx-sender)))
+      (try! (ft-transfer? stdao tax-amount sender (as-contract tx-sender)))
       true
     )
-    (try! (ft-transfer? sticky (- amount tax-amount) sender recipient))
+    (try! (ft-transfer? stdao (- amount tax-amount) sender recipient))
 
     (ok true)
   )
@@ -94,7 +94,7 @@
 (define-public (mint-for-protocol (amount uint) (recipient principal))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    (ft-mint? sticky amount recipient)
+    (ft-mint? stdao amount recipient)
   )
 )
 
@@ -102,14 +102,14 @@
 (define-public (burn-for-protocol (amount uint) (sender principal))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    (ft-burn? sticky amount sender)
+    (ft-burn? stdao amount sender)
   )
 )
 
 ;; Burn external
 (define-public (burn (amount uint))
   (begin
-    (ft-burn? sticky amount tx-sender)
+    (ft-burn? stdao amount tx-sender)
   )
 )
 
@@ -181,8 +181,8 @@
 ;; Test environments
 (begin
   ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? sticky u890000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
-  (try! (ft-mint? sticky u10000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
-  (try! (ft-mint? sticky u10000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
-  (try! (ft-mint? sticky u10000000000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
+  (try! (ft-mint? stdao u890000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+  (try! (ft-mint? stdao u10000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5))
+  (try! (ft-mint? stdao u10000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG))
+  (try! (ft-mint? stdao u10000000000 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC))
 )

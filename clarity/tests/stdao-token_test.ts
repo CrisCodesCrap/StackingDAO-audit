@@ -2,39 +2,39 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "./helpers/tests-utils.ts";
 qualifiedName("")
 
-import { StickyToken } from './helpers/sticky-token-helpers.ts';
+import { STDAOToken } from './helpers/stdao-token-helpers.ts';
 
 //-------------------------------------
 // Getters 
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: can get token info",
+  name: "stdao-token: can get token info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_4 = accounts.get("wallet_4")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let call = await stickyToken.getTotalSupply();
+    let call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920000);
 
-    call = await stickyToken.getName();
-    call.result.expectOk().expectAscii("Sticky Token");
+    call = await stDaoToken.getName();
+    call.result.expectOk().expectAscii("STDAO Token");
 
-    call = await stickyToken.getSymbol();
-    call.result.expectOk().expectAscii("STICKY");
+    call = await stDaoToken.getSymbol();
+    call.result.expectOk().expectAscii("STDAO");
 
-    call = await stickyToken.getDecimals();
+    call = await stDaoToken.getDecimals();
     call.result.expectOk().expectUint(6);
 
-    call = await stickyToken.getBalance(deployer.address);
+    call = await stDaoToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000);
 
-    call = await stickyToken.getBalance(wallet_4.address);
+    call = await stDaoToken.getBalance(wallet_4.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = await stickyToken.getTokenUri();
+    call = await stDaoToken.getTokenUri();
     call.result.expectOk().expectSome().expectUtf8("");
   }
 });
@@ -44,70 +44,70 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: can mint/burn as protocol",
+  name: "stdao-token: can mint/burn as protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let call = await stickyToken.getTotalSupply();
+    let call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920000);
 
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
-    let result = await stickyToken.mintForProtocol(deployer, 100, wallet_1.address);
+    let result = await stDaoToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getTotalSupply();
+    call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920100);
 
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10100);
 
-    result = await stickyToken.burnForProtocol(deployer, 20, wallet_1.address);
+    result = await stDaoToken.burnForProtocol(deployer, 20, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getTotalSupply();
+    call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920080);
 
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10080);
 
-    result = await stickyToken.burn(wallet_1, 30);
+    result = await stDaoToken.burn(wallet_1, 30);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getTotalSupply();
+    call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920050);
 
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10050);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: can transfer token",
+  name: "stdao-token: can transfer token",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await stickyToken.mintForProtocol(deployer, 100, wallet_1.address);
+    let result = await stDaoToken.mintForProtocol(deployer, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    result = await stickyToken.transfer(wallet_1, 20, wallet_2.address);
+    result = await stDaoToken.transfer(wallet_1, 20, wallet_2.address);
     result.expectOk().expectBool(true);
 
-    let call = await stickyToken.getTotalSupply();
+    let call = await stDaoToken.getTotalSupply();
     call.result.expectOk().expectUintWithDecimals(920100);
 
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10080);
 
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10020);
   }
 });
@@ -117,194 +117,194 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: no tax if not to/from amm",
+  name: "stdao-token: no tax if not to/from amm",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [deployer.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [deployer.address]);
     result.expectOk().expectBool(true);
 
     // AMM has 10k
-    let call = await stickyToken.getBalance(wallet_1.address);
+    let call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // User has 10k
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // Buy = transfer from AMM to user
-    result = await stickyToken.transfer(wallet_1, 100, wallet_2.address);
+    result = await stDaoToken.transfer(wallet_1, 100, wallet_2.address);
     result.expectOk().expectBool(true);
 
     // AMM has send 100
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(9900);
 
     // User has got full 100
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10100);
 
     // No taxes
-    call = await stickyToken.getTaxBalance();
+    call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(0);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: no tax if address excluded from taxes",
+  name: "stdao-token: no tax if address excluded from taxes",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // Exclude address
-    result = await stickyToken.setExcludeFromFees(deployer, [wallet_1.address]);
+    result = await stDaoToken.setExcludeFromFees(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // AMM has 10k
-    let call = await stickyToken.getBalance(wallet_1.address);
+    let call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // User has 10k
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // Buy = transfer from AMM to user
-    result = await stickyToken.transfer(wallet_1, 100, wallet_2.address);
+    result = await stDaoToken.transfer(wallet_1, 100, wallet_2.address);
     result.expectOk().expectBool(true);
 
     // AMM has send 100
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(9900);
 
     // User has got full 100 tokens
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10100);
 
     // No taxes
-    call = await stickyToken.getTaxBalance();
+    call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(0);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: buy tax",
+  name: "stdao-token: buy tax",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // AMM has 10k
-    let call = await stickyToken.getBalance(wallet_1.address);
+    let call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // User has 10k
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // Buy = transfer from AMM to user
-    result = await stickyToken.transfer(wallet_1, 100, wallet_2.address);
+    result = await stDaoToken.transfer(wallet_1, 100, wallet_2.address);
     result.expectOk().expectBool(true);
 
     // AMM has send 100
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(9900);
 
     // User has got 96 (100 - 3% tax)
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10097);
 
     // Got 3 in taxes
-    call = await stickyToken.getTaxBalance();
+    call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(3);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: sell tax",
+  name: "stdao-token: sell tax",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // AMM has 10k
-    let call = await stickyToken.getBalance(wallet_1.address);
+    let call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // User has 10k
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(10000);
 
     // Sell = transfer from user to AMM
-    result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
+    result = await stDaoToken.transfer(wallet_2, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     // User has send 100
-    call = await stickyToken.getBalance(wallet_2.address);
+    call = await stDaoToken.getBalance(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(9900);
     
     // AMM has got 100 minus 4% tax
-    call = await stickyToken.getBalance(wallet_1.address);
+    call = await stDaoToken.getBalance(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(10096);
 
     // Got 4 in taxes
-    call = await stickyToken.getTaxBalance();
+    call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(4);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: withdraw tax",
+  name: "stdao-token: withdraw tax",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // Sell = transfer from user to AMM
-    result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
+    result = await stDaoToken.transfer(wallet_2, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     // Got 4 in taxes
-    let call = await stickyToken.getTaxBalance();
+    let call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(4);
 
-    call = await stickyToken.getBalance(deployer.address);
+    call = await stDaoToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000);
 
     // Withdraw
-    result = await stickyToken.withdrawTax(deployer, deployer.address);
+    result = await stDaoToken.withdrawTax(deployer, deployer.address);
     result.expectOk().expectUintWithDecimals(4);
 
-    call = await stickyToken.getBalance(deployer.address);
+    call = await stDaoToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000 + 4);
   }
 });
@@ -314,43 +314,43 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: can set token URI",
+  name: "stdao-token: can set token URI",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let call = await stickyToken.getTokenUri();
+    let call = await stDaoToken.getTokenUri();
     call.result.expectOk().expectSome().expectUtf8("");
 
-    let result = await stickyToken.setTokenUri(deployer, "test-uri");
+    let result = await stDaoToken.setTokenUri(deployer, "test-uri");
     result.expectOk().expectBool(true)
 
-    call = await stickyToken.getTokenUri();
+    call = await stDaoToken.getTokenUri();
     call.result.expectOk().expectSome().expectUtf8("test-uri");
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: can set buy and sell tax",
+  name: "stdao-token: can set buy and sell tax",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let call = await stickyToken.getSellTax();
+    let call = await stDaoToken.getSellTax();
     call.result.expectOk().expectUint(0.04 * 10000);
 
-    call = await stickyToken.getBuyTax();
+    call = await stDaoToken.getBuyTax();
     call.result.expectOk().expectUint(0.03 * 10000);
 
-    let result = await stickyToken.setTax(deployer, 0.1, 0.2);
+    let result = await stDaoToken.setTax(deployer, 0.1, 0.2);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getBuyTax();
+    call = await stDaoToken.getBuyTax();
     call.result.expectOk().expectUint(0.1 * 10000);
 
-    call = await stickyToken.getSellTax();
+    call = await stDaoToken.getSellTax();
     call.result.expectOk().expectUint(0.2 * 10000);
   }
 });
@@ -360,16 +360,16 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: can not transfer is sender is not tx-sender, or sender has not enough",
+  name: "stdao-token: can not transfer is sender is not tx-sender, or sender has not enough",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("sticky-token", "transfer", [
+      Tx.contractCall("stdao-token", "transfer", [
         types.uint(100 * 1000000),
         types.principal(wallet_1.address),
         types.principal(wallet_2.address),
@@ -378,21 +378,21 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectErr().expectUint(1401);
 
-    let result = await stickyToken.transfer(wallet_1, 20, wallet_1.address);
+    let result = await stDaoToken.transfer(wallet_1, 20, wallet_1.address);
     result.expectErr().expectUint(2);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: can only withdraw tax to protocol",
+  name: "stdao-token: can only withdraw tax to protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Withdraw
-    let result = await stickyToken.withdrawTax(deployer, wallet_1.address);
+    let result = await stDaoToken.withdrawTax(deployer, wallet_1.address);
     result.expectErr().expectUint(20003);
   }
 });
@@ -402,36 +402,36 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "sticky-token: only protocol can set token URI, mint and burn for protocol",
+  name: "stdao-token: only protocol can set token URI, mint and burn for protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await stickyToken.setTokenUri(wallet_1, "test-uri");
+    let result = await stDaoToken.setTokenUri(wallet_1, "test-uri");
     result.expectErr().expectUint(20003);
 
-    result = await stickyToken.mintForProtocol(wallet_1, 100, wallet_1.address);
+    result = await stDaoToken.mintForProtocol(wallet_1, 100, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await stickyToken.burnForProtocol(wallet_1, 100, deployer.address);
+    result = await stDaoToken.burnForProtocol(wallet_1, 100, deployer.address);
     result.expectErr().expectUint(20003);
   }
 });
 
 Clarinet.test({
-  name: "sticky-token: only protocol can update tax related vars",
+  name: "stdao-token: only protocol can update tax related vars",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await stickyToken.setTax(wallet_1, 0.5, 0.5);
+    let result = await stDaoToken.setTax(wallet_1, 0.5, 0.5);
     result.expectErr().expectUint(20003);
 
-    result = await stickyToken.setAmmAddresses(wallet_1, [wallet_1.address]);
+    result = await stDaoToken.setAmmAddresses(wallet_1, [wallet_1.address]);
     result.expectErr().expectUint(20003);
   }
 });

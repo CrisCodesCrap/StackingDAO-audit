@@ -55,7 +55,7 @@ class Staking {
   stake(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("staking-v1", "stake", [
-        types.principal(qualifiedName("sticky-token")),
+        types.principal(qualifiedName("stdao-token")),
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
@@ -65,7 +65,7 @@ class Staking {
   unstake(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("staking-v1", "unstake", [
-        types.principal(qualifiedName("sticky-token")),
+        types.principal(qualifiedName("stdao-token")),
         types.uint(amount * 1000000),
       ], caller.address)
     ]);

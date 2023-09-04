@@ -50,7 +50,7 @@
 
 (define-read-only (should-handle-tax)
   (let (
-    (tax-amount (contract-call? .sticky-token get-tax-balance))
+    (tax-amount (contract-call? .stdao-token get-tax-balance))
   )
     (if (> tax-amount  (get-min-balance-to-handle))
       true
@@ -65,16 +65,16 @@
     (asserts! (should-handle-tax) (err ERR_SHOULD_NOT_HANDLE))
 
     ;; Get tax from contract
-    (try! (contract-call? .sticky-token withdraw-tax (as-contract tx-sender)))
+    (try! (contract-call? .stdao-token withdraw-tax (as-contract tx-sender)))
 
     (let (
-      (balance (unwrap-panic (as-contract (contract-call? .sticky-token get-balance tx-sender))))
+      (balance (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender))))
       (to-swap (/ (* balance (var-get percentage-to-swap)) u10000))
     )
-      ;; Swap STICKY for STX
+      ;; Swap STDAO for STX
       ;; TODO
       ;; (try! (contract-call? 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.amm-swap-pool-v1-1 swap-helper 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wsticky 
+      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstdao 
       ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstx 
       ;;   u100000000 
       ;;   to-swap 
@@ -84,10 +84,10 @@
       ;; Add liquidity
       ;; TODO
       ;; (try! (contract-call? 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.amm-swap-pool-v1-1 add-to-position 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wsticky 
+      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstdao 
       ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstx 
       ;;   u100000000 
-      ;;   (unwrap-panic (as-contract (contract-call? .sticky-token get-balance tx-sender)))
+      ;;   (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender)))
       ;;   (some u0)
       ;; ))
 
@@ -102,12 +102,12 @@
 
 (define-public (retreive-tokens)
   (let (
-    (balance (unwrap-panic (as-contract (contract-call? .sticky-token get-balance tx-sender))))
+    (balance (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender))))
     (receiver tx-sender)
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
-    (try! (as-contract (contract-call? .sticky-token transfer balance tx-sender receiver none)))
+    (try! (as-contract (contract-call? .stdao-token transfer balance tx-sender receiver none)))
     (ok balance)
   )
 )

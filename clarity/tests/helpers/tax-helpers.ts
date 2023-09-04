@@ -2,7 +2,7 @@ import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts
 import { qualifiedName } from './tests-utils.ts';
 
 // ---------------------------------------------------------
-// Sticky Tax
+// STDAO Tax
 // ---------------------------------------------------------
 
 class Tax {

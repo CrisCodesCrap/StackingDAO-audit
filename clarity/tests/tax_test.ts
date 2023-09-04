@@ -2,7 +2,7 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "./helpers/tests-utils.ts";
 qualifiedName("")
 
-import { StickyToken } from './helpers/sticky-token-helpers.ts';
+import { STDAOToken } from './helpers/stdao-token-helpers.ts';
 import { Tax } from './helpers/tax-helpers.ts';
 
 //-------------------------------------
@@ -16,11 +16,11 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
     let wallet_2 = accounts.get("wallet_2")!;
 
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
     let tax = new Tax(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
 
     // Handle - no taxes yet
@@ -28,28 +28,28 @@ Clarinet.test({
     result.expectErr().expectUint(2101);
 
     // Sell = transfer from user to AMM
-    result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
+    result = await stDaoToken.transfer(wallet_2, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
     // Got 4 in taxes
-    let call = await stickyToken.getTaxBalance();
+    let call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(4);
 
     // Handle
     result = await tax.handleTax(deployer);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getBalance(qualifiedName("tax-v1"));
+    call = await stDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(4);
 
-    call = await stickyToken.getBalance(deployer.address);
+    call = await stDaoToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000);
 
     // Retreive
     result = await tax.retreiveTokens(deployer);
     result.expectOk().expectUintWithDecimals(4);
 
-    call = await stickyToken.getBalance(deployer.address);
+    call = await stDaoToken.getBalance(deployer.address);
     call.result.expectOk().expectUintWithDecimals(890000 + 4);
   }
 });
@@ -66,10 +66,10 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let tax = new Tax(chain, deployer);
-    let stickyToken = new StickyToken(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
     // Set wallet_1 as AMM
-    let result = await stickyToken.setAmmAddresses(deployer, [wallet_1.address]);
+    let result = await stDaoToken.setAmmAddresses(deployer, [wallet_1.address]);
     result.expectOk().expectBool(true);
     
     let call = await tax.checkJob();
@@ -81,10 +81,10 @@ Clarinet.test({
     result = await tax.runJob(deployer);
     result.expectErr().expectUint(2101);
 
-    result = await stickyToken.transfer(wallet_2, 100, wallet_1.address);
+    result = await stDaoToken.transfer(wallet_2, 100, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    call = await stickyToken.getTaxBalance();
+    call = await stDaoToken.getTaxBalance();
     call.result.expectUintWithDecimals(4);
 
     call = await tax.checkJob();

@@ -89,7 +89,7 @@ export const AppContextProvider = (props: any) => {
     const fetchBalances = async () => {
       const client = getRPCClient();
       const stStxAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.ststx-token::ststx`;
-      const stDaoAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.sticky-token::sticky`;
+      const stDaoAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.stdao-token::stdao`;
       const url = `${client.url}/extended/v1/address/${stxAddress}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
