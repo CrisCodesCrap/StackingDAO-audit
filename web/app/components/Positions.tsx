@@ -103,7 +103,7 @@ export function Positions() {
                       <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Sticky Stacked STX</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stStxBalance} stSTX</div>
+                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stStxBalance.toLocaleString()} stSTX</div>
                       <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-primary">{stackingApy}% APY</span>
                     </div>
                   </div>

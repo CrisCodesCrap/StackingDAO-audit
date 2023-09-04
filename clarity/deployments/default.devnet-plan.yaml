@@ -77,7 +77,7 @@ plan:
         - contract-publish:
             contract-name: pox-3-mock
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 700490
+            cost: 700460
             path: contracts/tests/pox-3-mock.clar
             anchor-block-only: true
             clarity-version: 2
