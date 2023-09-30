@@ -19,7 +19,7 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var withdrawal-treshold-per-cycle uint u500) ;; 5% in basis points
+(define-data-var withdrawal-treshold-per-cycle uint u8500) ;; 85% in basis points
 (define-data-var commission uint u500) ;; 5% in basis points
 
 (define-data-var shutdown-deposits bool false)

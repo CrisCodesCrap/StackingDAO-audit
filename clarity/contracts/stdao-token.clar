@@ -169,7 +169,7 @@
   (let (
     (amount (get-tax-balance))
   )
-    (try! (contract-call? .dao check-is-protocol receiver))
+    (try! (contract-call? .dao check-is-protocol tx-sender))
     
     (try! (as-contract (transfer amount tx-sender receiver none)))
     (ok amount)

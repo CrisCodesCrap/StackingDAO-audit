@@ -5,7 +5,7 @@ qualifiedName('')
 import { StrategyV0 as Strategy } from './helpers/strategy-helpers.ts';
 import { Core } from './helpers/core-helpers.ts';
 import { Reserve } from './helpers/reserve-helpers.ts';
-import { Stacker1 } from './helpers/stacker-1-helpers.ts';
+import { Stacker } from './helpers/stacker-helpers.ts';
 import { Pox3Mock } from './helpers/pox-3-mock-helpers.ts';
 
 //-------------------------------------
@@ -29,6 +29,25 @@ Clarinet.test({
     call = await strategy.getPoxRewardAddress();
     call.result.expectTuple()["version"].expectBuff(hexToBytes("0x01"));
     call.result.expectTuple()["hashbytes"].expectBuff(hexToBytes("0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ab"));
+  }
+});
+
+//-------------------------------------
+// Get PoX info
+//-------------------------------------
+
+Clarinet.test({
+  name: "strategy-v0: get PoX info",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let strategy = new Strategy(chain, deployer);
+
+    let call = await strategy.getPoxCycle();
+    call.result.expectUint(0);
+
+    call = await strategy.getNextCycleStartBurnHeight();
+    call.result.expectUint(REWARD_CYCLE_LENGTH);
   }
 });
 
@@ -215,7 +234,7 @@ Clarinet.test({
 
     let strategy = new Strategy(chain, deployer);
     let core = new Core(chain, deployer);
-    let stacker1 = new Stacker1(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
 
     let result = core.deposit(deployer, 300000);
     result.expectOk().expectUintWithDecimals(300000);
@@ -232,12 +251,12 @@ Clarinet.test({
     call.result.expectUint(1);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    call = await stacker.getStackerInfo(1);
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(1);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(1);
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
     call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
@@ -257,12 +276,12 @@ Clarinet.test({
     call.result.expectUint(2);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    call = await stacker.getStackerInfo(1);
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(1);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(2);
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(60000);
     call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
@@ -282,12 +301,13 @@ Clarinet.test({
     call.result.expectUint(3);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    // When calling `stack-extend` the `first-reward-cycle` is updated to the current cycle
+    call = await stacker.getStackerInfo(1);
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(2);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(2);
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(60000);
     call.result.expectTuple()["unlock-height"].expectUint(4 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
@@ -305,7 +325,7 @@ Clarinet.test({
 
     let strategy = new Strategy(chain, deployer);
     let core = new Core(chain, deployer);
-    let stacker1 = new Stacker1(chain, deployer);
+    let stacker = new Stacker(chain, deployer);
     let poxMock = new Pox3Mock(chain, deployer);
 
     let result = core.deposit(deployer, 300000);
@@ -323,12 +343,12 @@ Clarinet.test({
     call.result.expectUint(1);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    call = await stacker.getStackerInfo(1);
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(1);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(1);
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
     call.result.expectTuple()["unlock-height"].expectUint(2 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
@@ -348,12 +368,12 @@ Clarinet.test({
     call.result.expectUint(2);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    call = await stacker.getStackerInfo(1);
     call.result.expectSome().expectTuple()["first-reward-cycle"].expectUint(1);
     call.result.expectSome().expectTuple()["lock-period"].expectUint(2);
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(50000);
     call.result.expectTuple()["unlock-height"].expectUint(3 * REWARD_CYCLE_LENGTH);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
@@ -385,11 +405,11 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stacker info
-    call = await stacker1.getStackerInfo();
+    call = await stacker.getStackerInfo(1);
     call.result.expectNone();
 
     // Tokens are now locked
-    call = await stacker1.getStxAccount();
+    call = await stacker.getStxAccount(1);
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);

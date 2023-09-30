@@ -12,7 +12,7 @@ Clarinet.test({
   name: "stdao-token: can get token info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_4 = accounts.get("wallet_4")!;
+    let wallet_4 = accounts.get("wallet_4")!
 
     let stDaoToken = new STDAOToken(chain, deployer);
 
@@ -20,7 +20,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(920000);
 
     call = await stDaoToken.getName();
-    call.result.expectOk().expectAscii("STDAO Token");
+    call.result.expectOk().expectAscii("StackingDAO Token");
 
     call = await stDaoToken.getSymbol();
     call.result.expectOk().expectAscii("STDAO");
@@ -392,7 +392,7 @@ Clarinet.test({
     let stDaoToken = new STDAOToken(chain, deployer);
 
     // Withdraw
-    let result = await stDaoToken.withdrawTax(deployer, wallet_1.address);
+    let result = await stDaoToken.withdrawTax(wallet_1, wallet_1.address);
     result.expectErr().expectUint(20003);
   }
 });

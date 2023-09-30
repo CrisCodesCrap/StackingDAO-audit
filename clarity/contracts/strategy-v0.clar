@@ -47,7 +47,7 @@
 
 (define-read-only (get-next-cycle-start-burn-height)
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock reward-cycle-to-burn-height (get-pox-cycle))
+  (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
 )
 
 ;;-------------------------------------
@@ -215,16 +215,16 @@
 )
 
 (define-private (stackers-initiate-stacking (stacker-id uint) (amount uint))
-  (if (is-eq stacker-id u1) (contract-call? .stacker-1 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u2) (contract-call? .stacker-2 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u3) (contract-call? .stacker-3 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u4) (contract-call? .stacker-4 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u5) (contract-call? .stacker-5 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u6) (contract-call? .stacker-6 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u7) (contract-call? .stacker-7 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u8) (contract-call? .stacker-8 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u9) (contract-call? .stacker-9 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
-  (if (is-eq stacker-id u10) (contract-call? .stacker-10 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount (get-next-cycle-start-burn-height) u1)
+  (if (is-eq stacker-id u1) (contract-call? .stacker-1 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u2) (contract-call? .stacker-2 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u3) (contract-call? .stacker-3 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u4) (contract-call? .stacker-4 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u5) (contract-call? .stacker-5 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u6) (contract-call? .stacker-6 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u7) (contract-call? .stacker-7 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u8) (contract-call? .stacker-8 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u9) (contract-call? .stacker-9 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
+  (if (is-eq stacker-id u10) (contract-call? .stacker-10 initiate-stacking .reserve-v1 (var-get pox-reward-address) amount burn-block-height u1)
     (ok u0)
   ))))))))))
 )

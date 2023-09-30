@@ -228,7 +228,7 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getWithdrawalTresholdPerCycle();
-    call.result.expectUint(500);
+    call.result.expectUint(8500);
 
     // Deposit 1,000,000 STX
     let result = await core.deposit(deployer, 1000000);
@@ -237,30 +237,30 @@ Clarinet.test({
     // Advance to next cycle
     chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
 
-    // Can not withdraw 50%
-    result = await core.initWithdraw(deployer, 500000);
+    // Can not withdraw more than 85%
+    result = await core.initWithdraw(deployer, 850001);
     result.expectErr().expectUint(19003);
 
-    // Can withdraw 50k (5%)
-    result = await core.initWithdraw(deployer, 50000);
+    // Can withdraw exactly 85%
+    result = await core.initWithdraw(deployer, 850000);
     result.expectOk().expectUint(0);
 
-    // Set treshold
-    result = await core.setWithdrawalTreshold(deployer, 0.5);
+    // Set treshold to 95%
+    result = await core.setWithdrawalTreshold(deployer, 0.95);
     result.expectOk().expectBool(true);
 
     // Treshold is set
     call = await core.getWithdrawalTresholdPerCycle();
-    call.result.expectUint(0.5 * 10000);
+    call.result.expectUint(0.95 * 10000);
 
-    // Can not withdraw more than 50%
-    result = await core.initWithdraw(deployer, 500000 - 50000 + 1);
+    // Can not withdraw more than 95%
+    // Can withdraw 950k in total, but already 850k withdrawn
+    result = await core.initWithdraw(deployer, 100000 + 1);
     result.expectErr().expectUint(19003);
     
-    // Can withdraw 50% (500k)
-    // But already 50k withdrawn
+    // Can withdraw 95%
     // Got NFT with ID 1 
-    result = await core.initWithdraw(deployer, 500000 - 50000);
+    result = await core.initWithdraw(deployer, 100000);
     result.expectOk().expectUint(1);
   },
 });
@@ -273,7 +273,7 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getWithdrawalTresholdPerCycle();
-    call.result.expectUint(500);
+    call.result.expectUint(8500);
 
     // Deposit 1,000,000 STX
     let result = await core.deposit(deployer, 1000000);
