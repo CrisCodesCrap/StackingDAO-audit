@@ -100,9 +100,17 @@ Clarinet.test({
 
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = await reserve.getStxStackingAtBlock(4);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await reserve.getStxStackingAtBlock(5);
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = await reserve.getStxStackingAtBlock(6);
+    call.result.expectOk().expectUintWithDecimals(100);
   }
 });
-
 
 Clarinet.test({
   name: "reserve: protocol can get STX",

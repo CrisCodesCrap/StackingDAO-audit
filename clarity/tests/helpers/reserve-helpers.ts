@@ -18,6 +18,12 @@ class Reserve {
     return this.chain.callReadOnlyFn("reserve-v1", "get-stx-stacking", [], this.deployer.address);
   }
 
+  getStxStackingAtBlock(blockHeight: number) {
+    return this.chain.callReadOnlyFn("reserve-v1", "get-stx-stacking-at-block", [
+      types.uint(blockHeight)
+    ], this.deployer.address);
+  }
+
   getStxBalance() {
     return this.chain.callReadOnlyFn("reserve-v1", "get-stx-balance", [], this.deployer.address);
   }

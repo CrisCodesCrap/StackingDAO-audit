@@ -30,6 +30,7 @@
   (ok (var-get stx-stacking))
 )
 
+;; Amount of STX used in stacking at given block
 (define-read-only (get-stx-stacking-at-block (block uint))
   (at-block
     (unwrap-panic (get-block-info? id-header-hash block))
