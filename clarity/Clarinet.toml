@@ -66,11 +66,6 @@ path = "contracts/reserve-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.governance-v0]
-path = "contracts/governance-v0.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.core-v1]
 path = "contracts/core-v1.clar"
 clarity_version = 2
@@ -159,6 +154,11 @@ epoch = 2.4
 # ------------------------------
 # Tests
 # ------------------------------
+
+[contracts.governance-v0]
+path = "contracts/tests/governance-v0.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.pox-3-mock]
 path = "contracts/tests/pox-3-mock.clar"

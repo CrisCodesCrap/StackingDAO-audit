@@ -93,7 +93,6 @@
   (map-set contracts { address: tx-sender } { active: true })
 
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.core-v1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.governance-v0 } { active: true })
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.reserve-v1 } { active: true })
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.commission-v1 } { active: true })
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tax-v1 } { active: true })

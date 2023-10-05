@@ -61,29 +61,45 @@ Clarinet.test({
     let call = await dao.getContractActive(qualifiedName("reserve-v1"));
     call.result.expectBool(true);
 
-    call = await dao.getContractActive(qualifiedName("new-contract"));
+    call = await dao.getContractActive(qualifiedName("governance-v0"));
     call.result.expectBool(false);
 
     let result = await dao.checkIsProtocol(deployer, qualifiedName("reserve-v1"));
     result.expectOk().expectBool(true);
 
-    result = await dao.checkIsProtocol(deployer, qualifiedName("new-contract"));
+    result = await dao.checkIsProtocol(deployer, qualifiedName("governance-v0"));
     result.expectErr().expectUint(20003);
+
+    // Contract can not update protocol
+    let block = chain.mineBlock([
+      Tx.contractCall("governance-v0", "set-commission", [
+        types.uint(10),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
 
     // Deactivate contract
     result = await dao.setContractActive(deployer, qualifiedName("reserve-v1"), false);
     result.expectOk().expectBool(true);
 
     // Activate contract
-    result = await dao.setContractActive(deployer, qualifiedName("new-contract"), true);
+    result = await dao.setContractActive(deployer, qualifiedName("governance-v0"), true);
     result.expectOk().expectBool(true);
 
     // Check
     result = await dao.checkIsProtocol(deployer, qualifiedName("reserve-v1"));
     result.expectErr().expectUint(20003);
 
-    result = await dao.checkIsProtocol(deployer, qualifiedName("new-contract"));
+    result = await dao.checkIsProtocol(deployer, qualifiedName("governance-v0"));
     result.expectOk().expectBool(true);
+
+    // Contract can update protocol
+    block = chain.mineBlock([
+      Tx.contractCall("governance-v0", "set-commission", [
+        types.uint(10),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
   }
 });
 
