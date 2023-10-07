@@ -13,7 +13,7 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var min-balance-to-handle uint u0)
+(define-data-var min-balance-to-handle uint u100000000) ;; 100
 (define-data-var percentage-to-swap uint u4000) ;; bps
 
 ;;-------------------------------------
