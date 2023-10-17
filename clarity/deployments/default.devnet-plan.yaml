@@ -208,13 +208,6 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: tax-token-trait-v1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 1690
-            path: contracts/tax-token-trait-v1.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
             contract-name: stdao-token
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 46750

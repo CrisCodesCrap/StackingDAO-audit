@@ -22,14 +22,12 @@ contract_id = "SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait"
 [[project.requirements]]
 contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1"
 
+[[project.requirements]]
+contract_id = "SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait"
+
 # ------------------------------
 # Protocol
 # ------------------------------
-
-[contracts.tax-token-trait-v1]
-path = "contracts/tax-token-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
 
 [contracts.reserve-trait-v1]
 path = "contracts/reserve-trait-v1.clar"
@@ -154,6 +152,21 @@ epoch = 2.4
 # ------------------------------
 # Tests
 # ------------------------------
+
+[contracts.wstx-token]
+path = "contracts/tests/wstx-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.swap-lp-token]
+path = "contracts/tests/swap-lp-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.swap]
+path = "contracts/tests/swap.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.governance-v0]
 path = "contracts/tests/governance-v0.clar"

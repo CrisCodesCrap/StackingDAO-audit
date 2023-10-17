@@ -40,30 +40,6 @@ class STDAOToken {
     return this.chain.callReadOnlyFn("stdao-token", "get-token-uri", [], this.deployer.address);
   }
 
-  isAmmAddress(address: string) {
-    return this.chain.callReadOnlyFn("stdao-token", "is-amm-address", [
-      types.principal(address)
-    ], this.deployer.address);
-  }
-
-  isExcludedFromFees(address: string) {
-    return this.chain.callReadOnlyFn("stdao-token", "is-excluded-from-fees", [
-      types.principal(address)
-    ], this.deployer.address);
-  }
-
-  getBuyTax() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-buy-tax", [], this.deployer.address);
-  }
-
-  getSellTax() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-sell-tax", [], this.deployer.address);
-  }
-
-  getTaxBalance() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-tax-balance", [], this.deployer.address);
-  }
-
   transfer(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stdao-token", "transfer", [
@@ -109,43 +85,6 @@ class STDAOToken {
     let block = this.chain.mineBlock([
       Tx.contractCall("stdao-token", "burn", [
         types.uint(amount * 1000000),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  setTax(caller: Account, buyTax: number, sellTax: number) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "set-tax", [
-        types.uint(buyTax * 10000),
-        types.uint(sellTax * 10000),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  setAmmAddresses(caller: Account, addresses: string[]) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "set-amm-addresses", [
-        types.list(addresses.map(address => types.principal(address))),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  setExcludeFromFees(caller: Account, addresses: string[]) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "set-exclude-from-fees", [
-        types.list(addresses.map(address => types.principal(address))),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  withdrawTax(caller: Account, receiver: string) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "withdraw-tax", [
-        types.principal(receiver)
       ], caller.address)
     ]);
     return block.receipts[0].result;

@@ -4,6 +4,7 @@ import { qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
 import { DAO } from './helpers/dao-helpers.ts';
 import { Staking } from './helpers/staking-helpers.ts';
 import { Core } from './helpers/core-helpers.ts';
+import { STDAOToken } from './helpers/stdao-token-helpers.ts';
 
 //-------------------------------------
 // Core 
@@ -16,8 +17,12 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let staking = new Staking(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await staking.stake(wallet_1, 1000);
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    result = await staking.stake(wallet_1, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     let call = await staking.getStakeAmountOf(wallet_1.address);
@@ -52,9 +57,16 @@ Clarinet.test({
 
     let staking = new Staking(chain, deployer);
     let core = new Core(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
+
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    result = stDaoToken.mintForProtocol(deployer, 1000, wallet_2.address);
+    result.expectOk().expectBool(true);
 
     // 21 STX so 1 STX per block
-    let result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH);
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH);
     result.expectOk().expectUintWithDecimals(REWARD_CYCLE_LENGTH);
 
     result = await staking.stake(wallet_1, 1000);
@@ -89,8 +101,18 @@ Clarinet.test({
 
     let staking = new Staking(chain, deployer);
     let core = new Core(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await staking.stake(wallet_1, 1000);
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    result = stDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
+    result.expectOk().expectBool(true);
+
+    result = stDaoToken.mintForProtocol(deployer, 3000, wallet_3.address);
+    result.expectOk().expectBool(true);
+
+    result = await staking.stake(wallet_1, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     result = await staking.stake(wallet_2, 2000);
@@ -152,12 +174,19 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let staking = new Staking(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
+
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    result = stDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
+    result.expectOk().expectBool(true);
 
     // Cumm reward per stake still 0
     let call = await staking.getCummRewardPerStake();
     call.result.expectUintWithDecimals(0);
 
-    let result = await staking.calculateCummRewardPerStake(deployer);
+    result = await staking.calculateCummRewardPerStake(deployer);
     result.expectOk().expectUintWithDecimals(0);
 
     // Last increase block
@@ -181,7 +210,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(5);
+    call.result.expectUint(7);
 
     // New stake amounts
     call = await staking.getStakeAmountOf(wallet_1.address);
@@ -266,7 +295,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(14);
+    call.result.expectUint(16);
 
     // New cumm reward per stake
     // Was 0.006333, adding 0.000333 (1 STX per block / 3000 STX staked)
@@ -337,8 +366,12 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let staking = new Staking(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    let result = await staking.stake(deployer, 1000);
+    let result = stDaoToken.mintForProtocol(deployer, 1000, deployer.address);
+    result.expectOk().expectBool(true);
+
+    result = await staking.stake(deployer, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
     result = await staking.unstake(deployer, 1001);

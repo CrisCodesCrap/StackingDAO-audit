@@ -5,6 +5,10 @@
 
 (define-constant ERR_NOT_AUTHORIZED u1401)
 
+;;-------------------------------------
+;; Variables
+;;-------------------------------------
+
 (define-data-var token-uri (string-utf8 256) u"")
 
 ;;-------------------------------------

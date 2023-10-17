@@ -2,12 +2,15 @@
 ;; @version 1
 
 (impl-trait 'SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1.automation-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
-(define-constant ERR_SHOULD_NOT_HANDLE u2101)
+(define-constant ERR_SHOULD_NOT_HANDLE u21001)
+(define-constant ERR_COULD_NOT_SWAP u21002)
+(define-constant ERR_COULD_NOT_ADD_LIQ u21003)
 
 ;;-------------------------------------
 ;; Variables
@@ -50,9 +53,9 @@
 
 (define-read-only (should-handle-tax)
   (let (
-    (tax-amount (contract-call? .stdao-token get-tax-balance))
+    (balance (stx-get-balance (as-contract tx-sender)))
   )
-    (if (> tax-amount  (get-min-balance-to-handle))
+    (if (>= balance (get-min-balance-to-handle))
       true
       false
     )
@@ -64,32 +67,35 @@
   (begin
     (asserts! (should-handle-tax) (err ERR_SHOULD_NOT_HANDLE))
 
-    ;; Get tax from contract
-    (try! (contract-call? .stdao-token withdraw-tax (as-contract tx-sender)))
-
     (let (
-      (balance (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender))))
+      (balance (stx-get-balance (as-contract tx-sender)))
       (to-swap (/ (* balance (var-get percentage-to-swap)) u10000))
     )
-      ;; Swap STDAO for STX
-      ;; TODO
-      ;; (try! (contract-call? 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.amm-swap-pool-v1-1 swap-helper 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstdao 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstx 
-      ;;   u100000000 
-      ;;   to-swap 
-      ;;   (some u0)
-      ;; ))
+      ;; Swap STX for stDAO
+      ;; TODO: update for mainnet
+      (unwrap! (as-contract (contract-call? .swap swap-y-for-x 
+        .wstx-token
+        .stdao-token
+        .swap-lp-token
+        to-swap 
+        u1
+      )) (err ERR_COULD_NOT_SWAP))
 
-      ;; Add liquidity
-      ;; TODO
-      ;; (try! (contract-call? 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.amm-swap-pool-v1-1 add-to-position 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstdao 
-      ;;   'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-wstx 
-      ;;   u100000000 
-      ;;   (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender)))
-      ;;   (some u0)
-      ;; ))
+      ;; Add stDAO/STX liquidity
+      ;; TODO: update for mainnet
+      (let (
+        (new-balance-stx (stx-get-balance (as-contract tx-sender)))
+        (new-balance-stdao (unwrap-panic (contract-call? .stdao-token get-balance (as-contract tx-sender))))
+      )
+        (unwrap! (as-contract (contract-call? .swap add-liquidity
+          .stdao-token
+          .wstx-token
+          .swap-lp-token
+          new-balance-stdao
+          new-balance-stx
+          u1
+        )) (err ERR_COULD_NOT_ADD_LIQ))
+      )
 
       (ok true)
     )
@@ -100,15 +106,21 @@
 ;; Admin 
 ;;-------------------------------------
 
-(define-public (retreive-tokens)
-  (let (
-    (balance (unwrap-panic (as-contract (contract-call? .stdao-token get-balance tx-sender))))
-    (receiver tx-sender)
-  )
+(define-public (retreive-stx-tokens (requested-stx uint) (receiver principal))
+  (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
-    (try! (as-contract (contract-call? .stdao-token transfer balance tx-sender receiver none)))
-    (ok balance)
+    (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
+    (ok requested-stx)
+  )
+)
+
+(define-public (retreive-tokens (token <ft-trait>) (requested-tokens uint) (receiver principal))
+  (begin
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (try! (as-contract (contract-call? token transfer requested-tokens tx-sender receiver none)))
+    (ok requested-tokens)
   )
 )
 
