@@ -208,10 +208,10 @@
     ;; Calculate new cumm reward per stake
     (new-cumm-reward-per-stake (unwrap-panic (calculate-cumm-reward-per-stake)))
   )
-    (asserts! (> block-height (var-get last-reward-increase-block)) (ok u0))
+    (asserts! (> burn-block-height (var-get last-reward-increase-block)) (ok u0))
 
     (var-set cumm-reward-per-stake new-cumm-reward-per-stake)
-    (var-set last-reward-increase-block block-height)
+    (var-set last-reward-increase-block burn-block-height)
     (ok new-cumm-reward-per-stake)
   )
 )
@@ -219,8 +219,8 @@
 (define-public (calculate-cumm-reward-per-stake)
   (let (
     (current-total-staked (var-get total-staked))
-    (block-diff (if (> block-height (var-get last-reward-increase-block))
-      (- block-height (var-get last-reward-increase-block))
+    (block-diff (if (> burn-block-height (var-get last-reward-increase-block))
+      (- burn-block-height (var-get last-reward-increase-block))
       u0
     ))
     (current-cumm-reward-per-stake (var-get cumm-reward-per-stake)) 
@@ -267,5 +267,5 @@
 ;;-------------------------------------
 
 (begin
-  (var-set last-reward-increase-block block-height)
+  (var-set last-reward-increase-block burn-block-height)
 )
