@@ -1,5 +1,9 @@
 ;; @contract Stacking Strategy
 ;; @version 0
+;;
+;; The strategy contract is used to manage stacking using the stacker contracts.
+;; Every cycle there is either an inflow or outflow of STX.
+;; The way the inflow or outflow affects the stacker contracts is calculated off chain.
 
 ;;-------------------------------------
 ;; Constants
@@ -21,6 +25,7 @@
 ;; Reward address
 ;;-------------------------------------
 
+;; TODO: update for mainnet
 (define-data-var pox-reward-address { version: (buff 1), hashbytes: (buff 32) } { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac })
 
 (define-read-only (get-pox-reward-address)
@@ -58,6 +63,7 @@
   (unwrap-panic (contract-call? .reserve-v1 get-stx-stacking))
 )
 
+;; Calculate STX outflow or inflow for next cycle.
 (define-read-only (get-outflow-inflow)
   (let (
     (total-withdrawals (unwrap-panic (contract-call? .reserve-v1 get-stx-for-withdrawals)))

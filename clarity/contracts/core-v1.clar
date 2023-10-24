@@ -155,7 +155,7 @@
 ;; User  
 ;;-------------------------------------
 
-;; 
+;; Deposit STX for stSTX
 (define-public (deposit (reserve-contract <reserve-trait>) (stx-amount uint))
   (let (
     (cycle-id (get-pox-cycle))
@@ -177,8 +177,9 @@
   )
 )
 
-;; Initiate withdrawal, given stSTX amount and cycle
-;; Can update amount as long as cycle not started
+;; Initiate withdrawal, given stSTX amount. Can update amount as long as cycle not started.
+;; The stSTX tokens are transferred to this contract, and are burned on the actual withdrawal.
+;; An NFT is minted for the user as a token representation of the withdrawal.
 (define-public (init-withdraw (reserve-contract <reserve-trait>) (ststx-amount uint))
   (let (
     (sender tx-sender)
@@ -210,7 +211,8 @@
   )
 )
 
-;; Actual withdrawal for given cycle
+;; Actual withdrawal for given NFT. 
+;; The NFT and stSTX tokens will be burned and the user will receive STX tokens.
 (define-public (withdraw (reserve-contract <reserve-trait>) (nft-id uint))
   (let (
     (receiver tx-sender)
@@ -246,7 +248,9 @@
   )
 )
 
-;; Add rewards in STX for given cycle
+;; Add rewards in STX for given cycle.
+;; The stacking rewards will be swapped to STX and added via this method.
+;; Stacking rewards management is a manual process.
 (define-public (add-rewards 
   (commission-contract <commission-trait>) 
   (staking-contract <staking-trait>) 

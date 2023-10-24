@@ -1,5 +1,14 @@
 ;; @contract Tax
 ;; @version 1
+;;
+;; Liquidity will be added on Bitflow (https://www.bitflow.finance)
+;; Bitflow will impose a purchase/sale tax in STX, and the proceeds will be directed to this contract.
+;;
+;; Once a sufficient amount of STX is accumulated, a portion of it will be exchanged for STDAO. 
+;; Both STX and STDAO will be added to the liquidity pool.
+;;
+;; The Arkadiko keepers network is leveraged to automate this process.
+;; https://keepers.arkadiko.finance/
 
 (impl-trait 'SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1.automation-trait)
 (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
@@ -51,6 +60,7 @@
 ;; Handle tax 
 ;;-------------------------------------
 
+;; Once enough STX is gathered, this job contract can be executed.
 (define-read-only (should-handle-tax)
   (let (
     (balance (stx-get-balance (as-contract tx-sender)))
@@ -62,7 +72,7 @@
   )
 )
 
-;; Need to be called by keeper
+;; Swap STX to STDAO. Add both as liquidity.
 (define-public (handle-tax)
   (begin
     (asserts! (should-handle-tax) (err ERR_SHOULD_NOT_HANDLE))

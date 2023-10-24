@@ -1,5 +1,8 @@
 ;; @contract Commission
 ;; @version 1
+;;
+;; Part of the stacking rewards are captured as commission.
+;; The commission is split between the protocol and stakers.
 
 (impl-trait .commission-trait-v1.commission-trait)
 (use-trait staking-trait .staking-trait-v1.staking-trait)
@@ -22,6 +25,8 @@
 ;; Trait 
 ;;-------------------------------------
 
+;; Used by core contract
+;; Commission is split between stakers and protocol
 (define-public (add-commission (staking-contract <staking-trait>) (stx-amount uint))
   (let (
     (amount-for-staking (/ (* stx-amount (get-staking-percentage)) u10000))

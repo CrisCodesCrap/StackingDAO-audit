@@ -1,5 +1,9 @@
 ;; @contract Reserve
 ;; @version 1
+;;
+;; This contract holds all STX that is not stacking.
+;; It also tracks the STX that is currently stacking, 
+;; and the STX needed for withdrawals after the current cycle.
 
 (impl-trait .reserve-trait-v1.reserve-trait)
 

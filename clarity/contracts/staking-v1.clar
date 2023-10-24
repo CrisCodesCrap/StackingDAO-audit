@@ -1,9 +1,9 @@
 ;; @contract Staking
 ;; @version 1
-
+;;
 ;; Stake STDAO to get part of protocol revenue
 ;; Rewards are distributed across all stakers, according to their size in the pool
-
+;;
 ;; Rewards will be automatically staked before staking or unstaking. 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
@@ -242,6 +242,7 @@
 ;; Rewards - Add
 ;;-------------------------------------
 
+;; Used by the commission contract to add STX
 (define-public (add-rewards (amount uint))
   (let (
     ;; TODO - Update for mainnet
