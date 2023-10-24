@@ -4,7 +4,7 @@
 ;; It's not possible to have PoX fully working in unit tests.
 ;; After stacking, the values in `stx-account` are not updated.
 ;; This mock contract was created to solve this.
-;; The `stx-account` info is kept in a seperate map.
+;; The `stx-account` info is kept in a separate map.
 
 ;;-------------------------------------
 ;; Mock info

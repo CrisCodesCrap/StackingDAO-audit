@@ -21,6 +21,16 @@ When exchanging stSTX or STDAO, a buy and sell tax is imposed. The `tax` contrac
 ### Tokens
 The liquid stacking token is `stSTX`, and `STDAO` serves as the DAO token. Additionally, an `ststx-withdraw` NFT represents the initiation of a withdrawal.
 
+### Tests
+Tests can be found in the `tests` folder and are written using [Clarinet](https://github.com/hirosystems/clarinet).
+
+### Mocks
+Mock contracts can be found in the `contracts/tests` folder. 
+
+The `swap` mock contract is a replication from Bitflow, the decentralized exchange (DEX) for swapping protocol tokens. This `swap` contract is used for tax management through the `tax` contract.
+
+It's currently not possible to achieve full PoX functionality within unit tests. The primary challenge stems from the fact that values in the `stx-account` are not dynamically updated. This necessity led to the introduction of the mock contract. The information that the `stx-account` should ideally provide is stored in a separate map and can be retrieved using the `stx-account-mock` method.  Another issue arises when tokens need to be unlocked. The tokens are not automatically returned to the owner and the information in `stx-account` is not updated. To address this, a method named `unlock-mock` was introduced, allowing manual unlocking of STX tokens during testing.
+
 ## Web
 
 Next.js app.
