@@ -131,13 +131,11 @@
     (asserts! (is-eq .stdao-token (contract-of token)) ERR_WRONG_TOKEN)
     (asserts! (>= stake-amount amount) ERR_INSUFFICIENT_STAKE)
 
-    ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake))
-
     (let (
       ;; Calculate new stake amount
       (new-stake-amount (- stake-amount amount))
     )
+      ;; Save currrent cumm reward per stake and
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
       (try! (claim-pending-rewards))
 
