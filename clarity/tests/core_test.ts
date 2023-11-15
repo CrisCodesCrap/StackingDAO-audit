@@ -203,20 +203,20 @@ Clarinet.test({
     let call = await core.getCommission();
     call.result.expectUint(500);
 
-    let result = await core.setCommission(deployer, 0.5);
+    let result = await core.setCommission(deployer, 0.2);
     result.expectOk().expectBool(true);
 
     call = await core.getCommission();
-    call.result.expectUint(0.5 * 10000);
+    call.result.expectUint(0.2 * 10000);
 
     result = await core.addRewards(deployer, 100, 0);
     result.expectOk().expectUintWithDecimals(100);
 
-    // 100 STX added as rewards, 50% taken as commission
+    // 100 STX added as rewards, 20% taken as commission
     // Commission contract keeps 20 %
-    // 100 * 0.5 * 0.2 = 10 STX
+    // 100 * 0.2 * 0.2 = 4 STX
     call = await core.getStxBalance(qualifiedName("commission-v1"));
-    call.result.expectUintWithDecimals(10);
+    call.result.expectUintWithDecimals(4);
   },
 });
 
@@ -489,6 +489,21 @@ Clarinet.test({
 
     result = await core.withdraw(deployer, 0);
     result.expectErr().expectUint(20002);
+  },
+});
+
+Clarinet.test({
+  name: "core: can not set commission higher than max",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let core = new Core(chain, deployer);
+
+    let call = await core.getCommission();
+    call.result.expectUint(500);
+
+    let result = await core.setCommission(deployer, 0.21);
+    result.expectErr().expectUint(19006);
   },
 });
 
