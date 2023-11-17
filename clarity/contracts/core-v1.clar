@@ -11,7 +11,6 @@
 
 (define-constant ERR_WRONG_CYCLE_ID u19001)
 (define-constant ERR_SHUTDOWN u19002)
-(define-constant ERR_WITHDRAW_EXCEEDED u19003)
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
 (define-constant ERR_MAX_COMMISSION u19006)
@@ -23,7 +22,6 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var withdrawal-treshold-per-cycle uint u8500) ;; 85% in basis points
 (define-data-var commission uint u500) ;; 5% in basis points
 
 (define-data-var shutdown-deposits bool false)
@@ -60,10 +58,6 @@
 ;;-------------------------------------
 ;; Getters 
 ;;-------------------------------------
-
-(define-read-only (get-withdrawal-treshold-per-cycle)
-  (var-get withdrawal-treshold-per-cycle)
-)
 
 (define-read-only (get-commission)
   (var-get commission)
@@ -200,7 +194,6 @@
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
-    (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-to-receive)))
@@ -289,15 +282,6 @@
 ;;-------------------------------------
 ;; Admin
 ;;-------------------------------------
-
-(define-public (set-withdrawal-treshold (new-treshold uint))
-  (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
-    (var-set withdrawal-treshold-per-cycle new-treshold)
-    (ok true)
-  )
-)
 
 (define-public (set-commission (new-commission uint))
   (begin

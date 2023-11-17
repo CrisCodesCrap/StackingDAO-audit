@@ -14,10 +14,6 @@ class Core {
     this.deployer = deployer;
   }
 
-  getWithdrawalTresholdPerCycle() {
-    return this.chain.callReadOnlyFn("core-v1", "get-withdrawal-treshold-per-cycle", [], this.deployer.address);
-  }
-
   getCommission() {
     return this.chain.callReadOnlyFn("core-v1", "get-commission", [], this.deployer.address);
   }
@@ -105,15 +101,6 @@ class Core {
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000),
         types.uint(cycle)
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  setWithdrawalTreshold(caller: Account, treshold: number) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "set-withdrawal-treshold", [
-        types.uint(treshold * 10000),
       ], caller.address)
     ]);
     return block.receipts[0].result;
