@@ -492,6 +492,21 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "core: can not deposit with wrong reserve",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("core-v1", "deposit", [
+        types.principal(qualifiedName("fake-reserve")),
+        types.uint(10 * 1000000),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  },
+});
+
 //-------------------------------------
 // Access 
 //-------------------------------------

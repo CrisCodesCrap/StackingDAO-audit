@@ -161,11 +161,10 @@
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info cycle-id))
 
-    (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (get-stx-per-ststx reserve-contract)))
     (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
