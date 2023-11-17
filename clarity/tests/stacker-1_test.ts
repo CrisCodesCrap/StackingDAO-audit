@@ -29,9 +29,6 @@ Clarinet.test({
     let result = await core.deposit(deployer, 150000);
     result.expectOk().expectUintWithDecimals(150000);
 
-    call = await stacker.poxCanStackStx(1, deployer, 125000, 0, 1);
-    call.result.expectOk().expectBool(true);
-
     call = stacker.getStxBalance(1);
     call.result.expectUintWithDecimals(0);
 
@@ -251,9 +248,13 @@ Clarinet.test({
 
     let stacker = new Stacker(chain, deployer);
 
-    // Treshold not met
-    let call = await stacker.poxCanStackStx(1, deployer, 100, 0, 1);
-    call.result.expectErr().expectUint(11);
+    // Deposit 150k STX to reserve
+    let result = await core.deposit(deployer, 150000);
+    result.expectOk().expectUintWithDecimals(150000);
+
+    // ERR_INVALID_START_BURN_HEIGHT = 24
+    result = await stacker.initiateStacking(1, deployer, 125000, 100000, 1);
+    result.expectErr().expectUint(24);
   }
 });
 

@@ -68,19 +68,6 @@
 ;; Stacking helpers (error int to uint)
 ;;-------------------------------------
 
-(define-read-only (pox-can-stack-stx
-    (pox-address (tuple (version (buff 1)) (hashbytes (buff 32))))
-    (tokens-to-stack uint)
-    (start-burn-height uint)
-    (lock-period uint)
-  )
-  ;; TODO: update for mainnet
-  (match (as-contract (contract-call? .pox-3-mock can-stack-stx pox-address tokens-to-stack start-burn-height lock-period))
-    result (ok result)
-    error (err (to-uint error))
-  )
-)
-
 (define-private (pox-stack-stx
     (pox-address (tuple (version (buff 1)) (hashbytes (buff 32))))
     (tokens-to-stack uint)
@@ -127,9 +114,6 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    ;; Check if possible to stack
-    (try! (pox-can-stack-stx pox-address tokens-to-stack start-burn-height lock-period))
 
     ;; Get STX tokens from reserve
     (try! (as-contract (contract-call? reserve-contract request-stx-to-stack tokens-to-stack)))

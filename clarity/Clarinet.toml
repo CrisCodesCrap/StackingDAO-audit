@@ -85,47 +85,47 @@ clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-2]
-path = "contracts/stacker-2.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-3]
-path = "contracts/stacker-3.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-4]
-path = "contracts/stacker-4.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-5]
-path = "contracts/stacker-5.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-6]
-path = "contracts/stacker-6.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-7]
-path = "contracts/stacker-7.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-8]
-path = "contracts/stacker-8.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-9]
-path = "contracts/stacker-9.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-10]
-path = "contracts/stacker-10.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
