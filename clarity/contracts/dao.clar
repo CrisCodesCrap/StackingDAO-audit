@@ -28,6 +28,15 @@
   }
 )
 
+(define-map admins
+  { 
+    address: principal 
+  }
+  {
+    active: bool,
+  }
+)
+
 ;;-------------------------------------
 ;; Getters 
 ;;-------------------------------------
@@ -41,6 +50,15 @@
     (default-to 
       { active: false }
       (map-get? contracts { address: address })
+    )
+  )
+)
+
+(define-read-only (get-admin (address principal))
+  (get active 
+    (default-to 
+      { active: false }
+      (map-get? admins { address: address })
     )
   )
 )
@@ -63,13 +81,20 @@
   )
 )
 
+(define-public (check-is-admin (contract principal))
+  (begin
+    (asserts! (get-admin contract) (err ERR_NOT_ADMIN))
+    (ok true)
+  )
+)
+
 ;;-------------------------------------
 ;; Set 
 ;;-------------------------------------
 
 (define-public (set-contracts-enabled (enabled bool))
   (begin
-    (try! (check-is-protocol tx-sender))
+    (try! (check-is-admin tx-sender))
     (var-set contracts-enabled enabled)
     (ok true)
   )
@@ -77,8 +102,17 @@
 
 (define-public (set-contract-active (address principal) (active bool))
   (begin
-    (try! (check-is-protocol tx-sender))
+    (try! (check-is-admin tx-sender))
     (map-set contracts { address: address } { active: active }
+  )
+    (ok true)
+  )
+)
+
+(define-public (set-admin (address principal) (active bool))
+  (begin
+    (try! (check-is-admin tx-sender))
+    (map-set admins { address: address } { active: active }
   )
     (ok true)
   )
@@ -90,6 +124,8 @@
 
 ;; TODO: update for mainnet
 (begin
+  (map-set admins { address: tx-sender } { active: true })
+
   (map-set contracts { address: tx-sender } { active: true })
 
   (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.core-v1 } { active: true })
