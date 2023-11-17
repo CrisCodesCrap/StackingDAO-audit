@@ -52,6 +52,16 @@ class Staking {
     ], this.deployer.address);
   }
 
+  getRewardsEndBlock() {
+    return this.chain.callReadOnlyFn("staking-v1", "get-rewards-end-block", [
+    ], this.deployer.address);
+  }
+
+  getCycleRewardsEndBlock() {
+    return this.chain.callReadOnlyFn("staking-v1", "get-cycle-rewards-end-block", [
+    ], this.deployer.address);
+  }
+
   stake(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("staking-v1", "stake", [

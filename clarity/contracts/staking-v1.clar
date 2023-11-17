@@ -27,6 +27,7 @@
 (define-data-var cumm-reward-per-stake uint u0)
 (define-data-var last-reward-increase-block uint u0) 
 (define-data-var rewards-per-block uint u0)
+(define-data-var rewards-end-block uint u0)
 
 ;;-------------------------------------
 ;; Maps
@@ -80,6 +81,11 @@
 ;; Get current rewards per block
 (define-read-only (get-rewards-per-block)
   (var-get rewards-per-block)
+)
+
+;; Get current rewards end block
+(define-read-only (get-rewards-end-block)
+  (var-get rewards-end-block)
 )
 
 ;;-------------------------------------
@@ -219,10 +225,25 @@
 (define-public (calculate-cumm-reward-per-stake)
   (let (
     (current-total-staked (var-get total-staked))
-    (block-diff (if (> burn-block-height (var-get last-reward-increase-block))
-      (- burn-block-height (var-get last-reward-increase-block))
-      u0
-    ))
+
+    (block-diff 
+      ;; If burn-block-height not bigger than last-reward-increase-block, there is nothing to add
+      (if (> burn-block-height (var-get last-reward-increase-block))
+
+        ;; If burn-block-height has not reached rewards-end-block
+        (if (< burn-block-height (var-get rewards-end-block))
+          (- burn-block-height (var-get last-reward-increase-block))
+
+          ;; Once burn-block-height reached rewards-end-block
+          (if (< (var-get last-reward-increase-block) (var-get rewards-end-block))
+            (- (var-get rewards-end-block) (var-get last-reward-increase-block))
+            u0
+          )
+        )
+        u0
+      )
+    )
+    
     (current-cumm-reward-per-stake (var-get cumm-reward-per-stake)) 
   )
     (if (> current-total-staked u0)
@@ -242,13 +263,37 @@
 ;; Rewards - Add
 ;;-------------------------------------
 
+;; Adding rewards for cycle X happens at the beginning of cycle X+1
+;; These rewards are distributed per block during cycle X+1,
+;; and the distribution ends at the end of cycle X+1 plus pox-prepare-length
+(define-read-only (get-cycle-rewards-end-block) 
+  (let (
+    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
+    (cycle-end-block (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+    (pox-prepare-length (get prepare-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+  )
+    (+ cycle-end-block pox-prepare-length)
+  )
+)
+
 ;; Used by the commission contract to add STX
 (define-public (add-rewards (amount uint))
   (let (
     ;; TODO - Update for mainnet
-    (pox-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
-    (total-rewards (+ (stx-get-balance (as-contract tx-sender)) amount))
-    (new-rewards-per-block (/ total-rewards pox-length))
+    (pox-info (unwrap-panic (contract-call? .pox-3-mock get-pox-info)))
+    (pox-reward-length (get reward-cycle-length pox-info))
+    (pox-prepare-length (get prepare-cycle-length pox-info))
+
+    ;; Get rewards not distributed yet
+    (reward-blocks-left (if (< burn-block-height (var-get rewards-end-block))
+      (- (var-get rewards-end-block) burn-block-height)
+      u0
+    ))
+    (rewards-left (* reward-blocks-left (var-get rewards-per-block)))
+
+    ;; Calculate new reward per block
+    (end-block (get-cycle-rewards-end-block))
+    (new-rewards-per-block (/ (+ rewards-left amount) (- end-block burn-block-height)))
   )
     ;; Increase cummulative rewards per stake first
     (unwrap-panic (increase-cumm-reward-per-stake))
@@ -256,8 +301,9 @@
     ;; Get STX
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
 
-    ;; Update rewards per block
+    ;; Update rewards per block and rewards end block
     (var-set rewards-per-block new-rewards-per-block)
+    (var-set rewards-end-block end-block)
 
     (ok amount)
   )

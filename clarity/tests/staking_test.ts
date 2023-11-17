@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
+import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
 
 import { DAO } from './helpers/dao-helpers.ts';
 import { Staking } from './helpers/staking-helpers.ts';
@@ -65,14 +65,23 @@ Clarinet.test({
     result = stDaoToken.mintForProtocol(deployer, 1000, wallet_2.address);
     result.expectOk().expectBool(true);
 
-    // 21 STX so 1 STX per block
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH);
-    result.expectOk().expectUintWithDecimals(REWARD_CYCLE_LENGTH);
+    let call = await staking.getCycleRewardsEndBlock();
+    call.result.expectUint(REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
+
+    // Current burn-block-height is 5, rewards end block is 21+3
+    // (21+3)-5 = 19
+    // Adding 19 STX as rewards
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 5);
+    result.expectOk().expectUintWithDecimals(19);
+
+    // Added 19 STX, for 19 blocks = 1 STX per block
+    call = await staking.getRewardsPerBlock();
+    call.result.expectUintWithDecimals(1);
 
     result = await staking.stake(wallet_1, 1000);
     result.expectOk().expectUintWithDecimals(1000);
 
-    let call = await core.getStxBalance(wallet_2.address);
+    call = await core.getStxBalance(wallet_2.address);
     call.result.expectUintWithDecimals(100000000);
 
     result = await staking.stake(wallet_2, 1000);
@@ -121,48 +130,51 @@ Clarinet.test({
     result = await staking.stake(wallet_3, 3000);
     result.expectOk().expectUintWithDecimals(3000);
 
-    result = await staking.addRewards(deployer, 100);
-    result.expectOk().expectUintWithDecimals(100);
+    // Current burn-block-height is 9
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 9);
+    result.expectOk().expectUintWithDecimals(15);
 
-    // 100 STX per 21 (REWARD_CYCLE_LENGTH) blocks = 4.7619 STX per block
+    // 1 STX per block
     let call = await staking.getRewardsPerBlock();
-    call.result.expectUintWithDecimals(4.761904);
+    call.result.expectUintWithDecimals(1);
 
     // Advance half cycle
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH / 2); // 10 blocks
+    chain.mineEmptyBlock(9); // 9 blocks
 
-    // 50 STX * 16.66% = 8.3 STX
+    // 10 STX * 16.66% = 1.666 STX
     call = await staking.getPendingRewards(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(8.73);
+    call.result.expectOk().expectUintWithDecimals(1.666);
 
-    // 50 STX * 33.33% = 8.3 STX
+    // 10 STX * 33.33% = 3.333 STX
     call = await staking.getPendingRewards(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(17.46);
+    call.result.expectOk().expectUintWithDecimals(3.332);
 
-    // 50 STX * 50% = 25 STX
+    // 10 STX * 50% = 5 STX
     call = await staking.getPendingRewards(wallet_3.address);
-    call.result.expectOk().expectUintWithDecimals(26.19);
+    call.result.expectOk().expectUintWithDecimals(4.998);
 
     call = await core.getStxBalance(wallet_1.address);
     call.result.expectUintWithDecimals(100000000);
 
     result = await staking.claimPendingRewards(wallet_1);
-    result.expectOk().expectUintWithDecimals(8.73);
+    result.expectOk().expectUintWithDecimals(1.666);
 
     call = await core.getStxBalance(wallet_1.address);
-    call.result.expectUintWithDecimals(100000008.73);
+    call.result.expectUintWithDecimals(100000000 + 1.666);
 
     call = await core.getStxBalance(wallet_2.address);
     call.result.expectUintWithDecimals(100000000);
 
+    // 3.333 + 0.333 extra after 1 block
     result = await staking.claimPendingRewards(wallet_2);
-    result.expectOk().expectUintWithDecimals(19.046);
+    result.expectOk().expectUintWithDecimals(3.664);
 
     call = await core.getStxBalance(wallet_2.address);
-    call.result.expectUintWithDecimals(100000019.046);
+    call.result.expectUintWithDecimals(100000000 + 3.664);
 
+    // 5 + 1 extra after 2 blocks
     result = await staking.claimPendingRewards(wallet_3);
-    result.expectOk().expectUintWithDecimals(30.948);
+    result.expectOk().expectUintWithDecimals(5.994);
   }
 });
 
@@ -223,9 +235,13 @@ Clarinet.test({
     call = await staking.getCummRewardPerStake();
     call.result.expectUintWithDecimals(0);
 
-    // Add 21 STX, which is 1 STX per block
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH);
-    result.expectOk().expectUintWithDecimals(REWARD_CYCLE_LENGTH);
+    // Burn block height is 7
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 7);
+    result.expectOk().expectUintWithDecimals(17);
+
+    // Add 1 STX per block
+    call = await staking.getRewardsPerBlock();
+    call.result.expectUintWithDecimals(1);
 
     // 1 STX reward per block, over 1000 STX staked = 0.001 STX rewards per STX staked
     result = await staking.calculateCummRewardPerStake(deployer);
@@ -310,26 +326,84 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "staking: calculate rewards per block again if rewards added",
+  name: "staking: rewards distribution - end block reached",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
     let staking = new Staking(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
 
-    // Add 21 STX, so 1 STX per block
-    let result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH);
-    result.expectOk().expectUintWithDecimals(REWARD_CYCLE_LENGTH);
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
 
-    let call = await staking.getRewardsPerBlock();
-    call.result.expectUintWithDecimals(1);
+    result = await staking.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
 
-    // Add 1050 STX, which is 0.5 STX per block
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH / 2);
-    result.expectOk().expectUintWithDecimals(REWARD_CYCLE_LENGTH / 2);
+    // Add rewards
+    result = await staking.addRewards(deployer, 100);
+    result.expectOk().expectUintWithDecimals(100);
 
-    // Total is now 1.5 STX per block
+    chain.mineEmptyBlock(50);
+
+    result = await staking.increaseCummRewardPerStake(deployer);
+    result.expectOk();
+
+    let call = await staking.getPendingRewards(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(99.999);
+  }
+});
+
+Clarinet.test({
+  name: "staking: rewards distribution - add rewards multiple times",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let staking = new Staking(chain, deployer);
+    let stDaoToken = new STDAOToken(chain, deployer);
+
+    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    result.expectOk().expectBool(true);
+
+    result = await staking.stake(wallet_1, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    // Add rewards
+    result = await staking.addRewards(deployer, 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    chain.mineEmptyBlock(2);
+
+    // Add rewards
+    result = await staking.addRewards(deployer, 200);
+    result.expectOk().expectUintWithDecimals(200);
+
+    chain.mineEmptyBlock(50);
+
+    let call = await staking.getRewardsEndBlock();
+    call.result.expectUint(24);
+
+    // When adding first rewards, burn height was 5, so 100/(24-5) = 5.263 per block
+    // When adding rewards again, burn height was 8, so 200/(24-8) = 12.5 per block
+    // So total is 17.763 per block
     call = await staking.getRewardsPerBlock();
-    call.result.expectUintWithDecimals(1.5);
+    call.result.expectUintWithDecimals(17.763157);
+
+    call = await staking.getPendingRewards(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(299.999);
+
+    chain.mineEmptyBlock(50);
+
+    // All rewards distributed, so no extra pending rewards
+    call = await staking.getPendingRewards(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(299.999);
+
+    result = await staking.claimPendingRewards(wallet_1);
+    result.expectOk().expectUintWithDecimals(299.999);
+
+    call = await staking.getPendingRewards(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(0);
   }
 });
 
