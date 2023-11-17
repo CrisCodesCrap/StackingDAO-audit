@@ -20,6 +20,7 @@
 (define-constant ERR_NO_LISTING u1104)
 (define-constant ERR_WRONG_COMMISSION u1105)
 (define-constant ERR_IS_LISTED u1106)
+(define-constant ERR_GET_OWNER u1107)
 
 ;;-------------------------------------
 ;; Variables
@@ -134,7 +135,7 @@
 
 (define-public (burn-for-protocol (token-id uint))
   (let (
-    (owner (unwrap-panic (unwrap-panic (get-owner token-id))))
+    (owner (unwrap! (unwrap! (get-owner token-id) (err ERR_GET_OWNER)) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 

@@ -14,6 +14,7 @@
 (define-constant ERR_WITHDRAW_EXCEEDED u19003)
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
+(define-constant ERR_GET_OWNER u19006)
 
 ;;-------------------------------------
 ;; Variables
@@ -223,13 +224,13 @@
     (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
 
     (stx-to-receive (get stx-amount withdrawal-entry))
-    (nft-owner (unwrap-panic (contract-call? .ststx-withdraw-nft get-owner nft-id)))
+    (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
-    (asserts! (is-eq (unwrap-panic nft-owner) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
+    (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; STX to user, burn stSTX

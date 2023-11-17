@@ -156,6 +156,22 @@ Clarinet.test({
 });
 
 //-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "reserve: can not get STX stacking at block in future",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let reserve = new Reserve(chain, deployer);
+
+    let call = await reserve.getStxStackingAtBlock(600);
+    call.result.expectErr().expectUint(17003);
+  }
+});
+
+//-------------------------------------
 // Access 
 //-------------------------------------
 
