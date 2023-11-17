@@ -55,16 +55,32 @@ Clarinet.test({
     result = await commission.withdrawCommission(deployer);
     result.expectOk().expectUintWithDecimals(1000);
 
-    result = await commission.setStakingPercentage(deployer, 0.2);
+    result = await commission.setStakingPercentage(deployer, 0.7);
     result.expectOk().expectBool(true);
 
     result = await commission.addCommission(wallet_1, 5000);
     result.expectOk().expectUintWithDecimals(5000);
 
-    // Can withdraw 80% of total commission
-    // 80% of 5000 STX = 1000 STX
+    // Can withdraw 30% of total commission
+    // 30% of 5000 STX = 1500 STX
     result = await commission.withdrawCommission(deployer);
-    result.expectOk().expectUintWithDecimals(4000);
+    result.expectOk().expectUintWithDecimals(1500);
+  }
+});
+
+//-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "commission: can not set staking percentage below minimum",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let commission = new Commission(chain, deployer);
+
+    let result = await commission.setStakingPercentage(deployer, 0.6);
+    result.expectErr().expectUint(29001);
   }
 });
 

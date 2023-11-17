@@ -8,6 +8,14 @@
 (use-trait staking-trait .staking-trait-v1.staking-trait)
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_MIN_STAKING_PERCENTAGE u29001)
+
+(define-constant MIN_STAKING_PERCENTAGE u7000) ;; 70% in basis points
+
+;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
 
@@ -68,7 +76,8 @@
 (define-public (set-staking-percentage (new-percentage uint))
   (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
-    
+    (asserts! (>= new-percentage MIN_STAKING_PERCENTAGE) (err ERR_MIN_STAKING_PERCENTAGE))
+
     (var-set staking-percentage new-percentage)
     (ok true)
   )
