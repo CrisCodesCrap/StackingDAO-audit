@@ -12,6 +12,7 @@
 ;;-------------------------------------
 
 (define-constant ERR_SHUTDOWN u17002)
+(define-constant ERR_BLOCK_INFO u17003)
 
 ;;-------------------------------------
 ;; Variables
@@ -37,7 +38,7 @@
 ;; Amount of STX used in stacking at given block
 (define-read-only (get-stx-stacking-at-block (block uint))
   (at-block
-    (unwrap-panic (get-block-info? id-header-hash block))
+    (unwrap! (get-block-info? id-header-hash block) (err ERR_BLOCK_INFO))
     (get-stx-stacking)
   )
 )

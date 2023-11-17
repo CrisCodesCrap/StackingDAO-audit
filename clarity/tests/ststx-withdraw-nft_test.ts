@@ -212,6 +212,20 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "ststx-withdraw-nft: can not burn NFT for which no owner found",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let stStxWithdrawNft = new StStxWithdrawNft(chain, deployer);
+
+    let result = await stStxWithdrawNft.burnForProtocol(deployer, 10);
+    result.expectErr().expectUint(1107);
+  }
+});
+
 //-------------------------------------
 // Access 
 //-------------------------------------

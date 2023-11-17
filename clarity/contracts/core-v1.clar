@@ -15,6 +15,7 @@
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
 (define-constant ERR_MAX_COMMISSION u19006)
+(define-constant ERR_GET_OWNER u19007)
 
 (define-constant MAX_COMMISSION u2000) ;; 20% in basis points
 
@@ -164,11 +165,10 @@
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info cycle-id))
 
-    (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (get-stx-per-ststx reserve-contract)))
     (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
@@ -227,13 +227,13 @@
     (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
 
     (stx-to-receive (get stx-amount withdrawal-entry))
-    (nft-owner (unwrap-panic (contract-call? .ststx-withdraw-nft get-owner nft-id)))
+    (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
-    (asserts! (is-eq (unwrap-panic nft-owner) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
+    (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; STX to user, burn stSTX
