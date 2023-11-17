@@ -14,7 +14,10 @@
 (define-constant ERR_WITHDRAW_EXCEEDED u19003)
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
-(define-constant ERR_GET_OWNER u19006)
+(define-constant ERR_MAX_COMMISSION u19006)
+(define-constant ERR_GET_OWNER u19007)
+
+(define-constant MAX_COMMISSION u2000) ;; 20% in basis points
 
 ;;-------------------------------------
 ;; Variables
@@ -299,6 +302,7 @@
 (define-public (set-commission (new-commission uint))
   (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
+    (asserts! (<= new-commission MAX_COMMISSION) (err ERR_MAX_COMMISSION))
 
     (var-set commission new-commission)
     (ok true)
