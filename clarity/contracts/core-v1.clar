@@ -25,7 +25,6 @@
 (define-data-var commission uint u500) ;; 5% in basis points
 
 (define-data-var shutdown-deposits bool false)
-(define-data-var shutdown-withdrawals bool false)
 
 ;;-------------------------------------
 ;; Maps 
@@ -65,10 +64,6 @@
 
 (define-read-only (get-shutdown-deposits)
   (var-get shutdown-deposits)
-)
-
-(define-read-only (get-shutdown-withdrawals)
-  (var-get shutdown-withdrawals)
 )
 
 (define-read-only (get-cycle-info (cycle-id uint))
@@ -193,7 +188,6 @@
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-to-receive)))
@@ -224,7 +218,6 @@
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
@@ -298,15 +291,6 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
     
     (var-set shutdown-deposits shutdown)
-    (ok true)
-  )
-)
-
-(define-public (set-shutdown-withdrawals (shutdown bool))
-  (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
-    (var-set shutdown-withdrawals shutdown)
     (ok true)
   )
 )

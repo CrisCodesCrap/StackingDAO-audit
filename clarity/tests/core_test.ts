@@ -221,7 +221,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: protocol can set shut down deposits / withdrawals",
+  name: "core: protocol can shut down deposits",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -238,10 +238,8 @@ Clarinet.test({
     result = await core.initWithdraw(deployer, 100);
     result.expectOk().expectUint(0);
 
-    // Check shutdowns
+    // Check shutdown
     let call = await core.getShutdownDeposits();
-    call.result.expectBool(false);
-    call = await core.getShutdownWithdrawals();
     call.result.expectBool(false);
 
     // Shutdown deposits
@@ -259,37 +257,6 @@ Clarinet.test({
     // Can not deposit again
     result = await core.deposit(deployer, 100);
     result.expectOk().expectUintWithDecimals(100);
-
-    // Shutdown withdrawals
-    result = await core.setShutdownWithdrawals(deployer, true);
-    result.expectOk().expectBool(true)
-
-    // Can not withdraw anymore
-    result = await core.initWithdraw(deployer, 50);
-    result.expectErr().expectUint(19002);
-
-    result = await core.withdraw(deployer, 0);
-    result.expectErr().expectUint(19002);
-
-    // Enable withdrawals
-    result = await core.setShutdownWithdrawals(deployer, false);
-    result.expectOk().expectBool(true)
-
-    // Advance to next cycle
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
-
-    // Can withdraw again (withdrawal NFT has ID 1)
-    result = await core.initWithdraw(deployer, 50);
-    result.expectOk().expectUint(1);
-
-    result = await core.withdraw(deployer, 0);
-    result.expectOk().expectUintWithDecimals(100);
-
-    // Advance to next cycle
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + 1);
-
-    result = await core.withdraw(deployer, 1);
-    result.expectOk().expectUintWithDecimals(50);
   },
 });
 
@@ -490,9 +457,6 @@ Clarinet.test({
     result.expectErr().expectUint(20003);
 
     result = await core.setShutdownDeposits(wallet_1, true);
-    result.expectErr().expectUint(20003);
-
-    result = await core.setShutdownWithdrawals(wallet_1, true);
     result.expectErr().expectUint(20003);
   },
 });

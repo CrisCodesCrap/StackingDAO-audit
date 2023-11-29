@@ -22,10 +22,6 @@ class Core {
     return this.chain.callReadOnlyFn("core-v1", "get-shutdown-deposits", [], this.deployer.address);
   }
 
-  getShutdownWithdrawals() {
-    return this.chain.callReadOnlyFn("core-v1", "get-shutdown-withdrawals", [], this.deployer.address);
-  }
-
   getCycleInfo(cycle: number) {
     return this.chain.callReadOnlyFn("core-v1", "get-cycle-info", [
       types.uint(cycle)
@@ -118,15 +114,6 @@ class Core {
   setShutdownDeposits(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall("core-v1", "set-shutdown-deposits", [
-        types.bool(shutdown),
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  setShutdownWithdrawals(caller: Account, shutdown: boolean) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "set-shutdown-withdrawals", [
         types.bool(shutdown),
       ], caller.address)
     ]);
