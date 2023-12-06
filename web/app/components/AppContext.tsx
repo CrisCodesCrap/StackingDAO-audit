@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount } from '@micro-stacks/react'
 import { getRPCClient } from '../common/utils'
@@ -6,18 +8,18 @@ import { contractPrincipalCV } from 'micro-stacks/clarity';
 import { stacksNetwork } from '../common/utils';
 
 interface AppContextProps {
-  stxBalance: string | undefined;
+  stxBalance: number;
   setStxBalance: (balance: string | undefined) => void;
-  stStxBalance: string | undefined;
-  setStStxBalance: (balance: string | undefined) => void;
+  stStxBalance: number;
+  setStStxBalance: (balance: number | undefined) => void;
   stDaoBalance: string | undefined;
   setStDaoBalance: (balance: string | undefined) => void;
   stxPrice: string | undefined;
   setStxPrice: (price: string | undefined) => void;
   stxRatio: string | undefined;
   setStxRatio: (ratio: string | undefined) => void;
-  stackingApy: string | undefined;
-  setStackingApy: (apy: string | undefined) => void;
+  stackingApy: number;
+  setStackingApy: (apy: number | undefined) => void;
 
   stackedStx: string | undefined;
   setStackedStx: (stackedStx: string | undefined) => void;
@@ -37,9 +39,9 @@ interface AppContextProps {
 }
 
 export const AppContext = createContext<AppContextProps>({
-  stxBalance: undefined,
+  stxBalance: 0,
   setStxBalance: () => {},
-  stStxBalance: undefined,
+  stStxBalance: 0,
   setStStxBalance: () => {},
   stDaoBalance: undefined,
   setStDaoBalance: () => {},
@@ -47,7 +49,7 @@ export const AppContext = createContext<AppContextProps>({
   setStxPrice: () => {},
   stxRatio: undefined,
   setStxRatio: () => {},
-  stackingApy: undefined,
+  stackingApy: 0,
   setStackingApy: () => {},
 
   stackedStx: undefined,
@@ -121,7 +123,7 @@ export const AppContextProvider = (props: any) => {
 
     const fetchRatio = async () => {
       const result = await callReadOnlyFunction({
-        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
         contractName: 'core-v1',
         functionName: 'get-stx-per-ststx',
         functionArgs: [
@@ -175,10 +177,10 @@ export const AppContextProvider = (props: any) => {
       setStackingApy(parseFloat(result?.value?.value) / 1000000.0);
     }
 
+    fetchStackingCycle();
     if (stxAddress) {
       fetchBalances();
       fetchRatio();
-      fetchStackingCycle();
       fetchStackingApy();
     }
   }, [stxAddress]);

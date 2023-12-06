@@ -6,7 +6,7 @@ interface ModalProps {
   setOpen: (openState: boolean | undefined) => void;
 }
 
-export function RatioModal({ open, setOpen }: ModalProps) {
+export function CommissionModal({ open, setOpen }: ModalProps) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -37,11 +37,11 @@ export function RatioModal({ open, setOpen }: ModalProps) {
                 <div>
                   <div className="text-center">
                     <Dialog.Title as="h1" className="font-semibold leading-6 text-2xl text-gray-900 mb-4 mt-2">
-                      stSTX goes up over time
+                      About performance fees
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-md text-gray-500">
-                        Each PoX cycle, stSTX will be worth a little bit more relative to STX. Multiplying this number with your stSTX position will give the approximate amount of STX you receive when withdrawing.
+                        To make sure we can offer the highest quality product, keep yields optimal and auto-compounding, the protocol charges a small 5% commission to keep the lights on. Thank you!
                       </p>
                     </div>
                   </div>

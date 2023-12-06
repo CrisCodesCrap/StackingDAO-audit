@@ -21,7 +21,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
         <span className="text-xs text-left text-gray-600 dark:text-zinc-400">
           Available amount {balance} {token}
         </span>
-        <div className="inline-flex items-center w-full min-w-0 mt-2 mb-2 border border-gray-300 rounded-md focus-within:ring-indigo-500 focus-within:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-500">
+        <div className="inline-flex items-center w-full min-w-0 mt-2 mb-2 border border-gray-300 rounded-md">
           <input
             type="text"
             inputMode="decimal"
@@ -32,7 +32,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
             name={inputName}
             id={inputId}
             aria-label={inputLabel}
-            className="flex-1 min-w-0 px-3 mr-2 border-0 rounded-md sm:text-sm focus:outline-none focus:ring-0 dark:bg-zinc-700 dark:text-zinc-200"
+            className="flex-1 min-w-0 px-3 mr-2 border-0 rounded-md sm:text-sm focus:outline-none focus:ring-0"
             value={inputValue}
             onChange={onInputChange}
             ref={ref}
@@ -45,7 +45,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
               <button
                 type="button"
                 onClick={onClickMax}
-                className="p-1 text-xs font-semibold text-indigo-600 bg-indigo-100 rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-indigo-500"
+                className="p-1 text-xs font-semibold text-gray-600 button-ststx rounded-md focus:outline-none focus:ring-2 focus:ring-offset-0"
               >
                 Max.
               </button>

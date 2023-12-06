@@ -26,7 +26,7 @@ export const getRPCClient = () => {
 };
 
 export const stacksNetwork = env === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
-stacksNetwork.coreApiUrl = coreApiUrl;
+(stacksNetwork.coreApiUrl as any) = coreApiUrl;
 
 export const blocksToTime = (blocks:number) => {
   const minutesPerBlock = 10;

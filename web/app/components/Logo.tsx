@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useId } from 'react'
 import clsx from 'clsx'
 

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useContext, useState, useRef } from 'react';
 import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';

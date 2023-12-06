@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { Fragment, useEffect, useState } from 'react';
@@ -12,6 +14,10 @@ import { standardPrincipalCV } from 'micro-stacks/clarity';
 import { stacksNetwork } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
 import { UnstakeModal } from '../components/UnstakeModal';
+import {
+  makeContractSTXPostCondition,
+  FungibleConditionCode,
+} from 'micro-stacks/transactions';
 
 export function Stake() {
   const { stxAddress } = useAccount();
@@ -23,17 +29,26 @@ export function Stake() {
   const [earnedRewards, setEarnedRewards] = useState<number>(0);
   const [stakedTokens, setStakedTokens] = useState<number>(0);
   const [totalStakedTokens, setTotalStakedTokens] = useState<number>(0);
-  const [apr, setApr] = useState<number>(5.5); // TODO
+  // TODO: calculate real APY
+  // Using rewards-per-block, STDAO and STX price we can calculate this
+  const [apr, setApr] = useState<number>(5.5);
   const [showStakeModal, setShowStakeModal] = useState<boolean>(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState<boolean>(false);
 
   const claimRewards = async () => {
+    const postCondition = makeContractSTXPostCondition(
+      process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+      'staking-v1',
+      FungibleConditionCode.GreaterEqual,
+      0n
+    );
+
     await openContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'staking-v1',
       functionName: 'claim-pending-rewards',
       functionArgs: [],
-      postConditionMode: 0x01,
+      postConditions: [postCondition],
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
@@ -97,19 +112,19 @@ export function Stake() {
       <section className="relative mt-8">
         <header className="pb-5 sm:flex sm:justify-between sm:items-end">
           <div>
-            <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
+            <h3 className="text-lg leading-6 text-gray-900 font-headings">
               STDAO Staking
             </h3>
-            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+            <p className="max-w-3xl mt-2 text-sm text-gray-500">
               The staking pool is a <span className="font-semibold">revenue share</span> pool where you receive STX from the protocol. The STX tokens are earned through a commission of <span className="font-semibold">5%</span> of the yield from Proof of Transfer.
             </p>
           </div>
           <div className="flex items-center mt-2 sm:mt-0">
-            <div className="w-5.5 h-5.5 rounded-full bg-indigo-200 flex items-center justify-center">
-              <StyledIcon as="QuestionMarkCircleIcon" size={5} className="text-indigo-600" />
+            <div className="w-5.5 h-5.5 rounded-full bg-white flex items-center justify-center">
+              <StyledIcon as="QuestionMarkCircleIcon" size={5} className="text-ststx" />
             </div>
             <a
-              className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+              className="inline-flex items-center px-2 text-sm font-medium text-ststx"
               href="https://docs.arkadiko.finance/protocol/auctions/liquidation-pool"
               target="_blank"
               rel="noopener noreferrer"
@@ -120,62 +135,62 @@ export function Stake() {
           </div>
         </header>
 
-        <div className="mt-4 bg-white rounded-md shadow dark:bg-zinc-800">
+        <div className="mt-4 bg-white rounded-md shadow">
           <div className="px-4 py-5 space-y-6 sm:p-6">
             <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
               <div className="self-center w-14">
                 <img className="w-12 h-12 rounded-full" src="/stdao-logo.jpg" alt="StackingDAO logo" />
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">
                   Your staked STDAO tokens
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold dark:text-white">
+                    <p className="text-lg font-semibold">
                       {stakedTokens} STDAO
                     </p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">
                   Total Staked
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold dark:text-white">
+                    <p className="text-lg font-semibold">
                       {totalStakedTokens} STDAO
                     </p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">
                   Earned STX
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold dark:text-white">
+                    <p className="text-lg font-semibold">
                       {earnedRewards} STX
                     </p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">
                   Current APR
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
-                  <p className="text-indigo-600 dark:text-indigo-400">
+                  <p className="text-ststx">
                     {apr}%
                   </p>
                 )}
@@ -185,7 +200,7 @@ export function Stake() {
                 <Menu as="div" className="relative flex items-center justify-end">
                   {({ open }) => (
                     <>
-                      <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
+                      <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-ststx bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-opacity-75">
                         <span>Actions</span>
                         <StyledIcon
                           as="ChevronUpIcon"
@@ -209,7 +224,7 @@ export function Stake() {
                       >
                         <Menu.Items
                           static
-                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 dark:divide-gray-600 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          className="absolute right-0 z-10 w-48 mx-3 mt-6 origin-top-right bg-white divide-y divide-gray-200 rounded-md shadow-lg top-2 ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
                           <div className="px-1 py-1 space-y-0.5">
                             <Menu.Item>
@@ -217,7 +232,7 @@ export function Stake() {
                                 <button
                                   className={`${
                                     active
-                                      ? 'bg-indigo-500 text-white'
+                                      ? 'button-ststx text-white'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   disabled={!(stDaoBalance > 0)}
@@ -236,7 +251,7 @@ export function Stake() {
                                         />
                                         Stake
                                       </div>
-                                      <span className="tooltip">You don't have any available STDAO to stake in your wallet.</span>
+                                      <span className="tooltip">You don&apos;t have any available STDAO to stake in your wallet.</span>
                                     </a>
                                   ) : (
                                     <>
@@ -257,7 +272,7 @@ export function Stake() {
                                 <button
                                   className={`${
                                     active
-                                      ? 'bg-indigo-500 text-white'
+                                      ? 'button-ststx text-white'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => setShowUnstakeModal(true)}

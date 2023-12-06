@@ -32,6 +32,24 @@
   background-color: rgb(85, 70, 255);
 }
 
+.button-ststx {
+  color: #fff;
+  background-color: #318d8b;
+}
+
+.text-ststx {
+  color: #318d8b;
+}
+
+.bg-light-ststx {
+  background-color: #c9ece1;
+}
+
+.bg-ststx {
+  --tw-bg-opacity: 1;
+  background-color: rgb(49 141 139/var(--tw-bg-opacity));
+}
+
 .button-stacks {
   color: #fff;
   cursor: pointer;

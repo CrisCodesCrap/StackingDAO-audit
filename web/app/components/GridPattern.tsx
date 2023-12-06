@@ -1,9 +1,16 @@
+// @ts-nocheck
+
 'use client'
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
-function Block({ x, y, ...props }) {
+interface BlockProps {
+  x: number;
+  y: number;
+}
+
+function Block({ x, y, ...props }: BlockProps) {
   return (
     <motion.path
       transform={`translate(${-32 * y + 96 * x} ${160 * y})`}
@@ -15,8 +22,8 @@ function Block({ x, y, ...props }) {
 
 export function GridPattern({ yOffset = 0, interactive = false, ...props }) {
   let id = useId()
-  let ref = useRef()
-  let currentBlock = useRef()
+  let ref = useRef<HTMLInputElement>(null);
+  let currentBlock = useRef<HTMLInputElement>(null);
   let counter = useRef(0)
   let [hoveredBlocks, setHoveredBlocks] = useState([])
   let staticBlocks = [
@@ -33,12 +40,12 @@ export function GridPattern({ yOffset = 0, interactive = false, ...props }) {
       return
     }
 
-    function onMouseMove(event) {
+    function onMouseMove(event : any) {
       if (!ref.current) {
         return
       }
 
-      let rect = ref.current.getBoundingClientRect()
+      let rect = ref?.current?.getBoundingClientRect()
       let x = event.clientX - rect.left
       let y = event.clientY - rect.top
       if (x < 0 || y < 0 || x > rect.width || y > rect.height) {

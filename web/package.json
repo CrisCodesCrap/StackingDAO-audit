@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx next build && npx next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy-contracts": "ts-node scripts/deploy-contracts.ts -r tsconfig-paths/register -T --project ./tsconfig.json"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.16",

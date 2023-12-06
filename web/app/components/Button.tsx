@@ -1,7 +1,14 @@
 import Link from 'next/link'
 import clsx from 'clsx'
 
-export function Button({ invert, href, className, children, ...props }) {
+interface ButtonProps {
+  invert: boolean | undefined;
+  href: string;
+  className: string;
+  children: any;
+}
+
+export function Button({ invert, href, className, children, ...props }: ButtonProps) {
   className = clsx(
     className,
     'inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition',

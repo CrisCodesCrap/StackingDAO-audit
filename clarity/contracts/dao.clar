@@ -122,26 +122,25 @@
 ;; Init 
 ;;-------------------------------------
 
-;; TODO: update for mainnet
 (begin
   (map-set admins { address: tx-sender } { active: true })
 
   (map-set contracts { address: tx-sender } { active: true })
 
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.core-v1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.reserve-v1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.commission-v1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.tax-v1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.staking-v1 } { active: true })
+  (map-set contracts { address: .core-v1 } { active: true })
+  (map-set contracts { address: .reserve-v1 } { active: true })
+  (map-set contracts { address: .commission-v1 } { active: true })
+  (map-set contracts { address: .tax-v1 } { active: true })
+  (map-set contracts { address: .staking-v1 } { active: true })
 
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-1 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-2 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-3 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-4 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-5 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-6 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-7 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-8 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-9 } { active: true })
-  (map-set contracts { address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.stacker-10 } { active: true })
+  (map-set contracts { address: .stacker-1 } { active: true })
+  (map-set contracts { address: .stacker-2 } { active: true })
+  (map-set contracts { address: .stacker-3 } { active: true })
+  (map-set contracts { address: .stacker-4 } { active: true })
+  (map-set contracts { address: .stacker-5 } { active: true })
+  (map-set contracts { address: .stacker-6 } { active: true })
+  (map-set contracts { address: .stacker-7 } { active: true })
+  (map-set contracts { address: .stacker-8 } { active: true })
+  (map-set contracts { address: .stacker-9 } { active: true })
+  (map-set contracts { address: .stacker-10 } { active: true })
 )

@@ -61,6 +61,13 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
+            contract-name: commission-trait
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 2100
+            path: contracts/commission-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
             contract-name: dao
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 36520

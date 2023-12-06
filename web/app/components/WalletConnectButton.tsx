@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useAuth, useAccount } from '@micro-stacks/react'
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'

@@ -5,8 +5,8 @@
 ;; When initiating a withdrawal, the stSTX tokens are already burned, while the user has not yet received STX.
 ;; That's why this NFT is introduced, so the user has a token representation of the withdrawal initiation.
 
-(impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
-(use-trait commission-trait 'SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait.commission)
+(impl-trait .nft-trait.nft-trait)
+(use-trait commission-trait .commission-trait.commission)
 
 (define-non-fungible-token ststx-withdraw uint)
 
