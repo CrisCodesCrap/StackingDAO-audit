@@ -1,44 +1,5 @@
 import Link from 'next/link'
-
 import { Container } from './Container'
-import { Logo } from './Logo'
-
-const socialMediaProfiles = [
-  { title: 'Twitter', href: 'https://twitter.com/stackingdao', icon: '' },
-]
-
-const navigation = [
-  {
-    title: 'Products',
-    links: [
-      { title: 'Stack STX', href: '#' },
-      { title: 'Use stSTX in DeFi', href: '#' },
-    ],
-  },
-  {
-    title: 'Connect',
-    links: socialMediaProfiles,
-  },
-]
-
-function Navigation() {
-  return (
-    <></>
-  )
-}
-
-function ArrowIcon(props:any) {
-  return (
-    <svg viewBox="0 0 16 6" aria-hidden="true" {...props}>
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M16 3 10 .5v2H0v1h10v2L16 3Z"
-      />
-    </svg>
-  )
-}
 
 export function Footer() {
   return (
