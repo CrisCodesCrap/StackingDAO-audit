@@ -172,7 +172,7 @@ export function Unstack() {
             Best price<span>1 stSTX = {stxRatio} STX</span>
           </div>
           <div className="flex justify-between items-start">
-            You will receive approximately<span>{stxReceived.toLocaleString()} STX</span>
+            You will receive approximately<span>~{stxReceived.toLocaleString()} STX</span>
           </div>
         </div>
         <button
