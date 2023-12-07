@@ -116,7 +116,13 @@ export function Stacking() {
               Stack STX and earn rewards
             </div>
           </div>
-          <Link href="/unstack" className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${stStxBalance > 0 ? 'bg-ststx' : 'bg-light-ststx'} text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14`}>
+          <Link
+            href="/unstack"
+            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${stStxBalance > 0 ? 'bg-ststx' : 'bg-light-ststx'} text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14`}
+            style={{
+              pointerEvents: (stStxBalance > 0) ? "auto" : "none",
+            }}
+          >
             Unstack stSTX
           </Link>
           <div className="bg-white rounded-xl w-full p-4 mt-2 hidden">

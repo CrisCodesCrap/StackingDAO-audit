@@ -25,16 +25,20 @@ export function Unstack() {
   const [amountInDollars, setAmountInDollars] = useState<number | undefined>(0);
   const [stxReceived, setStxReceived] = useState<number | undefined>(0);
   const [buttonText, setButtonText] = useState('Unstack');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const updateAmount = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setAmount(event.target.value);
+    const amount = event.target.value;
+    setAmount(amount);
     setAmountInDollars((stxPrice * stxRatio * event.target.value).toFixed(2));
     setStxReceived(stxRatio * event.target.value);
 
-    if (event.target.value > stStxBalance) {
+    if (amount > stStxBalance) {
       setButtonText("Insufficient Balance");
+      setButtonDisabled(true);
     } else {
       setButtonText("Unstack");
+      setButtonDisabled(!amount || !stxAddress || amount > stStxBalance);
     }
   };
 
@@ -44,11 +48,8 @@ export function Unstack() {
     setAmountInDollars((stxPrice * stxRatio * amount).toFixed(2));
     setStxReceived(stxRatio * amount);
 
-    if (amount > stStxBalance) {
-      setButtonText("Insufficient Balance");
-    } else {
-      setButtonText("Unstack");
-    }
+   setButtonText("Unstack");
+   setButtonDisabled(false);
   }
 
   const unstackStx = async () => {
@@ -176,8 +177,8 @@ export function Unstack() {
         </div>
         <button
           type="button"
-          className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg button-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full mt-4"
-          disabled={!amount || !stxAddress || amount > stStxBalance}
+          className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
+          disabled={buttonDisabled}
           onClick={unstackStx}
         >
           {buttonText}

@@ -28,16 +28,21 @@ export function Stack() {
   const [stStxReceived, setStStxReceived] = useState<number | undefined>(0);
   const [showApyInfo, setShowApyInfo] = useState(false);
   const [buttonText, setButtonText] = useState('Stack');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const updateAmount = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setAmount(event.target.value);
+    const amount = event.target.value;
+    setAmount(amount);
     setAmountInDollars(stxPrice * event.target.value);
     setStStxReceived(event.target.value / stxRatio);
+    const maxBalance = (stxBalance - 0.04);
 
-    if (event.target.value > (stxBalance - 0.04)) {
+    if (amount > maxBalance) {
       setButtonText("Insufficient Balance");
+      setButtonDisabled(true);
     } else {
       setButtonText("Stack");
+      setButtonDisabled(!amount || !stxAddress || amount > maxBalance);
     }
   };
 
@@ -47,11 +52,8 @@ export function Stack() {
     setAmountInDollars(stxPrice * amount);
     setStStxReceived(amount / stxRatio);
 
-    if (amount > (stxBalance - 0.04)) {
-      setButtonText("Insufficient Balance");
-    } else {
-      setButtonText("Stack");
-    }
+    setButtonText("Stack");
+    setButtonDisabled(false);
   };
 
   const stackStx = async () => {
@@ -178,8 +180,8 @@ export function Stack() {
           </div>
           <button
             type="button"
-            className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg button-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full mt-4"
-            disabled={!amount || !stxAddress || amount > stxBalance}
+            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
+            disabled={buttonDisabled}
             onClick={stackStx}
           >
             {buttonText}
