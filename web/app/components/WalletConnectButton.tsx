@@ -16,6 +16,11 @@ export const WalletConnectButton = ({ className }) => {
   const [truncatedAddress, setTruncatedAddress] = useState(stxAddress);
   const [buttonLabel, setButtonLabel] = useState('Connect Stacks Wallet');
 
+  const signOutAction = async () => {
+    await signOut();
+    window.location = '/';
+  }
+
   const updateButtonLabel = (entered: boolean) => {
     if (entered) {
       const label = isSignedIn ? 'Sign out' : 'Connect Stacks Wallet';
@@ -38,7 +43,7 @@ export const WalletConnectButton = ({ className }) => {
     <button
       className={className}
       onClick={async () => {
-        if (isSignedIn) await signOut();
+        if (isSignedIn) await signOutAction();
         else await openAuthRequest();
       }}
       onMouseEnter={() => updateButtonLabel(true)}
