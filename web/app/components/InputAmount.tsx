@@ -38,7 +38,7 @@ export const InputAmount = React.forwardRef<HTMLInputElement, InputAmountProps>(
             ref={ref}
             autoFocus={true}
           />
-          <div className="ml-auto mr-2 text-sm shrink-0">
+          <div className="ml-auto mr-2 text-sm shrink-0 pl-3 pt-3 pb-3">
             <div className="flex items-center min-w-0">
               <span className="text-gray-400 dark:text-zinc-300 sm:text-sm">{token}</span>
               <div className="w-px h-3 mx-2 bg-gray-400"></div>
