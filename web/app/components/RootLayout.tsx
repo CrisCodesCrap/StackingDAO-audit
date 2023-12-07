@@ -78,17 +78,13 @@ function Header({
             </svg>
             <div className="text-base">Stacking</div>
           </Link>
-          <Link className={`flex h-fit pt-3 pb-2 gap-2 items-center font-semibold border-b-4 ${pathname === '/defi' ? 'text-ststx border-primary' : 'border-transparent'}`} href="/defi">
-            <svg className={`${pathname === '/defi' ? 'text-ststx' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
-              <g id="liquidityLogo">
-                <path id="color" fillRule="evenodd" clipRule="evenodd" d="M12.6087 7.83428V8.53715C12.6087 9.23144 13.3972 9.62573 13.9458 9.20573L17.8972 6.2143C18.3344 5.88001 18.3344 5.22001 17.8972 4.88573L13.9458 1.88573C13.3887 1.46573 12.6087 1.86001 12.6087 2.5543V3.26573C9.33443 3.41148 6.41162 5.35718 4.78306 8.04001C5.75164 8.58858 6.72878 9.10287 7.72306 9.58287C7.88592 9.41144 8.05735 9.25715 8.24592 9.11144C9.52304 8.08289 11.1258 7.65432 12.6087 7.83428ZM20.1515 10.4486C20.1515 11.5886 19.9115 12.6943 19.4915 13.7314C18.4629 13.4829 17.4429 13.2086 16.4229 12.9086C16.9972 12.1372 17.4086 11.2372 17.5972 10.2514C17.6658 9.90858 17.9829 9.66858 18.3343 9.66858H19.3886C19.8172 9.66858 20.1515 10.02 20.1515 10.4486ZM15.9516 13.4657C15.763 13.6714 15.5573 13.86 15.343 14.0314C14.0659 15.06 12.463 15.4886 10.9802 15.3086V19.8772C14.3145 19.7314 17.2888 17.7172 18.8916 14.9572C17.923 14.4343 16.9459 13.9372 15.9516 13.4657ZM10.9716 20.5886V14.6057C10.9716 13.9114 10.183 13.5172 9.63448 13.9372L5.68305 16.9286C5.2459 17.2629 5.2459 17.9229 5.68305 18.2572L9.63448 21.2572C10.1916 21.6772 10.9716 21.2829 10.9716 20.5886ZM4.09728 9.3943L4.09659 9.39598L4.08871 9.3943H4.09728ZM4.09659 9.39598C3.66845 10.4327 3.42871 11.5464 3.42871 12.6943C3.42871 13.1229 3.763 13.4743 4.19157 13.4743H5.24585C5.59728 13.4743 5.91443 13.2343 5.983 12.8914C6.18014 11.88 6.60871 10.9543 7.20014 10.1743C6.17415 9.88361 5.13963 9.6185 4.09659 9.39598Z" fill="currentFill"></path>
-              </g>
+          <Link className={`flex h-fit pt-3 pb-2 gap-2 items-center font-semibold border-b-4 ${pathname === '/points' ? 'text-ststx border-primary' : 'border-transparent'}`} href="/points">
+            <svg className={`${pathname === '/points' ? 'text-ststx' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+              <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
+              <path fill-rule="evenodd" d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z" clip-rule="evenodd" />
+              <path d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z" />
             </svg>
-            <div className="text-base">DeFi</div>
-          </Link>
-          <Link className={`flex h-fit pt-3 pb-2 gap-2 items-center font-semibold border-b-4 ${pathname === '/stdao' ? 'text-stsx border-primary' : 'border-transparent'}`} href="/stdao">
-            <svg className={`${pathname === '/stdao' ? 'text-ststx' : ''}`} width="32" height="32" aria-hidden="true" preserveAspectRatio="xMinYMid meet"><rect clipPath="url(#:r2j:-clip)" className="h-8 transition-all duration-300 fill-neutral-950 w-0 group-hover/logo:w-8"></rect><use href="#:r2j:-path" className="stroke-neutral-950" fill="none" strokeWidth="1.5"></use><defs><path id=":r2j:-path" d="M3.25 26v.75H7c1.305 0 2.384-.21 3.346-.627.96-.415 1.763-1.02 2.536-1.752.695-.657 1.39-1.443 2.152-2.306l.233-.263c.864-.975 1.843-2.068 3.071-3.266 1.209-1.18 2.881-1.786 4.621-1.786h5.791V5.25H25c-1.305 0-2.384.21-3.346.627-.96.415-1.763 1.02-2.536 1.751-.695.658-1.39 1.444-2.152 2.307l-.233.263c-.864.975-1.843 2.068-3.071 3.266-1.209 1.18-2.881 1.786-4.621 1.786H3.25V26Z"></path><clipPath id=":r2j:-clip"><use href="#:r2j:-path"></use></clipPath></defs></svg>
-            <div className="text-base">STDAO</div>
+            <div className="text-base">Points</div>
           </Link>
         </div>
         <div className="flex items-center gap-x-8">

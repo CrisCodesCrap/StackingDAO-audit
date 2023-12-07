@@ -138,7 +138,7 @@ export function Stacking() {
         <div className="w-full md:max-w-xl min-h-full flex flex-col px-2 pb-10 items-center">
           <div className="bg-white rounded-xl w-full p-4">
             <h1 className="text-center text-3xl font-semibold mt-2">
-              All you ever need in one place for <span className="text-ststx">Stacks Stacking</span>
+              All you ever need in one place for <span className="text-ststx">STX Stacking</span>
             </h1>
             <p className="text-center text-base text-secondary-text font-normal mt-3 mb-6">
               Start stacking STX, review your existing STX locked in PoX, and unstack at any time, for the best price.
