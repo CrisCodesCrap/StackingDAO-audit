@@ -93,15 +93,13 @@
     (try! (contract-call? .dao check-is-enabled))
     (asserts! (is-eq .stdao-token (contract-of token)) ERR_WRONG_TOKEN)
 
-    ;; Save currrent cumm reward per stake
-    (unwrap-panic (increase-cumm-reward-per-stake))
-
     (let (
       ;; Calculate new stake amount
       (stake-amount (get-stake-amount-of staker))
       (new-stake-amount (+ stake-amount amount))
     )
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
+      ;; Save currrent cumm reward per stake
       (try! (claim-pending-rewards))
 
       ;; Update total stake
@@ -135,8 +133,8 @@
       ;; Calculate new stake amount
       (new-stake-amount (- stake-amount amount))
     )
-      ;; Save currrent cumm reward per stake and
       ;; Claim all pending rewards for staker so we can set the new cumm-reward for this user
+      ;; Save currrent cumm reward per stake
       (try! (claim-pending-rewards))
 
       ;; Update total stake
