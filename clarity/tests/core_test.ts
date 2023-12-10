@@ -213,10 +213,10 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(100);
 
     // 100 STX added as rewards, 20% taken as commission
-    // Commission contract keeps 20 %
-    // 100 * 0.2 * 0.2 = 4 STX
+    // Commission contract keeps 100%
+    // 100 * 0.2 = 20 STX
     call = await core.getStxBalance(qualifiedName("commission-v1"));
-    call.result.expectUintWithDecimals(4);
+    call.result.expectUintWithDecimals(20);
   },
 });
 

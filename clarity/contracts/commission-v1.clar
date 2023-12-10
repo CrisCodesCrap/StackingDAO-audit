@@ -19,7 +19,7 @@
 ;; Variables 
 ;;-------------------------------------
 
-(define-data-var staking-percentage uint u8000) ;; 80% in basis points
+(define-data-var staking-percentage uint u0) ;; 0% in basis points, set later
 
 ;;-------------------------------------
 ;; Getters 
@@ -43,10 +43,16 @@
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
 
     ;; Send to stakers
-    (try! (contract-call? staking-contract add-rewards amount-for-staking))
+    (if (> amount-for-staking u0)
+      (try! (contract-call? staking-contract add-rewards amount-for-staking))
+      u0    
+    )
 
     ;; Keep in contract
-    (try! (stx-transfer? amount-to-keep tx-sender (as-contract tx-sender)))
+    (if (> amount-to-keep u0)
+      (try! (stx-transfer? amount-to-keep tx-sender (as-contract tx-sender)))
+      false
+    )
 
     (ok stx-amount)
   )

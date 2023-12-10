@@ -16,10 +16,13 @@ Clarinet.test({
     let core = new Core(chain, deployer);
     let commission = new Commission(chain, deployer);
 
+    let result = await commission.setStakingPercentage(deployer, 0.8);
+    result.expectOk().expectBool(true);
+
     let call = await core.getStxBalance(wallet_1.address);
     call.result.expectUintWithDecimals(100000000);
 
-    let result = await commission.addCommission(wallet_1, 5000);
+    result = await commission.addCommission(wallet_1, 5000);
     result.expectOk().expectUintWithDecimals(5000);
 
     call = await core.getStxBalance(wallet_1.address);
@@ -47,7 +50,10 @@ Clarinet.test({
     let core = new Core(chain, deployer);
     let commission = new Commission(chain, deployer);
 
-    let result = await commission.addCommission(wallet_1, 5000);
+    let result = await commission.setStakingPercentage(deployer, 0.8);
+    result.expectOk().expectBool(true);
+
+    result = await commission.addCommission(wallet_1, 5000);
     result.expectOk().expectUintWithDecimals(5000);
 
     // Can withdraw 20% of total commission
