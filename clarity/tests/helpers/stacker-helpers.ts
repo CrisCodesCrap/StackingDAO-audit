@@ -42,15 +42,6 @@ class Stacker {
     return this.chain.callReadOnlyFn("stacker-" + stackerId, "get-pox-info", [], this.deployer.address);
   }
 
-  poxCanStackStx(stackerId: number, caller: Account, amount: number, startBurnHeight: number, lockPeriod: number) {
-    return this.chain.callReadOnlyFn("stacker-" + stackerId, "pox-can-stack-stx", [
-      types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
-      types.uint(amount * 1000000),
-      types.uint(startBurnHeight), 
-      types.uint(lockPeriod) 
-    ], caller.address);
-  }
-
   initiateStacking(stackerId: number, caller: Account, amount: number, startBurnHeight: number, lockPeriod: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacker-" + stackerId, "initiate-stacking", [

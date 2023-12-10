@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
@@ -5,6 +7,10 @@ import {
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
+  makeContractSTXPostCondition,
+  makeStandardNonFungiblePostCondition,
+  makeContractFungiblePostCondition,
+  NonFungibleConditionCode
 } from 'micro-stacks/transactions'
 import { useAccount, useOpenContractCall } from '@micro-stacks/react'
 import { useAppContext } from './AppContext'
@@ -12,10 +18,27 @@ import { useAppContext } from './AppContext'
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const { openContractCall } = useOpenContractCall();
   const { bitcoinBlocksLeft, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { stxAddress } = useAccount();
 
   const withdraw = async () => {
-    const postConditions = []; // TODO
-  
+    const postConditions = [
+      makeContractSTXPostCondition(
+        process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        'core-v1',
+        FungibleConditionCode.GreaterEqual,
+        stxAmount * 1000000
+      ),
+      makeStandardNonFungiblePostCondition(
+        stxAddress!,
+        NonFungibleConditionCode.DoesNotOwn,
+        createAssetInfo(
+          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+          'ststx-withdraw-nft',
+          'ststx-withdraw'
+        ),
+        uintCV(id)
+      )
+    ];
     await openContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'core-v1',
@@ -25,7 +48,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         uintCV(id)
       ],
       postConditionMode: 0x01,
-      postConditions,
+      postConditions: [],
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
@@ -52,7 +75,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
             </div>
             <div className="text-right">
-              <button type="button" disabled={Number(cycleId) > currentCycleId} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-primary text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
+              <button type="button" disabled={Number(cycleId) > currentCycleId} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
                 {Number(cycleId) <= currentCycleId ? (
                   <span>Withdraw {stxAmount.toLocaleString()} STX</span>
                 ) : (

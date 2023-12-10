@@ -5,8 +5,8 @@
 ;; When initiating a withdrawal, the stSTX tokens are already burned, while the user has not yet received STX.
 ;; That's why this NFT is introduced, so the user has a token representation of the withdrawal initiation.
 
-(impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
-(use-trait commission-trait 'SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait.commission)
+(impl-trait .nft-trait.nft-trait)
+(use-trait commission-trait .commission-trait.commission)
 
 (define-non-fungible-token ststx-withdraw uint)
 
@@ -20,6 +20,7 @@
 (define-constant ERR_NO_LISTING u1104)
 (define-constant ERR_WRONG_COMMISSION u1105)
 (define-constant ERR_IS_LISTED u1106)
+(define-constant ERR_GET_OWNER u1107)
 
 ;;-------------------------------------
 ;; Variables
@@ -134,7 +135,7 @@
 
 (define-public (burn-for-protocol (token-id uint))
   (let (
-    (owner (unwrap-panic (unwrap-panic (get-owner token-id))))
+    (owner (unwrap! (unwrap! (get-owner token-id) (err ERR_GET_OWNER)) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 

@@ -104,7 +104,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "DAO: add or update protocol managers",
+  name: "DAO: add or update protocol admins",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -112,31 +112,35 @@ Clarinet.test({
     let dao = new DAO(chain, deployer);
 
     // Check active guardian
-    let call = await dao.getContractActive(deployer.address);
+    let call = await dao.getAdmin(deployer.address);
     call.result.expectBool(true);
 
-    call = await dao.getContractActive(wallet_1.address);
+    call = await dao.getAdmin(wallet_1.address);
     call.result.expectBool(false);
 
-    let result = await dao.checkIsProtocol(deployer, deployer.address);
+    let result = await dao.checkIsAdmin(deployer, deployer.address);
     result.expectOk().expectBool(true);
 
-    result = await dao.checkIsProtocol(deployer, wallet_1.address);
-    result.expectErr().expectUint(20003);
+    result = await dao.checkIsAdmin(deployer, wallet_1.address);
+    result.expectErr().expectUint(20001);
 
     // Activate new guardian
-    result = await dao.setContractActive(deployer, wallet_1.address, true);
+    result = await dao.setAdmin(deployer, wallet_1.address, true);
     result.expectOk().expectBool(true);
 
     // Deactivate guardian
-    result = await dao.setContractActive(deployer, deployer.address, false);
+    result = await dao.setAdmin(deployer, deployer.address, false);
     result.expectOk().expectBool(true);
 
-    // Check
-    result = await dao.checkIsProtocol(deployer, deployer.address);
-    result.expectErr().expectUint(20003);
+    // Deployer not admin anymore
+    result = await dao.setAdmin(deployer, deployer.address, false);
+    result.expectErr().expectUint(20001);
 
-    result = await dao.checkIsProtocol(deployer, wallet_1.address);
+    // Check
+    result = await dao.checkIsAdmin(deployer, deployer.address);
+    result.expectErr().expectUint(20001);
+
+    result = await dao.checkIsAdmin(deployer, wallet_1.address);
     result.expectOk().expectBool(true);
   }
 });
@@ -146,7 +150,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "DAO: only protocol can enable/disable contracts",
+  name: "DAO: only protocol admin can enable/disable contracts",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -154,12 +158,12 @@ Clarinet.test({
     let dao = new DAO(chain, deployer);
 
     let result = await dao.setContractsEnabled(wallet_1, false);
-    result.expectErr().expectUint(20003);
+    result.expectErr().expectUint(20001);
   }
 });
 
 Clarinet.test({
-  name: "DAO: only protocol can set contracts",
+  name: "DAO: only protocol admin can set contracts",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -167,6 +171,6 @@ Clarinet.test({
     let dao = new DAO(chain, deployer);
 
     let result = await dao.setContractActive(wallet_1, wallet_1.address, true);
-    result.expectErr().expectUint(20003);
+    result.expectErr().expectUint(20001);
   }
 });

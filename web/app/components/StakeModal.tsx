@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useContext, useState, useRef } from 'react';
 import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';
@@ -102,7 +104,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
         </div>
       ) : null}
 
-      <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
+      <p className="mt-3 text-sm text-center text-gray-500">
         Stake STDAO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-6">

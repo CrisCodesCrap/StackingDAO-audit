@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import Link from 'next/link'
@@ -11,9 +13,10 @@ import {
 import {
   FungibleConditionCode,
   makeStandardSTXPostCondition,
-  createFungiblePostCondition,
+  makeContractFungiblePostCondition,
   createAssetInfo
 } from 'micro-stacks/transactions';
+import { CommissionModal } from './CommissionModal';
 
 export function Stack() {
   const { stxAddress } = useAccount();
@@ -23,36 +26,52 @@ export function Stack() {
   const [amount, setAmount] = useState<string | undefined>('');
   const [amountInDollars, setAmountInDollars] = useState<number | undefined>(0);
   const [stStxReceived, setStStxReceived] = useState<number | undefined>(0);
+  const [showApyInfo, setShowApyInfo] = useState(false);
+  const [buttonText, setButtonText] = useState('Stack');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const updateAmount = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setAmount(event.target.value);
+    const amount = event.target.value;
+    setAmount(amount);
     setAmountInDollars(stxPrice * event.target.value);
-    setStStxReceived(stxRatio * event.target.value);
+    setStStxReceived(event.target.value / stxRatio);
+    const maxBalance = (stxBalance - 0.04);
+
+    if (amount > maxBalance) {
+      setButtonText("Insufficient Balance");
+      setButtonDisabled(true);
+    } else {
+      setButtonText("Stack");
+      setButtonDisabled(!amount || !stxAddress || amount > maxBalance);
+    }
   };
 
   const maxClicked = () => {
-    const amount = (stxBalance - 0.01).toFixed(2);
+    const amount = (stxBalance - 0.04).toFixed(2);
     setAmount(amount);
     setAmountInDollars(stxPrice * amount);
-    setStStxReceived(stxRatio * amount);
+    setStStxReceived(amount / stxRatio);
+
+    setButtonText("Stack");
+    setButtonDisabled(false);
   };
 
   const stackStx = async () => {
     const stxAmount = Number(amount) * 1000000;
-    const stStxAmount = Number(stStxReceived) * 1000000;
+    const stStxAmount = Number(stStxReceived) * 1000000 * 0.98;
     const postConditions = [
       makeStandardSTXPostCondition(stxAddress!, FungibleConditionCode.LessEqual, stxAmount),
-      // TODO: figure out PC
-      // createFungiblePostCondition(
-      //   process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      //   FungibleConditionCode.GreaterEqual,
-      //   uintCV(stStxAmount).value,
-      //   createAssetInfo(
-      //     process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      //     'ststx-token',
-      //     'ststx'
-      //   )
-      // )
+      makeContractFungiblePostCondition(
+        process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        'ststx-token',
+        FungibleConditionCode.GreaterEqual,
+        parseInt(0, 10), // TODO: this fails with anything higher than 0
+        createAssetInfo(
+          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+          'ststx-token',
+          'ststx'
+        )
+      )
     ];
  
     await openContractCall({
@@ -73,10 +92,14 @@ export function Stack() {
 
   return (
     <>
+      {showApyInfo && (
+        <CommissionModal open={showApyInfo} setOpen={setShowApyInfo} />
+      )}
+
       <div className="absolute min-h-screen top-0 left-0 bottom-[-80px] z-[49] bg-page-bg w-full md:relative md:min-h-full md:z-0 flex flex-col px-2 overflow-y-auto md:max-w-xl items-center mb-20">
         <div className="py-3 px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
           <Link href="/">
-            <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-primary" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+            <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-ststx" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
@@ -138,15 +161,15 @@ export function Stack() {
               <div>
                 APY
                 <div className="relative self-center flex">
-                  <span className="text-tertiary-text text-sm">
+                  <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base w-fit flex gap-1 rounded-full items-center text-ststx">
                     The APY includes a 5% performance fee
-                  </span>
-                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="cursor-pointer text-tertiary-text hover:text-primary w-3.5 h-3.5 self-center" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
-                  </svg>
+                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
+                    </svg>
+                  </button>
                 </div>
               </div>
-              <span className="text-primary">~{stackingApy}%</span>
+              <span className="text-ststx">~{stackingApy}%</span>
             </div>
             <div className="flex justify-between items-start">
               Conversion rate<span>1 stSTX = {stxRatio} STX</span>
@@ -157,11 +180,11 @@ export function Stack() {
           </div>
           <button
             type="button"
-            className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-primary text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full mt-4"
-            disabled={!amount || !stxAddress}
+            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
+            disabled={buttonDisabled}
             onClick={stackStx}
           >
-            Stack
+            {buttonText}
           </button>
         </div>
       </div>

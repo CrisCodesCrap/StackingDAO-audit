@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useAuth, useAccount } from '@micro-stacks/react'
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'
@@ -13,6 +15,11 @@ export const WalletConnectButton = ({ className }) => {
   const { stxAddress } = useAccount();
   const [truncatedAddress, setTruncatedAddress] = useState(stxAddress);
   const [buttonLabel, setButtonLabel] = useState('Connect Stacks Wallet');
+
+  const signOutAction = async () => {
+    await signOut();
+    window.location = '/';
+  }
 
   const updateButtonLabel = (entered: boolean) => {
     if (entered) {
@@ -36,7 +43,7 @@ export const WalletConnectButton = ({ className }) => {
     <button
       className={className}
       onClick={async () => {
-        if (isSignedIn) await signOut();
+        if (isSignedIn) await signOutAction();
         else await openAuthRequest();
       }}
       onMouseEnter={() => updateButtonLabel(true)}

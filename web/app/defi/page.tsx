@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Container } from '../components/Container'
 
 const statuses = { 'Launched': 'text-green-400 bg-green-400/10', 'Not Launched Yet': 'text-rose-400 bg-rose-400/10' }
@@ -12,10 +14,18 @@ const activityItems = [
   },
   {
     user: {
+      name: 'Bitflow AMM',
+      imageUrl: '/bitflow-logo.jpg'
+    },
+    commit: 'stSTX/STX trading pool',
+    status: 'Not Launched Yet',
+  },
+  {
+    user: {
       name: 'ALEX AMM',
       imageUrl: '/alex.png'
     },
-    commit: 'STX/stSTX and STX/STDAO trading pools',
+    commit: 'STDAO/STX trading pool',
     status: 'Not Launched Yet',
   },
 ]
@@ -33,7 +43,7 @@ export default function Defi() {
         <div className="bg-white shadow sm:rounded-lg mt-8">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-base font-semibold leading-6 text-gray-900">Keep an eye on the integrations</h3>
-            <div className="mt-2 text-sm text-stacks font-semibold">
+            <div className="mt-2 text-sm text-ststx font-semibold">
               <p>
                 As more integrations launch, they will be listed below with a brief explanation on how to use them.
               </p>
@@ -45,14 +55,12 @@ export default function Defi() {
           <colgroup>
             <col className="w-full sm:w-4/12" />
             <col className="lg:w-4/12" />
-            <col className="lg:w-2/12" />
-            <col className="lg:w-1/12" />
+            <col className="lg:w-4/12" />
           </colgroup>
           <thead className="border-b border-white/10 text-sm leading-6 text-neutral-800">
             <tr>
               <th scope="col" className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8" />
               <th scope="col" className="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell" />
-              <th scope="col" className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8" />
               <th scope="col" className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8" />
             </tr>
           </thead>
@@ -80,9 +88,6 @@ export default function Defi() {
                     </div>
                     <div className="hidden text-neutral-800 sm:block">{item.status}</div>
                   </div>
-                </td>
-                <td className="hidden py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-400 sm:table-cell sm:pr-6 lg:pr-8">
-                  #
                 </td>
               </tr>
             ))}

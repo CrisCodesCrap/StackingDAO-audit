@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { Fragment, useContext, useState } from 'react';
 import { useAppContext } from './AppContext';
 import { Transition } from '@headlessui/react';

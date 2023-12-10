@@ -10,7 +10,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-trait og-sip-010-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait og-sip-010-trait .sip-010-trait-ft-standard.sip-010-trait)
 (use-trait lp-trait 'SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait.lp-trait)
 
 ;;;;;;;;;;;;;;;

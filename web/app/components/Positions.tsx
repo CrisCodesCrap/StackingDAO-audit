@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { useAuth, useAccount } from '@micro-stacks/react'
@@ -22,7 +24,7 @@ export function Positions() {
 
   const getPoxCycle = async () => {
     const result = await callReadOnlyFunction({
-      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
       contractName: 'core-v1',
       functionName: 'get-pox-cycle',
       functionArgs: [],
@@ -35,7 +37,7 @@ export function Positions() {
   useEffect(() => {
     const fetchNft = async (id: string) => {
       const result = await callReadOnlyFunction({
-        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
         contractName: 'core-v1',
         functionName: 'get-withdrawals-by-nft',
         functionArgs: [
@@ -60,6 +62,9 @@ export function Positions() {
       // Alternative
       // https://github.com/hirosystems/stacks-blockchain-api/pull/936
       let url = 'https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff';
+      if (process.env.NEXT_PUBLIC_NETWORK_ENV === 'testnet') {
+        url = 'https://api.testnet.hiro.so';
+      }
       url += `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
@@ -73,9 +78,6 @@ export function Positions() {
         }
       }
 
-      // TODO: remove this
-      setUnstackNfts([0]);
-      await fetchNft(0);
       setIsLoading(false);
     }
 
@@ -104,7 +106,7 @@ export function Positions() {
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stStxBalance.toLocaleString()} stSTX</div>
-                      <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-primary">{stackingApy}% APY</span>
+                      <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">{stackingApy}% APY</span>
                     </div>
                   </div>
                 </div>

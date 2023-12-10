@@ -11,15 +11,6 @@ cache_dir = "./.cache"
 # ------------------------------
 
 [[project.requirements]]
-contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
-
-[[project.requirements]]
-contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
-
-[[project.requirements]]
-contract_id = "SP2KAF9RF86PVX3NEE27DFV1CQX0T4WGR41X3S45C.commission-trait"
-
-[[project.requirements]]
 contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1"
 
 [[project.requirements]]
@@ -28,6 +19,21 @@ contract_id = "SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait"
 # ------------------------------
 # Protocol
 # ------------------------------
+
+[contracts.sip-010-trait-ft-standard]
+path = "contracts/sip-010-trait-ft-standard.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.nft-trait]
+path = "contracts/nft-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-trait]
+path = "contracts/commission-trait.clar"
+clarity_version = 2
+epoch = 2.4
 
 [contracts.reserve-trait-v1]
 path = "contracts/reserve-trait-v1.clar"
@@ -85,47 +91,47 @@ clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-2]
-path = "contracts/stacker-2.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-3]
-path = "contracts/stacker-3.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-4]
-path = "contracts/stacker-4.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-5]
-path = "contracts/stacker-5.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-6]
-path = "contracts/stacker-6.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-7]
-path = "contracts/stacker-7.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-8]
-path = "contracts/stacker-8.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-9]
-path = "contracts/stacker-9.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacker-10]
-path = "contracts/stacker-10.clar"
+path = "contracts/stacker-1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -146,6 +152,11 @@ epoch = 2.4
 
 [contracts.staking-v1]
 path = "contracts/staking-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.rewards-job-v1]
+path = "contracts/rewards-job-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -188,13 +199,3 @@ path = "contracts/tests/marketplace-commission.clar"
 clarity_version = 2
 epoch = 2.4
 
-
-
-[repl.analysis]
-passes = ['check_checker']
-
-[repl.analysis.check_checker]
-strict = false
-trusted_sender = false
-trusted_caller = false
-callee_filter = false

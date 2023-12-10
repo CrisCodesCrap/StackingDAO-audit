@@ -1,8 +1,12 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-export function ApyModal({ open, setOpen }) {
+interface ModalProps {
+  open: boolean | undefined;
+  setOpen: (openState: boolean | undefined) => void;
+}
 
+export function ApyModal({ open, setOpen }: ModalProps) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -45,7 +49,7 @@ export function ApyModal({ open, setOpen }) {
                 <div className="mt-5 sm:mt-6">
                   <button
                     type="button"
-                    className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-primary text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
+                    className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
                     onClick={() => setOpen(false)}
                   >
                     Got it

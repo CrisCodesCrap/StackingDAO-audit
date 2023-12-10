@@ -11,19 +11,20 @@
 
 (define-constant ERR_WRONG_CYCLE_ID u19001)
 (define-constant ERR_SHUTDOWN u19002)
-(define-constant ERR_WITHDRAW_EXCEEDED u19003)
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
+(define-constant ERR_MAX_COMMISSION u19006)
+(define-constant ERR_GET_OWNER u19007)
+
+(define-constant MAX_COMMISSION u2000) ;; 20% in basis points
 
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var withdrawal-treshold-per-cycle uint u8500) ;; 85% in basis points
 (define-data-var commission uint u500) ;; 5% in basis points
 
 (define-data-var shutdown-deposits bool false)
-(define-data-var shutdown-withdrawals bool false)
 
 ;;-------------------------------------
 ;; Maps 
@@ -57,20 +58,12 @@
 ;; Getters 
 ;;-------------------------------------
 
-(define-read-only (get-withdrawal-treshold-per-cycle)
-  (var-get withdrawal-treshold-per-cycle)
-)
-
 (define-read-only (get-commission)
   (var-get commission)
 )
 
 (define-read-only (get-shutdown-deposits)
   (var-get shutdown-deposits)
-)
-
-(define-read-only (get-shutdown-withdrawals)
-  (var-get shutdown-withdrawals)
 )
 
 (define-read-only (get-cycle-info (cycle-id uint))
@@ -161,11 +154,10 @@
     (cycle-id (get-pox-cycle))
     (current-cycle-info (get-cycle-info cycle-id))
 
-    (stx-ststx (unwrap-panic (get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (get-stx-per-ststx reserve-contract)))
     (ststx-to-receive (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
@@ -196,8 +188,6 @@
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
-    (asserts! (<= new-withdraw-init (/ (* (get-withdrawal-treshold-per-cycle) total-stx) u10000)) (err ERR_WITHDRAW_EXCEEDED))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-to-receive)))
@@ -224,13 +214,12 @@
     (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
 
     (stx-to-receive (get stx-amount withdrawal-entry))
-    (nft-owner (unwrap-panic (contract-call? .ststx-withdraw-nft get-owner nft-id)))
+    (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-    (asserts! (not (get-shutdown-withdrawals)) (err ERR_SHUTDOWN))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
-    (asserts! (is-eq (unwrap-panic nft-owner) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
+    (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
 
     ;; STX to user, burn stSTX
@@ -287,18 +276,10 @@
 ;; Admin
 ;;-------------------------------------
 
-(define-public (set-withdrawal-treshold (new-treshold uint))
-  (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
-    (var-set withdrawal-treshold-per-cycle new-treshold)
-    (ok true)
-  )
-)
-
 (define-public (set-commission (new-commission uint))
   (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
+    (asserts! (<= new-commission MAX_COMMISSION) (err ERR_MAX_COMMISSION))
 
     (var-set commission new-commission)
     (ok true)
@@ -310,15 +291,6 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
     
     (var-set shutdown-deposits shutdown)
-    (ok true)
-  )
-)
-
-(define-public (set-shutdown-withdrawals (shutdown bool))
-  (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
-    (var-set shutdown-withdrawals shutdown)
     (ok true)
   )
 )
