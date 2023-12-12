@@ -23,8 +23,8 @@
 (define-read-only (check-job)
   (let (
     (stx-balance (stx-get-balance (as-contract tx-sender)))
-    (current-cycle (contract-call? .core-v1 get-pox-cycle))
-    (next-withdraw-cycle (contract-call? .core-v1 get-next-withdraw-cycle))
+    (current-cycle (contract-call? .stacking-dao-core-v1 get-pox-cycle))
+    (next-withdraw-cycle (contract-call? .stacking-dao-core-v1 get-next-withdraw-cycle))
 
     (balance-not-zero (> stx-balance u0))
     (end-of-cycle (> next-withdraw-cycle (+ current-cycle u1)))
@@ -39,11 +39,11 @@
 (define-public (run-job)
   (let (
     (stx-balance (stx-get-balance (as-contract tx-sender)))
-    (current-cycle (contract-call? .core-v1 get-pox-cycle))
+    (current-cycle (contract-call? .stacking-dao-core-v1 get-pox-cycle))
   )
     (asserts! (unwrap-panic (check-job)) (err ERR_SHOULD_NOT_HANDLE))
 
-    (try! (as-contract (contract-call? .core-v1 add-rewards .commission-v1 .staking-v1 .reserve-v1 stx-balance (- current-cycle u1))))
+    (try! (as-contract (contract-call? .stacking-dao-core-v1 add-rewards .commission-v1 .staking-v1 .reserve-v1 stx-balance (- current-cycle u1))))
 
     (ok true)
   )

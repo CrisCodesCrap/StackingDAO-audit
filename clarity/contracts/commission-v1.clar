@@ -11,22 +11,22 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_MIN_STAKING_PERCENTAGE u29001)
+(define-constant ERR_MIN_STAKING_BASISPOINTS u29001)
 
-(define-constant MIN_STAKING_PERCENTAGE u7000) ;; 70% in basis points
+(define-constant MIN_STAKING_BASISPOINTS u7000) ;; 70% in basis points
 
 ;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
 
-(define-data-var staking-percentage uint u0) ;; 0% in basis points, set later
+(define-data-var staking-basispoints uint u0) ;; 0% in basis points, set later
 
 ;;-------------------------------------
 ;; Getters 
 ;;-------------------------------------
 
-(define-read-only (get-staking-percentage)
-  (var-get staking-percentage)
+(define-read-only (get-staking-basispoints)
+  (var-get staking-basispoints)
 )
 
 ;;-------------------------------------
@@ -37,7 +37,7 @@
 ;; Commission is split between stakers and protocol
 (define-public (add-commission (staking-contract <staking-trait>) (stx-amount uint))
   (let (
-    (amount-for-staking (/ (* stx-amount (get-staking-percentage)) u10000))
+    (amount-for-staking (/ (* stx-amount (get-staking-basispoints)) u10000))
     (amount-to-keep (- stx-amount amount-for-staking))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
@@ -79,12 +79,12 @@
 ;; Admin 
 ;;-------------------------------------
 
-(define-public (set-staking-percentage (new-percentage uint))
+(define-public (set-staking-basispoints (new-basispoints uint))
   (begin
     (try! (contract-call? .dao check-is-protocol tx-sender))
-    (asserts! (>= new-percentage MIN_STAKING_PERCENTAGE) (err ERR_MIN_STAKING_PERCENTAGE))
+    (asserts! (>= new-basispoints MIN_STAKING_BASISPOINTS) (err ERR_MIN_STAKING_BASISPOINTS))
 
-    (var-set staking-percentage new-percentage)
+    (var-set staking-basispoints new-basispoints)
     (ok true)
   )
 )

@@ -15,53 +15,53 @@ class Core {
   }
 
   getCommission() {
-    return this.chain.callReadOnlyFn("core-v1", "get-commission", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-commission", [], this.deployer.address);
   }
 
   getShutdownDeposits() {
-    return this.chain.callReadOnlyFn("core-v1", "get-shutdown-deposits", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-shutdown-deposits", [], this.deployer.address);
   }
 
   getCycleInfo(cycle: number) {
-    return this.chain.callReadOnlyFn("core-v1", "get-cycle-info", [
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-cycle-info", [
       types.uint(cycle)
     ], this.deployer.address);
   }
 
   getWithdrawalsByNft(nftId: number) {
-    return this.chain.callReadOnlyFn("core-v1", "get-withdrawals-by-nft", [
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-withdrawals-by-nft", [
       types.uint(nftId),
     ], this.deployer.address);
   }
 
   getBurnHeight() {
-    return this.chain.callReadOnlyFn("core-v1", "get-burn-height", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-burn-height", [], this.deployer.address);
   }
 
   getPoxCycle() {
-    return this.chain.callReadOnlyFn("core-v1", "get-pox-cycle", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-pox-cycle", [], this.deployer.address);
   }
 
   getStxBalance(address: string) {
-    return this.chain.callReadOnlyFn("core-v1", "get-stx-balance", [
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-stx-balance", [
       types.principal(address),
     ], this.deployer.address);
   }
 
   getNextWithdrawCycle() {
-    return this.chain.callReadOnlyFn("core-v1", "get-next-withdraw-cycle", [
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-next-withdraw-cycle", [
     ], this.deployer.address);
   }
 
   getStxPerStstx() {
-    return this.chain.callReadOnlyFn("core-v1", "get-stx-per-ststx", [
+    return this.chain.callReadOnlyFn("stacking-dao-core-v1", "get-stx-per-ststx", [
       types.principal(qualifiedName("reserve-v1"))
     ], this.deployer.address);
   }
 
   deposit(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "deposit", [
+      Tx.contractCall("stacking-dao-core-v1", "deposit", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000),
       ], caller.address)
@@ -71,7 +71,7 @@ class Core {
 
   initWithdraw(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "init-withdraw", [
+      Tx.contractCall("stacking-dao-core-v1", "init-withdraw", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000)
       ], caller.address)
@@ -81,7 +81,7 @@ class Core {
 
   withdraw(caller: Account, nftId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "withdraw", [
+      Tx.contractCall("stacking-dao-core-v1", "withdraw", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(nftId),
       ], caller.address)
@@ -91,7 +91,7 @@ class Core {
 
   addRewards(caller: Account, amount: number, cycle: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "add-rewards", [
+      Tx.contractCall("stacking-dao-core-v1", "add-rewards", [
         types.principal(qualifiedName("commission-v1")),
         types.principal(qualifiedName("staking-v1")),
         types.principal(qualifiedName("reserve-v1")),
@@ -104,7 +104,7 @@ class Core {
 
   setCommission(caller: Account, commission: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "set-commission", [
+      Tx.contractCall("stacking-dao-core-v1", "set-commission", [
         types.uint(commission * 10000),
       ], caller.address)
     ]);
@@ -113,7 +113,7 @@ class Core {
 
   setShutdownDeposits(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("core-v1", "set-shutdown-deposits", [
+      Tx.contractCall("stacking-dao-core-v1", "set-shutdown-deposits", [
         types.bool(shutdown),
       ], caller.address)
     ]);

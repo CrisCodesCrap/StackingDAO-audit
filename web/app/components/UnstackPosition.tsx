@@ -24,7 +24,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     const postConditions = [
       makeContractSTXPostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        'core-v1',
+        'stacking-dao-core-v1',
         FungibleConditionCode.GreaterEqual,
         stxAmount * 1000000
       ),
@@ -41,7 +41,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     ];
     await openContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      contractName: 'core-v1',
+      contractName: 'stacking-dao-core-v1',
       functionName: 'withdraw',
       functionArgs: [
         contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),

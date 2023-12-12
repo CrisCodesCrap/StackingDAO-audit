@@ -14,8 +14,8 @@ class Commission {
     this.deployer = deployer;
   }
 
-  getContractsEnabled() {
-    return this.chain.callReadOnlyFn("commission-v1", "get-staking-percentage", [
+  getStakingBasisPoints() {
+    return this.chain.callReadOnlyFn("commission-v1", "get-staking-basispoints", [
     ], this.deployer.address);
   }
 
@@ -37,9 +37,9 @@ class Commission {
     return block.receipts[0].result;
   }
 
-  setStakingPercentage(caller: Account, percentage: number) {
+  setStakingBasisPoints(caller: Account, percentage: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("commission-v1", "set-staking-percentage", [
+      Tx.contractCall("commission-v1", "set-staking-basispoints", [
         types.uint(percentage * 10000)
       ], caller.address)
     ]);

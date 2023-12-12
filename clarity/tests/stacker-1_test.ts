@@ -3,7 +3,7 @@ import { qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
 
 import { DAO } from './helpers/dao-helpers.ts';
 import { Reserve } from './helpers/reserve-helpers.ts';
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { Stacker } from './helpers/stacker-helpers.ts';
 import { Pox3Mock } from './helpers/pox-3-mock-helpers.ts';
 

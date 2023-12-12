@@ -25,7 +25,7 @@ export function Positions() {
   const getPoxCycle = async () => {
     const result = await callReadOnlyFunction({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-      contractName: 'core-v1',
+      contractName: 'stacking-dao-core-v1',
       functionName: 'get-pox-cycle',
       functionArgs: [],
       network: stacksNetwork
@@ -38,7 +38,7 @@ export function Positions() {
     const fetchNft = async (id: string) => {
       const result = await callReadOnlyFunction({
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-        contractName: 'core-v1',
+        contractName: 'stacking-dao-core-v1',
         functionName: 'get-withdrawals-by-nft',
         functionArgs: [
           uintCV(id)

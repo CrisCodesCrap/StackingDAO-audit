@@ -2,7 +2,7 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName, REWARD_CYCLE_LENGTH } from './helpers/tests-utils.ts';
 qualifiedName("")
 
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { RewardsJob } from './helpers/rewards-job-helpers.ts';
 
 //-------------------------------------

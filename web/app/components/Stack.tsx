@@ -76,7 +76,7 @@ export function Stack() {
  
     await openContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      contractName: 'core-v1',
+      contractName: 'stacking-dao-core-v1',
       functionName: 'deposit',
       functionArgs: [
         contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),

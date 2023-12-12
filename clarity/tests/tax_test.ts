@@ -4,7 +4,7 @@ qualifiedName("")
 
 import { STDAOToken } from './helpers/stdao-token-helpers.ts';
 import { Tax } from './helpers/tax-helpers.ts';
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 
 //-------------------------------------
 // Tax 

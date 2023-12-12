@@ -1,6 +1,6 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
 
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { Commission } from './helpers/commission-helpers.ts';
 
 //-------------------------------------
@@ -16,7 +16,7 @@ Clarinet.test({
     let core = new Core(chain, deployer);
     let commission = new Commission(chain, deployer);
 
-    let result = await commission.setStakingPercentage(deployer, 0.8);
+    let result = await commission.setStakingBasisPoints(deployer, 0.8);
     result.expectOk().expectBool(true);
 
     let call = await core.getStxBalance(wallet_1.address);
@@ -50,7 +50,7 @@ Clarinet.test({
     let core = new Core(chain, deployer);
     let commission = new Commission(chain, deployer);
 
-    let result = await commission.setStakingPercentage(deployer, 0.8);
+    let result = await commission.setStakingBasisPoints(deployer, 0.8);
     result.expectOk().expectBool(true);
 
     result = await commission.addCommission(wallet_1, 5000);
@@ -61,7 +61,7 @@ Clarinet.test({
     result = await commission.withdrawCommission(deployer);
     result.expectOk().expectUintWithDecimals(1000);
 
-    result = await commission.setStakingPercentage(deployer, 0.7);
+    result = await commission.setStakingBasisPoints(deployer, 0.7);
     result.expectOk().expectBool(true);
 
     result = await commission.addCommission(wallet_1, 5000);
@@ -85,7 +85,7 @@ Clarinet.test({
 
     let commission = new Commission(chain, deployer);
 
-    let result = await commission.setStakingPercentage(deployer, 0.6);
+    let result = await commission.setStakingBasisPoints(deployer, 0.6);
     result.expectErr().expectUint(29001);
   }
 });
@@ -115,7 +115,7 @@ Clarinet.test({
 
     let commission = new Commission(chain, deployer);
 
-    let result = await commission.setStakingPercentage(wallet_1, 10);
+    let result = await commission.setStakingBasisPoints(wallet_1, 10);
     result.expectErr().expectUint(20003);
   }
 });

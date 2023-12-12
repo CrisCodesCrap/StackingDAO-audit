@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'core-v1';
+const CONTRACT_NAME = 'stacking-dao-core-v1';
 const FUNCTION_NAME = 'add-rewards';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');

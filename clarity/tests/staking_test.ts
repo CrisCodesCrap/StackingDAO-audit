@@ -3,7 +3,7 @@ import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "./help
 
 import { DAO } from './helpers/dao-helpers.ts';
 import { Staking } from './helpers/staking-helpers.ts';
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { STDAOToken } from './helpers/stdao-token-helpers.ts';
 
 //-------------------------------------

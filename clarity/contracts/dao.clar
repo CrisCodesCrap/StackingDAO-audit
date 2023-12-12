@@ -127,7 +127,7 @@
 
   (map-set contracts { address: tx-sender } { active: true })
 
-  (map-set contracts { address: .core-v1 } { active: true })
+  (map-set contracts { address: .stacking-dao-core-v1 } { active: true })
   (map-set contracts { address: .reserve-v1 } { active: true })
   (map-set contracts { address: .commission-v1 } { active: true })
   (map-set contracts { address: .tax-v1 } { active: true })

@@ -110,10 +110,10 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: core-v1
+            contract-name: stacking-dao-core-v1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 99750
-            path: contracts/core-v1.clar
+            path: contracts/stacking-dao-core-v1.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:

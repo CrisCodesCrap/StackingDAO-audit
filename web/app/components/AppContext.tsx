@@ -124,7 +124,7 @@ export const AppContextProvider = (props: any) => {
     const fetchRatio = async () => {
       const result = await callReadOnlyFunction({
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-        contractName: 'core-v1',
+        contractName: 'stacking-dao-core-v1',
         functionName: 'get-stx-per-ststx',
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1')

@@ -3,7 +3,7 @@ import { hexToBytes, qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-
 qualifiedName('')
 
 import { StrategyV0 as Strategy } from './helpers/strategy-helpers.ts';
-import { Core } from './helpers/core-helpers.ts';
+import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { Reserve } from './helpers/reserve-helpers.ts';
 import { Stacker } from './helpers/stacker-helpers.ts';
 import { Pox3Mock } from './helpers/pox-3-mock-helpers.ts';
