@@ -9,6 +9,9 @@ import { useAccount, useOpenContractCall } from '@micro-stacks/react'
 import {
   uintCV,
   contractPrincipalCV,
+  someCV,
+  standardPrincipalCV,
+  noneCV
 } from 'micro-stacks/clarity';
 import {
   FungibleConditionCode,
@@ -17,10 +20,13 @@ import {
   createAssetInfo
 } from 'micro-stacks/transactions';
 import { CommissionModal } from './CommissionModal';
+import { useSearchParams } from 'next/navigation'
 
 export function Stack() {
   const { stxAddress } = useAccount();
   const { openContractCall } = useOpenContractCall();
+  const searchParams = useSearchParams();
+  const referral = searchParams.get('referral');
 
   const { stStxBalance, stxBalance, stxPrice, stxRatio, stackingApy, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const [amount, setAmount] = useState<string | undefined>('');
@@ -74,13 +80,19 @@ export function Stack() {
       )
     ];
  
+    let referralParam = noneCV();
+    if (referral) {
+      referralParam = someCV(standardPrincipalCV(referral));
+    }
+
     await openContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'deposit',
       functionArgs: [
         contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
-        uintCV(stxAmount)
+        uintCV(stxAmount),
+        referralParam
       ],
       postConditions,
       onFinish: async data => {

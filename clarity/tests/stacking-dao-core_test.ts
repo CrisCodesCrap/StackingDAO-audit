@@ -435,9 +435,48 @@ Clarinet.test({
       Tx.contractCall("stacking-dao-core-v1", "deposit", [
         types.principal(qualifiedName("fake-reserve")),
         types.uint(10 * 1000000),
+        types.none()
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(20003);
+  },
+});
+
+Clarinet.test({
+  name: "core: prints event on deposit with referrer",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("core-v1", "deposit", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.uint(10 * 1000000),
+        types.some(types.principal('ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC'))
+      ], deployer.address)
+    ]);
+    block.receipts[0].events.expectPrintEvent(
+      qualifiedName('core-v1'),
+      '{action: "deposit", data: {amount: u10000000, referrer: (some ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC), stacker: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM}}'
+    )
+  },
+});
+
+Clarinet.test({
+  name: "core: prints event on deposit without referrer",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("core-v1", "deposit", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.uint(10 * 1000000),
+        types.none()
+      ], deployer.address)
+    ]);
+    block.receipts[0].events.expectPrintEvent(
+      qualifiedName('core-v1'),
+      '{action: "deposit", data: {amount: u10000000, referrer: none, stacker: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM}}'
+    )
   },
 });
 

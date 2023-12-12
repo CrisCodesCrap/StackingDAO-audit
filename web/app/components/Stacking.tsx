@@ -8,11 +8,14 @@ import { useAppContext } from './AppContext';
 import { ApyModal } from './ApyModal';
 import { RatioModal } from './RatioModal';
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 export function Stacking() {
   const { stxAddress } = useAccount();
   const { openAuthRequest } = useAuth();
   const { stStxBalance, stxBalance, stxRatio, stackingApy } = useAppContext();
+  const searchParams = useSearchParams();
+  const referral = searchParams.get('referral');
 
   const [isLoading, setIsLoading] = useState(true);
   const [yieldPerYear, setYieldPerYear] = useState(0);
@@ -105,7 +108,7 @@ export function Stacking() {
             <div className="mt-4 flex gap-2 items-end font-medium">
               <span className="text-ststx text-5xl font-semibold">~{yieldPerYear.toLocaleString()}</span>STX/per year
             </div>
-            <Link href="/stack" className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg button-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14">
+            <Link href={`${referral ? `/stack?referral=${referral}` : '/stack'}`} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg button-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14">
               <span>{stStxBalance > 0 ? 'Stack more STX' : 'Start stacking STX'}</span>
             </Link>
             <div className="flex gap-2 justify-center items-center">
@@ -116,6 +119,16 @@ export function Stacking() {
               Stack STX and earn rewards
             </div>
           </div>
+
+          <div className={`bg-white rounded-xl w-full p-4 mt-2 ${referral ? '' : 'hidden'}`}>
+            <div className="py-1 px-2 flex gap-4 justify-start items-center">
+              <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/orange-checkmark.svg" style={{color: 'transparent'}} />
+              <div className="text-xl font-semibold">
+                Referral Address<span className="text-sm font-normal block">You are using {referral} as referral address</span>
+              </div>
+            </div>
+          </div>
+
           <Link
             href="/unstack"
             className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${stStxBalance > 0 ? 'bg-ststx' : 'bg-light-ststx'} text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14`}
@@ -125,14 +138,6 @@ export function Stacking() {
           >
             Unstack stSTX
           </Link>
-          <div className="bg-white rounded-xl w-full p-4 mt-2 hidden">
-            <div className="py-1 px-2 flex gap-4 justify-start items-center">
-              <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/orange-checkmark.svg" style={{color: 'transparent'}} />
-              <div className="text-xl font-semibold">
-                Referral Code<span className="text-sm font-normal block">You clicked on the link using the promo code</span>
-              </div>
-            </div>
-          </div>
         </div>
       ) : (
         <div className="w-full md:max-w-xl min-h-full flex flex-col px-2 pb-10 items-center">

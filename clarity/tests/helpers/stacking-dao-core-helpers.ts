@@ -59,11 +59,17 @@ class Core {
     ], this.deployer.address);
   }
 
-  deposit(caller: Account, amount: number) {
+  deposit(caller: Account, amount: number, referrer: string = undefined) {
+    let referrerType = types.none();
+    if (referrer) {
+      referrerType = types.some(types.principal(referrer))
+    }
+
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v1", "deposit", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000),
+        referrerType
       ], caller.address)
     ]);
     return block.receipts[0].result;

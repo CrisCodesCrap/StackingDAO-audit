@@ -32,13 +32,13 @@ const contracts: Contract[] = [
   { name: 'pox-3-mock', file: 'tests/pox-3-mock' },
 
   { name: 'dao' },
-  { name: 'stacking-dao-core-v1' },
   { name: 'commission-v1' },
   { name: 'reserve-v1' },
-  { name: 'staking-v1' },
   { name: 'stdao-token' },
   { name: 'ststx-token' },
   { name: 'ststx-withdraw-nft' },
+  { name: 'staking-v1' },
+  { name: 'stacking-dao-core-v1' },
 
   { name: 'stacker-1' },
   { name: 'stacker-2', file: 'stacker-1' },
