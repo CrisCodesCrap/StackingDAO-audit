@@ -85,7 +85,7 @@ export function Positions() {
       fetchNftBalance();
       getPoxCycle();
     }
-  }, []);
+  }, [stxAddress]);
 
   return (
     <>
