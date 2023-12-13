@@ -46,7 +46,7 @@
     (match (ft-transfer? ststx amount sender recipient)
       response (begin
         (print memo)
-        (print { action: "transfer", data: { sender: tx-sender, recipient: recipient, amount: amount } })
+        (print { action: "transfer", data: { sender: tx-sender, recipient: recipient, amount: amount, block-height: block-height } })
         (ok response)
       )
       error (err error)

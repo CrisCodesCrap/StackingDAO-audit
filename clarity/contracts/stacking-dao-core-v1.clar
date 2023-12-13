@@ -161,7 +161,7 @@
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { deposited: (+ (get deposited current-cycle-info) stx-amount) }))
-    (print { action: "deposit", data: { stacker: tx-sender, referrer: referrer, amount: ststx-to-receive } })
+    (print { action: "deposit", data: { stacker: tx-sender, referrer: referrer, amount: ststx-to-receive, block-height: block-height } })
 
     (try! (stx-transfer? stx-amount tx-sender (contract-of reserve-contract)))
     (try! (contract-call? .ststx-token mint-for-protocol ststx-to-receive tx-sender))
@@ -229,7 +229,7 @@
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
 
     ;; Update withdrawals maps so user can not withdraw again
-    (print { action: "withdraw", data: { stacker: tx-sender, amount: (get ststx-amount withdrawal-entry) } })
+    (print { action: "withdraw", data: { stacker: tx-sender, amount: (get ststx-amount withdrawal-entry), block-height: block-height } })
     (map-delete withdrawals-by-nft { nft-id: nft-id })
     (map-set cycle-info { cycle-id: withdrawal-cycle } (merge withdrawal-cycle-info { 
       withdraw-out: (+ (get withdraw-out withdrawal-cycle-info) stx-to-receive),
