@@ -5,7 +5,6 @@
 import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
 import {
   FungibleConditionCode,
-  createFungiblePostCondition,
   createAssetInfo,
   makeContractSTXPostCondition,
   makeStandardNonFungiblePostCondition,
@@ -22,12 +21,29 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
 
   const withdraw = async () => {
     const postConditions = [
+
+      // STX transfer from reserve
       makeContractSTXPostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        'stacking-dao-core-v1',
-        FungibleConditionCode.GreaterEqual,
+        'reserve-v1',
+        FungibleConditionCode.Equal,
         stxAmount * 1000000
       ),
+
+      // stSTX transfer from core
+      makeContractFungiblePostCondition(
+        process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        'core-v1',
+        FungibleConditionCode.Equal,
+        stStxAmount * 1000000,
+        createAssetInfo(
+          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+          'ststx-token',
+          'ststx'
+        )
+      ),
+
+      // NFT not owned by user
       makeStandardNonFungiblePostCondition(
         stxAddress!,
         NonFungibleConditionCode.DoesNotOwn,
@@ -47,8 +63,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
         uintCV(id)
       ],
-      postConditionMode: 0x01,
-      postConditions: [],
+      postConditions: postConditions,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
