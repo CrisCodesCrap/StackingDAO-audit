@@ -211,6 +211,8 @@
 
     (withdrawal-entry (get-withdrawals-by-nft nft-id))
     (withdrawal-cycle (get cycle-id withdrawal-entry))
+    (start-block-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height withdrawal-cycle))
+    (unlock-burn-height (+ u100 start-block-cycle)) ;; u100 is prepare cycle length hard-coded
 
     (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
 
@@ -222,6 +224,7 @@
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (>= cycle-id withdrawal-cycle) (err ERR_WRONG_CYCLE_ID))
+    (asserts! (> burn-block-height unlock-burn-height) (err ERR_WRONG_CYCLE_ID))
 
     ;; STX to user, burn stSTX
     (try! (as-contract (contract-call? reserve-contract request-stx-for-withdrawal stx-to-receive receiver)))
