@@ -259,21 +259,8 @@
 ;; Rewards - Add
 ;;-------------------------------------
 
-;; Adding rewards for cycle X happens at the beginning of cycle X+1
-;; These rewards are distributed per block during cycle X+1,
-;; and the distribution ends at the end of cycle X+1 plus pox-prepare-length
-(define-read-only (get-cycle-rewards-end-block) 
-  (let (
-    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
-    (cycle-end-block (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ current-cycle u1)))
-    (pox-prepare-length (get prepare-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
-  )
-    (+ cycle-end-block pox-prepare-length)
-  )
-)
-
 ;; Used by the commission contract to add STX
-(define-public (add-rewards (amount uint))
+(define-public (add-rewards (amount uint) (end-block uint))
   (let (
     ;; Get rewards not distributed yet
     (reward-blocks-left (if (< burn-block-height (var-get rewards-end-block))
@@ -283,9 +270,10 @@
     (rewards-left (* reward-blocks-left (var-get rewards-per-block)))
 
     ;; Calculate new reward per block
-    (end-block (get-cycle-rewards-end-block))
     (new-rewards-per-block (/ (+ rewards-left amount) (- end-block burn-block-height)))
   )
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
     ;; Increase cummulative rewards per stake first
     (unwrap-panic (increase-cumm-reward-per-stake))
 

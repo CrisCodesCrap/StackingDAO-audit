@@ -3,6 +3,6 @@
 
 (define-trait staking-trait
   (
-    (add-rewards (uint) (response uint uint))
+    (add-rewards (uint uint) (response uint uint))
   )
 )

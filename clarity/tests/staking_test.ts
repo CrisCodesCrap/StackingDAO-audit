@@ -5,6 +5,7 @@ import { DAO } from './helpers/dao-helpers.ts';
 import { Staking } from './helpers/staking-helpers.ts';
 import { Core } from './helpers/stacking-dao-core-helpers.ts';
 import { STDAOToken } from './helpers/stdao-token-helpers.ts';
+import { Commission } from "./helpers/commission-helpers.ts";
 
 //-------------------------------------
 // Core 
@@ -58,6 +59,7 @@ Clarinet.test({
     let staking = new Staking(chain, deployer);
     let core = new Core(chain, deployer);
     let stDaoToken = new STDAOToken(chain, deployer);
+    let commission = new Commission(chain, deployer);
 
     let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
@@ -65,16 +67,16 @@ Clarinet.test({
     result = stDaoToken.mintForProtocol(deployer, 1000, wallet_2.address);
     result.expectOk().expectBool(true);
 
-    let call = await staking.getCycleRewardsEndBlock();
-    call.result.expectUint(REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
+    let call = await commission.getCycleRewardsEndBlock();
+    call.result.expectUint(REWARD_CYCLE_LENGTH * 2 + PREPARE_PHASE_LENGTH);
 
-    // Current burn-block-height is 5, rewards end block is 21+3
-    // (21+3)-5 = 19
-    // Adding 19 STX as rewards
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 5);
-    result.expectOk().expectUintWithDecimals(19);
+    // Current burn-block-height is 5, rewards end block is 21*2+3
+    // (21*2+3)-5 = 40
+    // Adding 40 STX as rewards
+    result = await staking.addRewards(deployer, 40, REWARD_CYCLE_LENGTH * 2 + PREPARE_PHASE_LENGTH);
+    result.expectOk().expectUintWithDecimals(40);
 
-    // Added 19 STX, for 19 blocks = 1 STX per block
+    // Added 40 STX, for 40 blocks = 1 STX per block
     call = await staking.getRewardsPerBlock();
     call.result.expectUintWithDecimals(1);
 
@@ -131,7 +133,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(3000);
 
     // Current burn-block-height is 9
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 9);
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 9, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
     result.expectOk().expectUintWithDecimals(15);
 
     // 1 STX per block
@@ -236,7 +238,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(0);
 
     // Burn block height is 7
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 7);
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 7, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
     result.expectOk().expectUintWithDecimals(17);
 
     // Add 1 STX per block
@@ -341,7 +343,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1000);
 
     // Add rewards
-    result = await staking.addRewards(deployer, 100);
+    result = await staking.addRewards(deployer, 100, 50);
     result.expectOk().expectUintWithDecimals(100);
 
     chain.mineEmptyBlock(50);
@@ -370,13 +372,13 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(1000);
 
     // Add rewards
-    result = await staking.addRewards(deployer, 100);
+    result = await staking.addRewards(deployer, 100, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
     result.expectOk().expectUintWithDecimals(100);
 
     chain.mineEmptyBlock(2);
 
     // Add rewards
-    result = await staking.addRewards(deployer, 200);
+    result = await staking.addRewards(deployer, 200, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
     result.expectOk().expectUintWithDecimals(200);
 
     chain.mineEmptyBlock(50);
@@ -472,5 +474,18 @@ Clarinet.test({
 
     result = await staking.claimPendingRewards(deployer);
     result.expectErr().expectUint(20002);
+  }
+});
+
+Clarinet.test({
+  name: "staking: only protocol can add rewards",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let staking = new Staking(chain, deployer);
+
+    let result = await staking.addRewards(wallet_1, 40, 200);
+    result.expectErr().expectUint(20003);
   }
 });

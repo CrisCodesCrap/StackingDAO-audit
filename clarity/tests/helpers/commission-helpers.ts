@@ -19,6 +19,11 @@ class Commission {
     ], this.deployer.address);
   }
 
+  getCycleRewardsEndBlock() {
+    return this.chain.callReadOnlyFn("commission-v1", "get-cycle-rewards-end-block", [
+    ], this.deployer.address);
+  }
+
   addCommission(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("commission-v1", "add-commission", [
