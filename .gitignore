@@ -2,4 +2,5 @@ notes.md
 .DS_Store
 .env
 keychain_testnet
+keychain_mainnet
 node_modules
