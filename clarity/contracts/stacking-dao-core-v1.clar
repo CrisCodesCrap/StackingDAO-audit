@@ -211,8 +211,10 @@
 
     (withdrawal-entry (get-withdrawals-by-nft nft-id))
     (withdrawal-cycle (get cycle-id withdrawal-entry))
+
     (start-block-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height withdrawal-cycle))
-    (unlock-burn-height (+ u100 start-block-cycle)) ;; u100 is prepare cycle length hard-coded
+    (pox-prepare-length (get prepare-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+    (unlock-burn-height (+ pox-prepare-length start-block-cycle))
 
     (withdrawal-cycle-info (get-cycle-info withdrawal-cycle ))
 

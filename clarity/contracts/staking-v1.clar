@@ -275,11 +275,6 @@
 ;; Used by the commission contract to add STX
 (define-public (add-rewards (amount uint))
   (let (
-    ;; TODO - Update for mainnet
-    (pox-info (unwrap-panic (contract-call? .pox-3-mock get-pox-info)))
-    (pox-reward-length (get reward-cycle-length pox-info))
-    (pox-prepare-length (get prepare-cycle-length pox-info))
-
     ;; Get rewards not distributed yet
     (reward-blocks-left (if (< burn-block-height (var-get rewards-end-block))
       (- (var-get rewards-end-block) burn-block-height)

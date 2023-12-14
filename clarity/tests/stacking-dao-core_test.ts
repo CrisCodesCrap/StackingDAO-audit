@@ -169,7 +169,7 @@ Clarinet.test({
     call.result.expectUintWithDecimals(99000000); // 99M
 
     // Let's go 1 cycle further now
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
 
     // Current PoX cycle
     call = await core.getPoxCycle();
@@ -374,7 +374,7 @@ Clarinet.test({
     result.expectErr().expectUint(19001);
 
     // Advance to next cycle
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
 
     // PoX cycle 3
     call = await core.getPoxCycle();
