@@ -1,7 +1,7 @@
 ;; @contract Staking
 ;; @version 1
 ;;
-;; Stake STDAO to get part of protocol revenue
+;; Stake sDAO to get part of protocol revenue
 ;; Rewards are distributed across all stakers, according to their size in the pool
 ;;
 ;; Rewards will be automatically staked before staking or unstaking. 
@@ -97,7 +97,7 @@
     (staker tx-sender)
   )
     (try! (contract-call? .dao check-is-enabled))
-    (asserts! (is-eq .stdao-token (contract-of token)) ERR_WRONG_TOKEN)
+    (asserts! (is-eq .sdao-token (contract-of token)) ERR_WRONG_TOKEN)
 
     (let (
       ;; Calculate new stake amount
@@ -115,7 +115,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake))
 
       ;; Transfer token to this contract
-      (try! (contract-call? .stdao-token transfer amount staker (as-contract tx-sender) none))
+      (try! (contract-call? .sdao-token transfer amount staker (as-contract tx-sender) none))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { amount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })
@@ -132,7 +132,7 @@
     (stake-amount (get-stake-amount-of staker))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (asserts! (is-eq .stdao-token (contract-of token)) ERR_WRONG_TOKEN)
+    (asserts! (is-eq .sdao-token (contract-of token)) ERR_WRONG_TOKEN)
     (asserts! (>= stake-amount amount) ERR_INSUFFICIENT_STAKE)
 
     (let (
@@ -150,7 +150,7 @@
       (unwrap-panic (increase-cumm-reward-per-stake))
 
       ;; Transfer token back from this contract to the user
-      (try! (as-contract (contract-call? .stdao-token transfer amount tx-sender staker none)))
+      (try! (as-contract (contract-call? .sdao-token transfer amount tx-sender staker none)))
 
       ;; Update sender stake info
       (map-set stakes { staker: staker } { amount: new-stake-amount, cumm-reward-per-stake: (var-get cumm-reward-per-stake) })

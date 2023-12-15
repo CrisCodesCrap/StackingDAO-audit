@@ -4,8 +4,8 @@
 ;; Liquidity will be added on Bitflow (https://www.bitflow.finance)
 ;; Bitflow will impose a purchase/sale tax in STX, and the proceeds will be directed to this contract.
 ;;
-;; Once a sufficient amount of STX is accumulated, a portion of it will be exchanged for STDAO. 
-;; Both STX and STDAO will be added to the liquidity pool.
+;; Once a sufficient amount of STX is accumulated, a portion of it will be exchanged for sDAO. 
+;; Both STX and sDAO will be added to the liquidity pool.
 ;;
 ;; The Arkadiko keepers network is leveraged to automate this process.
 ;; https://keepers.arkadiko.finance/
@@ -72,7 +72,7 @@
   )
 )
 
-;; Swap STX to STDAO. Add both as liquidity.
+;; Swap STX to sDAO. Add both as liquidity.
 (define-public (handle-tax)
   (begin
     (asserts! (should-handle-tax) (err ERR_SHOULD_NOT_HANDLE))
@@ -81,27 +81,27 @@
       (balance (stx-get-balance (as-contract tx-sender)))
       (to-swap (/ (* balance (var-get percentage-to-swap)) u10000))
     )
-      ;; Swap STX for stDAO
+      ;; Swap STX for sDAO
       ;; TODO: update for mainnet
       (unwrap! (as-contract (contract-call? .swap swap-y-for-x 
         .wstx-token
-        .stdao-token
+        .sdao-token
         .swap-lp-token
         to-swap 
         u1
       )) (err ERR_COULD_NOT_SWAP))
 
-      ;; Add stDAO/STX liquidity
+      ;; Add sDAO/STX liquidity
       ;; TODO: update for mainnet
       (let (
         (new-balance-stx (stx-get-balance (as-contract tx-sender)))
-        (new-balance-stdao (unwrap-panic (contract-call? .stdao-token get-balance (as-contract tx-sender))))
+        (new-balance-sdao (unwrap-panic (contract-call? .sdao-token get-balance (as-contract tx-sender))))
       )
         (unwrap! (as-contract (contract-call? .swap add-liquidity
-          .stdao-token
+          .sdao-token
           .wstx-token
           .swap-lp-token
-          new-balance-stdao
+          new-balance-sdao
           new-balance-stx
           u1
         )) (err ERR_COULD_NOT_ADD_LIQ))

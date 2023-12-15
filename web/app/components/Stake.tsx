@@ -22,7 +22,7 @@ import {
 export function Stake() {
   const { stxAddress } = useAccount();
   const { openContractCall } = useOpenContractCall();
-  const { stDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { sDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
 
   const [loadingData, setLoadingData] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export function Stake() {
   const [stakedTokens, setStakedTokens] = useState<number>(0);
   const [totalStakedTokens, setTotalStakedTokens] = useState<number>(0);
   // TODO: calculate real APY
-  // Using rewards-per-block, STDAO and STX price we can calculate this
+  // Using rewards-per-block, sDAO and STX price we can calculate this
   const [apr, setApr] = useState<number>(5.5);
   const [showStakeModal, setShowStakeModal] = useState<boolean>(false);
   const [showUnstakeModal, setShowUnstakeModal] = useState<boolean>(false);
@@ -113,7 +113,7 @@ export function Stake() {
         <header className="pb-5 sm:flex sm:justify-between sm:items-end">
           <div>
             <h3 className="text-lg leading-6 text-gray-900 font-headings">
-              STDAO Staking
+              sDAO Staking
             </h3>
             <p className="max-w-3xl mt-2 text-sm text-gray-500">
               The staking pool is a <span className="font-semibold">revenue share</span> pool where you receive STX from the protocol. The STX tokens are earned through a commission of <span className="font-semibold">5%</span> of the yield from Proof of Transfer.
@@ -139,18 +139,18 @@ export function Stake() {
           <div className="px-4 py-5 space-y-6 sm:p-6">
             <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
               <div className="self-center w-14">
-                <img className="w-12 h-12 rounded-full" src="/stdao-logo.jpg" alt="StackingDAO logo" />
+                <img className="w-12 h-12 rounded-full" src="/sdao-logo.jpg" alt="StackingDAO logo" />
               </div>
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 md:mb-1">
-                  Your staked STDAO tokens
+                  Your staked sDAO tokens
                 </p>
                 {loadingData ? (
                   <Placeholder className="py-2" width={Placeholder.width.HALF} />
                 ) : (
                   <div>
                     <p className="text-lg font-semibold">
-                      {stakedTokens} STDAO
+                      {stakedTokens} sDAO
                     </p>
                   </div>
                 )}
@@ -164,7 +164,7 @@ export function Stake() {
                 ) : (
                   <div>
                     <p className="text-lg font-semibold">
-                      {totalStakedTokens} STDAO
+                      {totalStakedTokens} sDAO
                     </p>
                   </div>
                 )}
@@ -235,10 +235,10 @@ export function Stake() {
                                       ? 'button-ststx text-white'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
-                                  disabled={!(stDaoBalance > 0)}
+                                  disabled={!(sDaoBalance > 0)}
                                   onClick={() => setShowStakeModal(true)}
                                 >
-                                  {!(stDaoBalance > 0) ? (
+                                  {!(sDaoBalance > 0) ? (
                                     <a
                                       href="#"
                                       className="mr-2"
@@ -251,7 +251,7 @@ export function Stake() {
                                         />
                                         Stake
                                       </div>
-                                      <span className="tooltip">You don&apos;t have any available STDAO to stake in your wallet.</span>
+                                      <span className="tooltip">You don&apos;t have any available sDAO to stake in your wallet.</span>
                                     </a>
                                   ) : (
                                     <>

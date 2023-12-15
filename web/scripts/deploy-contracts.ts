@@ -34,7 +34,7 @@ const contracts: Contract[] = [
   { name: 'dao' },
   { name: 'commission-v1' },
   { name: 'reserve-v1' },
-  { name: 'stdao-token' },
+  { name: 'sdao-token' },
   { name: 'ststx-token' },
   { name: 'ststx-withdraw-nft' },
   { name: 'staking-v1' },

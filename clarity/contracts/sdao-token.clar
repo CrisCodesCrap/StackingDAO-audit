@@ -1,7 +1,7 @@
 (impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 
-;; Defines the STDAO token according to the SIP010 Standard
-(define-fungible-token stdao)
+;; Defines the sDAO token according to the SIP010 Standard
+(define-fungible-token sdao)
 
 (define-constant ERR_NOT_AUTHORIZED u1401)
 
@@ -16,7 +16,7 @@
 ;;-------------------------------------
 
 (define-read-only (get-total-supply)
-  (ok (ft-get-supply stdao))
+  (ok (ft-get-supply sdao))
 )
 
 (define-read-only (get-name)
@@ -24,7 +24,7 @@
 )
 
 (define-read-only (get-symbol)
-  (ok "STDAO")
+  (ok "sDAO")
 )
 
 (define-read-only (get-decimals)
@@ -32,7 +32,7 @@
 )
 
 (define-read-only (get-balance (account principal))
-  (ok (ft-get-balance stdao account))
+  (ok (ft-get-balance sdao account))
 )
 
 (define-read-only (get-token-uri)
@@ -43,7 +43,7 @@
   (begin
     (asserts! (is-eq tx-sender sender) (err ERR_NOT_AUTHORIZED))
 
-    (match (ft-transfer? stdao amount sender recipient)
+    (match (ft-transfer? sdao amount sender recipient)
       response (begin
         (print memo)
         (ok response)
@@ -72,7 +72,7 @@
 (define-public (mint-for-protocol (amount uint) (recipient principal))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    (ft-mint? stdao amount recipient)
+    (ft-mint? sdao amount recipient)
   )
 )
 
@@ -80,13 +80,13 @@
 (define-public (burn-for-protocol (amount uint) (sender principal))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    (ft-burn? stdao amount sender)
+    (ft-burn? sdao amount sender)
   )
 )
 
 ;; Burn external
 (define-public (burn (amount uint))
   (begin
-    (ft-burn? stdao amount tx-sender)
+    (ft-burn? sdao amount tx-sender)
   )
 )

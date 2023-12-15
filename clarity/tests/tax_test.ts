@@ -2,7 +2,7 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "./helpers/tests-utils.ts";
 qualifiedName("")
 
-import { STDAOToken } from './helpers/stdao-token-helpers.ts';
+import { SDAOToken } from './helpers/sdao-token-helpers.ts';
 import { Tax } from './helpers/tax-helpers.ts';
 import { Core } from './helpers/stacking-dao-core-helpers.ts';
 
@@ -15,22 +15,22 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
     let tax = new Tax(chain, deployer);
     let core = new Core(chain, deployer);
 
-    // Get stDAO for liquidity
-    let result = await stDaoToken.mintForProtocol(deployer, 1000, deployer.address);
+    // Get sDAO for liquidity
+    let result = await sDaoToken.mintForProtocol(deployer, 1000, deployer.address);
     result.expectOk().expectBool(true);
 
-    // Create stDAO/STX pair
+    // Create sDAO/STX pair
     let block = chain.mineBlock([
       Tx.contractCall("swap", "create-pair", [
-        types.principal(qualifiedName("stdao-token")),
+        types.principal(qualifiedName("sdao-token")),
         types.principal(qualifiedName("wstx-token")),
         types.principal(qualifiedName("swap-lp-token")),
         types.uint(100),
-        types.ascii("stDAO-STX"),
+        types.ascii("sDAO-STX"),
         types.uint(100 * 1000000),
         types.uint(100 * 1000000),
 
@@ -48,7 +48,7 @@ Clarinet.test({
     let call: any = core.getStxBalance(qualifiedName("tax-v1"));
     call.result.expectUintWithDecimals(100);
 
-    call = stDaoToken.getBalance(qualifiedName("tax-v1"));
+    call = sDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = chain.callReadOnlyFn("swap-lp-token", "get-balance", [
@@ -64,7 +64,7 @@ Clarinet.test({
     call = core.getStxBalance(qualifiedName("tax-v1"));
     call.result.expectUintWithDecimals(0);
 
-    call = stDaoToken.getBalance(qualifiedName("tax-v1"));
+    call = sDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = chain.callReadOnlyFn("swap-lp-token", "get-balance", [
@@ -119,7 +119,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let tax = new Tax(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
     let core = new Core(chain, deployer);
 
     // Transfer 100 STX to contract
@@ -128,29 +128,29 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // Transfer 100 stDAO to contract
-    let result = await stDaoToken.mintForProtocol(deployer, 100, qualifiedName("tax-v1"));
+    // Transfer 100 sDAO to contract
+    let result = await sDaoToken.mintForProtocol(deployer, 100, qualifiedName("tax-v1"));
     result.expectOk().expectBool(true);
 
     // Contract balances
     let call = core.getStxBalance(qualifiedName("tax-v1"));
     call.result.expectUintWithDecimals(100);
 
-    call = stDaoToken.getBalance(qualifiedName("tax-v1"));
+    call = sDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(100);
 
     // Retreive tokens
     result = await tax.retreiveStxTokens(deployer, 10, deployer.address);
     result.expectOk().expectUintWithDecimals(10);
 
-    result = await tax.retreiveTokens(deployer, "stdao-token", 10, deployer.address);
+    result = await tax.retreiveTokens(deployer, "sdao-token", 10, deployer.address);
     result.expectOk().expectUintWithDecimals(10);
 
     // Contract balances
     call = core.getStxBalance(qualifiedName("tax-v1"));
     call.result.expectUintWithDecimals(90);
 
-    call = stDaoToken.getBalance(qualifiedName("tax-v1"));
+    call = sDaoToken.getBalance(qualifiedName("tax-v1"));
     call.result.expectOk().expectUintWithDecimals(90);
   }
 });
@@ -200,7 +200,7 @@ Clarinet.test({
     let result = await tax.retreiveStxTokens(wallet_1, 10, wallet_1.address);
     result.expectErr().expectUint(20003);
 
-    result = await tax.retreiveTokens(wallet_1, "stdao-token", 10, wallet_1.address);
+    result = await tax.retreiveTokens(wallet_1, "sdao-token", 10, wallet_1.address);
     result.expectErr().expectUint(20003);
   }
 });

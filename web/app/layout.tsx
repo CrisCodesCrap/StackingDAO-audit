@@ -33,7 +33,7 @@ export default function Layout({
       <body className={`${inter.className} flex min-h-full flex-col`}>
         <ClientProvider
           appName="StackingDAO - Liquid Stacking"
-          appIconUrl="/stdao-logo.jpg"
+          appIconUrl="/sdao-logo.jpg"
           network={stacksNetwork}
         >
           {isClient && (

@@ -215,10 +215,10 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: stdao-token
+            contract-name: sdao-token
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 46750
-            path: contracts/stdao-token.clar
+            path: contracts/sdao-token.clar
             anchor-block-only: true
             clarity-version: 2
       epoch: "2.4"

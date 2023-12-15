@@ -16,10 +16,10 @@ The `reserve` contract safeguards STX tokens and keeps track of the stacked STX 
 At the end of a stacking cycle, BTC rewards are manually converted to STX and added to the `core` contract. These rewards are distributed to stSTX holders, with a portion retained as a commission. The `commission` contract retains a segment as protocol revenue and distributes the rest to stakers through the `staking` contract.
 
 ### Tax
-When exchanging stSTX or STDAO, a buy and sell tax is imposed. The `tax` contract harnesses these taxes to enhance liquidity.
+When exchanging stSTX or sDAO, a buy and sell tax is imposed. The `tax` contract harnesses these taxes to enhance liquidity.
 
 ### Tokens
-The liquid stacking token is `stSTX`, and `STDAO` serves as the DAO token. Additionally, an `ststx-withdraw` NFT represents the initiation of a withdrawal.
+The liquid stacking token is `stSTX`, and `sDAO` serves as the DAO token. Additionally, an `ststx-withdraw` NFT represents the initiation of a withdrawal.
 
 ### Tests
 Tests can be found in the `tests` folder and are written using [Clarinet](https://github.com/hirosystems/clarinet).

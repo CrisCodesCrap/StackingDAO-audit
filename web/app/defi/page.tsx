@@ -25,7 +25,7 @@ const activityItems = [
       name: 'ALEX AMM',
       imageUrl: '/alex.png'
     },
-    commit: 'STDAO/STX trading pool',
+    commit: 'sDAO/STX trading pool',
     status: 'Not Launched Yet',
   },
 ]

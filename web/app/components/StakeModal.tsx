@@ -28,20 +28,20 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
   const [stakeAmount, setStakeAmount] = useState(0);
   const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
-  const { stDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { sDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
-    setStakeAmount(stDaoBalance.toString());
+    setStakeAmount(sDaoBalance.toString());
   };
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
-    if (value > stDaoBalance) {
+    if (value > sDaoBalance) {
       if (errors.length < 1) {
         setErrors(
-          errors.concat([`You cannot stake more than ${stDaoBalance} STDAO`])
+          errors.concat([`You cannot stake more than ${sDaoBalance} sDAO`])
         );
       }
       setIsStakeButtonDisabled(true);
@@ -62,8 +62,8 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
         amount.value,
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'stdao-token',
-          'stdao'
+          'sdao-token',
+          'sdao'
         )
       )
     ];
@@ -73,7 +73,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       contractName: 'staking-v1',
       functionName: 'stake',
       functionArgs: [
-        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'stdao-token'),
+        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'sdao-token'),
         amount
       ],
       postConditions,
@@ -88,8 +88,8 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
   return (
     <Modal
       open={showStakeModal}
-      title="Stake STDAO"
-      icon={<img className="w-10 h-10 rounded-full" src="/stdao-logo.jpg" alt="STDAO logo" />}
+      title="Stake sDAO"
+      icon={<img className="w-10 h-10 rounded-full" src="/sdao-logo.jpg" alt="sDAO logo" />}
       closeModal={() => setShowStakeModal(false)}
       buttonText="Stake"
       buttonAction={() => stake()}
@@ -105,19 +105,19 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500">
-        Stake STDAO tokens at {apy}% (estimated APR) and start earning rewards now.
+        Stake sDAO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={stDaoBalance.toLocaleString(undefined, {
+          balance={sDaoBalance.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}
-          token="STDAO"
-          inputName="stakeSTDAO"
+          token="sDAO"
+          inputName="stakesDAO"
           inputId="stakeAmount"
           inputValue={stakeAmount}
-          inputLabel="Stake STDAO"
+          inputLabel="Stake sDAO"
           onInputChange={onInputStakeChange}
           onClickMax={stakeMaxAmount}
           ref={inputRef}

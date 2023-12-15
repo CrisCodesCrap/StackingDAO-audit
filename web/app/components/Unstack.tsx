@@ -132,7 +132,7 @@ export function Unstack() {
         </div>
         <div className="bg-white rounded-xl w-full p-4 font-medium overflow-x-hidden">
           <div className="flex gap-4 items-center">
-            <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/stdao-logo.jpg" style={{color: 'transparent'}} />
+            <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/sdao-logo.jpg" style={{color: 'transparent'}} />
             <div className="flex-grow text-xl">
               stSTX
               <span className="text-tertiary-text text-base block">Balance: {stStxBalance.toLocaleString()} stSTX</span>

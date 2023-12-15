@@ -12,8 +12,8 @@ interface AppContextProps {
   setStxBalance: (balance: string | undefined) => void;
   stStxBalance: number;
   setStStxBalance: (balance: number | undefined) => void;
-  stDaoBalance: string | undefined;
-  setStDaoBalance: (balance: string | undefined) => void;
+  sDaoBalance: string | undefined;
+  setSDaoBalance: (balance: string | undefined) => void;
   stxPrice: string | undefined;
   setStxPrice: (price: string | undefined) => void;
   stxRatio: string | undefined;
@@ -43,8 +43,8 @@ export const AppContext = createContext<AppContextProps>({
   setStxBalance: () => {},
   stStxBalance: 0,
   setStStxBalance: () => {},
-  stDaoBalance: undefined,
-  setStDaoBalance: () => {},
+  sDaoBalance: undefined,
+  setSDaoBalance: () => {},
   stxPrice: undefined,
   setStxPrice: () => {},
   stxRatio: undefined,
@@ -75,7 +75,7 @@ export const AppContextProvider = (props: any) => {
   const { stxAddress } = useAccount();
   const [stxBalance, setStxBalance] = useState(0);
   const [stStxBalance, setStStxBalance] = useState(0);
-  const [stDaoBalance, setStDaoBalance] = useState(0);
+  const [sDaoBalance, setSDaoBalance] = useState(0);
   const [stxPrice, setStxPrice] = useState(0);
   const [stxRatio, setStxRatio] = useState(0);
   const [stackedStx, setStackedStx] = useState(0);
@@ -91,7 +91,7 @@ export const AppContextProvider = (props: any) => {
     const fetchBalances = async () => {
       const client = getRPCClient();
       const stStxAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.ststx-token::ststx`;
-      const stDaoAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.stdao-token::stdao`;
+      const sDaoAddress = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.sdao-token::sdao`;
       const url = `${client.url}/extended/v1/address/${stxAddress}/balances`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
@@ -106,10 +106,10 @@ export const AppContextProvider = (props: any) => {
         stackedBalance = data['fungible_tokens'][stStxAddress]['balance'] / DENOMINATOR;
         setStStxBalance(stackedBalance);
       }
-      let stDaoBalance = 0;
-      if (data['fungible_tokens'][stDaoAddress]) {
-        stDaoBalance = data['fungible_tokens'][stDaoAddress]['balance'] / DENOMINATOR;
-        setStDaoBalance(stDaoBalance);
+      let sDaoBalance = 0;
+      if (data['fungible_tokens'][sDaoAddress]) {
+        sDaoBalance = data['fungible_tokens'][sDaoAddress]['balance'] / DENOMINATOR;
+        setSDaoBalance(sDaoBalance);
       }
 
       // Fetch STX price
@@ -190,7 +190,7 @@ export const AppContextProvider = (props: any) => {
       value={{
         stxBalance: stxBalance,
         stStxBalance: stStxBalance,
-        stDaoBalance: stDaoBalance,
+        sDaoBalance: sDaoBalance,
         stxPrice: stxPrice,
         stxRatio: stxRatio,
         stackingApy: stackingApy,

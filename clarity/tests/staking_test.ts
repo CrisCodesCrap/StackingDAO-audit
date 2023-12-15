@@ -4,7 +4,7 @@ import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "./help
 import { DAO } from './helpers/dao-helpers.ts';
 import { Staking } from './helpers/staking-helpers.ts';
 import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { STDAOToken } from './helpers/stdao-token-helpers.ts';
+import { SDAOToken } from './helpers/sdao-token-helpers.ts';
 import { Commission } from "./helpers/commission-helpers.ts";
 
 //-------------------------------------
@@ -18,9 +18,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let staking = new Staking(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
     result = await staking.stake(wallet_1, 1000);
@@ -58,13 +58,13 @@ Clarinet.test({
 
     let staking = new Staking(chain, deployer);
     let core = new Core(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
     let commission = new Commission(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    result = stDaoToken.mintForProtocol(deployer, 1000, wallet_2.address);
+    result = sDaoToken.mintForProtocol(deployer, 1000, wallet_2.address);
     result.expectOk().expectBool(true);
 
     let call = await commission.getCycleRewardsEndBlock();
@@ -112,15 +112,15 @@ Clarinet.test({
 
     let staking = new Staking(chain, deployer);
     let core = new Core(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    result = stDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
+    result = sDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
     result.expectOk().expectBool(true);
 
-    result = stDaoToken.mintForProtocol(deployer, 3000, wallet_3.address);
+    result = sDaoToken.mintForProtocol(deployer, 3000, wallet_3.address);
     result.expectOk().expectBool(true);
 
     result = await staking.stake(wallet_1, 1000);
@@ -188,12 +188,12 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let staking = new Staking(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
-    result = stDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
+    result = sDaoToken.mintForProtocol(deployer, 2000, wallet_2.address);
     result.expectOk().expectBool(true);
 
     // Cumm reward per stake still 0
@@ -334,9 +334,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let staking = new Staking(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
     result = await staking.stake(wallet_1, 1000);
@@ -363,9 +363,9 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let staking = new Staking(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, wallet_1.address);
     result.expectOk().expectBool(true);
 
     result = await staking.stake(wallet_1, 1000);
@@ -442,9 +442,9 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let staking = new Staking(chain, deployer);
-    let stDaoToken = new STDAOToken(chain, deployer);
+    let sDaoToken = new SDAOToken(chain, deployer);
 
-    let result = stDaoToken.mintForProtocol(deployer, 1000, deployer.address);
+    let result = sDaoToken.mintForProtocol(deployer, 1000, deployer.address);
     result.expectOk().expectBool(true);
 
     result = await staking.stake(deployer, 1000);

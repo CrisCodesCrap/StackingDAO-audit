@@ -32,7 +32,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
         stxAddress!,
         FungibleConditionCode.LessEqual,
         amount.value,
-        createAssetInfo(contractAddress, 'stdao-token', 'stdao')
+        createAssetInfo(contractAddress, 'sdao-token', 'sdao')
       ),
     ];
 
@@ -41,7 +41,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       contractName: 'staking-v1',
       functionName: 'unstake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'stdao-token'),
+        contractPrincipalCV(contractAddress, 'sdao-token'),
         amount,
       ],
       postConditionMode: 0x01,
@@ -76,8 +76,8 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
   return (
     <Modal
       open={showUnstakeModal}
-      title="Unstake STDAO"
-      icon={<img className="w-10 h-10 rounded-full" src="./stdao-logo.jpg" alt="STDAO logo" />}
+      title="Unstake sDAO"
+      icon={<img className="w-10 h-10 rounded-full" src="./sdao-logo.jpg" alt="sDAO logo" />}
       closeModal={() => setShowUnstakeModal(false)}
       buttonText="Unstake"
       buttonAction={() => unstake()}
@@ -100,16 +100,16 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
-        STDAO
+        sDAO
       </p>
       <div className="mt-6">
         <InputAmount
           balance={stakedAmount.toLocaleString()}
-          token="STDAO"
-          inputName="unstakeSTDAO"
+          token="sDAO"
+          inputName="unstakesDAO"
           inputId="unstakeAmount"
           inputValue={stakeAmount}
-          inputLabel="Unstake STDAO"
+          inputLabel="Unstake sDAO"
           onInputChange={onInputStakeChange}
           onClickMax={unstakeMaxAmount}
           ref={inputRef}

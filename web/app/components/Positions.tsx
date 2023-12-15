@@ -97,7 +97,7 @@ export function Positions() {
               <div className="pl-4 pr-3">
                 <div className="flex gap-3 items-center text-left py-2">
                   <div className="w-10 h-10 relative flex-shrink-0">
-                    <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/stdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                    <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/sdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
                   </div>
                   <div className="flex-grow flex justify-between">
                     <div>

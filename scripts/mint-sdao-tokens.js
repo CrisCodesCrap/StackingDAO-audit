@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'stdao-token';
+const CONTRACT_NAME = 'sdao-token';
 const FUNCTION_NAME = 'mint-for-protocol';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');

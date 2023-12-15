@@ -2,10 +2,10 @@ import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts
 import { qualifiedName } from './tests-utils.ts';
 
 // ---------------------------------------------------------
-// STDAO token
+// sDAO token
 // ---------------------------------------------------------
 
-class STDAOToken {
+class SDAOToken {
   chain: Chain;
   deployer: Account;
 
@@ -15,34 +15,34 @@ class STDAOToken {
   }
 
   getTotalSupply() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-total-supply", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sdao-token", "get-total-supply", [], this.deployer.address);
   }
 
   getName() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-name", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sdao-token", "get-name", [], this.deployer.address);
   }
 
   getSymbol() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-symbol", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sdao-token", "get-symbol", [], this.deployer.address);
   }
 
   getDecimals() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-decimals", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sdao-token", "get-decimals", [], this.deployer.address);
   }
 
   getBalance(account: string) {
-    return this.chain.callReadOnlyFn("stdao-token", "get-balance", [
+    return this.chain.callReadOnlyFn("sdao-token", "get-balance", [
       types.principal(account)
     ], this.deployer.address);
   }
 
   getTokenUri() {
-    return this.chain.callReadOnlyFn("stdao-token", "get-token-uri", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("sdao-token", "get-token-uri", [], this.deployer.address);
   }
 
   transfer(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "transfer", [
+      Tx.contractCall("sdao-token", "transfer", [
         types.uint(amount * 1000000),
         types.principal(caller.address),
         types.principal(receiver),
@@ -54,7 +54,7 @@ class STDAOToken {
 
   setTokenUri(caller: Account, uri: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "set-token-uri", [
+      Tx.contractCall("sdao-token", "set-token-uri", [
         types.utf8(uri),
       ], caller.address)
     ]);
@@ -63,7 +63,7 @@ class STDAOToken {
 
   mintForProtocol(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "mint-for-protocol", [
+      Tx.contractCall("sdao-token", "mint-for-protocol", [
         types.uint(amount * 1000000),
         types.principal(receiver),
       ], caller.address)
@@ -73,7 +73,7 @@ class STDAOToken {
 
   burnForProtocol(caller: Account, amount: number, receiver: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "burn-for-protocol", [
+      Tx.contractCall("sdao-token", "burn-for-protocol", [
         types.uint(amount * 1000000),
         types.principal(receiver),
       ], caller.address)
@@ -83,7 +83,7 @@ class STDAOToken {
 
   burn(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stdao-token", "burn", [
+      Tx.contractCall("sdao-token", "burn", [
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
@@ -91,4 +91,4 @@ class STDAOToken {
   }
 
 }
-export { STDAOToken };
+export { SDAOToken };
