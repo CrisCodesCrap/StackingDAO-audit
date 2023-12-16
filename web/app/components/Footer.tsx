@@ -10,7 +10,7 @@ export function Footer() {
         </p>
 
         <p className="text-sm text-neutral-700 flex gap-8">
-          <a href="https://github.com/arkadiko-dao/sticky/blob/master/Audit-2023-11.pdf" target="_blank" className="flex items-center gap-2">
+          <a href="https://github.com/StackingDAO/app/blob/master/Audit-2023-11.pdf" target="_blank" className="flex items-center gap-2">
             Audited by <img src="/coinfabrik-logo.png" className="w-32" />
           </a>
           <a href="https://twitter.com/stackingdao" target="_blank" className="flex items-center">
