@@ -17,7 +17,7 @@ if (env.includes('mocknet')) {
 export function getExplorerLink(txId: string) {
   const url = location.origin.includes('localhost')
     ? `http://localhost:3999/extended/v1/tx/${txId}`
-    : `https://explorer.stacks.co/txid/${txId}?chain=testnet`;
+    : `https://explorer.hiro.so/txid/${txId}?chain=mainnet`;
   return url;
 };
 
