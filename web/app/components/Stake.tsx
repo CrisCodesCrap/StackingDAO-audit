@@ -18,7 +18,6 @@ import { stacksNetwork } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
 import { UnstakeModal } from '../components/UnstakeModal';
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork } from '../common/utils';
 
 export function Stake() {
   const stxAddress = useSTXAddress();
