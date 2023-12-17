@@ -2,22 +2,25 @@
 
 'use client'
 
-import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import { useConnect } from '@stacks/connect-react';
 import {
+  uintCV,
+  contractPrincipalCV,
   FungibleConditionCode,
   createAssetInfo,
   makeContractSTXPostCondition,
   makeStandardNonFungiblePostCondition,
   makeContractFungiblePostCondition,
   NonFungibleConditionCode
-} from 'micro-stacks/transactions'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
+} from '@stacks/transactions'
 import { useAppContext } from './AppContext'
+import { useSTXAddress } from '../common/use-stx-address';
+import { stacksNetwork } from '../common/utils';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
-  const { openContractCall } = useOpenContractCall();
+  const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
   const { bitcoinBlocksLeft, setCurrentTxId, setCurrentTxStatus } = useAppContext();
-  const { stxAddress } = useAccount();
 
   const withdraw = async () => {
     const postConditions = [
@@ -55,7 +58,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         uintCV(id)
       )
     ];
-    await openContractCall({
+    await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'withdraw',
@@ -64,6 +67,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         uintCV(id)
       ],
       postConditions: postConditions,
+      network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');

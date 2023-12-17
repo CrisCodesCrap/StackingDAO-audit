@@ -8,7 +8,9 @@ export default async function Home() {
       <Container as='div' className="mt-12">
         <div className="w-full min-h-full h-full flex flex-col items-center">
           <Stack />
-          <PoX />
+          <div className="hidden sm:block">
+            <PoX />
+          </div>
         </div>
       </Container>
     </>

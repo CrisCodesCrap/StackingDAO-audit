@@ -4,10 +4,10 @@
 
 import { useState } from 'react'
 import { Container } from '../components/Container'
-import { useAccount } from '@micro-stacks/react'
+import { useSTXAddress } from '../common/use-stx-address';
 
 export default function Points() {
-  const { stxAddress } = useAccount();
+  const stxAddress = useSTXAddress();
   const [buttonText, setButtonText] = useState('Copy your referral link');
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stake?referral=${stxAddress}`);

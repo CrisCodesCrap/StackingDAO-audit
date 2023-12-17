@@ -2,17 +2,21 @@
 
 'use client'
 
-import { useAuth, useAccount } from '@micro-stacks/react'
 import { useEffect, useState } from 'react'
 import { useAppContext } from './AppContext';
 import { ApyModal } from './ApyModal';
 import { RatioModal } from './RatioModal';
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { useConnect } from '@stacks/connect-react';
+import { useSTXAddress } from '../common/use-stx-address';
+import { ChooseWalletModal } from './ChooseWalletModal';
+import { resolveProvider } from '../common/utils';
 
 export function Stacking() {
-  const { stxAddress } = useAccount();
-  const { openAuthRequest } = useAuth();
+  const stxAddress = useSTXAddress();
+  const { doOpenAuth } = useConnect();
+
   const { stStxBalance, stxBalance, stxRatio, stackingApy } = useAppContext();
   const searchParams = useSearchParams();
   const referral = searchParams.get('referral');
@@ -22,6 +26,24 @@ export function Stacking() {
   const [showApyInfo, setShowApyInfo] = useState(false);
   const [showRatioInfo, setShowRatioInfo] = useState(false);
   const [stStxWidth, setStStxWidth] = useState(0);
+  const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
+
+  const showModalOrConnectWallet = async () => {
+    const provider = resolveProvider();
+    if (provider) {
+      await doOpenAuth(true, undefined, provider);
+    } else {
+      setShowChooseWalletModal(true);
+    }
+  };
+
+  const onProviderChosen = async (providerString: string) => {
+    localStorage.setItem('stacking-sign-provider', providerString);
+    setShowChooseWalletModal(false);
+
+    const provider = resolveProvider();
+    await doOpenAuth(true, undefined, provider);
+  };
 
   useEffect(() => {
     const fetchBalances = async () => {
@@ -39,6 +61,12 @@ export function Stacking() {
 
   return (
     <>
+      <ChooseWalletModal
+        open={showChooseWalletModal}
+        closeModal={() => setShowChooseWalletModal(false)}
+        onProviderChosen={onProviderChosen}
+      />
+
       <div className="w-full text-center hidden md:block font-semibold text-4xl my-8">Stacking</div>
       {showApyInfo && (
         <ApyModal open={showApyInfo} setOpen={setShowApyInfo} />
@@ -149,9 +177,7 @@ export function Stacking() {
               Start stacking STX, review your existing STX locked in PoX, and unstack at any time, for the best price.
             </p>
             <button type="button" className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full mb-2"
-              onClick={async () => {
-                await openAuthRequest();
-              }}
+              onClick={() => showModalOrConnectWallet()}
             >
               Connect wallet
             </button>

@@ -6,13 +6,15 @@ import { InputAmount } from './InputAmount';
 import { Alert } from './Alert';
 import { stacksNetwork as network } from '../common/utils';
 import { useAppContext } from './AppContext'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
-import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import { useSTXAddress } from '../common/use-stx-address';
+import { useConnect } from '@stacks/connect-react';
 import {
+  uintCV, contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
-} from 'micro-stacks/transactions'
+} from '@stacks/transactions'
+import { stacksNetwork } from '../common/utils';
 
 interface Props {
   showStakeModal: boolean;
@@ -21,8 +23,8 @@ interface Props {
 }
 
 export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal, apy }) => {
-  const { stxAddress } = useAccount();
-  const { openContractCall } = useOpenContractCall();
+  const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
 
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState(0);
@@ -68,7 +70,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       )
     ];
     
-    await openContractCall({
+    await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'staking-v1',
       functionName: 'stake',
@@ -77,6 +79,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
         amount
       ],
       postConditions,
+      network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');

@@ -8,20 +8,21 @@ import { StyledIcon } from './StyledIcon';
 import Link from 'next/link'
 import { Menu, Transition } from '@headlessui/react'
 import { useAppContext } from './AppContext'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
-import { callReadOnlyFunction } from 'micro-stacks/transactions';
-import { standardPrincipalCV } from 'micro-stacks/clarity';
+import {
+  callReadOnlyFunction,
+  standardPrincipalCV,
+  makeContractSTXPostCondition,
+  FungibleConditionCode
+} from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
 import { UnstakeModal } from '../components/UnstakeModal';
-import {
-  makeContractSTXPostCondition,
-  FungibleConditionCode,
-} from 'micro-stacks/transactions';
+import { useSTXAddress } from '../common/use-stx-address';
+import { stacksNetwork } from '../common/utils';
 
 export function Stake() {
-  const { stxAddress } = useAccount();
-  const { openContractCall } = useOpenContractCall();
+  const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
   const { sDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
 
@@ -43,12 +44,13 @@ export function Stake() {
       0n
     );
 
-    await openContractCall({
+    await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'staking-v1',
       functionName: 'claim-pending-rewards',
       functionArgs: [],
       postConditions: [postCondition],
+      network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
@@ -65,6 +67,7 @@ export function Stake() {
         functionArgs: [
           standardPrincipalCV(stxAddress)
         ],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 
@@ -79,6 +82,7 @@ export function Stake() {
         functionArgs: [
           standardPrincipalCV(stxAddress)
         ],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 
@@ -91,6 +95,7 @@ export function Stake() {
         contractName: 'staking-v1',
         functionName: 'get-total-staked',
         functionArgs: [],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 

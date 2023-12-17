@@ -1,11 +1,10 @@
 // @ts-nocheck
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useAccount } from '@micro-stacks/react'
 import { getRPCClient } from '../common/utils'
-import { callReadOnlyFunction } from 'micro-stacks/transactions';
-import { contractPrincipalCV } from 'micro-stacks/clarity';
+import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
+import { UserData } from '@stacks/auth';
 
 interface AppContextProps {
   stxBalance: number;
@@ -36,6 +35,8 @@ interface AppContextProps {
   setCurrentTxId: (id: string | undefined) => void;
   currentTxMessage: string | undefined;
   setCurrentTxMessage: (message: string | undefined) => void;
+
+  userData: UserData | undefined;
 }
 
 export const AppContext = createContext<AppContextProps>({
@@ -66,13 +67,16 @@ export const AppContext = createContext<AppContextProps>({
   currentTxId: undefined,
   setCurrentTxId: () => {},
   currentTxMessage: undefined,
-  setCurrentTxMessage: () => {}
+  setCurrentTxMessage: () => {},
+
+  userData: undefined
 });
 
 const DENOMINATOR = 1000000;
 
 export const AppContextProvider = (props: any) => {
-  const { stxAddress } = useAccount();
+  const [userData, setUserData] = useState<UserData>({});
+  const [stxAddress, setStxAddress] = useState('');
   const [stxBalance, setStxBalance] = useState(0);
   const [stStxBalance, setStStxBalance] = useState(0);
   const [sDaoBalance, setSDaoBalance] = useState(0);
@@ -86,6 +90,21 @@ export const AppContextProvider = (props: any) => {
   const [currentTxStatus, setCurrentTxStatus] = useState('');
   const [currentTxId, setCurrentTxId] = useState('');
   const [currentTxMessage, setCurrentTxMessage] = useState('');
+
+  useEffect(() => {
+    if (props.userData) {
+      const userData = props.userData;
+      setUserData(userData);
+      const env = process.env.NEXT_PUBLIC_NETWORK_ENV;
+      const isMainnet = env == 'mainnet';
+
+      if (isMainnet) {
+        setStxAddress(userData?.profile?.stxAddress?.mainnet);
+      } else {
+        setStxAddress(userData?.profile?.stxAddress?.testnet);
+      }
+    }
+  }, [props.userData])
 
   useEffect(() => {
     const fetchBalances = async () => {
@@ -129,6 +148,7 @@ export const AppContextProvider = (props: any) => {
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1')
         ],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 
@@ -171,6 +191,7 @@ export const AppContextProvider = (props: any) => {
         functionArgs: [
           uintCV(600000)
         ],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 
@@ -203,7 +224,8 @@ export const AppContextProvider = (props: any) => {
         currentTxMessage: currentTxMessage,
         setCurrentTxId: setCurrentTxId,
         setCurrentTxStatus: setCurrentTxStatus,
-        setCurrentTxMessage: setCurrentTxMessage
+        setCurrentTxMessage: setCurrentTxMessage,
+        userData: userData
       }}
     >
       {props.children}

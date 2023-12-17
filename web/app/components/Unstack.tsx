@@ -5,20 +5,23 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useAppContext } from './AppContext'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
-import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import { useSTXAddress } from '../common/use-stx-address';
 import {
+  uintCV,
+  contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
   makeStandardNonFungiblePostCondition,
   NonFungibleConditionCode
-} from 'micro-stacks/transactions'
+} from '@stacks/transactions'
 import { Alert } from './Alert';
+import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork } from '../common/utils';
 
 export function Unstack() {
-  const { stxAddress } = useAccount();
-  const { openContractCall } = useOpenContractCall();
+  const { doContractCall } = useConnect();
+  const stxAddress = useSTXAddress();
 
   const { stStxBalance, stxPrice, stxRatio, bitcoinBlocksLeft, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const [amount, setAmount] = useState<string | undefined>('');
@@ -77,7 +80,7 @@ export function Unstack() {
       )
     ];
   
-    await openContractCall({
+    await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'init-withdraw',
@@ -86,6 +89,7 @@ export function Unstack() {
         uintCV(stStxAmount)
       ],
       postConditions,
+      network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');

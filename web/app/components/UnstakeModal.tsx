@@ -6,17 +6,19 @@ import { InputAmount } from './InputAmount';
 import { stacksNetwork as network } from '../common/utils';
 import { Alert } from './Alert';
 import { useAppContext } from './AppContext'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
-import { uintCV, contractPrincipalCV } from 'micro-stacks/clarity'
+import { useConnect } from '@stacks/connect-react';
 import {
+  uintCV, contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
-} from 'micro-stacks/transactions'
+} from '@stacks/transactions'
+import { useSTXAddress } from '../common/use-stx-address';
+import { stacksNetwork } from '../common/utils';
 
 export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
-  const { stxAddress } = useAccount();
-  const { openContractCall } = useOpenContractCall();
+  const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
 
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -36,7 +38,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       ),
     ];
 
-    await openContractCall({
+    await doContractCall({
       contractAddress,
       contractName: 'staking-v1',
       functionName: 'unstake',
@@ -45,6 +47,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
         amount,
       ],
       postConditionMode: 0x01,
+      network: stacksNetwork,
       onFinish: data => {
         console.log('finished broadcasting unstaking tx!', data);
         setCurrentTxId(data.txId);

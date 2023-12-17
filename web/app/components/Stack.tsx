@@ -5,26 +5,26 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useAppContext } from './AppContext'
-import { useAccount, useOpenContractCall } from '@micro-stacks/react'
+import { useConnect } from '@stacks/connect-react';
 import {
   uintCV,
   contractPrincipalCV,
   someCV,
   standardPrincipalCV,
-  noneCV
-} from 'micro-stacks/clarity';
-import {
+  noneCV,
   FungibleConditionCode,
   makeStandardSTXPostCondition,
   makeContractFungiblePostCondition,
   createAssetInfo
-} from 'micro-stacks/transactions';
+} from '@stacks/transactions';
+import { useSTXAddress } from '../common/use-stx-address';
 import { CommissionModal } from './CommissionModal';
 import { useSearchParams } from 'next/navigation'
+import { stacksNetwork } from '../common/utils';
 
 export function Stack() {
-  const { stxAddress } = useAccount();
-  const { openContractCall } = useOpenContractCall();
+  const stxAddress = useSTXAddress();
+  const { doContractCall } = useConnect();
   const searchParams = useSearchParams();
   const referral = searchParams.get('referral');
 
@@ -85,7 +85,7 @@ export function Stack() {
       referralParam = someCV(standardPrincipalCV(referral));
     }
 
-    await openContractCall({
+    await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'deposit',
@@ -95,6 +95,7 @@ export function Stack() {
         referralParam
       ],
       postConditions,
+      network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
@@ -108,7 +109,7 @@ export function Stack() {
         <CommissionModal open={showApyInfo} setOpen={setShowApyInfo} />
       )}
 
-      <div className="absolute min-h-screen top-0 left-0 bottom-[-80px] z-[49] bg-page-bg w-full md:relative md:min-h-full md:z-0 flex flex-col px-2 overflow-y-auto md:max-w-xl items-center mb-20">
+      <div className="sm:pt-0 pt-12 absolute min-h-screen top-0 left-0 bottom-[-80px] z-[49] bg-page-bg w-full md:relative md:min-h-full md:z-0 flex flex-col px-2 overflow-y-auto md:max-w-xl items-center mb-20">
         <div className="py-3 px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
           <Link href="/">
             <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-ststx" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -172,14 +173,12 @@ export function Stack() {
             <div className="flex justify-between items-start">
               <div>
                 APY
-                <div className="relative self-center flex">
-                  <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base w-fit flex gap-1 rounded-full items-center text-ststx">
-                    The APY includes a 5% performance fee
-                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
-                    </svg>
-                  </button>
-                </div>
+                <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base flex items-center text-ststx">
+                  The APY includes a 5% performance fee
+                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
+                  </svg>
+                </button>
               </div>
               <span className="text-ststx">~{stackingApy}%</span>
             </div>

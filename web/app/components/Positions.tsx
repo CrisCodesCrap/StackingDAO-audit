@@ -2,9 +2,7 @@
 
 'use client'
 
-import { useAuth, useAccount } from '@micro-stacks/react'
-import { callReadOnlyFunction } from 'micro-stacks/transactions'
-import { uintCV } from 'micro-stacks/clarity'
+import { callReadOnlyFunction, uintCV } from '@stacks/transactions'
 import { useEffect, useState } from 'react'
 import { useAppContext } from './AppContext'
 import { ApyModal } from './ApyModal'
@@ -12,10 +10,10 @@ import { RatioModal } from './RatioModal'
 import { UnstackPosition } from './UnstackPosition'
 import { stacksNetwork, getRPCClient } from '../common/utils'
 import Link from 'next/link'
+import { useSTXAddress } from '../common/use-stx-address';
 
 export function Positions() {
-  const { stxAddress } = useAccount();
-  const { openAuthRequest } = useAuth();
+  const stxAddress = useSTXAddress();
   const { stStxBalance, stxBalance, stackingApy, bitcoinBlocksLeft } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
   const [unstackNfts, setUnstackNfts] = useState([]);
@@ -28,6 +26,7 @@ export function Positions() {
       contractName: 'stacking-dao-core-v1',
       functionName: 'get-pox-cycle',
       functionArgs: [],
+      senderAddress: stxAddress,
       network: stacksNetwork
     });
 
@@ -43,6 +42,7 @@ export function Positions() {
         functionArgs: [
           uintCV(id)
         ],
+        senderAddress: stxAddress,
         network: stacksNetwork
       });
 
