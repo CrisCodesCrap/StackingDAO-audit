@@ -25,7 +25,7 @@ export default function Layout({
   const [isClient, setIsClient] = useState(false);
   const [userData, setUserData] = useState({});
 
-  const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
+  const appConfig = new AppConfig(['store_write', 'publish_data'], 'https://app.stackingdao.com');
   const userSession = new UserSession({ appConfig });
   const authOptions: AuthOptions = {
     redirectTo: '/',

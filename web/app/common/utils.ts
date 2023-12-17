@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { RPCClient } from '@stacks/rpc-client';
 import { StacksMainnet, StacksTestnet } from '@stacks/network';
 require('dotenv').config();

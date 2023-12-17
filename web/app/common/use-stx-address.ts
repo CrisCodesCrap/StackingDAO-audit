@@ -13,11 +13,6 @@ export const useSTXAddress = (): string | undefined => {
   return userData?.profile?.stxAddress?.testnet as string;
 };
 
-export const bnsName = (): string | undefined => {
-  const { userData } = useAppContext();
-  return userData?.username || useSTXAddress();
-};
-
 export const resolveSTXAddress = (userData: UserData | null) => {
   const env = process.env.NEXT_PUBLIC_NETWORK_ENV;
   const isMainnet = env == 'mainnet';
