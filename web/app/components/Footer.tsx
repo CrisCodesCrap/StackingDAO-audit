@@ -13,6 +13,15 @@ export function Footer() {
           <a href="https://github.com/StackingDAO/app/blob/master/Audit-2023-11.pdf" target="_blank" className="flex items-center gap-2">
             Audited by <img src="/coinfabrik-logo.png" className="w-32" />
           </a>
+          <a href="https://www.stackingdao.com/tos" className="flex items-center gap-2">
+            Terms of Service
+          </a>
+          <a href="https://docs.stackingdao.com" target="_blank" className="flex items-center gap-2">
+            Documentation
+          </a>
+          <a href="https://t.me/+0jPjegAOoMwyNTU0" target="_blank" className="flex items-center gap-2">
+            Support
+          </a>
           <a href="https://twitter.com/stackingdao" target="_blank" className="flex items-center">
             <img src="/x-logo-black.png" className="w-5" />
           </a>
