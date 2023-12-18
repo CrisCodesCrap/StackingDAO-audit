@@ -10,7 +10,7 @@ export default function Points() {
   const stxAddress = useSTXAddress();
   const [buttonText, setButtonText] = useState('Copy your referral link');
   const copyLink = async () => {
-    await navigator.clipboard.writeText(`https://app.stackingdao.com/stake?referral=${stxAddress}`);
+    await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
     setButtonText('Link copied!');
   };
 
