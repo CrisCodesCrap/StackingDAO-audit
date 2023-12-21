@@ -1,6 +1,7 @@
 import { Container } from '../components/Container'
 import { Stack } from '../components/Stack'
 import { PoX } from '../components/PoX'
+import { Stats } from '../components/Stats'
 
 export default async function Home() {
   return (
@@ -9,6 +10,7 @@ export default async function Home() {
         <div className="w-full min-h-full h-full flex flex-col items-center">
           <Stack />
           <div className="hidden sm:block">
+            <Stats />
             <PoX />
           </div>
         </div>

@@ -2,6 +2,7 @@ import { Container } from './components/Container'
 import { Stacking } from './components/Stacking'
 import { Positions } from './components/Positions'
 import { PoX } from './components/PoX'
+import { Stats } from './components/Stats'
 
 export default async function Home() {
   return (
@@ -12,6 +13,7 @@ export default async function Home() {
 
           <Positions />
 
+          <Stats />
           <PoX />
         </div>
       </Container>
