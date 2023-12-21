@@ -41,7 +41,7 @@ export function Stack() {
     setAmount(amount);
     setAmountInDollars(stxPrice * event.target.value);
     setStStxReceived(event.target.value / stxRatio);
-    const maxBalance = (stxBalance - 0.04);
+    const maxBalance = (stxBalance - 2);
 
     if (amount > maxBalance) {
       setButtonText("Insufficient Balance");
@@ -53,7 +53,7 @@ export function Stack() {
   };
 
   const maxClicked = () => {
-    const amount = (stxBalance - 0.04).toFixed(2);
+    const amount = (stxBalance - 2).toFixed(2);
     setAmount(amount);
     setAmountInDollars(stxPrice * amount);
     setStStxReceived(amount / stxRatio);
