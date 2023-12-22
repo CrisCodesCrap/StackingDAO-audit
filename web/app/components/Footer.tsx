@@ -10,7 +10,7 @@ export function Footer() {
         </p>
 
         <p className="text-sm text-neutral-700 flex gap-8">
-          <a href="https://github.com/StackingDAO/app/blob/master/Audit-2023-11.pdf" target="_blank" className="flex items-center gap-2">
+          <a href="https://www.coinfabrik.com/blog/stacking-dao-audit/" target="_blank" className="flex items-center gap-2">
             Audited by <img src="/coinfabrik-logo.png" className="w-32" />
           </a>
           <a href="https://www.stackingdao.com/tos" className="flex items-center gap-2">
@@ -20,7 +20,7 @@ export function Footer() {
             Documentation
           </a>
           <a href="https://t.me/+0jPjegAOoMwyNTU0" target="_blank" className="flex items-center gap-2">
-            Support
+            Community <img src="/tg-logo.png" className="w-5" />
           </a>
           <a href="https://twitter.com/stackingdao" target="_blank" className="flex items-center">
             <img src="/x-logo-black.png" className="w-5" />
