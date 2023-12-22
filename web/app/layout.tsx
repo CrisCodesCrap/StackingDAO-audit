@@ -36,7 +36,7 @@ export default function Layout({
     },
     appDetails: {
       name: 'StackingDAO - Liquid Stacking',
-      icon: 'https://stackingdao.com/logo.png',
+      icon: 'https://stackingdao.com/_next/static/media/logo.00ae0d9a.png',
     },
   };
 
