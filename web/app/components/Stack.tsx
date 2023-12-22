@@ -20,7 +20,7 @@ import {
 import { useSTXAddress } from '../common/use-stx-address';
 import { CommissionModal } from './CommissionModal';
 import { useSearchParams } from 'next/navigation'
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 
 export function Stack() {
   const stxAddress = useSTXAddress();
@@ -100,7 +100,7 @@ export function Stack() {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

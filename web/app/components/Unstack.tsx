@@ -17,7 +17,7 @@ import {
 } from '@stacks/transactions'
 import { Alert } from './Alert';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 
 export function Unstack() {
   const { doContractCall } = useConnect();
@@ -94,7 +94,7 @@ export function Unstack() {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

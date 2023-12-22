@@ -14,7 +14,7 @@ import {
   createAssetInfo,
 } from '@stacks/transactions'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 
 export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const stxAddress = useSTXAddress();
@@ -54,7 +54,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
         setCurrentTxStatus('pending');
         setShowUnstakeModal(false);
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const unstakeMaxAmount = () => {

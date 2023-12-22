@@ -14,7 +14,7 @@ import {
   createFungiblePostCondition,
   createAssetInfo,
 } from '@stacks/transactions'
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 
 interface Props {
   showStakeModal: boolean;
@@ -85,7 +85,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
         setCurrentTxStatus('pending');
         setShowStakeModal(false);
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

@@ -15,7 +15,7 @@ import {
 } from '@stacks/transactions'
 import { useAppContext } from './AppContext'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
@@ -72,7 +72,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

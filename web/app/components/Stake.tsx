@@ -14,7 +14,7 @@ import {
   makeContractSTXPostCondition,
   FungibleConditionCode
 } from '@stacks/transactions';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, resolveProvider } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
 import { UnstakeModal } from '../components/UnstakeModal';
 import { useSTXAddress } from '../common/use-stx-address';
@@ -54,7 +54,7 @@ export function Stake() {
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
       }
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   useEffect(() => {
