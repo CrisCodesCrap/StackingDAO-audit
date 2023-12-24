@@ -23,9 +23,9 @@ export default function Points() {
           <header className="mx-auto w-full max-w-7xl px-6 pt-6 sm:pt-10 lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:px-8"></header>
           <main className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32 lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:px-8">
             <div className="max-w-lg">
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl text-center">Coming Soon</h1>
+              <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl text-center">Points are LIVE</h1>
               <p className="mt-6 text-base leading-7 text-gray-600 text-center">
-                You&apos;re here for airdrop farming ser?
+                Details are coming very soon
               </p>
 
               {stxAddress && (
