@@ -74,9 +74,9 @@ export function Unstack() {
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
           'ststx-withdraw-nft',
-          'ststx-withdraw-nft'
+          'ststx-withdraw'
         ),
-        uintCV(111)
+        uintCV(1)
       )
     ];
   
@@ -85,10 +85,10 @@ export function Unstack() {
       contractName: 'stacking-dao-core-v1',
       functionName: 'init-withdraw',
       functionArgs: [
-        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
+        contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'reserve-v1'),
         uintCV(stStxAmount)
       ],
-      postConditions,
+      postConditionMode: 0x01,
       network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);

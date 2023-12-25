@@ -17,7 +17,7 @@
     "@stacks/connect-react": "22.2.1",
     "@stacks/network": "^6.5.5",
     "@stacks/rpc-client": "^0.8.18",
-    "@stacks/transactions": "6.9.0",
+    "@stacks/transactions": "6.11.0",
     "@types/node": "20.4.7",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
