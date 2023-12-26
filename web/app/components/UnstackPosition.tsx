@@ -36,7 +36,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       // stSTX transfer from core
       makeContractFungiblePostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        'core-v1',
+        'stacking-dao-core-v1',
         FungibleConditionCode.Equal,
         stStxAmount * 1000000,
         createAssetInfo(
@@ -49,7 +49,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       // NFT not owned by user
       makeStandardNonFungiblePostCondition(
         stxAddress!,
-        NonFungibleConditionCode.DoesNotOwn,
+        NonFungibleConditionCode.Sends,
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
           'ststx-withdraw-nft',
