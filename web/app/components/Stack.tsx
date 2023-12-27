@@ -66,18 +66,7 @@ export function Stack() {
     const stxAmount = Number(amount) * 1000000;
     const stStxAmount = Number(stStxReceived) * 1000000 * 0.98;
     const postConditions = [
-      makeStandardSTXPostCondition(stxAddress!, FungibleConditionCode.LessEqual, stxAmount),
-      makeContractFungiblePostCondition(
-        process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        'ststx-token',
-        FungibleConditionCode.GreaterEqual,
-        parseInt(0, 10), // TODO: this fails with anything higher than 0
-        createAssetInfo(
-          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'ststx-token',
-          'ststx'
-        )
-      )
+      makeStandardSTXPostCondition(stxAddress!, FungibleConditionCode.LessEqual, stxAmount)
     ];
  
     let referralParam = noneCV();
