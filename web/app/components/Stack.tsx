@@ -36,11 +36,10 @@ export function Stack() {
   const [buttonText, setButtonText] = useState('Stack');
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const updateAmount = (event: { target: { value: SetStateAction<string>; }; }) => {
-    const amount = event.target.value;
+  const setAmounts = (amount: number) => {
     setAmount(amount);
-    setAmountInDollars(stxPrice * event.target.value);
-    setStStxReceived(event.target.value / stxRatio);
+    setAmountInDollars(stxPrice * amount);
+    setStStxReceived(amount / stxRatio);
     const maxBalance = (stxBalance - 2);
 
     if (amount > maxBalance) {
@@ -50,6 +49,10 @@ export function Stack() {
       setButtonText("Stack");
       setButtonDisabled(!amount || !stxAddress || amount > maxBalance);
     }
+  };
+
+  const updateAmount = (event: { target: { value: SetStateAction<string>; }; }) => {
+    setAmounts(event.target.value);
   };
 
   const maxClicked = () => {
@@ -86,6 +89,7 @@ export function Stack() {
       postConditions,
       network: stacksNetwork,
       onFinish: async data => {
+        setAmounts(0);
         setCurrentTxId(data.txId);
         setCurrentTxStatus('pending');
       }
