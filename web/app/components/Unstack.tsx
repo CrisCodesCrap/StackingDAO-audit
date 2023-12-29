@@ -57,28 +57,6 @@ export function Unstack() {
 
   const unstackStx = async () => {
     const stStxAmount = Number(amount) * 1000000;
-    const postConditions = [
-      createFungiblePostCondition(
-        stxAddress!,
-        FungibleConditionCode.LessEqual,
-        uintCV(stStxAmount).value,
-        createAssetInfo(
-          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'ststx-token',
-          'ststx'
-        )
-      ),
-      makeStandardNonFungiblePostCondition(
-        stxAddress!,
-        NonFungibleConditionCode.Owns,
-        createAssetInfo(
-          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'ststx-withdraw-nft',
-          'ststx-withdraw'
-        ),
-        uintCV(1)
-      )
-    ];
   
     await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
@@ -88,7 +66,28 @@ export function Unstack() {
         contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'reserve-v1'),
         uintCV(stStxAmount)
       ],
-      postConditionMode: 0x01,
+      postConditions: [
+        createFungiblePostCondition(
+          stxAddress!,
+          FungibleConditionCode.LessEqual,
+          uintCV(stStxAmount).value,
+          createAssetInfo(
+            process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+            'ststx-token',
+            'ststx'
+          )
+        ),
+        makeStandardNonFungiblePostCondition(
+          stxAddress!,
+          NonFungibleConditionCode.Sends,
+          createAssetInfo(
+            process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+            'ststx-withdraw-nft',
+            'ststx-withdraw'
+          ),
+          uintCV(1)
+        )
+      ],
       network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
