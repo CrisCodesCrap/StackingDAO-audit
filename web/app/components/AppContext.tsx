@@ -26,6 +26,8 @@ interface AppContextProps {
   setStackingCycle: (stackingCycle: string | undefined) => void;
   cycleDaysLeft: string | undefined;
   setCycleDaysLeft: (cycleDaysLeft: string | undefined) => void;
+  nextRewardCycleBlocks: number | undefined;
+  setNextRewardCycleBlocks: (nextRewardCycleBlocks: number | undefined) => void;
   bitcoinBlocksLeft: string | undefined;
   setBitcoinBlocksLeft: (bitcoinBlocksLeft: string | undefined) => void;
 
@@ -85,6 +87,7 @@ export const AppContextProvider = (props: any) => {
   const [stackedStx, setStackedStx] = useState(0);
   const [stackingCycle, setStackingCycle] = useState(0);
   const [cycleDaysLeft, setCycleDaysLeft] = useState(0);
+  const [nextRewardCycleBlocks, setNextRewardCycleBlocks] = useState(0);
   const [bitcoinBlocksLeft, setBitcoinBlocksLeft] = useState(0);
   const [stackingApy, setStackingApy] = useState(7.21); // TODO: make dynamic
   const [currentTxStatus, setCurrentTxStatus] = useState('');
@@ -164,6 +167,7 @@ export const AppContextProvider = (props: any) => {
           setStackedStx(response['current_cycle']['stacked_ustx']);
           const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase'];
           setBitcoinBlocksLeft(blocksUntilNextCycle);
+          setNextRewardCycleBlocks(response['next_reward_cycle_in']);
 
           const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
           const currentTimestamp = Date.now(); // in milliseconds
@@ -219,6 +223,7 @@ export const AppContextProvider = (props: any) => {
         stackedStx: stackedStx,
         cycleDaysLeft: cycleDaysLeft,
         bitcoinBlocksLeft: bitcoinBlocksLeft,
+        nextRewardCycleBlocks: nextRewardCycleBlocks,
         currentTxId: currentTxId,
         currentTxStatus: currentTxStatus,
         currentTxMessage: currentTxMessage,

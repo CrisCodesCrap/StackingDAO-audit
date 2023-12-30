@@ -58,7 +58,7 @@ export function PointsModal({ open, setOpen }: ModalProps) {
 
                     <h2 className="text-md mt-2">DeFi Activities with stSTX</h2>
                     <p className="text-md text-gray-500 mb-2">
-                      If you're an active participant in the DeFi world, your engagement will also earn you extra points. For those lending your stSTX you will collect 1.5 points per stSTX per day. You can earn 2.5 points for stSTX/STX LPs.
+                      If you&apos;re an active participant in the DeFi world, your engagement will also earn you extra points. For those lending your stSTX you will collect 1.5 points per stSTX per day. You can earn 2.5 points for stSTX/STX LPs.
 
                       We are only tracking DeFi platforms with an aggregate TVL that is greater than a minimum threshold that ensures meaningful liquidity on the platform.
                       As such we are currently tracking ALEX, Arkadiko and Bitflow
@@ -69,7 +69,7 @@ export function PointsModal({ open, setOpen }: ModalProps) {
 
                     <h2 className="text-md mt-2">Referrals</h2>
                     <p className="text-md text-gray-500 mb-2">
-                      For our community builders out there, we haven’t forgotten you. Refer a friend to join the StackingDAO ecosystem, and you'll gain 10% of the points they earn.
+                      For our community builders out there, we haven’t forgotten you. Refer a friend to join the StackingDAO ecosystem, and you&apos;ll gain 10% of the points they earn.
 
                       For example, if your referee earns 1000 points, you get 100 points.
                     </p>

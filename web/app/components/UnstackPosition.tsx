@@ -2,6 +2,7 @@
 
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useConnect } from '@stacks/connect-react';
 import {
   uintCV,
@@ -20,7 +21,20 @@ import { stacksNetwork, resolveProvider } from '../common/utils';
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
-  const { bitcoinBlocksLeft, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { bitcoinBlocksLeft, nextRewardCycleBlocks, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const [canWithdraw, setCanWithdraw] = useState(false);
+  const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
+
+  useEffect(() => {
+    const withdrawalEnabled = Number(cycleId) <= currentCycleId && nextRewardCycleBlocks < 2000;
+    setCanWithdraw(withdrawalEnabled);
+
+    if (Number(cycleId) <= currentCycleId) {
+      setWithdrawalBlocksLeft(2100 - nextRewardCycleBlocks + 1);
+    } else {
+      setWithdrawalBlocksLeft(bitcoinBlocksLeft + 100);
+    }
+  }, []);
 
   const withdraw = async () => {
     const postConditions = [
@@ -94,11 +108,11 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
             </div>
             <div className="text-right">
-              <button type="button" disabled={Number(cycleId) > currentCycleId} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
-                {Number(cycleId) <= currentCycleId ? (
-                  <span>Withdraw {stxAmount.toLocaleString()} STX</span>
+              <button type="button" disabled={!canWithdraw} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
+                {canWithdraw ? (
+                  <span>Withdraw {stxAmount.toLocaleString()} {nextRewardCycleBlocks} STX</span>
                 ) : (
-                  <span>Withdraw in {bitcoinBlocksLeft} blocks</span>
+                  <span>Withdraw in {withdrawalBlocksLeft} blocks</span>
                 )}
               </button>
             </div>
