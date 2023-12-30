@@ -30,7 +30,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     setCanWithdraw(withdrawalEnabled);
 
     if (Number(cycleId) <= currentCycleId) {
-      setWithdrawalBlocksLeft(2100 - nextRewardCycleBlocks + 1);
+      setWithdrawalBlocksLeft(nextRewardCycleBlocks - 1999);
     } else {
       setWithdrawalBlocksLeft(bitcoinBlocksLeft + 100);
     }
