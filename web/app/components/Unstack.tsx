@@ -57,7 +57,29 @@ export function Unstack() {
 
   const unstackStx = async () => {
     const stStxAmount = Number(amount) * 1000000;
-  
+    const postConditions = [
+      createFungiblePostCondition(
+        stxAddress!,
+        FungibleConditionCode.LessEqual,
+        uintCV(stStxAmount).value,
+        createAssetInfo(
+          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+          'ststx-token',
+          'ststx'
+        )
+      ),
+      makeStandardNonFungiblePostCondition(
+        stxAddress!,
+        NonFungibleConditionCode.Sends,
+        createAssetInfo(
+          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+          'ststx-withdraw-nft',
+          'ststx-withdraw'
+        ),
+        uintCV(1)
+      )
+    ];
+
     await doContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
@@ -66,28 +88,7 @@ export function Unstack() {
         contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'reserve-v1'),
         uintCV(stStxAmount)
       ],
-      postConditions: [
-        createFungiblePostCondition(
-          stxAddress!,
-          FungibleConditionCode.LessEqual,
-          uintCV(stStxAmount).value,
-          createAssetInfo(
-            process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-            'ststx-token',
-            'ststx'
-          )
-        ),
-        makeStandardNonFungiblePostCondition(
-          stxAddress!,
-          NonFungibleConditionCode.Sends,
-          createAssetInfo(
-            process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-            'ststx-withdraw-nft',
-            'ststx-withdraw'
-          ),
-          uintCV(1)
-        )
-      ],
+      postConditionMode: 0x01,
       network: stacksNetwork,
       onFinish: async data => {
         setCurrentTxId(data.txId);
