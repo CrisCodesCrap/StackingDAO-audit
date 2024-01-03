@@ -75,9 +75,6 @@
     (lock-period uint)
   )
   ;; TODO: update for mainnet
-
-  ;; TODO: use delegate-stx
-
   (match (as-contract (contract-call? .pox-3-mock stack-stx tokens-to-stack pox-address start-burn-height lock-period))
     result (ok result)
     error (err (to-uint error))
@@ -86,8 +83,6 @@
 
 (define-private (pox-stack-increase (additional-tokens-to-stack uint))
   ;; TODO: update for mainnet
-
-  ;; TODO: use delegate-stack-increase
   (match (as-contract (contract-call? .pox-3-mock stack-increase additional-tokens-to-stack))
     result (ok result)
     error (err (to-uint error))
@@ -96,10 +91,6 @@
 
 (define-private (pox-stack-extend (extend-count uint) (pox-address { version: (buff 1), hashbytes: (buff 32) }))
   ;; TODO: update for mainnet
-
-
-  ;; TODO: use delegate-stack-extend
-
   (match (as-contract (contract-call? .pox-3-mock stack-extend extend-count pox-address))
     result (ok result)
     error (err (to-uint error))
