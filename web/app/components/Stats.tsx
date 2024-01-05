@@ -67,8 +67,9 @@ export function Stats() {
   }, []);
 
   return (
-    <>
-      <div className="bg-white border-2 rounded-xl w-full p-4 mt-8">
+    <div className="w-full mt-8">
+      <span className="text-tertiary-text font-medium">Stacking DAO stats</span>
+      <div className="bg-white border-2 rounded-xl w-full p-4">
         <dl className="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4 mt-0 text-center">
           <div
             className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8"
@@ -107,6 +108,6 @@ export function Stats() {
           </div>
         </dl>
       </div>
-    </>
+    </div>
   );
 }
