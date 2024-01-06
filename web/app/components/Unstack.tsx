@@ -17,7 +17,7 @@ import {
 } from '@stacks/transactions'
 import { Alert } from './Alert';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork, resolveProvider, formatSeconds } from '../common/utils';
 
 export function Unstack() {
   const { doContractCall } = useConnect();
@@ -120,7 +120,7 @@ export function Unstack() {
           Unstacking STX will give you a withdrawal NFT that allows you to withdraw the STX tokens after the current PoX yield cycle ends.
         </p>
         <p className="mt-2">
-          <a className="font-bold" href="https://docs.stacks.co/docs/stacks-academy/proof-of-transfer" target="_blank">Learn more about PoX</a>
+          <a className="font-bold" href="https://docs.stackingdao.com/stackingdao/the-stacking-dao-app/withdrawing-stx" target="_blank">Learn more about withdrawals</a>
         </p>
       </Alert>
 
@@ -170,7 +170,11 @@ export function Unstack() {
         </div>
         <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-2">
           <div className="flex justify-between items-start">
-            Time to receive STX<span>End of Cycle ({bitcoinBlocksLeft} Bitcoin blocks)</span>
+            Time to receive STX {Number(bitcoinBlocksLeft) <= 100 ? (
+              <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
+            ) : (
+              <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
+            )}
           </div>
           <div className="flex justify-between items-start">
             Best price<span>1 stSTX = {stxRatio} STX</span>

@@ -72,3 +72,20 @@ export const resolveProvider = () => {
     return window.StacksProvider;
   }
 };
+
+export const formatSeconds = function (totalmins)  {
+  if (Math.sign(totalmins) != -1) {
+    const mins= totalmins % 60;
+    const hours = Math.floor(totalmins / 60);
+    const days= Math.floor(hours / 24);
+    const hourss = hours % 24;
+    return days + 'd, ' + hourss + 'h, ' + mins + 'm';
+  } else {
+    const absTotal= Math.abs(totalmins);
+    const mins= absTotal % 60;
+    const hours = Math.floor(absTotal / 60);
+    const days= Math.floor(hours / 24);
+    const hourss = hours % 24;
+    return days + 'd, ' + hourss + 'h, ' + mins + 'm';
+  }
+}
