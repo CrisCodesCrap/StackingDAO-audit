@@ -67,14 +67,6 @@ export default function Points() {
           )}
         </div>
 
-        <div className="mt-6 whitespace-nowrap text-left">
-          <img
-            src="/soon.jpeg"
-            alt="Coming Soon"
-            className="inset-0 h-full w-full object-cover"
-          />
-        </div>
-
         {/*<table className="mt-6 w-full whitespace-nowrap text-left">
           <colgroup>
             <col className="w-full sm:w-4/12" />
