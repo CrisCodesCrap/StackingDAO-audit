@@ -160,6 +160,11 @@ path = "contracts/rewards-job-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.return-stx-job-v1]
+path = "contracts/return-stx-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 # ------------------------------
 # Tests
 # ------------------------------
