@@ -1,7 +1,7 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'stacking-dao-core-v1';
-const FUNCTION_NAME = 'add-rewards';
+const CONTRACT_NAME = 'dao';
+const FUNCTION_NAME = 'set-contract-active';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
@@ -12,13 +12,11 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'commission-v1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v0'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(10000000000),
-    tx.uintCV(75)
+    tx.trueCV()
   ],
-  fee: new BN(10000000, 10),
+  fee: new BN(20000001, 10),
+  nonce: new BN(37, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
