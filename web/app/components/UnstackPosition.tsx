@@ -16,7 +16,7 @@ import {
 } from '@stacks/transactions'
 import { useAppContext } from './AppContext'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork, resolveProvider, formatSeconds } from '../common/utils';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
@@ -43,6 +43,8 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
   }, []);
 
   const withdraw = async () => {
+    if (!canWithdraw) return;
+
     const postConditions = [
 
       // STX transfer from reserve
@@ -114,13 +116,13 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
             </div>
             <div className="text-right">
-              <button type="button" disabled={!canWithdraw} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
-                {canWithdraw ? (
+              {canWithdraw ? (
+                <button type="button" disabled={!canWithdraw} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
                   <span>Withdraw {stxAmount.toLocaleString()} {nextRewardCycleBlocks} STX</span>
-                ) : (
-                  <span>Withdraw in {withdrawalBlocksLeft} blocks</span>
-                )}
-              </button>
+                </button>
+              ) : (
+                <span>Withdrawal available in {formatSeconds(withdrawalBlocksLeft * 10)}</span>
+              )}
             </div>
           </div>
         </div>
