@@ -118,7 +118,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
             <div className="text-right">
               {canWithdraw ? (
                 <button type="button" disabled={!canWithdraw} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
-                  <span>Withdraw {stxAmount.toLocaleString()} {nextRewardCycleBlocks} STX</span>
+                  <span>Withdraw {stxAmount.toLocaleString()} STX</span>
                 </button>
               ) : (
                 <span>Withdrawal available in {formatSeconds(withdrawalBlocksLeft * 10)}</span>
