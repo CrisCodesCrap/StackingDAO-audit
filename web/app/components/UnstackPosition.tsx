@@ -21,7 +21,7 @@ import { stacksNetwork, resolveProvider } from '../common/utils';
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
   const { doContractCall } = useConnect();
-  const { bitcoinBlocksLeft, nextRewardCycleBlocks, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { nextRewardCycleBlocks, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const [canWithdraw, setCanWithdraw] = useState(false);
   const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
 
@@ -32,7 +32,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     if (Number(cycleId) <= currentCycleId) {
       setWithdrawalBlocksLeft(nextRewardCycleBlocks - 1999);
     } else {
-      setWithdrawalBlocksLeft(bitcoinBlocksLeft + 100);
+      setWithdrawalBlocksLeft(nextRewardCycleBlocks);
     }
   }, []);
 
