@@ -26,12 +26,18 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
   const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
 
   useEffect(() => {
-    const withdrawalEnabled = Number(cycleId) <= currentCycleId && nextRewardCycleBlocks < 2000;
+    const withdrawalEnabled = Number(cycleId) <= currentCycleId;
     setCanWithdraw(withdrawalEnabled);
 
-    if (Number(cycleId) <= currentCycleId) {
-      setWithdrawalBlocksLeft(nextRewardCycleBlocks - 1999);
+    const cycleDiff = Number(currentCycleId) - Number(cycleId);
+    if (Math.abs(cycleDiff) > 1) {
+      // can withdraw in 2+ cycles
+      setWithdrawalBlocksLeft(2100 + nextRewardCycleBlocks);
+    } else if (Math.abs(cycleDiff) === 1) {
+      // can withdraw in next cycle
+      setWithdrawalBlocksLeft(nextRewardCycleBlocks);
     } else {
+      // can withdraw in current cycle, should never hit?
       setWithdrawalBlocksLeft(nextRewardCycleBlocks);
     }
   }, []);
