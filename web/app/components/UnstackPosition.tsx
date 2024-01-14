@@ -26,7 +26,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
   const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
 
   useEffect(() => {
-    const withdrawalEnabled = Number(cycleId) <= currentCycleId && nextRewardCycleBlocks < 2000;
+    const withdrawalEnabled = Number(cycleId) <= currentCycleId && nextRewardCycleBlocks <= 2000;
     setCanWithdraw(withdrawalEnabled);
 
     const cycleDiff = Number(currentCycleId) - Number(cycleId);
