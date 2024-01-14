@@ -121,7 +121,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
                   <span>Withdraw {stxAmount.toLocaleString()} STX</span>
                 </button>
               ) : (
-                <span>Withdrawal available in {formatSeconds(withdrawalBlocksLeft * 10)}</span>
+                <span>Withdrawal available in {withdrawalBlocksLeft} Bitcoin blocks</span>
               )}
             </div>
           </div>
