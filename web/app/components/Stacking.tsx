@@ -49,7 +49,7 @@ export function Stacking() {
     const fetchBalances = async () => {
       if (stStxBalance > 0) {
         setYieldPerYear(((stackingApy / 100.0) * stStxBalance));
-        setStStxWidth(100.0 * stStxBalance / stxBalance);
+        setStStxWidth(100.0 * stStxBalance / (stStxBalance + stxBalance));
       }
       setIsLoading(false);
     };
