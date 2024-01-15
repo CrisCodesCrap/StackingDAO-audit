@@ -19,6 +19,9 @@ export function Footer() {
           <a href="https://docs.stackingdao.com" target="_blank" className="flex items-center gap-2">
             Documentation
           </a>
+          <a href="/cycles" className="flex items-center gap-2">
+            Cycles
+          </a>
           <a href="https://t.me/+0jPjegAOoMwyNTU0" target="_blank" className="flex items-center gap-2">
             Community <img src="/tg-logo.png" className="w-5" />
           </a>
