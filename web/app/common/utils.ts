@@ -6,7 +6,9 @@ require('dotenv').config();
 
 const env = process.env.NEXT_PUBLIC_NETWORK_ENV || 'mainnet';
 
-let coreApiUrl = 'https://api.hiro.so';
+export let coreApiUrl = 'https://api.hiro.so';
+// export let coreApiUrl = "https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff"
+
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT || 3999}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';

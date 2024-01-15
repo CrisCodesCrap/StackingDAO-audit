@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { callReadOnlyFunction } from '@stacks/transactions';
+import { coreApiUrl } from "@/app/common/utils";
 
 const fetchTVL = async () => {
   const result: any = await callReadOnlyFunction({
@@ -20,7 +21,7 @@ const fetchTVL = async () => {
 }
 
 const fetchPoX = async () => {
-  const url = "https://api.mainnet.hiro.so/v2/pox";
+  const url = coreApiUrl + "/v2/pox";
   const response = await fetch(url, { credentials: 'omit' });
   const data = await response.json();
   return data;

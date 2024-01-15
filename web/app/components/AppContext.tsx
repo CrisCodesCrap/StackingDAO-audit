@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getRPCClient } from '../common/utils'
+import { coreApiUrl, getRPCClient } from '../common/utils'
 import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 import { UserData } from '@stacks/auth';
@@ -159,7 +159,7 @@ export const AppContextProvider = (props: any) => {
     };
 
     const fetchStackingCycle = async () => {
-      const metaInfoUrl = `https://api.mainnet.hiro.so/v2/pox`; 
+      const metaInfoUrl = coreApiUrl + `/v2/pox`; 
       fetch(metaInfoUrl)
         .then(res => res.json())
         .then(response => {

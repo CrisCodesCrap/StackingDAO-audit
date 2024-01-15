@@ -8,7 +8,7 @@ import { useAppContext } from './AppContext'
 import { ApyModal } from './ApyModal'
 import { RatioModal } from './RatioModal'
 import { UnstackPosition } from './UnstackPosition'
-import { stacksNetwork, getRPCClient } from '../common/utils'
+import { stacksNetwork, getRPCClient, coreApiUrl } from '../common/utils'
 import Link from 'next/link'
 import { useSTXAddress } from '../common/use-stx-address';
 
@@ -61,11 +61,7 @@ export function Positions() {
 
       // Alternative
       // https://github.com/hirosystems/stacks-blockchain-api/pull/936
-      let url = 'https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff';
-      if (process.env.NEXT_PUBLIC_NETWORK_ENV === 'testnet') {
-        url = 'https://api.testnet.hiro.so';
-      }
-      url += `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
+      const url = coreApiUrl + `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
       const response = await fetch(url, { credentials: 'omit' });
       const data = await response.json();
 
