@@ -3,14 +3,16 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { useAppContext } from './AppContext'
 import { callReadOnlyFunction } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 
 export function Stats() {
+  const { stxPrice } = useAppContext();
+
   const [totalStx, setTotalStx] = useState<number>(0);
   const [stackingStx, setStackingStx] = useState<number>(0);
   const [idleStx, setIdleStx] = useState<number>(0);
-  const [stxPrice, setStxPrice] = useState<number>(0);
 
   useEffect(() => {
     const fetchTotal = async () => {
@@ -52,18 +54,9 @@ export function Stats() {
       setIdleStx(Number(result?.value?.value) / 1000000);
     };
 
-    const fetchStxPrice = async () => {
-      const url = "https://api.coingecko.com/api/v3/simple/price?ids=blockstack&vs_currencies=usd&precision=6";
-      const response = await fetch(url, { credentials: 'omit' });
-      const data = await response.json();
-      setStxPrice(data.blockstack.usd)
-    }
-
-
     fetchTotal();
     fetchStxStacking();
     fetchStxIdle();
-    fetchStxPrice();
   }, []);
 
   return (
