@@ -16,6 +16,15 @@ contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-tra
 [[project.requirements]]
 contract_id = "SPRP7MYBHSMFH5EGN3HGX6KNQ7QBHVTBPCE2RJDH.lp-trait"
 
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1"
+
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1"
+
+[[project.requirements]]
+contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1"
+
 # ------------------------------
 # Protocol
 # ------------------------------
@@ -167,6 +176,11 @@ epoch = 2.4
 
 [contracts.return-stx-job-v1]
 path = "contracts/return-stx-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v1]
+path = "contracts/block-info-v1.clar"
 clarity_version = 2
 epoch = 2.4
 

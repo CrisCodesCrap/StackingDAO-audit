@@ -2,46 +2,123 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
 import { Container } from '../components/Container'
 import { useSTXAddress } from '../common/use-stx-address';
 import { PointsModal } from '../components/PointsModal'
+import { coreApiUrl } from '../common/utils';
 
 export default function Points() {
   const stxAddress = useSTXAddress();
+
   const [buttonText, setButtonText] = useState('Copy your referral link');
   const [showPointsInfo, setShowPointsInfo] = useState(false);
+  const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
+  const [totalPoints, setTotalPoints] = useState(0);
+
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
     setButtonText('Link copied!');
   };
 
+  async function fetchBlockInfo() {
+    const lastBlockResponse = await fetch("https://stackingdao-points.s3.amazonaws.com/points-last-block.json");
+    const lastBlock = (await lastBlockResponse.json()).last_block;
+
+    const blockHeightResponse = await fetch(`${coreApiUrl}/v2/info`, { json: true });
+    const blockHeight = (await blockHeightResponse.json())['stacks_tip_height'];
+
+    const daysDiff = (blockHeight - lastBlock) / 144;
+    console.log("Update info. Current block:", blockHeight, ", last block:", lastBlock, ", days diff:", daysDiff)
+  }
+
+  async function fetchPointsInfo() {
+    const url = "https://stackingdao-points.s3.amazonaws.com/points-aggregate.json";
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const sumWithInitial = Object.values(data).reduce(
+      (accumulator, currentValue) => accumulator + currentValue['user_points'],
+      0,
+    );
+    setTotalPoints(sumWithInitial);
+
+    if (!stxAddress) return;
+    const userData = data[stxAddress];
+    setPointsInfo(userData || { user_points: 0, referral_points: 0 });
+  }
+
+  useEffect(() => {
+    if (stxAddress) {
+      fetchPointsInfo();
+    }
+    fetchBlockInfo();
+  }, [stxAddress]);
+
   return (
     <Container className="mt-12">
       <div className="py-10">
-        <div className="w-full text-center hidden md:block font-semibold text-4xl my-8">StackingDAO Points</div>
+        <div className="w-full text-center hidden md:block font-semibold text-4xl my-3">StackingDAO Points</div>
+        <div className="w-full text-center text-sm">We reserve the right to update point calculations at any time. Points are updated weekly.</div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
         )}
 
-        <div>
-          <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-            <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-              <dt className="truncate text-sm font-medium text-gray-500">Total Points</dt>
-              <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">Soon</dd>
-            </div>
+        {stxAddress ? (
+          <div>
+            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-4">
+              <div className="rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <dt className="text-sm font-medium text-gray-500 flex block gap-1">
+                  Total Points
+                  <a className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
+                    <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                      <div className="flex max-w-xs flex-col items-center w-32">
+                        <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">Total Points accumulated in the protocol so far</div>
+                        <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+                      </div>
+                    </div>
+                  </a>
+                </dt>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString()}</dd>
+              </div>
 
-            <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-              <dt className="truncate text-sm font-medium text-gray-500">Stacking Points</dt>
-              <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">Soon</dd>
-            </div>
+              <div className="rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <dt className="text-sm font-medium text-gray-500 flex block gap-1">
+                  Your Points
+                  <a className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600" href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
+                    <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                      <div className="flex max-w-xs flex-col items-center w-32">
+                        <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">The sum of Your Stacking Points and Your Referral Points</div>
+                        <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+                      </div>
+                    </div>
+                  </a>
+                </dt>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString()}</dd>
+              </div>
 
-            <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-              <dt className="truncate text-sm font-medium text-gray-500">Referral Points</dt>
-              <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">Soon</dd>
-            </div>
-          </dl>
-        </div>
+              <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <dt className="truncate text-sm font-medium text-gray-500">Your Stacking Points</dt>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.user_points.toLocaleString()}</dd>
+              </div>
+
+              <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <dt className="truncate text-sm font-medium text-gray-500">Your Referral Points</dt>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.referral_points.toLocaleString()}</dd>
+              </div>
+            </dl>
+          </div>
+        ):(
+          <>
+            <div className="w-full text-center hidden md:block text-lg my-8">Connect your wallet to view your points</div>
+          </>
+        )}
 
         <div className="flex gap-2 mt-4">
           <button
@@ -66,6 +143,8 @@ export default function Points() {
             </button>
           )}
         </div>
+
+        <div className="w-full text-center text-sm my-8">A searchable leaderboard is coming soon.</div>
 
         {/*<table className="mt-6 w-full whitespace-nowrap text-left">
           <colgroup>
