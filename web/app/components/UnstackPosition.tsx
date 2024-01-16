@@ -121,7 +121,15 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
                   <span>Withdraw {stxAmount.toLocaleString()} STX</span>
                 </button>
               ) : (
-                <span>Withdrawal available in {withdrawalBlocksLeft} Bitcoin blocks</span>
+                <a className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600" href="#">
+                  <span>Withdrawal available in {withdrawalBlocksLeft} Bitcoin blocks</span>
+                  <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <div className="flex max-w-xs flex-col items-center w-48">
+                      <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">Your STX will become available in {withdrawalBlocksLeft} Bitcoin blocks, which is approximately {formatSeconds(withdrawalBlocksLeft * 10)} based on 10 minute blocks.</div>
+                      <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+                    </div>
+                  </div>
+                </a>
               )}
             </div>
           </div>
