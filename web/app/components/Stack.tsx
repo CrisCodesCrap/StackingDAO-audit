@@ -133,7 +133,14 @@ export function Stack() {
               <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/stacks-stx-logo.png" style={{color: 'transparent'}} />
               <div className="flex-grow text-xl">
                 Stacks
-                <span className="text-tertiary-text text-base block">Balance: {stxBalance.toLocaleString()} STX</span>
+                <span className="text-tertiary-text text-base block">
+                  Balance: {' '}
+                  {stxBalance.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })} 
+                  {' '}STX
+                </span>
               </div>
             </div>
             <div className="mt-10 mb-5 flex flex-col items-center relative max-w-full overflow-x-clip">
@@ -179,7 +186,12 @@ export function Stack() {
               Conversion rate<span>1 stSTX = {stxRatio} STX</span>
             </div>
             <div className="flex justify-between items-start">
-              You receive<span>~{stStxReceived.toLocaleString()} stSTX</span>
+              You receive<span>
+                ~{stStxReceived.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} 
+                {' '}stSTX</span>
             </div>
           </div>
           <button

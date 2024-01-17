@@ -90,7 +90,12 @@ export function Stacking() {
                     <div className="w-[25%] bg-gray-400 rounded-r-md" />
                   </div>
                 ) : (
-                  <span className="text-lg block font-semibold">{stStxBalance.toLocaleString()} stSTX</span>
+                  <span className="text-lg block font-semibold">
+                    {stStxBalance.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })} 
+                    {' '}stSTX</span>
                 )}
               </div>
               <div className="text-end">
@@ -105,7 +110,12 @@ export function Stacking() {
                     <div className="w-[25%] bg-gray-400 rounded-r-md" />
                   </div>
                 ) : (
-                  <span className="text-lg block font-semibold">{stxBalance.toLocaleString()} STX</span>
+                  <span className="text-lg block font-semibold">
+                    {stxBalance.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })} 
+                    {' '}STX</span>
                 )}
               </div>
             </div>
@@ -134,7 +144,12 @@ export function Stacking() {
               </div>
             </div>
             <div className="mt-4 flex gap-2 items-end font-medium">
-              <span className="text-ststx text-5xl font-semibold">~{yieldPerYear.toLocaleString()}</span>STX/per year
+              <span className="text-ststx text-5xl font-semibold">
+                ~{yieldPerYear.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>STX/per year
             </div>
             <Link href={`${referral ? `/stack?referral=${referral}` : '/stack'}`} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg button-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 my-4 w-full mt-14">
               <span>{stStxBalance > 0 ? 'Stack more STX' : 'Start stacking STX'}</span>

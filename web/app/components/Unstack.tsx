@@ -139,7 +139,14 @@ export function Unstack() {
             <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/sdao-logo.jpg" style={{color: 'transparent'}} />
             <div className="flex-grow text-xl">
               stSTX
-              <span className="text-tertiary-text text-base block">Balance: {stStxBalance.toLocaleString()} stSTX</span>
+              <span className="text-tertiary-text text-base block">
+                Balance: {' '}
+                {stStxBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+                })} 
+                {' '}stSTX
+              </span>
             </div>
           </div>
           <div className="mt-10 mb-5 flex flex-col items-center relative max-w-full overflow-x-clip">

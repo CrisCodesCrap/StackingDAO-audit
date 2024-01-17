@@ -101,7 +101,12 @@ export function Positions() {
                       <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stStxBalance.toLocaleString()} stSTX</div>
+                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                        {stStxBalance.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })} 
+                        {' '}stSTX</div>
                       <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">{stackingApy}% APY</span>
                     </div>
                   </div>
@@ -123,7 +128,12 @@ export function Positions() {
                       <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Stacks</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">{stxBalance.toLocaleString()} STX</div>
+                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                        {stxBalance.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })} 
+                        {' '}STX</div>
                       <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-tertiary-text">Not earning yield</span>
                     </div>
                   </div>

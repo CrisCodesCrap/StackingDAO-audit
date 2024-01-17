@@ -34,7 +34,9 @@ export function PoX() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">Total STX Stacked</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {(stackedStx / 1000000).toLocaleString()}
+              {(stackedStx / 1000000).toLocaleString(undefined, {
+                maximumFractionDigits: 0,
+              })}
             </dd>
           </div>
 

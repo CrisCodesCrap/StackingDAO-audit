@@ -82,7 +82,7 @@ export default function Points() {
                     </div>
                   </a>
                 </dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString(undefined, { maximumFractionDigits: 1 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
               </div>
 
               <div className="rounded-lg bg-white px-4 py-5 shadow sm:p-6">
@@ -100,17 +100,17 @@ export default function Points() {
                     </div>
                   </a>
                 </dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(undefined, { maximumFractionDigits: 1 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
               </div>
 
               <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
                 <dt className="truncate text-sm font-medium text-gray-500">Your Stacking Points</dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.user_points.toLocaleString(undefined, { maximumFractionDigits: 1 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.user_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
               </div>
 
               <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
                 <dt className="truncate text-sm font-medium text-gray-500">Your Referral Points</dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.referral_points.toLocaleString(undefined, { maximumFractionDigits: 1 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.referral_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
               </div>
             </dl>
           </div>
