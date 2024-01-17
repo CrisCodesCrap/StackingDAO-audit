@@ -192,7 +192,8 @@ export function Unstack() {
                 <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
                   <div className="flex max-w-xs flex-col items-center w-64">
                     <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
-                      The STX that's backing your stSTX is locked in Stacks consensus in 2 week cycles. STX can only be unstacked by Stacking DAO at the end of a Stacks Consensus cycle.
+                      The STX that is backing your stSTX is locked in Stacks consensus in 2 week cycles. 
+                      STX can only be unstacked by Stacking DAO at the end of a Stacks Consensus cycle.
                     </div>
                     <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
                   </div>
