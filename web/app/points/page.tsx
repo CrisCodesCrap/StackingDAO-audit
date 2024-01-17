@@ -58,7 +58,7 @@ export default function Points() {
   return (
     <Container className="mt-12">
       <div className="py-10">
-        <div className="w-full text-center hidden md:block font-semibold text-4xl my-3">StackingDAO Points</div>
+        <div className="w-full text-center font-semibold text-4xl my-3">StackingDAO Points</div>
         <div className="w-full text-center text-sm">We reserve the right to update point calculations at any time. Points are updated weekly.</div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
@@ -116,19 +116,11 @@ export default function Points() {
           </div>
         ):(
           <>
-            <div className="w-full text-center hidden md:block text-lg my-8">Connect your wallet to view your points</div>
+            <div className="w-full text-center text-lg my-8">Connect your wallet to view your points</div>
           </>
         )}
 
         <div className="flex gap-2 mt-4">
-          <button
-            type="button"
-            className="flex gap-2 items-center mt-6 justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full mb-2"
-            onClick={() => { setShowPointsInfo(true)}}
-          >
-            How do points work?
-          </button>
-
           {stxAddress && (
             <button
               type="button"
@@ -144,7 +136,52 @@ export default function Points() {
           )}
         </div>
 
-        <div className="w-full text-center text-sm my-8">A searchable leaderboard is coming soon.</div>
+        <div className="mt-12">
+          <div className="w-full font-semibold text-2xl my-3">How do points work?</div>
+          <p className="text-md text-gray-500 mb-2">
+            StackingDAO Points are designed to quantify and reward your contributions to the ever-growing StackingDAO ecosystem.
+          </p>
+          <p className="text-md text-gray-500 mb-2">
+            You can earn points through holding stSTX, participating in DeFi activities or making referrals, and more.
+            The math is simple, transparent, and designed to benefit everyone from long-term holders to active DeFi users.
+          </p>
+
+          <h2 className="text-lg mt-6">How to Earn Points</h2>
+          <h2 className="text-md mt-4">Holding stSTX</h2>
+          <p className="text-md text-gray-500 mb-2">
+            For those of you holding onto stSTX, your faith in the ecosystem will be rewarded. Every stSTX in your wallet accumulates 1 point per day.
+            The points will be calculated based on a daily snapshot of your stSTX holdings.
+
+            For example, holding 1000 stSTX will earn you 1000 points each day, and the longer you hold, the more you accumulate.
+          </p>
+
+          <h2 className="text-md mt-4">DeFi Activities with stSTX</h2>
+          <p className="text-md text-gray-500 mb-2">
+            If you&apos;re an active participant in the DeFi world, your engagement will also earn you extra points. For those lending your stSTX you will collect 1.5 points per stSTX per day. You can earn 2.5 points for stSTX/STX LPs.
+
+            We are only tracking DeFi platforms with an aggregate TVL that is greater than a minimum threshold that ensures meaningful liquidity on the platform.
+            As such we are currently tracking ALEX, Arkadiko and Bitflow
+          </p>
+          <p className="text-md text-gray-500 mb-2">
+            Please reach out to us if you believe we should add a protocol that is missing from our list.
+          </p>
+
+          <h2 className="text-md mt-4">Referrals</h2>
+          <p className="text-md text-gray-500 mb-2">
+            For our community builders out there, we haven’t forgotten you. Refer a friend to join the StackingDAO ecosystem, and you&apos;ll gain 10% of the points they earn.
+
+            For example, if your referee earns 1000 points, you get 100 points.
+          </p>
+
+          <h2 className="text-md mt-4">OG and Genesis NFTs</h2>
+          <p className="text-md text-gray-500 mb-2">
+            For holders of OG and Genesis NFTs, we have a special points multiplier in store. Have you accumulated a lot of points? Congrats, you will get even more points!
+          </p>
+        </div>
+
+        <div className="mt-12">
+          <div className="w-full font-semibold text-2xl my-3">A searchable leaderboard is coming soon.</div>
+        </div>
 
         {/*<table className="mt-6 w-full whitespace-nowrap text-left">
           <colgroup>
