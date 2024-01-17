@@ -133,14 +133,6 @@ export const AppContextProvider = (props: any) => {
         sDaoBalance = data['fungible_tokens'][sDaoAddress]['balance'] / DENOMINATOR;
         setSDaoBalance(sDaoBalance);
       }
-
-      // Fetch STX price
-      const bandUrl = 'https://laozi1.bandchain.org/api/oracle/v1/request_prices?ask_count=16&min_count=10&symbols=STX';
-      const result = await fetch(bandUrl);
-      const res = await result.json();
-      if (res['price_results']?.length > 0) {
-        setStxPrice(res['price_results'][0]['px'] / Number(res['price_results'][0]['multiplier']));
-      }
     };
 
     const fetchRatio = async () => {
@@ -157,6 +149,16 @@ export const AppContextProvider = (props: any) => {
 
       setStxRatio(parseFloat(result?.value?.value) / 1000000.0);
     };
+
+    const fetchStxPrice = async () => {
+      // Fetch STX price
+      const bandUrl = 'https://laozi1.bandchain.org/api/oracle/v1/request_prices?ask_count=16&min_count=10&symbols=STX';
+      const result = await fetch(bandUrl);
+      const res = await result.json();
+      if (res['price_results']?.length > 0) {
+        setStxPrice(res['price_results'][0]['px'] / Number(res['price_results'][0]['multiplier']));
+      }
+    }
 
     const fetchStackingCycle = async () => {
       const metaInfoUrl = coreApiUrl + `/v2/pox`; 
@@ -203,6 +205,7 @@ export const AppContextProvider = (props: any) => {
     }
 
     fetchStackingCycle();
+    fetchStxPrice();
     if (stxAddress) {
       fetchBalances();
       fetchRatio();
