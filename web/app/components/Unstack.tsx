@@ -170,11 +170,27 @@ export function Unstack() {
         </div>
         <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-2">
           <div className="flex justify-between items-start">
-            Time to receive STX {Number(bitcoinBlocksLeft) <= 100 ? (
-              <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
-            ) : (
-              <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
-            )}
+            Time to receive STX 
+             <a className="group max-w-max relative flex block gap-1" href="#">
+
+                {Number(bitcoinBlocksLeft) <= 100 ? (
+                  <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
+                ) : (
+                  <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
+                )}
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                </svg>
+                <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                  <div className="flex max-w-xs flex-col items-center w-64">
+                    <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
+                      The STX that's backing your stSTX is locked in Stacks consensus in 2 week cycles. STX can only be unstacked by Stacking DAO at the end of a Stacks Consensus cycle.
+                    </div>
+                    <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+                  </div>
+                </div>
+              </a>
           </div>
           <div className="flex justify-between items-start">
             Best price<span>1 stSTX = {stxRatio} STX</span>
