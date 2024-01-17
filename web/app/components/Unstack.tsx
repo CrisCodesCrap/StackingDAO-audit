@@ -98,8 +98,8 @@ export function Unstack() {
   };
 
   return (
-    <div className="absolute min-h-screen top-0 left-0 bottom-[-80px] z-[49] bg-page-bg w-full md:relative md:min-h-full md:z-0 flex flex-col px-2 overflow-y-auto md:max-w-xl items-center mb-20">
-      <div className="py-3 px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
+    <div className="pt-0 top-0 left-0 w-full md:relative md:min-h-full md:z-0 flex flex-col px-0 md:max-w-xl items-center mb-12">
+      <div className="py-3 px-0 sm:px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
         <Link href="/">
           <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-ststx" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
             <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -107,24 +107,20 @@ export function Unstack() {
           </svg>
         </Link>
         <span className="flex-grow">Unstack</span>
-        <button type="button" className="md:hidden">
-          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" className="w-6 h-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"></path>
-          </svg>
-        </button>
       </div>
 
-      <Alert type={Alert.type.WARNING}>
-        <p>
-          Unstacking STX will give you a withdrawal NFT that allows you to withdraw the STX tokens after the current PoX yield cycle ends.
-        </p>
-        <p className="mt-2">
-          <a className="font-bold" href="https://docs.stackingdao.com/stackingdao/the-stacking-dao-app/withdrawing-stx" target="_blank">Learn more about withdrawals</a>
-        </p>
-      </Alert>
+      <div className='pb-3'>
+        <Alert type={Alert.type.WARNING}>
+          <p>
+            Unstacking STX will give you a withdrawal NFT that allows you to withdraw the STX tokens after the current PoX yield cycle ends.
+          </p>
+          <p className="mt-2">
+            <a className="font-bold" href="https://docs.stackingdao.com/stackingdao/the-stacking-dao-app/withdrawing-stx" target="_blank">Learn more about withdrawals</a>
+          </p>
+        </Alert>
+      </div>
 
-      <div className="p-2 pt-0 mt-4 w-full border-2 rounded-xl p-4">
+      <div className="p-0 sm:p-2 pt-0 w-full border-2 rounded-xl p-4">
         <div className="bg-white rounded-xl w-full p-4 mb-2 hidden">
           <div className="py-1 px-2 flex gap-4 justify-start items-center">
             <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/orange-checkmark.svg" style={{color: 'transparent'}} />
@@ -176,45 +172,62 @@ export function Unstack() {
           </div>
         </div>
         <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-2">
-          <div className="flex justify-between items-start">
-            Time to receive STX 
-             <a className="group max-w-max relative flex block gap-1" href="#">
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            <div className="text-gray-600">
+              Time to receive STX 
+            </div>
+            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+            <a className="group max-w-max relative flex block gap-1" href="#">
+              {Number(bitcoinBlocksLeft) <= 100 ? (
+                <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
+              ) : (
+                <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
+              )}
 
-                {Number(bitcoinBlocksLeft) <= 100 ? (
-                  <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
-                ) : (
-                  <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
-                )}
-
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                </svg>
-                <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <div className="flex max-w-xs flex-col items-center w-64">
-                    <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
-                      The STX that is backing your stSTX is locked in Stacks consensus in 2 week cycles. 
-                      STX can only be unstacked by Stacking DAO at the end of a Stacks Consensus cycle.
-                    </div>
-                    <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+              </svg>
+              <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                <div className="flex max-w-xs flex-col items-center w-64">
+                  <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
+                    The STX that's backing your stSTX is locked in Stacks consensus in 2 week cycles. STX can only be unstacked by Stacking DAO at the end of a Stacks Consensus cycle.
                   </div>
+                  <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
                 </div>
+              </div>
               </a>
+            </div>
           </div>
-          <div className="flex justify-between items-start">
-            Best price<span>1 stSTX = {stxRatio} STX</span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            <div className="text-gray-600">
+              Best price
+            </div>
+            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+              1 stSTX = {stxRatio} STX
+            </div>
           </div>
-          <div className="flex justify-between items-start">
-            You will receive approximately<span>~{stxReceived.toLocaleString()} STX</span>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            <div className="text-gray-600">
+              You receive
+            </div>
+            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+              {stxReceived.toLocaleString()} STX
+            </div>
           </div>
+
         </div>
-        <button
-          type="button"
-          className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
-          disabled={buttonDisabled}
-          onClick={unstackStx}
-        >
-          {buttonText}
-        </button>
+        <div className='p-2'>
+          <button
+            type="button"
+            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
+            disabled={buttonDisabled}
+            onClick={unstackStx}
+          >
+            {buttonText}
+          </button>
+        </div>
       </div>
     </div>
   )

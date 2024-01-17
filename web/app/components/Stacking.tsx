@@ -75,7 +75,7 @@ export function Stacking() {
         <RatioModal open={showRatioInfo} setOpen={setShowRatioInfo} />
       )}
       {stxAddress ? (
-        <div className="w-full min-h-full flex flex-col px-2 md:max-w-xl items-center">
+        <div className="w-full min-h-full flex flex-col md:max-w-xl items-center">
           <div className="bg-white border-2 rounded-xl w-full p-4">
             <div className="flex justify-between font-medium">
               <div>
@@ -123,7 +123,8 @@ export function Stacking() {
               <div className="h-full rounded" style={{width: `${stStxWidth}%`, backgroundImage: 'linear-gradient(45deg, rgba(49,141,139,255) 25%, rgba(49,141,139,255) 25%, rgba(49,141,139,255) 50%, rgba(49,141,139,255) 50%, rgba(49,141,139,255) 75%, rgba(49,141,139,255) 75%, rgba(49,141,139,255) 100%)', backgroundSize: '10px 10px'}}></div>
               <div className="h-full rounded" style={{width: `${100 - stStxWidth}%`, backgroundImage: 'linear-gradient(45deg, rgb(210, 220, 227) 25%, rgb(202, 214, 211) 25%, rgb(202, 214, 211) 50%, rgb(210, 220, 227) 50%, rgb(210, 220, 227) 75%, rgb(202, 214, 211) 75%, rgb(202, 214, 211) 100%)', backgroundSize: '10px 10px'}}></div>
             </div>
-            <div className="mt-4 mb-4 flex justify-between">
+
+            <div className="mt-4 mb-4 grid grid-cols-1 sm:grid-cols-2">
               <div className="mt-1 flex gap-2 items-center font-semibold">
                 Projected yield
                 <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base w-fit flex gap-1 rounded-full px-2 items-center font-bold bg-light-ststx text-ststx">
@@ -133,7 +134,7 @@ export function Stacking() {
                   </svg>
                 </button>
               </div>
-              <div className="mt-1 flex gap-2 items-center font-semibold">
+              <div className="mt-1 flex gap-2 items-center font-semibold place-content-start sm:place-content-end mt-4 sm:mt-0">
                 1 stSTX =
                 <button type="button" onClick={() => { setShowRatioInfo(true)}} className="text-base w-fit flex gap-1 rounded-full px-2 items-center font-bold bg-light-ststx text-ststx">
                   {stxRatio} STX
@@ -184,7 +185,7 @@ export function Stacking() {
         </div>
       ) : (
         <div className="w-full md:max-w-xl min-h-full flex flex-col px-2 pb-10 items-center">
-          <div className="bg-white rounded-xl w-full p-4">
+          <div className="rounded-xl w-full p-4">
             <h1 className="text-center text-3xl font-semibold mt-2">
               All you ever need in one place for <span className="text-ststx">STX Stacking</span>
             </h1>

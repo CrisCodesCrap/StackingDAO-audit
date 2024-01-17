@@ -10,8 +10,10 @@ export default async function Home() {
       <Container as='div' className="mt-12">
         <div className="w-full min-h-full h-full flex flex-col items-center">
           <Unstack />
-          <Stats />
-          <PoX />
+          <div className="hidden lg:block">
+            <Stats />
+            <PoX />
+          </div>
         </div>
       </Container>
     </>

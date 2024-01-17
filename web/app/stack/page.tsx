@@ -7,9 +7,9 @@ export default async function Home() {
   return (
     <>
       <Container as='div' className="mt-12">
-        <div className="w-full min-h-full h-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center">
           <Stack />
-          <div className="hidden sm:block">
+          <div className="hidden lg:block">
             <Stats />
             <PoX />
           </div>
