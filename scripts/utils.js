@@ -94,7 +94,7 @@ function resolveUrl() {
   } else if (env === 'regtest') {
     return 'https://stacks-node-api.regtest.stacks.co';
   } else {
-    return 'https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff';
+    return 'https://api.hiro.so';
   }
 }
 

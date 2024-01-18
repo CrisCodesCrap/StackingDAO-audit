@@ -123,12 +123,12 @@ const ogAddresses = [
   'SPJT8G4DA24ZDF35WMY5FZEQ9YJNK38DBN2D48QH'
 ];
 
-let nonce = 40;
+let nonce = 56;
 
 async function dropIt(addy) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'stacking-daogenesis-genesis-nft-minter',
+    contractName: 'stacking-dao-genesis-nft-minter',
     functionName: 'airdrop-many',
     functionArgs: [
       tx.listCV([
@@ -136,7 +136,7 @@ async function dropIt(addy) {
           'recipient': tx.standardPrincipalCV(addy),
           'type': tx.uintCV(1) // ID 0 for normal, 1 for OG, 2 for gold, 3 for diamond
         })
-      ]);
+      ])
     ],
     fee: new BN(500000, 10),
     nonce: new BN(nonce, 10),
