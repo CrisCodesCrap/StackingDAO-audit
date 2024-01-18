@@ -13,6 +13,9 @@ export function Footer() {
           <a href="https://www.coinfabrik.com/blog/stacking-dao-audit/" target="_blank" className="flex items-center gap-2">
             Audited by <img src="/coinfabrik-logo.png" className="w-24" />
           </a>
+          <a href="https://github.com/StackingDAO/contracts" target="_blank" className="flex items-center gap-2">
+            GitHub <img src="/github-logo.png" className="w-5" />
+          </a>
           <a href="https://www.stackingdao.com/tos" className="flex items-center gap-2">
             Terms of Service
           </a>

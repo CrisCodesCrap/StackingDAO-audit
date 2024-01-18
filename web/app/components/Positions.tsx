@@ -2,7 +2,7 @@
 
 'use client'
 
-import { callReadOnlyFunction, uintCV } from '@stacks/transactions'
+import { callReadOnlyFunction, contractPrincipalCV, standardPrincipalCV, uintCV, cvToJSON } from '@stacks/transactions'
 import { useEffect, useState } from 'react'
 import { useAppContext } from './AppContext'
 import { ApyModal } from './ApyModal'
@@ -14,11 +14,14 @@ import { useSTXAddress } from '../common/use-stx-address';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
+
   const { stStxBalance, stxBalance, stackingApy, bitcoinBlocksLeft } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
   const [unstackNfts, setUnstackNfts] = useState([]);
   const [unstackNftData, setUnstackNftData] = useState({});
   const [currentCycleId, setCurrentCycleId] = useState(3);
+  const [bitflowLpWallet, setBitflowLpWallet] = useState(0);
+  const [bitflowLpStaked, setBitflowLpStaked] = useState(0);
 
   const getPoxCycle = async () => {
     const result = await callReadOnlyFunction({
@@ -77,8 +80,40 @@ export function Positions() {
       setIsLoading(false);
     }
 
+    const fetchBitflowBalance = async () => {
+      const resultWallet = await callReadOnlyFunction({
+        contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+        contractName: 'stx-ststx-lp-token-v-1-1',
+        functionName: 'get-balance',
+        functionArgs: [
+          standardPrincipalCV(stxAddress)
+        ],
+        senderAddress: stxAddress,
+        network: stacksNetwork
+      });
+
+      const resultStaked = await callReadOnlyFunction({
+        contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
+        contractName: 'earn-stx-ststx-v-1-1',
+        functionName: 'get-user-data',
+        functionArgs: [
+          contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, "ststx-token"),
+          contractPrincipalCV("SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M", "stx-ststx-lp-token-v-1-1"),
+          standardPrincipalCV(stxAddress)
+        ],
+        senderAddress: stxAddress,
+        network: stacksNetwork
+      });
+
+      const walletBalance = cvToJSON(resultWallet).value.value;
+      const stakeBalance = cvToJSON(resultStaked).value ? cvToJSON(resultStaked).value.value["total-currently-staked"].value : 0;
+      setBitflowLpWallet(Number(walletBalance) / 1000000);
+      setBitflowLpStaked(Number(stakeBalance) / 1000000);
+    }
+
     if (stxAddress) {
       fetchNftBalance();
+      fetchBitflowBalance();
       getPoxCycle();
     }
   }, [stxAddress]);
@@ -88,6 +123,8 @@ export function Positions() {
       {stxAddress && (
         <div className="w-full flex flex-col gap-1 mt-10">
           <span className="text-lg font-medium md:ml-6 md:mb-4 md:text-2xl">Active Positions</span>
+          
+          {/* stSTX */}
           {stStxBalance > 0 && (
             <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="pl-4 pr-3">
@@ -114,7 +151,72 @@ export function Positions() {
               </div>
             </div>
           )}
+
+          {/* Withdraw NFT */}
           {!isLoading && unstackNfts.map((id) => <UnstackPosition key={id} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
+
+          {/* BitFlow LP */}
+          {bitflowLpStaked > 0 && (
+            <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+              <div className="pl-4 pr-3">
+                <div className="flex gap-3 items-center text-left py-2">
+                  <div className="w-10 h-10 relative flex-shrink-0">
+                    <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                  </div>
+                  <div className="flex-grow flex justify-between">
+                    <div>
+                      <span className="text-lg font-semibold line-clamp-1 text-ellipsis">STX/stSTX</span>
+                      <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Staked liquidity on Bitflow</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                        {bitflowLpStaked.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })} 
+                        {' '} STX-stSTX-LP
+                      </div>
+                      <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                        3.6% APY + yield on Bitflow
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {bitflowLpWallet > 0 && (
+            <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+              <div className="pl-4 pr-3">
+                <div className="flex gap-3 items-center text-left py-2">
+                  <div className="w-10 h-10 relative flex-shrink-0">
+                    <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                  </div>
+                  <div className="flex-grow flex justify-between">
+                    <div>
+                      <span className="text-lg font-semibold line-clamp-1 text-ellipsis">STX/stSTX</span>
+                      <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Liquidity on Bitflow</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                        {bitflowLpWallet.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })} 
+                        {' '} STX-stSTX-LP
+                      </div>
+                      <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                        3.6% APY
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* STX */}
           {stxBalance > 0 && (
             <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="pl-4 pr-3">

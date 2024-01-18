@@ -8,7 +8,7 @@ const activityItems = [
   {
     user: {
       name: 'Bitflow AMM',
-      imageUrl: '/bitflow-logo.jpg'
+      imageUrl: '/bitflow-logo.png'
     },
     commit: 'stSTX/STX trading pool',
     status: 'Launched',
