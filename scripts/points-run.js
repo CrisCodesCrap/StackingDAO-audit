@@ -23,9 +23,6 @@ async function start() {
 
   }
 
-  console.log("Run ended, waiting 60 seconds for next run")
-  await new Promise(r => setTimeout(r, 60 * 1000));
-  start();
 };
 
 start();

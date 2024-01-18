@@ -140,7 +140,7 @@ async function updateAllPoints(blockHeight) {
 
     // Reset referral_points first
     aggregate[referrer] = {
-      user_points: aggregate[referrer].user_points,
+      user_points: aggregate[referrer] ? aggregate[referrer].user_points : 0,
       referral_points: 0
     }
 
