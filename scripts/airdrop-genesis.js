@@ -123,22 +123,22 @@ const ogAddresses = [
   'SPJT8G4DA24ZDF35WMY5FZEQ9YJNK38DBN2D48QH'
 ];
 
-let nonce = 56;
+let nonce = 59;
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
-async function dropIt(addy) {
+async function dropIt(arr) {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'stacking-dao-genesis-nft-minter',
     functionName: 'airdrop-many',
     functionArgs: [
-      tx.listCV([
-        tx.tupleCV({
-          'recipient': tx.standardPrincipalCV(addy),
-          'type': tx.uintCV(1) // ID 0 for normal, 1 for OG, 2 for gold, 3 for diamond
-        })
-      ])
+      tx.listCV(arr)
     ],
-    fee: new BN(500000, 10),
+    fee: new BN(1000000, 10),
     nonce: new BN(nonce, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
@@ -151,13 +151,7 @@ async function dropIt(addy) {
 };
 
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
-
-asyncForEach(ogAddresses, async (addy) => {
-  await dropIt(addy, nonce);
-  nonce = nonce + 1;
-});
+const chunk = (arr, size) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+let pieces = chunk(ogAddresses, 25);
+const cvs = pieces[0].map((piece) => tx.tupleCV({ 'recipient': tx.standardPrincipalCV(piece), 'type': tx.uintCV(1) }));
+dropIt(cvs);
