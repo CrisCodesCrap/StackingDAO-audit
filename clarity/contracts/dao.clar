@@ -144,4 +144,6 @@
   (map-set contracts { address: .stacker-8 } { active: true })
   (map-set contracts { address: .stacker-9 } { active: true })
   (map-set contracts { address: .stacker-10 } { active: true })
+
+  (map-set contracts { address: .stacking-dao-genesis-nft-minter } { active: true })
 )

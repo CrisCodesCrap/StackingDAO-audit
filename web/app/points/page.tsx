@@ -179,10 +179,6 @@ export default function Points() {
           </p>
         </div>
 
-        <div className="mt-12">
-          <div className="w-full font-semibold text-2xl my-3">A searchable leaderboard is coming soon.</div>
-        </div>
-
         {/*<table className="mt-6 w-full whitespace-nowrap text-left">
           <colgroup>
             <col className="w-full sm:w-4/12" />
