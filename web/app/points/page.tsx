@@ -16,7 +16,6 @@ export default function Points() {
   const [showPointsInfo, setShowPointsInfo] = useState(false);
   const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
   const [totalPoints, setTotalPoints] = useState(0);
-  const [currentBlock, setCurrentBlock] = useState(0);
   const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
 
   const copyLink = async () => {
@@ -28,13 +27,12 @@ export default function Points() {
     const lastBlockResponse = await fetch("https://stackingdao-points.s3.amazonaws.com/points-last-block.json");
     const lastBlock = (await lastBlockResponse.json()).last_block;
 
-    const blockHeightResponse = await fetch(`${coreApiUrl}/v2/info`, { json: true });
-    const blockHeight = (await blockHeightResponse.json())['stacks_tip_height'];
+    const blockHeightResponse = await fetch(`${coreApiUrl}/extended/v2/blocks/${lastBlock}`, { json: true });
+    const blockTime = (await blockHeightResponse.json())['burn_block_time_iso'];
 
-    const daysDiff = (blockHeight - lastBlock) / 144;
-    console.log("Update info. Current block:", blockHeight, ", last block:", lastBlock, ", days diff:", daysDiff);
-    setCurrentBlock(blockHeight);
-    setLastUpdateBlock(lastBlock);
+    console.log("lastBlock:", lastBlock, "blockTime:", blockTime), 
+
+    setLastUpdateBlock(blockTime);
   }
 
   async function fetchPointsInfo() {
@@ -68,7 +66,11 @@ export default function Points() {
           We reserve the right to update point calculations at any time. 
         </div>
         <div className="w-full text-center text-sm text-gray-500">
-          Points were last updated <span className='font-semibold'>{currentBlock-lastUpdateBlock} blocks ago</span>.
+          Points are updated daily. Last updated on {' '}
+          <span className='font-semibold'>
+            {(new Date(lastUpdateBlock).toLocaleString())}
+          </span>
+          .
         </div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
