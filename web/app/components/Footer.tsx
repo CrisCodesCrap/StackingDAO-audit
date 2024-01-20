@@ -10,26 +10,31 @@ export function Footer() {
         </p>
 
         <p className="text-sm text-neutral-700 flex flex-wrap gap-x-8 gap-y-3">
-          <a href="https://www.coinfabrik.com/blog/stacking-dao-audit/" target="_blank" className="flex items-center gap-2">
+          <a href="https://www.coinfabrik.com/blog/stacking-dao-audit/" target="_blank" className="flex items-center gap-2 lg:w-fit w-full">
             Audited by <img src="/coinfabrik-logo.png" className="w-24" />
           </a>
-          <a href="https://github.com/StackingDAO/contracts" target="_blank" className="flex items-center gap-2">
-            GitHub <img src="/github-logo.png" className="w-5" />
-          </a>
-          <a href="https://www.stackingdao.com/tos" className="flex items-center gap-2">
+
+          <a href="https://www.stackingdao.com/tos" className="flex items-center lg:w-fit w-full">
             Terms of Service
           </a>
-          <a href="https://docs.stackingdao.com" target="_blank" className="flex items-center gap-2">
+          <a href="https://docs.stackingdao.com" target="_blank" className="flex items-center lg:w-fit w-full">
             Documentation
           </a>
-          <a href="/cycles" className="flex items-center gap-2">
+          <a href="/cycles" className="flex items-center lg:w-fit w-full">
             Cycles
           </a>
-          <a href="https://t.me/+0jPjegAOoMwyNTU0" target="_blank" className="flex items-center gap-2">
-            Community <img src="/tg-logo.png" className="w-4" />
+
+          <a href="https://t.me/+0jPjegAOoMwyNTU0" target="_blank" className="flex items-center lg:mt-0 mt-4">
+            <img src="/tg-logo.svg" className="w-9" />
           </a>
-          <a href="https://twitter.com/stackingdao" target="_blank" className="flex items-center">
-            <img src="/x-logo-black.png" className="w-4" />
+          <a href="https://twitter.com/stackingdao" target="_blank" className="flex items-center lg:mt-0 mt-4">
+            <img src="/x-logo.svg" className="w-6" />
+          </a>
+          <a href="https://medium.com/@stackingdao" target="_blank" className="flex items-center lg:mt-0 mt-4">
+            <img src="/medium-logo.png" className="w-6" />
+          </a>
+          <a href="https://github.com/StackingDAO/contracts" target="_blank" className="flex items-center lg:mt-0 mt-4">
+            <img src="/github-logo.svg" className="w-8" />
           </a>
         </p>
       </div>
