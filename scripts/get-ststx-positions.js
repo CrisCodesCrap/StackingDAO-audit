@@ -234,7 +234,7 @@ async function getStStx(address) {
     functionName: 'get-user-ststx-at-block',
     functionArgs: [
       tx.standardPrincipalCV(address),
-      tx.uintCV(135418)
+      tx.uintCV(133737)
     ],
     senderAddress: 'SP000000000000000000002Q6VF78',
     network
