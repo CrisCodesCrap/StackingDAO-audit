@@ -10,7 +10,7 @@ import { ChooseWalletModal } from './ChooseWalletModal';
 export const WalletConnectButton = ({ className, signOut }) => {
   className = clsx(
     className,
-    'inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition',
+    'w-32 justify-center inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition',
     'bg-neutral-950 text-white hover:bg-neutral-800'
   )
 
