@@ -7,6 +7,7 @@ import { Container } from '../components/Container'
 import { useSTXAddress } from '../common/use-stx-address';
 import { PointsModal } from '../components/PointsModal'
 import { coreApiUrl } from '../common/utils';
+import { WalletConnectButton } from '../components/WalletConnectButton';
 
 export default function Points() {
   const stxAddress = useSTXAddress();
@@ -15,6 +16,8 @@ export default function Points() {
   const [showPointsInfo, setShowPointsInfo] = useState(false);
   const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
   const [totalPoints, setTotalPoints] = useState(0);
+  const [currentBlock, setCurrentBlock] = useState(0);
+  const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
@@ -29,7 +32,9 @@ export default function Points() {
     const blockHeight = (await blockHeightResponse.json())['stacks_tip_height'];
 
     const daysDiff = (blockHeight - lastBlock) / 144;
-    console.log("Update info. Current block:", blockHeight, ", last block:", lastBlock, ", days diff:", daysDiff)
+    console.log("Update info. Current block:", blockHeight, ", last block:", lastBlock, ", days diff:", daysDiff);
+    setCurrentBlock(blockHeight);
+    setLastUpdateBlock(lastBlock);
   }
 
   async function fetchPointsInfo() {
@@ -59,7 +64,12 @@ export default function Points() {
     <Container className="mt-12">
       <div className="py-10">
         <div className="w-full text-center font-semibold text-4xl my-3">StackingDAO Points</div>
-        <div className="w-full text-center text-sm text-gray-500">We reserve the right to update point calculations at any time. Points are updated weekly.</div>
+        <div className="w-full text-center text-sm text-gray-500">
+          We reserve the right to update point calculations at any time. 
+        </div>
+        <div className="w-full text-center text-sm text-gray-500">
+          Points were last updated <span className='font-semibold'>{currentBlock-lastUpdateBlock} blocks ago</span>.
+        </div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
         )}
@@ -116,7 +126,10 @@ export default function Points() {
           </div>
         ):(
           <>
-            <div className="w-full text-center text-lg my-8">Connect your wallet to view your points</div>
+            <div className="w-full text-center text-lg my-8">
+              <div className='pb-2'>Connect your wallet to view your points.</div>
+              <WalletConnectButton/>
+            </div>
           </>
         )}
 
