@@ -66,7 +66,7 @@ export default function Points() {
           We reserve the right to update point calculations at any time. 
         </div>
         <div className="w-full text-center text-sm text-gray-500">
-          Points are updated daily. Last updated on {' '}
+          Points are updated weekly. Last updated on {' '}
           <span className='font-semibold'>
             {(new Date(lastUpdateBlock).toLocaleString())}
           </span>
