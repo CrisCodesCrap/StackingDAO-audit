@@ -70,7 +70,7 @@ export default function Points() {
           <span className='font-semibold'>
             {(new Date(lastUpdateBlock).toLocaleString())}
           </span>
-          .
+          {' '}({Intl.DateTimeFormat().resolvedOptions().timeZone}). 
         </div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
