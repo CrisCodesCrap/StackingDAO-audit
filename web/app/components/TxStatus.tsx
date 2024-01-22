@@ -68,7 +68,7 @@ export const TxStatus = () => {
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          This transaction takes at least 1 Stacks block to confirm. That's approximately around 10-30 minutes.
+                          This transaction takes at least 1 Stacks block to confirm. That&apos;s approximately around 10-30 minutes.
                         </p>
                       </div>
                       <div className="mt-2">

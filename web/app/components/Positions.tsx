@@ -127,25 +127,23 @@ export function Positions() {
           {/* stSTX */}
           {stStxBalance > 0 && (
             <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
-              <div className="pl-4 pr-3">
-                <div className="flex gap-3 items-center text-left py-2">
-                  <div className="w-10 h-10 relative flex-shrink-0">
-                    <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/sdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+              <div className="flex gap-3 items-center text-left py-2">
+                <div className="w-10 h-10 relative flex-shrink-0">
+                  <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/sdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                </div>
+                <div className="flex-grow flex justify-between">
+                  <div>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">stSTX</span>
+                    <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
                   </div>
-                  <div className="flex-grow flex justify-between">
-                    <div>
-                      <span className="text-lg font-semibold line-clamp-1 text-ellipsis">stSTX</span>
-                      <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                        {stStxBalance.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })} 
-                        {' '}stSTX</div>
-                      <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">{stackingApy}% APY</span>
-                    </div>
+                  <div className="text-right">
+                    <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                      {stStxBalance.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })} 
+                      {' '}stSTX</div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">{stackingApy}% APY</span>
                   </div>
                 </div>
               </div>
@@ -157,7 +155,7 @@ export function Positions() {
 
           {/* BitFlow LP */}
           {bitflowLpStaked > 0 && (
-            <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -185,7 +183,7 @@ export function Positions() {
           )}
 
           {bitflowLpWallet > 0 && (
-            <div role="button" tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
