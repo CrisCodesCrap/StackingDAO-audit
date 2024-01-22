@@ -7,6 +7,7 @@ import { Container } from '../components/Container'
 import { useSTXAddress } from '../common/use-stx-address';
 import { PointsModal } from '../components/PointsModal'
 import { coreApiUrl } from '../common/utils';
+import { WalletConnectButton } from '../components/WalletConnectButton';
 
 export default function Points() {
   const stxAddress = useSTXAddress();
@@ -15,6 +16,7 @@ export default function Points() {
   const [showPointsInfo, setShowPointsInfo] = useState(false);
   const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
   const [totalPoints, setTotalPoints] = useState(0);
+  const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
@@ -25,11 +27,12 @@ export default function Points() {
     const lastBlockResponse = await fetch("https://stackingdao-points.s3.amazonaws.com/points-last-block.json");
     const lastBlock = (await lastBlockResponse.json()).last_block;
 
-    const blockHeightResponse = await fetch(`${coreApiUrl}/v2/info`, { json: true });
-    const blockHeight = (await blockHeightResponse.json())['stacks_tip_height'];
+    const blockHeightResponse = await fetch(`${coreApiUrl}/extended/v2/blocks/${lastBlock}`, { json: true });
+    const blockTime = (await blockHeightResponse.json())['burn_block_time_iso'];
 
-    const daysDiff = (blockHeight - lastBlock) / 144;
-    console.log("Update info. Current block:", blockHeight, ", last block:", lastBlock, ", days diff:", daysDiff)
+    console.log("lastBlock:", lastBlock, "blockTime:", blockTime), 
+
+    setLastUpdateBlock(blockTime);
   }
 
   async function fetchPointsInfo() {
@@ -59,7 +62,16 @@ export default function Points() {
     <Container className="mt-12">
       <div className="py-10">
         <div className="w-full text-center font-semibold text-4xl my-3">StackingDAO Points</div>
-        <div className="w-full text-center text-sm text-gray-500">We reserve the right to update point calculations at any time. Points are updated weekly.</div>
+        <div className="w-full text-center text-sm text-gray-500">
+          We reserve the right to update point calculations at any time. 
+        </div>
+        <div className="w-full text-center text-sm text-gray-500">
+          Points are updated weekly. Last updated on {' '}
+          <span className='font-semibold'>
+            {(new Date(lastUpdateBlock).toLocaleString())}
+          </span>
+          {' '}({Intl.DateTimeFormat().resolvedOptions().timeZone}). 
+        </div>
         {showPointsInfo && (
           <PointsModal open={showPointsInfo} setOpen={setShowPointsInfo} />
         )}
@@ -116,7 +128,10 @@ export default function Points() {
           </div>
         ):(
           <>
-            <div className="w-full text-center text-lg my-8">Connect your wallet to view your points</div>
+            <div className="w-full text-center text-lg my-8">
+              <div className='pb-2'>Connect your wallet to view your points.</div>
+              <WalletConnectButton/>
+            </div>
           </>
         )}
 
