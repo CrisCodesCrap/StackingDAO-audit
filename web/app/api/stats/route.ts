@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { callReadOnlyFunction } from '@stacks/transactions';
 import { coreApiUrl, stacksNetwork } from "@/app/common/utils";
+import { revalidatePath } from "next/cache";
 
 const fetchTVL = async () => {
   // Total STX
@@ -16,7 +17,7 @@ const fetchTVL = async () => {
 
   // Fetch STX price
   const url = 'https://laozi1.bandchain.org/api/oracle/v1/request_prices?ask_count=16&min_count=10&symbols=STX';
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: 'no-store' });
   const data = await response.json();
   if (data['price_results']?.length > 0) {
     const priceSTX = data['price_results'][0]['px'] / Number(data['price_results'][0]['multiplier']);
@@ -34,6 +35,8 @@ const fetchPoX = async () => {
 }
 
 export async function GET() {
+  revalidatePath("/api/stats");
+
   const [
     tvl,
     pox,
