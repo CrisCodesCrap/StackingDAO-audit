@@ -174,7 +174,7 @@ export function Positions() {
                       {' '} STX-stSTX-LP
                     </div>
                     <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
-                      3.6% APY + yield on Bitflow
+                      stSTX yield + yield on Bitflow
                     </span>
                   </div>
                 </div>
