@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { Container } from '../components/Container'
 import { useSTXAddress } from '../common/use-stx-address';
 import { PointsModal } from '../components/PointsModal'
-import { coreApiUrl } from '../common/utils';
+import { callReadOnlyFunction, uintCV } from '@stacks/transactions'
+import { stacksNetwork, coreApiUrl } from '../common/utils'
 import { WalletConnectButton } from '../components/WalletConnectButton';
 
 export default function Points() {
@@ -16,6 +17,7 @@ export default function Points() {
   const [showPointsInfo, setShowPointsInfo] = useState(false);
   const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
   const [totalPoints, setTotalPoints] = useState(0);
+  const [nftType, setNftType] = useState(-1);
   const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
 
   const copyLink = async () => {
@@ -51,9 +53,39 @@ export default function Points() {
     setPointsInfo(userData || { user_points: 0, referral_points: 0 });
   }
 
+  const fetchNftType = async (id: string) => {
+    const result = await callReadOnlyFunction({
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
+      contractName: 'stacking-dao-genesis-nft',
+      functionName: 'get-genesis-type',
+      functionArgs: [
+        uintCV(id)
+      ],
+      senderAddress: stxAddress,
+      network: stacksNetwork
+    });
+
+    return Number(result?.value);
+  }
+
+  const fetchNftBalance = async () => {
+    const identifier = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.stacking-dao-genesis-nft::stacking-dao-genesis`;
+    const url = coreApiUrl + `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
+    const response = await fetch(url, { credentials: 'omit' });
+    const data = await response.json();
+
+    if (data['results']?.length > 0) {
+      const ids = data['results'].map((el) => el['value']['repr'].replace('u', ''));
+      const types = await Promise.all(ids.map(id => fetchNftType(id)));
+      const maxType = Math.max(types);
+      setNftType(maxType);
+    }
+  }
+
   useEffect(() => {
     if (stxAddress) {
       fetchPointsInfo();
+      fetchNftBalance();
     }
     fetchBlockInfo();
   }, [stxAddress]);
@@ -112,7 +144,44 @@ export default function Points() {
                     </div>
                   </a>
                 </dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 flex">
+                  {(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+
+                  {nftType >= 0 ? (
+                    <>
+                      <div className="ml-2 text-bottom text-gray-500">*</div>
+                      <a className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600" href="#">
+                        {nftType == 1 ? (
+                          <>😎</>
+                        ): nftType == 2 ? (
+                          <>✨</>
+                        ): nftType == 3 ? (
+                          <>💎</>
+                        ):(
+                          <>🚀</>
+                        )}
+                        <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+                          <div className="flex max-w-xs flex-col items-center w-64">
+                            <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
+                              {nftType == 1 ? (
+                                <>LFG! You're holding a Stacking DAO OG Genesis NFT.</>
+                              ): nftType == 2 ? (
+                                <>Wow, you're lucky! You're holding a 1 of 100 Stacking DAO Gold Genesis NFT.</>
+                              ): nftType == 3 ? (
+                                <>OMG. You're the special one! You're holding a 1 of 1 a Stacking DAO Diamond Genesis NFT.</>
+                              ):(
+                                <>LFG! You're holding a Stacking DAO Genesis NFT.</>
+                              )}
+                              {' '} A secret multiplier will be applied on your points later!
+                            </div>
+                            <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
+                          </div>
+                        </div>
+                      </a>
+                    </>
+                  ): null}
+
+                </dd>
               </div>
 
               <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">

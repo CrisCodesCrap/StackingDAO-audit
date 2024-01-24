@@ -19,6 +19,7 @@ export function Positions() {
   const [isLoading, setIsLoading] = useState(true);
   const [unstackNfts, setUnstackNfts] = useState([]);
   const [unstackNftData, setUnstackNftData] = useState({});
+  const [genesisNfts, setGenesisNfts] = useState([]);
   const [currentCycleId, setCurrentCycleId] = useState(3);
   const [bitflowLpWallet, setBitflowLpWallet] = useState(0);
   const [bitflowLpStaked, setBitflowLpStaked] = useState(0);
@@ -80,6 +81,20 @@ export function Positions() {
       setIsLoading(false);
     }
 
+    const fetchGenesisBalance = async () => {
+      const identifier = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.stacking-dao-genesis-nft::stacking-dao-genesis`;
+      const url = coreApiUrl + `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
+      const response = await fetch(url, { credentials: 'omit' });
+      const data = await response.json();
+
+      if (data['results']?.length > 0) {
+        const arr = data['results'].map((el) => el['value']['repr'].replace('u', ''));
+        setGenesisNfts(arr);
+      }
+
+      setIsLoading(false);
+    }
+
     const fetchBitflowBalance = async () => {
       const resultWallet = await callReadOnlyFunction({
         contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
@@ -114,6 +129,7 @@ export function Positions() {
     if (stxAddress) {
       fetchNftBalance();
       fetchBitflowBalance();
+      fetchGenesisBalance();
       getPoxCycle();
     }
   }, [stxAddress]);
@@ -152,6 +168,31 @@ export function Positions() {
 
           {/* Withdraw NFT */}
           {!isLoading && unstackNfts.map((id) => <UnstackPosition key={id} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
+
+          {/* Genesis NFT */}
+          {!isLoading && genesisNfts.map((id) => <>
+            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+              <div className="flex gap-3 items-center text-left py-2">
+                <div className="w-10 h-10 relative flex-shrink-0">
+                  <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/genesis-nft.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                </div>
+                <div className="flex-grow flex justify-between">
+                  <div>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Genesis NFT</span>
+                    <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Stacking DAO Genesis NFT</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                      🎇🎇🎇
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                      Special Points Multiplier
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>)}
 
           {/* BitFlow LP */}
           {bitflowLpStaked > 0 && (
