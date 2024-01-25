@@ -164,13 +164,13 @@ export default function Points() {
                           <div className="flex max-w-xs flex-col items-center w-64">
                             <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
                               {nftType == 1 ? (
-                                <>LFG! You're holding a Stacking DAO OG Genesis NFT.</>
+                                <>LFG! You&apos;re holding a Stacking DAO OG Genesis NFT.</>
                               ): nftType == 2 ? (
-                                <>Wow, you're lucky! You're holding a 1 of 100 Stacking DAO Gold Genesis NFT.</>
+                                <>Wow, you&apos;re lucky! You&apos;re holding a 1 of 100 Stacking DAO Gold Genesis NFT.</>
                               ): nftType == 3 ? (
-                                <>OMG. You're the special one! You're holding a 1 of 1 a Stacking DAO Diamond Genesis NFT.</>
+                                <>OMG. You&apos;re the special one! You&apos;re holding a 1 of 1 a Stacking DAO Diamond Genesis NFT.</>
                               ):(
-                                <>LFG! You're holding a Stacking DAO Genesis NFT.</>
+                                <>LFG! You&apos;re holding a Stacking DAO Genesis NFT.</>
                               )}
                               {' '} A secret multiplier will be applied on your points later!
                             </div>
