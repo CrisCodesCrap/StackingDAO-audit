@@ -71,11 +71,10 @@ export function Positions() {
 
       if (data['results']?.length > 0) {
         const arr = data['results'].map((el) => el['value']['repr'].replace('u', ''));
-        setUnstackNfts(arr);
-
         for await (const id of arr) {
           await fetchNft(id);
         }
+        setUnstackNfts(arr);
       }
 
       setIsLoading(false);
