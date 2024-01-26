@@ -195,6 +195,25 @@ clarity_version = 2
 epoch = 2.4
 
 # ------------------------------
+# Stacking Pools
+# ------------------------------
+
+[contracts.stacking-delegate-1]
+path = "contracts/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-pool-v1]
+path = "contracts/stacking-dao-pool-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v2]
+path = "contracts/strategy-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
 # Tests
 # ------------------------------
 
