@@ -74,7 +74,7 @@ async function start() {
   const addrs = parseAddresses(allEvents);
 
   try {
-    fs.writeFileSync('stackingdao-addresses.txt', Object.keys(addrs).join(',\n'));
+    fs.writeFileSync('files/stackingdao-addresses.txt', Object.keys(addrs).join(',\n'));
   } catch (err) {
     console.error(err);
   }

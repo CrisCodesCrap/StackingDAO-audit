@@ -102,8 +102,8 @@ export function Stack() {
         <CommissionModal open={showApyInfo} setOpen={setShowApyInfo} />
       )}
 
-      <div className="sm:pt-0 pt-12 absolute min-h-screen top-0 left-0 bottom-[-80px] z-[49] bg-page-bg w-full md:relative md:min-h-full md:z-0 flex flex-col px-2 overflow-y-auto md:max-w-xl items-center mb-20">
-        <div className="py-3 px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
+      <div className="pt-0 top-0 left-0 w-full md:relative md:min-h-full md:z-0 flex flex-col px-0 md:max-w-xl items-center mb-12">
+        <div className="py-3 px-0 sm:px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
           <Link href="/">
             <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 text-ststx" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
               <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -111,29 +111,21 @@ export function Stack() {
             </svg>
           </Link>
           <span className="flex-grow">Stack</span>
-          <button type="button" className="md:hidden">
-            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" className="w-6 h-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-              <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"></path>
-            </svg>
-          </button>
         </div>
-        <div className="p-2 pt-0 w-full border-2 rounded-xl p-4">
-          <div className="bg-white rounded-xl w-full p-4 mb-2 hidden">
-            <div className="py-1 px-2 flex gap-4 justify-start items-center">
-              <img alt="Checkmark illustration" loading="lazy" width="56" height="56" decoding="async" data-nimg="1" src="/orange-checkmark.svg" style={{color: 'transparent'}} />
-              <div className="text-xl font-semibold">
-                Referral Code
-                <span className="text-sm font-normal block">You clicked on the link using the promo code</span>
-              </div>
-            </div>
-          </div>
+        <div className="p-0 sm:p-2 pt-0 w-full border-2 rounded-xl p-4">
           <div className="bg-white rounded-xl w-full p-4 font-medium overflow-x-hidden">
             <div className="flex gap-4 items-center">
               <img alt="Input asset icon" loading="lazy" width="48" height="48" decoding="async" data-nimg="1" className="rounded-full" src="/stacks-stx-logo.png" style={{color: 'transparent'}} />
               <div className="flex-grow text-xl">
                 Stacks
-                <span className="text-tertiary-text text-base block">Balance: {stxBalance.toLocaleString()} STX</span>
+                <span className="text-tertiary-text text-base block">
+                  Balance: {' '}
+                  {stxBalance.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })} 
+                  {' '}STX
+                </span>
               </div>
             </div>
             <div className="mt-10 mb-5 flex flex-col items-center relative max-w-full overflow-x-clip">
@@ -163,33 +155,61 @@ export function Stack() {
             </div>
           </div>
           <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-2">
-            <div className="flex justify-between items-start">
-              <div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="text-gray-600 place-content-start">
+
                 APY
-                <button type="button" onClick={() => { setShowApyInfo(true)}} className="text-base flex items-center text-ststx">
-                  The APY includes a 5% performance fee
-                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
-                  </svg>
+                <button type="button" onClick={() => { setShowApyInfo(true)}} className="flex text-gray-400">
+                  <div className='text-sm'>
+                    Includes a 5% performance fee
+                  </div>
+                  <div className='pt-0.5 pl-1'>
+                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="w-4 h-4 text-opacity-60" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path>
+                    </svg>
+                  </div>
                 </button>
+
               </div>
-              <span className="text-ststx">~{stackingApy}%</span>
+              <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+                <span className="text-ststx font-bold">~{stackingApy}%</span>
+              </div>
             </div>
-            <div className="flex justify-between items-start">
-              Conversion rate<span>1 stSTX = {stxRatio} STX</span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="text-gray-600">
+                Conversion rate
+              </div>
+              <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+                1 stSTX = {stxRatio} STX
+              </div>
             </div>
-            <div className="flex justify-between items-start">
-              You receive<span>~{stStxReceived.toLocaleString()} stSTX</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="text-gray-600">
+                You receive
+              </div>
+              <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
+                <span>
+                  ~{stStxReceived.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })} 
+                  {' '}stSTX
+                </span>
+              </div>
             </div>
           </div>
-          <button
-            type="button"
-            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
-            disabled={buttonDisabled}
-            onClick={stackStx}
-          >
-            {buttonText}
-          </button>
+          <div className='p-2'>
+            <button
+              type="button"
+              className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${buttonDisabled ? 'bg-gray-400' : 'button-ststx'} text-white active:bg-button-active hover:bg-button-hover w-full mt-4`}
+              disabled={buttonDisabled}
+              onClick={stackStx}
+            >
+              {buttonText}
+            </button>
+          </div>
         </div>
       </div>
     </>

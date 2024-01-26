@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getRPCClient } from '../common/utils'
+import { coreApiUrl, getRPCClient } from '../common/utils'
 import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 import { UserData } from '@stacks/auth';
@@ -133,14 +133,6 @@ export const AppContextProvider = (props: any) => {
         sDaoBalance = data['fungible_tokens'][sDaoAddress]['balance'] / DENOMINATOR;
         setSDaoBalance(sDaoBalance);
       }
-
-      // Fetch STX price
-      const bandUrl = 'https://laozi1.bandchain.org/api/oracle/v1/request_prices?ask_count=16&min_count=10&symbols=STX';
-      const result = await fetch(bandUrl);
-      const res = await result.json();
-      if (res['price_results']?.length > 0) {
-        setStxPrice(res['price_results'][0]['px'] / Number(res['price_results'][0]['multiplier']));
-      }
     };
 
     const fetchRatio = async () => {
@@ -158,15 +150,25 @@ export const AppContextProvider = (props: any) => {
       setStxRatio(parseFloat(result?.value?.value) / 1000000.0);
     };
 
+    const fetchStxPrice = async () => {
+      // Fetch STX price
+      const bandUrl = 'https://laozi1.bandchain.org/api/oracle/v1/request_prices?ask_count=16&min_count=10&symbols=STX';
+      const result = await fetch(bandUrl);
+      const res = await result.json();
+      if (res['price_results']?.length > 0) {
+        setStxPrice(res['price_results'][0]['px'] / Number(res['price_results'][0]['multiplier']));
+      }
+    }
+
     const fetchStackingCycle = async () => {
-      const metaInfoUrl = `https://api.mainnet.hiro.so/v2/pox`; 
+      const metaInfoUrl = coreApiUrl + `/v2/pox`; 
       fetch(metaInfoUrl)
         .then(res => res.json())
         .then(response => {
           setStackingCycle(response['current_cycle']['id']);
           setStackedStx(response['current_cycle']['stacked_ustx']);
           const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase'];
-          setBitcoinBlocksLeft(blocksUntilNextCycle);
+          setBitcoinBlocksLeft(Math.max(0, blocksUntilNextCycle));
           setNextRewardCycleBlocks(response['next_reward_cycle_in']);
 
           const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
@@ -203,6 +205,7 @@ export const AppContextProvider = (props: any) => {
     }
 
     fetchStackingCycle();
+    fetchStxPrice();
     if (stxAddress) {
       fetchBalances();
       fetchRatio();

@@ -6,7 +6,9 @@ require('dotenv').config();
 
 const env = process.env.NEXT_PUBLIC_NETWORK_ENV || 'mainnet';
 
-let coreApiUrl = 'https://api.hiro.so';
+export let coreApiUrl = 'https://api.hiro.so';
+// export let coreApiUrl = "https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff"
+
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT || 3999}`;
   // coreApiUrl = 'https://dull-liger-41.loca.lt';
@@ -72,3 +74,20 @@ export const resolveProvider = () => {
     return window.StacksProvider;
   }
 };
+
+export const formatSeconds = function (totalmins)  {
+  if (Math.sign(totalmins) != -1) {
+    const mins= totalmins % 60;
+    const hours = Math.floor(totalmins / 60);
+    const days= Math.floor(hours / 24);
+    const hourss = hours % 24;
+    return days + 'd, ' + hourss + 'h, ' + mins + 'm';
+  } else {
+    const absTotal= Math.abs(totalmins);
+    const mins= absTotal % 60;
+    const hours = Math.floor(absTotal / 60);
+    const days= Math.floor(hours / 24);
+    const hourss = hours % 24;
+    return days + 'd, ' + hourss + 'h, ' + mins + 'm';
+  }
+}

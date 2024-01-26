@@ -132,6 +132,7 @@
   (map-set contracts { address: .commission-v1 } { active: true })
   (map-set contracts { address: .tax-v1 } { active: true })
   (map-set contracts { address: .staking-v1 } { active: true })
+  (map-set contracts { address: .staking-v0 } { active: true })
 
   (map-set contracts { address: .stacker-1 } { active: true })
   (map-set contracts { address: .stacker-2 } { active: true })
@@ -143,4 +144,6 @@
   (map-set contracts { address: .stacker-8 } { active: true })
   (map-set contracts { address: .stacker-9 } { active: true })
   (map-set contracts { address: .stacker-10 } { active: true })
+
+  (map-set contracts { address: .stacking-dao-genesis-nft-minter } { active: true })
 )

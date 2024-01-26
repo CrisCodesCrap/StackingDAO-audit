@@ -1,16 +1,15 @@
 // @ts-nocheck
 
-import React, { Fragment, useContext, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { useAppContext } from './AppContext';
-import { Transition } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/outline';
-import { XIcon } from '@heroicons/react/solid';
 import { getExplorerLink } from '../common/utils';
 
 export const TxStatus = () => {
-  const { currentTxStatus, currentTxId, setCurrentTxId, currentTxMessage } = useAppContext();
-
+  const { currentTxStatus, currentTxId, setCurrentTxId } = useAppContext();
   const explorerLink = getExplorerLink(currentTxId);
+  const cancelButtonRef = useRef(null)
 
   const statusClass = () => {
     if (currentTxStatus === 'success') {
@@ -26,65 +25,82 @@ export const TxStatus = () => {
     setCurrentTxId('');
   };
 
+  const viewExplorer = () => {
+    window.open(explorerLink, '_blank', 'noreferrer');
+    setCurrentTxId('');
+  };
+
   return (
     <>
-      <div aria-live="assertive" className="fixed inset-0 flex items-end px-4 py-6 mt-24 pointer-events-none sm:p-6 sm:items-start z-[100]">
-        <div className="flex flex-col items-center w-full space-y-4 sm:items-end">
-          {currentTxId ? (
-            <Transition
-              show={currentTxId && currentTxId != ''}
-              as={Fragment}
-              enter="transform ease-out duration-300 transition"
-              enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-              enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5">
-                <div className="p-4">
-                  <div className="flex items-start">
+      <Transition.Root show={currentTxId != ''} as={Fragment}>
+        <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={hidePopup}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
 
-                    <div className="flex-shrink-0">
-                      <CheckCircleIcon className={`w-6 h-6 ${statusClass()}`} aria-hidden="true" />
-                    </div>
-
-                    <div className="ml-3 w-0 flex-1 pt-0.5">
-                      <p className="text-sm font-medium text-gray-900">
-                        Transaction broadcasted
-                      </p>
-
-                      <div className="my-4">
-                        <a className="text-sm font-medium text-green-800 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2" href={explorerLink} target="_blank">
-                          View in explorer
-                        </a>
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                  <div>
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ststx">
+                    <CheckCircleIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  </div>
+                    <div className="mt-3 text-center sm:mt-5">
+                      <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                        Transaction broadcast
+                      </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          This transaction takes at least 1 Stacks block to confirm. That&apos;s approximately around 10-30 minutes.
+                        </p>
                       </div>
-
-                      {currentTxMessage ? (
-                        <p className={`mt-1 text-sm ${statusClass()}`}>
-                          {currentTxMessage}
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Please note that even after the transaction is mined, it might take a few minutes before this is propagated to the Stacks APIs and shown on this website.
                         </p>
-                      ) : (
-                        <p className="mt-1 text-sm text-gray-500">
-                          Your transaction has been broadcasted. It can take up to 30 minutes before it completes.
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex flex-shrink-0 ml-4">
-                      <button
-                        className="inline-flex text-gray-400 bg-white rounded-md cursor-pointer hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        onClick={() => {hidePopup()}}>
-                        <span className="sr-only">Close</span>
-                        <XIcon className="w-5 h-5" aria-hidden="true" />
-                      </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </Transition>
-          ) : null }
+                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-ststx px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-ststx focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:col-start-2"
+                      onClick={() => viewExplorer()}
+                    >
+                      View in explorer
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                      onClick={() => hidePopup()}
+                      ref={cancelButtonRef}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
           </div>
-      </div>
+        </Dialog>
+      </Transition.Root>
     </>
   );
 };

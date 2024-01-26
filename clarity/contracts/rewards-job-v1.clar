@@ -43,7 +43,7 @@
   )
     (asserts! (unwrap-panic (check-job)) (err ERR_SHOULD_NOT_HANDLE))
 
-    (try! (as-contract (contract-call? .stacking-dao-core-v1 add-rewards .commission-v1 .staking-v1 .reserve-v1 stx-balance (- current-cycle u1))))
+    (try! (as-contract (contract-call? .stacking-dao-core-v1 add-rewards .commission-v1 .staking-v1 .reserve-v1 stx-balance current-cycle)))
 
     (ok true)
   )

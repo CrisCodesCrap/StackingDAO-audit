@@ -5,6 +5,7 @@ const FUNCTION_NAME = 'add-rewards';
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
@@ -12,11 +13,12 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'commission-v1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v0'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(10000000),
-    tx.uintCV(1)
+    tx.uintCV(10000000000),
+    tx.uintCV(75)
   ],
+  fee: new BN(10000000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

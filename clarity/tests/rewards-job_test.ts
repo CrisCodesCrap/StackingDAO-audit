@@ -88,7 +88,7 @@ Clarinet.test({
     call = core.getStxBalance(qualifiedName("commission-v1"));
     call.result.expectUintWithDecimals(5);
 
-    call = core.getCycleInfo(0)
+    call = core.getCycleInfo(1)
     call.result.expectTuple()["commission"].expectUintWithDecimals(5);
     call.result.expectTuple()["rewards"].expectUintWithDecimals(95);
 

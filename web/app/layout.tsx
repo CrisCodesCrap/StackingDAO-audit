@@ -73,6 +73,10 @@ export default function Layout({
 
   return (
     <html lang="en" className="h-full bg-neutral-950 text-base antialiased">
+      <head>
+        <link rel="shortcut icon" href="favicon.png" />
+        <link rel="icon" href="favicon.ico" />
+      </head>
       <body className={`${inter.className} flex min-h-full flex-col`}>
         <Connect authOptions={authOptions}>
           {isClient && (
