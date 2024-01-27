@@ -66,11 +66,11 @@
 )
 
 ;;-------------------------------------
-;; Admin 
+;; Return STX 
 ;;-------------------------------------
 
-;; Return STX to the STX reserve
-(define-public (return-stx (reserve-contract <reserve-trait>))
+;; Get amount of STX that can be returned
+(define-read-only (get-return-stx)
   (let (
     (delegation-info (contract-call? .pox-3-mock get-check-delegation (as-contract tx-sender)))
     (delegation-amount (if (is-none delegation-info)
@@ -85,6 +85,15 @@
       (- (+ locked-amount contract-amount) delegation-amount)
       u0
     ))
+  )
+    return-amount
+  )
+)
+
+;; Return STX to the reserve
+(define-public (return-stx (reserve-contract <reserve-trait>))
+  (let (
+    (return-amount (get-return-stx))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))

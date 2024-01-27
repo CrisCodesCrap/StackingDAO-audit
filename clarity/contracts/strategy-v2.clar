@@ -85,6 +85,7 @@
 
 (define-public (perform-return-stx (delegate-traits (list 900 <stacking-delegate-trait>)))
   (begin
+    
     ;; TODO: check errors
     (map perform-return-stx-helper delegate-traits)
 
@@ -105,7 +106,6 @@
 )
 
 ;; TODO: what if outflow is > largest delegation balance?
-
 (define-private (perform-outflow (outflow uint) (delegate-traits (list 900 <stacking-delegate-trait>)))
   (begin
     ;; Calculate first
@@ -136,7 +136,7 @@
     (outflow-list (list-30-uint outflow))
     (active-pools (contract-call? .stacking-dao-data-pools-v1 get-active-pools))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     ;; Reset temp vars
     (var-set outflow-diff (pow u2 u125))
@@ -157,7 +157,7 @@
     (outflow-list (list-30-uint outflow))
     (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     ;; TODO: check for errors
     (map calculate-outflow-delegate pool-list delegates outflow-list)
@@ -174,7 +174,7 @@
       (unwrap-panic (get amount-ustx delegation-info))
     ))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     ;; TODO: only perform outflow on pool with most funds?
     (if (> delegation-amount outflow)
@@ -242,7 +242,7 @@
     (new-stx-stacking-list (list-30-uint new-stx-stacking))
     (active-pools (contract-call? .stacking-dao-data-pools-v1 get-active-pools))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     ;; TODO: check for errors
     (map calculate-inflow-pool active-pools new-stx-stacking-list)
@@ -258,7 +258,7 @@
     (total-stx-for-pool-list (list-30-uint total-stx-for-pool))
     (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     ;; TODO: check for errors
     (map calculate-inflow-delegate delegates pool-list total-stx-for-pool-list)
@@ -272,7 +272,7 @@
     (delegate-share (contract-call? .stacking-dao-data-pools-v1 get-delegate-share delegate))
     (total-stx-for-delegate (/ (* total-stx-for-pool delegate-share) u10000))
   )
-    ;; TODO: only protocol can call this function
+    (try! (contract-call? .dao check-is-protocol tx-sender))
 
     (map-set inflow-delegate-amount delegate total-stx-for-delegate)
     (map-set inflow-delegate-pool delegate pool)
