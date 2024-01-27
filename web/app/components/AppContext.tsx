@@ -167,7 +167,7 @@ export const AppContextProvider = (props: any) => {
         .then(response => {
           setStackingCycle(response['current_cycle']['id']);
           setStackedStx(response['current_cycle']['stacked_ustx']);
-          const blocksUntilNextCycle = response['next_cycle']['blocks_until_prepare_phase'];
+          const blocksUntilNextCycle = response['next_reward_cycle_in'];
           setBitcoinBlocksLeft(Math.max(0, blocksUntilNextCycle));
           setNextRewardCycleBlocks(response['next_reward_cycle_in']);
 
