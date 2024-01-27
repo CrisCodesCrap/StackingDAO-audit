@@ -65,13 +65,36 @@
     (outflow-inflow (get-outflow-inflow))
   )
     (if (>= (get inflow outflow-inflow) u0)
-      (perform-inflow (get inflow outflow-inflow) delegate-traits)
-      (perform-outflow (get outflow outflow-inflow) delegate-traits)
+      ;; TODO: try! once it returns error
+      (unwrap-panic (perform-inflow (get inflow outflow-inflow) delegate-traits))
+      (unwrap-panic (perform-outflow (get outflow outflow-inflow) delegate-traits))
     )
+
+    ;; TODO: try! once it returns error
+    (unwrap-panic (perform-return-stx delegate-traits))
+
+    (ok true)
   )
 )
 
 ;; TODO: admin should be able to call private methods (in case something goes wrong)
+
+;;-------------------------------------
+;; Perform - Return STX
+;;-------------------------------------
+
+(define-public (perform-return-stx (delegate-traits (list 900 <stacking-delegate-trait>)))
+  (begin
+    ;; TODO: check errors
+    (map perform-return-stx-helper delegate-traits)
+
+    (ok true)
+  )
+)
+
+(define-public (perform-return-stx-helper (delegate <stacking-delegate-trait>))
+  (contract-call? delegate return-stx .reserve-v1)
+)
 
 ;;-------------------------------------
 ;; Perform - Outflow
@@ -104,6 +127,9 @@
   )
 )
 
+;;-------------------------------------
+;; Calculate - Outflow
+;;-------------------------------------
 
 (define-public (calculate-outflow (outflow uint))
   (let (
@@ -174,13 +200,6 @@
 ;; Perform - Inflow
 ;;-------------------------------------
 
-(define-private (clear-inflow-delegate-maps (delegate <stacking-delegate-trait>))
-  (begin
-    (map-delete inflow-delegate-amount (contract-of delegate))
-    (map-delete inflow-delegate-pool (contract-of delegate))
-  )
-)
-
 (define-private (perform-inflow (inflow uint) (delegate-traits (list 900 <stacking-delegate-trait>)))
   (begin
     ;; Calculate first
@@ -211,6 +230,10 @@
     )
   )
 )
+
+;;-------------------------------------
+;; Calculate - Inflow
+;;-------------------------------------
 
 (define-public (calculate-inflow (inflow uint))
   (let (
