@@ -64,14 +64,14 @@
   (let (
     (outflow-inflow (get-outflow-inflow))
   )
+    ;; TODO: try! once it returns error
+    (unwrap-panic (perform-return-stx delegate-traits))
+
     (if (>= (get inflow outflow-inflow) u0)
       ;; TODO: try! once it returns error
       (unwrap-panic (perform-inflow (get inflow outflow-inflow) delegate-traits))
       (unwrap-panic (perform-outflow (get outflow outflow-inflow) delegate-traits))
     )
-
-    ;; TODO: try! once it returns error
-    (unwrap-panic (perform-return-stx delegate-traits))
 
     (ok true)
   )
