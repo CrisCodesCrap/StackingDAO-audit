@@ -14,16 +14,16 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.listCV([
-      tx.uintCV(2300000 * 1000000),
-      tx.uintCV(400000 * 1000000),
-      tx.uintCV(230000 * 1000000),
-      tx.uintCV(230000 * 1000000),
-      tx.uintCV(140000 * 1000000),
-      tx.uintCV(140000 * 1000000),
-      tx.uintCV(140000 * 1000000),
-      tx.uintCV(140000 * 1000000),
-      tx.uintCV(140000 * 1000000),
-      tx.uintCV(140000 * 1000000)
+      tx.uintCV((120000 * 1000000) + (6 * 121000 * 1000000)),
+      tx.uintCV((77000 * 1000000) + (4 * 121000 * 1000000)),
+      tx.uintCV((88000 * 1000000) + (4 * 121000 * 1000000)),
+      tx.uintCV((26000 * 1000000) + (3 * 121000 * 1000000)),
+      tx.uintCV((55000 * 1000000) + (2 * 121000 * 1000000)),
+      tx.uintCV(4000 * 1000000),
+      tx.uintCV(102000 * 1000000),
+      tx.uintCV(102000 * 1000000),
+      tx.uintCV(102000 * 1000000),
+      tx.uintCV(102000 * 1000000)
     ])
   ],
   fee: new BN(10000000, 10),
