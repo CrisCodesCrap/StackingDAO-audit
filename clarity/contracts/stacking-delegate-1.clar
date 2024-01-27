@@ -1,6 +1,7 @@
 ;; @contract Stacking Delegate Contract
 ;; @version 1
 
+(impl-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 
 ;;-------------------------------------

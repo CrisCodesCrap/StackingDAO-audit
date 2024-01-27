@@ -60,6 +60,8 @@
     )
     (try! (stx-transfer? rewards-left tx-sender reserve))
 
+    (print { action: "add-rewards", data: { sender: tx-sender, commission-amount: commission-amount, rewards: rewards-left, block-height: block-height } })
+
     (ok stx-amount)
   )
 )

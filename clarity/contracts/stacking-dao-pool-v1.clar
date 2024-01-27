@@ -10,7 +10,7 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_PREPARE u31001)
+(define-constant ERR_CAN_NOT_PREPARE u31001)
 
 ;;-------------------------------------
 ;; Maps
@@ -56,16 +56,25 @@
 ;; Public 
 ;;-------------------------------------
 
+(define-read-only (is-error (response (response bool uint)))
+  (is-err response)
+)
+
 (define-public (prepare)
   (let (
     (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates (as-contract tx-sender)))
+
+    ;; 1. Delegate
+    (delegation-errors (filter is-error (map delegation delegates)))
+    (delegation-error (element-at? delegation-errors u0))
   )
-    (asserts! (unwrap-panic (can-prepare)) (err ERR_PREPARE))
+    (asserts! (unwrap-panic (can-prepare)) (err ERR_CAN_NOT_PREPARE))
+    (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
-    ;; TODO: check errors
-    (map delegation delegates)
-
+    ;; 2. Aggregate
     (try! (aggregation))
+
+    (print { action: "prepare", data: { delegation-errors: delegation-errors, block-height: block-height } })
 
     (ok true)
   )
