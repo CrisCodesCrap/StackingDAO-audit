@@ -89,7 +89,7 @@ export const AppContextProvider = (props: any) => {
   const [cycleDaysLeft, setCycleDaysLeft] = useState(0);
   const [nextRewardCycleBlocks, setNextRewardCycleBlocks] = useState(0);
   const [bitcoinBlocksLeft, setBitcoinBlocksLeft] = useState(0);
-  const [stackingApy, setStackingApy] = useState(7.21); // TODO: make dynamic
+  const [stackingApy, setStackingApy] = useState(6.35); // TODO: make dynamic
   const [currentTxStatus, setCurrentTxStatus] = useState('');
   const [currentTxId, setCurrentTxId] = useState('');
   const [currentTxMessage, setCurrentTxMessage] = useState('');
