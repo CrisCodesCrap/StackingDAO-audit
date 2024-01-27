@@ -33,7 +33,7 @@
     (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
   )
-    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-next-cycle-withdraw-blocks)))
+    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-cycle-withdraw-offset)))
       ;; Can withdraw next cycle
       (ok (+ start-block-current-cycle u1))
 
@@ -48,7 +48,7 @@
 ;;-------------------------------------
 
 ;; Deposit STX for stSTX
-(define-public (deposit (reserve-contract <reserve-trait>) (stx-amount uint) (referrer (optional principal)))
+(define-public (deposit (reserve-contract <reserve-trait>) (stx-amount uint) (referrer (optional principal)) (pool (optional principal)))
   (let (
     (stx-ststx (try! (contract-call? .stacking-dao-data-core-v1 get-stx-per-ststx reserve-contract)))
     (ststx-amount (/ (* stx-amount u1000000) stx-ststx))
@@ -57,6 +57,8 @@
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-deposit stx-amount))
+    
+    (try! (add-direct-stacking-pool tx-sender pool stx-amount))
 
     (print { action: "deposit", data: { stacker: tx-sender, referrer: referrer, amount: ststx-amount, block-height: block-height } })
 
@@ -86,6 +88,8 @@
 
     (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-init-withdraw stx-amount))
     (try! (contract-call? .stacking-dao-data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
+    
+    (try! (subtract-direct-stacking tx-sender stx-amount))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-amount)))
@@ -117,6 +121,8 @@
 
     (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-cancel-withdraw stx-amount))
     (try! (contract-call? .stacking-dao-data-core-v1 delete-withdrawals-by-nft nft-id))
+    
+    (try! (add-direct-stacking tx-sender stx-amount))
 
     ;; Burn NFT, send back stSTX
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
@@ -164,6 +170,126 @@
     (ok stx-amount)
   )
 )
+
+;;-------------------------------------
+;; Direct Stacking Helpers  
+;;-------------------------------------
+
+(define-public (add-direct-stacking (user principal) (amount uint))
+  (let (
+    (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))
+    (current-direct-pool (if (is-some current-direct-stacking)
+      (some (get pool (unwrap-panic current-direct-stacking)))
+      none
+    ))
+  )
+    (add-direct-stacking-pool user current-direct-pool amount)
+  )
+)
+
+(define-public (add-direct-stacking-pool (user principal) (pool (optional principal)) (amount uint))
+  (let (
+    (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))
+  )
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (if (is-some current-direct-stacking)
+      (let (
+        (current-direct-pool (get pool (unwrap-panic current-direct-stacking)))
+        (current-direct-amount (get amount (unwrap-panic current-direct-stacking)))
+        (current-pool-amount (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-pool-amount current-direct-pool))
+        (current-total-amount (contract-call? .stacking-dao-data-pools-v1 get-total-directed-stacking))
+      )
+        ;; 1) User is direct stacking, remove current info
+        (try! (stop-direct-stacking user))
+
+        (if (is-some pool)
+          ;; 2) User has selected pool, add all info to new pool
+          (let (
+            (selected-pool-amount (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-pool-amount (unwrap-panic pool)))
+            (new-total-amount (contract-call? .stacking-dao-data-pools-v1 get-total-directed-stacking))
+          )
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-direct-stacking-user user (unwrap-panic pool) (+ current-direct-amount amount)))
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-direct-stacking-pool-amount (unwrap-panic pool) (+ selected-pool-amount current-direct-amount amount)))            
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-total-directed-stacking (+ new-total-amount current-direct-amount amount)))
+          )
+
+          ;; 3) User was direct stacking, but did not select a pool
+          ;; His direct stacking info was removed
+          false
+        )
+        true
+      )
+
+      ;; 4) User is not direct stacking yet
+      ;; TODO
+      ;; 
+      
+
+      false
+    )
+    (ok true)
+  )
+)
+
+(define-public (stop-direct-stacking (user principal))
+ (let (
+    (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))
+  )
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (if (is-some current-direct-stacking)
+      (let (
+        (current-direct-pool (get pool (unwrap-panic current-direct-stacking)))
+        (current-direct-amount (get amount (unwrap-panic current-direct-stacking)))
+        (current-pool-amount (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-pool-amount current-direct-pool))
+        (current-total-amount (contract-call? .stacking-dao-data-pools-v1 get-total-directed-stacking))
+      )
+        ;; 1) User is direct stacking, remove current info
+        (try! (contract-call? .stacking-dao-data-pools-v1 delete-direct-stacking-user user))        
+        (try! (contract-call? .stacking-dao-data-pools-v1 set-direct-stacking-pool-amount current-direct-pool (- current-pool-amount current-direct-amount)))
+        (try! (contract-call? .stacking-dao-data-pools-v1 set-total-directed-stacking (- current-total-amount current-direct-amount)))
+        true
+      )
+      false
+    )
+    (ok true)
+  )
+)
+
+(define-public (subtract-direct-stacking (user principal) (amount uint))
+  (let (
+    (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))
+  )
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (if (is-some current-direct-stacking)
+      (let (
+        (current-direct-pool (get pool (unwrap-panic current-direct-stacking)))
+        (current-direct-amount (get amount (unwrap-panic current-direct-stacking)))
+        (current-pool-amount (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-pool-amount current-direct-pool))
+        (current-total-amount (contract-call? .stacking-dao-data-pools-v1 get-total-directed-stacking))
+      )
+        (if (is-eq current-direct-amount amount)
+          (begin
+            (try! (stop-direct-stacking user))
+            true
+          )
+          (begin
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-direct-stacking-user user current-direct-pool (- current-direct-amount amount)))
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-direct-stacking-pool-amount current-direct-pool (- current-pool-amount amount)))                    
+            (try! (contract-call? .stacking-dao-data-pools-v1 set-total-directed-stacking (- current-total-amount amount)))
+            true
+          )
+        )
+        true
+      )
+      false
+    )
+    (ok true)
+  )
+)
+
 
 ;;-------------------------------------
 ;; Admin

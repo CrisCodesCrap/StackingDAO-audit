@@ -62,6 +62,8 @@
   )
 )
 
+;; TODO: setter to override
+
 (define-public (cycle-info-add-deposit (stx-amount uint))
   (let (
     ;; TODO: Update for mainnet
