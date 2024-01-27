@@ -175,6 +175,8 @@
 ;; Direct Stacking Helpers  
 ;;-------------------------------------
 
+;; TODO: move to separate contract
+
 (define-public (add-direct-stacking (user principal) (amount uint))
   (let (
     (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))
@@ -232,6 +234,7 @@
   )
 )
 
+;; TODO: 
 (define-public (stop-direct-stacking (user principal))
  (let (
     (current-direct-stacking (contract-call? .stacking-dao-data-pools-v1 get-direct-stacking-user user))

@@ -59,18 +59,18 @@
 ;; Perform
 ;;-------------------------------------
 
-;; TODO: needs to be called by keeper job
+;; TODO: needs to be called by keeper job regularly
 (define-public (perform (delegate-traits (list 900 <stacking-delegate-trait>)))
   (let (
     (outflow-inflow (get-outflow-inflow))
   )
     ;; TODO: try! once it returns error
-    (unwrap-panic (perform-return-stx delegate-traits))
+    (unwrap-panic (as-contract (perform-return-stx delegate-traits)))
 
     (if (>= (get inflow outflow-inflow) u0)
       ;; TODO: try! once it returns error
-      (unwrap-panic (perform-inflow (get inflow outflow-inflow) delegate-traits))
-      (unwrap-panic (perform-outflow (get outflow outflow-inflow) delegate-traits))
+      (unwrap-panic (as-contract (perform-inflow (get inflow outflow-inflow) delegate-traits)))
+      (unwrap-panic (as-contract (perform-outflow (get outflow outflow-inflow) delegate-traits)))
     )
 
     (ok true)
@@ -85,7 +85,9 @@
 
 (define-public (perform-return-stx (delegate-traits (list 900 <stacking-delegate-trait>)))
   (begin
-    
+    ;; TODO: does this check work? anyone should be able to call "perform" but not this method
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
     ;; TODO: check errors
     (map perform-return-stx-helper delegate-traits)
 
@@ -93,7 +95,7 @@
   )
 )
 
-(define-public (perform-return-stx-helper (delegate <stacking-delegate-trait>))
+(define-private (perform-return-stx-helper (delegate <stacking-delegate-trait>))
   (contract-call? delegate return-stx .reserve-v1)
 )
 
@@ -251,10 +253,43 @@
   )
 )
 
+(define-read-only (calculate-stx-for-pool (pool principal) (new-stx-stacking uint))
+  (let (
+    (default-share (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool))
+    
+    ;; TODO: get from pools-data
+    (direct-share u12)
+
+    ;; TODO: create var and getter/setter
+    (direct-dependence u2000) ;; 20% in bps
+
+    ;; TODO: check decimals
+    ;; TODO: rounding errors can cause strategy to stop working. if too much STX is requested..
+    ;; Maybe just scale down the share a bit?
+    (new-share (+
+      (* default-share (- u10000 direct-dependence))
+      (* direct-share direct-dependence)
+    ))
+
+    (stx-for-default u12)
+    (stx-for-direct u123)
+  )
+    (+ 
+      (/ (* stx-for-default new-share) u10000)
+      stx-for-direct
+    )
+  )
+)
+
 (define-public (calculate-inflow-pool (pool principal) (new-stx-stacking uint))
   (let (
     (pool-list (list-30-principal pool))
-    (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool)) u10000))
+
+    ;; TODO: this needs to update for direct stacking
+    ;; 
+    ;; (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool)) u10000))
+    (total-stx-for-pool (calculate-stx-for-pool pool new-stx-stacking))
+
     (total-stx-for-pool-list (list-30-uint total-stx-for-pool))
     (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool))
   )
