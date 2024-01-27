@@ -47,6 +47,10 @@
   (let (
     (outflow-list (list-30-uint outflow))
   )
+    ;; Reset temp vars
+    (var-set stop-diff u0)
+    (var-set stop-pool-total u0)
+
     ;; TODO: check for errors
     (map perform-outflow-pool (contract-call? .stacking-dao-data-pools-v1 get-active-pools) outflow-list)
 
