@@ -18,7 +18,6 @@
 ;;-------------------------------------
 
 (define-data-var shutdown-deposits bool false)
-(define-data-var last-withdraw-blocks uint u144) ;; TODO: increase?
 
 ;;-------------------------------------
 ;; Getters 
@@ -28,22 +27,18 @@
   (var-get shutdown-deposits)
 )
 
-(define-read-only (get-last-withdraw-blocks)
-  (var-get last-withdraw-blocks)
-)
-
-(define-read-only (get-withdraw-unlock-burn-height)
+(define-public (get-withdraw-unlock-burn-height)
   (let (
     (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
     (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
   )
-    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (get-last-withdraw-blocks)))
+    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-next-cycle-withdraw-blocks)))
       ;; Can withdraw next cycle
-      (+ start-block-current-cycle u1)
+      (ok (+ start-block-current-cycle u1))
 
       ;; Withdraw cycle after next
-      (+ start-block-current-cycle u2)
+      (ok (+ start-block-current-cycle u2))
     )
   )
 )
@@ -55,13 +50,13 @@
 ;; Deposit STX for stSTX
 (define-public (deposit (reserve-contract <reserve-trait>) (stx-amount uint) (referrer (optional principal)))
   (let (
-    (stx-ststx (try! (contract-call? .stacking-dao-data-v1 get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (contract-call? .stacking-dao-data-core-v1 get-stx-per-ststx reserve-contract)))
     (ststx-amount (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
-    (try! (contract-call? .stacking-dao-data-v1 cycle-info-add-deposit stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-deposit stx-amount))
 
     (print { action: "deposit", data: { stacker: tx-sender, referrer: referrer, amount: ststx-amount, block-height: block-height } })
 
@@ -78,9 +73,9 @@
 (define-public (init-withdraw (reserve-contract <reserve-trait>) (ststx-amount uint))
   (let (
     (sender tx-sender)
-    (unlock-burn-height (get-withdraw-unlock-burn-height))
+    (unlock-burn-height (unwrap-panic (get-withdraw-unlock-burn-height)))
 
-    (stx-ststx (try! (contract-call? .stacking-dao-data-v1 get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (contract-call? .stacking-dao-data-core-v1 get-stx-per-ststx reserve-contract)))
     (stx-amount (/ (* ststx-amount stx-ststx) u1000000))
     (total-stx (unwrap-panic (contract-call? reserve-contract get-total-stx)))
 
@@ -89,8 +84,8 @@
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
 
-    (try! (contract-call? .stacking-dao-data-v1 cycle-info-add-init-withdraw stx-amount))
-    (try! (contract-call? .stacking-dao-data-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-init-withdraw stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
     (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-amount)))
@@ -103,11 +98,13 @@
   )
 )
 
+;; Cancel init withdrawal for given NFT. 
+;; The NFT will be burned, and the user will receive back the STX tokens.
 (define-public (cancel-withdraw (reserve-contract <reserve-trait>) (nft-id uint))
   (let (
     (receiver tx-sender)
 
-    (withdrawal-entry (contract-call? .stacking-dao-data-v1 get-withdrawals-by-nft nft-id))
+    (withdrawal-entry (contract-call? .stacking-dao-data-core-v1 get-withdrawals-by-nft nft-id))
     (stx-amount (get stx-amount withdrawal-entry))
     (ststx-amount (get ststx-amount withdrawal-entry))
 
@@ -118,8 +115,8 @@
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
 
-    (try! (contract-call? .stacking-dao-data-v1 cycle-info-add-cancel-withdraw stx-amount))
-    (try! (contract-call? .stacking-dao-data-v1 delete-withdrawals-by-nft nft-id))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-cancel-withdraw stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 delete-withdrawals-by-nft nft-id))
 
     ;; Burn NFT, send back stSTX
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
@@ -142,7 +139,7 @@
   (let (
     (receiver tx-sender)
 
-    (withdrawal-entry (contract-call? .stacking-dao-data-v1 get-withdrawals-by-nft nft-id))
+    (withdrawal-entry (contract-call? .stacking-dao-data-core-v1 get-withdrawals-by-nft nft-id))
     (unlock-burn-height (get unlock-burn-height withdrawal-entry))
     (stx-amount (get stx-amount withdrawal-entry))
 
@@ -154,8 +151,8 @@
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (> burn-block-height unlock-burn-height) (err ERR_WITHDRAW_LOCKED))
 
-    (try! (contract-call? .stacking-dao-data-v1 cycle-info-add-init-withdraw stx-amount))
-    (try! (contract-call? .stacking-dao-data-v1 delete-withdrawals-by-nft nft-id))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-init-withdraw stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 delete-withdrawals-by-nft nft-id))
 
     ;; STX to user, burn stSTX
     (try! (as-contract (contract-call? reserve-contract request-stx-for-withdrawal stx-amount receiver)))
@@ -177,15 +174,6 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
     
     (var-set shutdown-deposits shutdown)
-    (ok true)
-  )
-)
-
-(define-public (set-last-withdraw-blocks (blocks uint))
-  (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-    
-    (var-set last-withdraw-blocks blocks)
     (ok true)
   )
 )

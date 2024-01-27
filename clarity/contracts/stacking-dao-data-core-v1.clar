@@ -31,16 +31,18 @@
 ;; Cycle info 
 ;;-------------------------------------
 
+;; All values in STX
 (define-map cycle-info
   { 
     cycle-id: uint 
   }
   {
-    deposited: uint,        ;; STX
-    withdraw-init: uint,    ;; STX
-    withdraw-cancel: uint,  ;; STX
-    withdraw: uint,         ;; STX
-    rewards: uint,          ;; STX
+    deposited: uint,
+    withdraw-init: uint,
+    withdraw-cancel: uint,
+    withdraw: uint,
+    rewards: uint,
+    commission: uint
   }
 )
 
@@ -54,6 +56,7 @@
       withdraw-cancel: u0,
       withdraw: u0,
       rewards: u0,
+      commission: u0
     }
     (map-get? cycle-info { cycle-id: cycle-id })
   )
@@ -120,6 +123,19 @@
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
     (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { rewards: (+ (get rewards current-cycle-info) stx-amount) }))
+    (ok true)
+  )
+)
+
+(define-public (cycle-info-add-commission (stx-amount uint))
+  (let (
+    ;; TODO: Update for mainnet
+    (cycle-id (contract-call? .pox-3-mock current-pox-reward-cycle))
+    (current-cycle-info (get-cycle-info cycle-id))
+  )
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (map-set cycle-info { cycle-id: cycle-id } (merge current-cycle-info { commission: (+ (get commission current-cycle-info) stx-amount) }))
     (ok true)
   )
 )

@@ -5,49 +5,14 @@
 ;; Variables
 ;;-------------------------------------
 
-(define-data-var active-pools (list 10 principal) (list))
-
 ;; Temporary vars for outflow
 (define-data-var stop-delegate principal tx-sender)
 (define-data-var stop-diff uint u0)
 (define-data-var stop-pool-total uint u0)
 
 ;;-------------------------------------
-;; Maps
-;;-------------------------------------
-
-(define-map pool-share principal uint)
-(define-map pool-delegates principal (list 10 principal)) ;; TODO: more delegates?
-(define-map delegate-share principal uint)
-
-;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
-
-(define-read-only (get-active-pools)
-  (var-get active-pools)
-)
-
-(define-read-only (get-pool-share (pool principal))
-  (default-to
-    u0
-    (map-get? pool-share pool)
-  )
-)
-
-(define-read-only (get-pool-delegates (pool principal))
-  (default-to
-    (list)
-    (map-get? pool-delegates pool)
-  )
-)
-
-(define-read-only (get-delegate-share (delegate principal))
-  (default-to
-    u0
-    (map-get? delegate-share delegate)
-  )
-)
 
 (define-read-only (get-stx-account (account principal))
   ;; TODO: update for mainnet
@@ -80,10 +45,10 @@
 ;; TODO: what if outflow is > largest delegation balance?
 (define-private (perform-outflow (outflow uint))
   (let (
-    (outflow-list (list outflow outflow outflow outflow outflow outflow outflow outflow outflow outflow))
+    (outflow-list (list-30-uint outflow))
   )
     ;; TODO: check for errors
-    (map perform-inflow-pool (var-get active-pools) outflow-list)
+    (map perform-inflow-pool (contract-call? .stacking-dao-data-pools-v1 get-active-pools) outflow-list)
 
     ;; Now that stop-delegate is set
     ;; TODO: STOP delegate
@@ -95,11 +60,11 @@
 
 (define-private (perform-outflow-pool (pool principal) (outflow uint))
   (let (
-    (pool-list (list pool pool pool pool pool pool pool pool pool pool))
-    (outflow-list (list outflow outflow outflow outflow outflow outflow outflow outflow outflow outflow))
+    (pool-list (list-30-principal pool))
+    (outflow-list (list-30-uint outflow))
   )
     ;; TODO: check for errors
-    (map perform-outflow-delegate pool-list (get-pool-delegates pool) outflow-list)
+    (map perform-outflow-delegate pool-list (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool) outflow-list)
 
     (ok true)
   )
@@ -137,10 +102,10 @@
   (let (
     (current-stx-stacking (unwrap-panic (contract-call? .reserve-v1 get-stx-stacking)))
     (new-stx-stacking (+ current-stx-stacking inflow))
-    (new-stx-stacking-list (list new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking new-stx-stacking))
+    (new-stx-stacking-list (list-30-uint new-stx-stacking))
   )
     ;; TODO: check for errors
-    (map perform-inflow-pool (var-get active-pools) new-stx-stacking-list)
+    (map perform-inflow-pool (contract-call? .stacking-dao-data-pools-v1 get-active-pools) new-stx-stacking-list)
 
     (ok true)
   )
@@ -148,13 +113,13 @@
 
 (define-private (perform-inflow-pool (pool principal) (new-stx-stacking uint))
   (let (
-    (pool-list (list pool pool pool pool pool pool pool pool pool pool))
-    (total-stx-for-pool (/ (* new-stx-stacking (get-pool-share pool)) u10000))
-    (total-stx-for-pool-list (list total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool total-stx-for-pool))
+    (pool-list (list-30-principal pool))
+    (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool)) u10000))
+    (total-stx-for-pool-list (list-30-uint total-stx-for-pool))
 
   )
     ;; TODO: check for errors
-    (map perform-inflow-delegate (get-pool-delegates pool) pool-list total-stx-for-pool-list)
+    (map perform-inflow-delegate (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool) pool-list total-stx-for-pool-list)
 
     (ok true)
   )
@@ -162,7 +127,7 @@
 
 (define-private (perform-inflow-delegate (delegate principal) (pool principal) (total-stx-for-pool uint))
   (let (
-    (total-stx-for-delegate (/ (* total-stx-for-pool (get-delegate-share delegate)) u10000))
+    (total-stx-for-delegate (/ (* total-stx-for-pool (contract-call? .stacking-dao-data-pools-v1 get-delegate-share delegate)) u10000))
   )
     ;; TODO: correct contract (need delegate trait)
     (try! (contract-call? .stacking-delegate-1 revoke-delegate-stx))
@@ -175,6 +140,14 @@
 ;;-------------------------------------
 ;; Helpers
 ;;-------------------------------------
+
+(define-read-only (list-30-uint (item uint)) 
+  (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
+)
+
+(define-read-only (list-30-principal (item principal)) 
+  (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
+)
 
 (define-read-only (get-outflow-inflow)
   (let (
@@ -198,24 +171,3 @@
     { outflow: outflow, inflow: inflow }
   )
 )
-
-;;-------------------------------------
-;; Admin
-;;-------------------------------------
-
-;; TODO: set variables and maps
-
-;;-------------------------------------
-;; Init 
-;;-------------------------------------
-
-(begin
-  (var-set active-pools (list .stacking-pool-v1))
-
-  (map-set pool-share .stacking-pool-v1 u10000)
-
-  ;; TODO: set up other delegates
-  (map-set pool-delegates .stacking-pool-v1 (list .stacking-delegate-1))
-  (map-set delegate-share .stacking-delegate-1 u10000)
-)
-

@@ -4,26 +4,32 @@
 (use-trait staking-trait .staking-trait-v1.staking-trait)
 
 ;;-------------------------------------
-;; Maps
+;; Constants 
 ;;-------------------------------------
 
-;; TODO: pool just keeps commission?
-;; TODO: commission depending on who adds rewards - keep map
-
-(define-data-var commission uint u500) ;; 5% in basis points
+(define-constant ERR_ADD_REWARDS u26001)
 
 ;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
 
-;; TODO
+;; Can only add rewards in last X blocks of cycle
+(define-public (can-add-rewards)
+  (let (
+    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
+    (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
+    (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+  )
+    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-next-cycle-withdraw-blocks)))
+      (ok true)
+      (ok false)
+    )
+  )
+)
 
 ;;-------------------------------------
 ;; Add rewards
 ;;-------------------------------------
-
-;; TODO: can only add rewards in last X blocks of cycle
-;; And in first X blocks of cycle? -> need to take this into account in core (withdrawals)
 
 ;; Add rewards in STX for given cycle.
 ;; The stacking rewards will be swapped to STX and added via this method.
@@ -35,17 +41,18 @@
   (stx-amount uint) 
 )
   (let (
-    ;; (current-cycle-info (get-cycle-info cycle-id))
-    (commission-amount (/ (* stx-amount (var-get commission)) u10000))
+    (commission (contract-call? .stacking-dao-data-pools-v1 get-pool-commission tx-sender))
+    (commission-amount (/ (* stx-amount commission) u10000))
     (rewards-left (- stx-amount commission-amount))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol reserve))
     (try! (contract-call? .dao check-is-protocol (contract-of commission-contract)))
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
+    (asserts! (unwrap-panic (can-add-rewards)) (err ERR_ADD_REWARDS))
 
-    ;; Update cycle info
-    (try! (contract-call? .stacking-dao-data-v1 cycle-info-add-rewards stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-rewards stx-amount))
+    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-commission commission-amount))
 
     (if (> commission-amount u0)
       (try! (contract-call? commission-contract add-commission staking-contract commission-amount))
@@ -56,15 +63,3 @@
     (ok stx-amount)
   )
 )
-
-;;-------------------------------------
-;; Admin
-;;-------------------------------------
-
-;; TODO
-
-;;-------------------------------------
-;; Init
-;;-------------------------------------
-
-;; TODO

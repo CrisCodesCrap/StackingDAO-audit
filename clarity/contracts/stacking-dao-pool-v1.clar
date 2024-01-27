@@ -38,13 +38,12 @@
 
 (define-public (prepare)
   (let (
-    ;; TODO: dependency on strategy?
-    (delegates (contract-call? .strategy-v2 get-pool-delegates (as-contract tx-sender)))
+    (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates (as-contract tx-sender)))
   )
     ;; TODO: check errors
     (map delegation delegates)
 
-    ;; TODO: check errors
+
     (try! (aggregation))
 
     (ok true)
@@ -58,40 +57,46 @@
 (define-private (delegation (delegate principal))
   (let (
     ;; TODO: update for mainnet
-    (delegation-info (unwrap-panic (contract-call? .pox-3-mock get-check-delegation delegate)))
-    (delegation-amount (get amount-ustx delegation-info))
+    (delegation-info (contract-call? .pox-3-mock get-check-delegation delegate))
+    (delegation-amount (if (is-none delegation-info)
+      u0
+      (unwrap-panic (get amount-ustx delegation-info))
+    ))
   )
-    ;; TODO: IF DELEGATION-AMOUNT IS 0
+    (if (is-eq delegation-amount u0)
+      ;; No delegation, do nothing
+      false
 
-    ;; TODO: update for mainnet
-    (if (is-none (contract-call? .pox-3-mock get-stacker-info delegate))
-      ;; Not stacking yet
-      (begin 
-        (try! (as-contract (delegate-stack-stx delegate delegation-amount)))
-        true
-      )
-
-      ;; Already stacking
-      (begin
-        ;; Extend for next cycle if not extended yet
-        (if (unwrap-panic (not-extended-next-cycle delegate))
-          (begin
-            (try! (as-contract (delegate-stack-extend delegate)))
-            true
-          )
+      ;; TODO: update for mainnet
+      (if (is-none (contract-call? .pox-3-mock get-stacker-info delegate))
+        ;; Not stacking yet
+        (begin 
+          (try! (as-contract (delegate-stack-stx delegate delegation-amount)))
           true
         )
 
-        ;; Increase if needed
-        (let (
-          (locked-amount (get locked (get-stx-account delegate)))
-        )
-          (if (> delegation-amount locked-amount)
+        ;; Already stacking
+        (begin
+          ;; Extend for next cycle if not extended yet
+          (if (unwrap-panic (not-extended-next-cycle delegate))
             (begin
-              (try! (as-contract (delegate-stack-increase delegate (- delegation-amount locked-amount))))
+              (try! (as-contract (delegate-stack-extend delegate)))
               true
             )
             true
+          )
+
+          ;; Increase if needed
+          (let (
+            (locked-amount (get locked (get-stx-account delegate)))
+          )
+            (if (> delegation-amount locked-amount)
+              (begin
+                (try! (as-contract (delegate-stack-increase delegate (- delegation-amount locked-amount))))
+                true
+              )
+              true
+            )
           )
         )
       )

@@ -218,8 +218,13 @@ path = "contracts/stacking-dao-core-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-data-v1]
-path = "contracts/stacking-dao-data-v1.clar"
+[contracts.stacking-dao-data-core-v1]
+path = "contracts/stacking-dao-data-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-data-pools-v1]
+path = "contracts/stacking-dao-data-pools-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
