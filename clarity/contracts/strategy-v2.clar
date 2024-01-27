@@ -77,6 +77,7 @@
 ;; Perform - Outflow
 ;;-------------------------------------
 
+;; TODO: what if outflow is > largest delegation balance?
 (define-private (perform-outflow (outflow uint))
   (let (
     (outflow-list (list outflow outflow outflow outflow outflow outflow outflow outflow outflow outflow))

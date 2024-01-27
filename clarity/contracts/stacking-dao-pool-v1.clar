@@ -45,7 +45,7 @@
     (map delegation delegates)
 
     ;; TODO: check errors
-    (map aggregation delegates)
+    (try! (aggregation))
 
     (ok true)
   )
@@ -61,6 +61,8 @@
     (delegation-info (unwrap-panic (contract-call? .pox-3-mock get-check-delegation delegate)))
     (delegation-amount (get amount-ustx delegation-info))
   )
+    ;; TODO: IF DELEGATION-AMOUNT IS 0
+
     ;; TODO: update for mainnet
     (if (is-none (contract-call? .pox-3-mock get-stacker-info delegate))
       ;; Not stacking yet
@@ -98,7 +100,7 @@
   )
 )
 
-(define-private (aggregation (delegate principal))
+(define-private (aggregation)
   (let (
     (next-cycle (+ (contract-call? .pox-3-mock current-pox-reward-cycle) u1))
     (index (map-get? cycle-to-index next-cycle))
@@ -136,9 +138,7 @@
   (let (
     ;; TODO: update for mainnet
     (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
-
     (next-cycle-height (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ current-cycle u1)))
-
     (unlock-height (get unlock-height (get-stx-account delegate)))
   )
     (ok (<= unlock-height next-cycle-height))
@@ -148,7 +148,6 @@
 ;;-------------------------------------
 ;; PoX Wrappers
 ;;-------------------------------------
-
 
 (define-public (delegate-stack-stx (stacker principal) (amount-ustx uint))
   (begin

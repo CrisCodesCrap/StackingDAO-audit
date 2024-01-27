@@ -213,6 +213,21 @@ path = "contracts/strategy-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.stacking-dao-core-v2]
+path = "contracts/stacking-dao-core-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-data-v1]
+path = "contracts/stacking-dao-data-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-add-rewards-v1]
+path = "contracts/stacking-dao-add-rewards-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 # ------------------------------
 # Tests
 # ------------------------------
@@ -252,3 +267,7 @@ path = "contracts/tests/marketplace-commission.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.pox-fast-pool-v2-mock]
+path = "contracts/tests/pox-fast-pool-v2-mock.clar"
+clarity_version = 2
+epoch = 2.4
