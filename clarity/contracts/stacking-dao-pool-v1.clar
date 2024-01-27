@@ -7,6 +7,12 @@
 ;; As pool: `stack-aggregation-increase` with index from previous commit
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_PREPARE u31001)
+
+;;-------------------------------------
 ;; Maps
 ;;-------------------------------------
 
@@ -32,6 +38,20 @@
   (map-get? cycle-to-index cycle)
 )
 
+;; Can only prepare in last X blocks of cycle
+(define-public (can-prepare)
+  (let (
+    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
+    (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
+    (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+  )
+    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-next-cycle-withdraw-blocks)))
+      (ok true)
+      (ok false)
+    )
+  )
+)
+
 ;;-------------------------------------
 ;; Public 
 ;;-------------------------------------
@@ -40,9 +60,10 @@
   (let (
     (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates (as-contract tx-sender)))
   )
+    (asserts! (unwrap-panic (can-prepare)) (err ERR_PREPARE))
+
     ;; TODO: check errors
     (map delegation delegates)
-
 
     (try! (aggregation))
 

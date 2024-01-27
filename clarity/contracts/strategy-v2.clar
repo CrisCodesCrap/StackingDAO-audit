@@ -25,7 +25,7 @@
 ;;-------------------------------------
 
 (define-public (perform)
-  ;; TODO: this can be called on every deposit?
+  ;; TODO: this can be called on every deposit? Too expensive?
   ;; Or at least by keepers?
 
   (let (
