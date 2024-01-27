@@ -48,7 +48,7 @@
     (outflow-list (list-30-uint outflow))
   )
     ;; TODO: check for errors
-    (map perform-inflow-pool (contract-call? .stacking-dao-data-pools-v1 get-active-pools) outflow-list)
+    (map perform-outflow-pool (contract-call? .stacking-dao-data-pools-v1 get-active-pools) outflow-list)
 
     ;; Now that stop-delegate is set
     ;; TODO: STOP delegate
