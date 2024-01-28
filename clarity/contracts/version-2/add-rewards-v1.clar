@@ -52,8 +52,8 @@
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
     (asserts! (unwrap-panic (can-add-rewards)) (err ERR_ADD_REWARDS))
 
-    (try! (contract-call? .data-core-v1 cycle-info-add-rewards stx-amount))
-    (try! (contract-call? .data-core-v1 cycle-info-add-commission commission-amount))
+    ;; (try! (contract-call? .data-core-v1 cycle-info-add-rewards stx-amount))
+    ;; (try! (contract-call? .data-core-v1 cycle-info-add-commission commission-amount))
 
     (if (> commission-amount u0)
       (try! (contract-call? commission-contract add-commission staking-contract commission-amount))

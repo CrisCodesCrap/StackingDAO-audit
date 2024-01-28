@@ -1,4 +1,4 @@
-;; @contract Pool data
+;; @contract Data Pools
 ;; @version 1
 
 ;;-------------------------------------

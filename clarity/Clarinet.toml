@@ -230,6 +230,11 @@ path = "contracts/version-2/stacking-dao-core-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.data-cycles-v1]
+path = "contracts/version-2/data-cycles-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.data-core-v1]
 path = "contracts/version-2/data-core-v1.clar"
 clarity_version = 2
@@ -242,6 +247,11 @@ epoch = 2.4
 
 [contracts.add-rewards-v1]
 path = "contracts/version-2/add-rewards-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.direct-stacking-helpers-v1]
+path = "contracts/version-2/direct-stacking-helpers-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
