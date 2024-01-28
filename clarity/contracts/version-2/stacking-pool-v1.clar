@@ -57,7 +57,7 @@
     (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
   )
-    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-cycle-withdraw-offset)))
+    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-pools-v1 get-cycle-withdraw-offset)))
       (ok true)
       (ok false)
     )
@@ -74,7 +74,7 @@
 
 (define-public (prepare)
   (let (
-    (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates (as-contract tx-sender)))
+    (delegates (contract-call? .data-pools-v1 get-pool-delegates (as-contract tx-sender)))
 
     ;; 1. Delegate
     (delegation-errors (filter is-error (map delegation delegates)))

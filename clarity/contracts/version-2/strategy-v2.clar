@@ -136,7 +136,7 @@
 (define-public (calculate-outflow (outflow uint))
   (let (
     (outflow-list (list-30-uint outflow))
-    (active-pools (contract-call? .stacking-dao-data-pools-v1 get-active-pools))
+    (active-pools (contract-call? .data-pools-v1 get-active-pools))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
@@ -157,7 +157,7 @@
   (let (
     (pool-list (list-30-principal pool))
     (outflow-list (list-30-uint outflow))
-    (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool))
+    (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
@@ -242,7 +242,7 @@
     (current-stx-stacking (unwrap-panic (contract-call? .reserve-v1 get-stx-stacking)))
     (new-stx-stacking (+ current-stx-stacking inflow))
     (new-stx-stacking-list (list-30-uint new-stx-stacking))
-    (active-pools (contract-call? .stacking-dao-data-pools-v1 get-active-pools))
+    (active-pools (contract-call? .data-pools-v1 get-active-pools))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
@@ -255,7 +255,7 @@
 
 (define-read-only (calculate-stx-for-pool (pool principal) (new-stx-stacking uint))
   (let (
-    (default-share (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool))
+    (default-share (contract-call? .data-pools-v1 get-pool-share pool))
     
     ;; TODO: get from pools-data
     (direct-share u12)
@@ -287,11 +287,11 @@
 
     ;; TODO: this needs to update for direct stacking
     ;; 
-    ;; (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .stacking-dao-data-pools-v1 get-pool-share pool)) u10000))
+    ;; (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .data-pools-v1 get-pool-share pool)) u10000))
     (total-stx-for-pool (calculate-stx-for-pool pool new-stx-stacking))
 
     (total-stx-for-pool-list (list-30-uint total-stx-for-pool))
-    (delegates (contract-call? .stacking-dao-data-pools-v1 get-pool-delegates pool))
+    (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
@@ -304,7 +304,7 @@
 
 (define-public (calculate-inflow-delegate (delegate principal) (pool principal) (total-stx-for-pool uint))
   (let (
-    (delegate-share (contract-call? .stacking-dao-data-pools-v1 get-delegate-share delegate))
+    (delegate-share (contract-call? .data-pools-v1 get-delegate-share delegate))
     (total-stx-for-delegate (/ (* total-stx-for-pool delegate-share) u10000))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))

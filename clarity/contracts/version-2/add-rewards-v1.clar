@@ -21,7 +21,7 @@
     (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
   )
-    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .stacking-dao-data-pools-v1 get-cycle-withdraw-offset)))
+    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-pools-v1 get-cycle-withdraw-offset)))
       (ok true)
       (ok false)
     )
@@ -42,7 +42,7 @@
   (stx-amount uint) 
 )
   (let (
-    (commission (contract-call? .stacking-dao-data-pools-v1 get-pool-commission tx-sender))
+    (commission (contract-call? .data-pools-v1 get-pool-commission tx-sender))
     (commission-amount (/ (* stx-amount commission) u10000))
     (rewards-left (- stx-amount commission-amount))
   )
@@ -52,8 +52,8 @@
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
     (asserts! (unwrap-panic (can-add-rewards)) (err ERR_ADD_REWARDS))
 
-    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-rewards stx-amount))
-    (try! (contract-call? .stacking-dao-data-core-v1 cycle-info-add-commission commission-amount))
+    (try! (contract-call? .data-core-v1 cycle-info-add-rewards stx-amount))
+    (try! (contract-call? .data-core-v1 cycle-info-add-commission commission-amount))
 
     (if (> commission-amount u0)
       (try! (contract-call? commission-contract add-commission staking-contract commission-amount))

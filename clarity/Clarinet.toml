@@ -215,8 +215,8 @@ path = "contracts/version-2/stacking-delegate-1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-pool-v1]
-path = "contracts/version-2/stacking-dao-pool-v1.clar"
+[contracts.stacking-pool-v1]
+path = "contracts/version-2/stacking-pool-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -230,18 +230,18 @@ path = "contracts/version-2/stacking-dao-core-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-data-core-v1]
-path = "contracts/version-2/stacking-dao-data-core-v1.clar"
+[contracts.data-core-v1]
+path = "contracts/version-2/data-core-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-data-pools-v1]
-path = "contracts/version-2/stacking-dao-data-pools-v1.clar"
+[contracts.data-pools-v1]
+path = "contracts/version-2/data-pools-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-dao-add-rewards-v1]
-path = "contracts/version-2/stacking-dao-add-rewards-v1.clar"
+[contracts.add-rewards-v1]
+path = "contracts/version-2/add-rewards-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
