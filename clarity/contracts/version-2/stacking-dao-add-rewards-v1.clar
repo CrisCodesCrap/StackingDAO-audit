@@ -14,6 +14,7 @@
 ;;-------------------------------------
 
 ;; Can only add rewards in last X blocks of cycle
+;; TODO: what if other pools do not do this? How to get comission?
 (define-public (can-add-rewards)
   (let (
     (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))

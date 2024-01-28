@@ -1,10 +1,21 @@
 ;; @contract Stacking Pool
 ;; @version 1
 
-;; As user: `revoke-delegate-stx` and `delegate-stx` to (re)set amount to delegate
-;; As pool: `delegate-stack-stx` for first time user, otherwise `delegate-stack-extend` once and `delegate-stack-increase` if needed
-;; As pool: `stack-aggregation-commit-indexed` to commit to a reward cycle and get reward index, only done once per cycle
-;; As pool: `stack-aggregation-increase` with index from previous commit
+;; 
+;; Stacking delegation
+;;
+;; 1) User needs to set correct amount to delegate
+;;    `revoke-delegate-stx` and `delegate-stx` to (re)set amount to delegate
+;;
+;; 2) Pool must perform user delegation
+;;    `delegate-stack-stx` for first time user to start stacking
+;;    `delegate-stack-extend` once for next cycle
+;;    `delegate-stack-increase` if need to stack more
+;;
+;; 3) Pool must commit aggregation result
+;;    `stack-aggregation-commit-indexed` to commit to a reward cycle and get reward index, only done once per cycle
+;;    `stack-aggregation-increase` with index from previous commit to increase amount stacked
+;;
 
 ;;-------------------------------------
 ;; Constants 
@@ -39,6 +50,7 @@
 )
 
 ;; Can only prepare in last X blocks of cycle
+;; TODO: what if other pools do not do this???
 (define-public (can-prepare)
   (let (
     (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))

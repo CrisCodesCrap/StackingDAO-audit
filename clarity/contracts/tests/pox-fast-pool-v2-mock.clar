@@ -79,97 +79,136 @@
 
 ;; Revokes and delegates stx
 (define-private (delegate-stx-inner (amount-ustx uint) (delegate-to principal) (until-burn-ht (optional uint)))
-  (let ((result-revoke
-            ;; Calls revoke and ignores result
-          (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx)))
+  (let (
+    ;; Calls revoke and ignores result
+    (result-revoke (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx))
+  )
     ;; Calls delegate-stx, converts any error to uint
     (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stx amount-ustx delegate-to until-burn-ht none)
       success (ok success)
-      error (err (* u1000 (to-uint error))))))
+      error (err (* u1000 (to-uint error)))
+    )
+  )
+)
 
 ;; Locks the users STX and extends the locking period
 ;; and increases the amount if necessary.
 ;; If possible, the locked stx of the pool are commited
 (define-private (lock-and-commit (user principal) (current-cycle uint))
   (match (as-contract (lock-delegated-stx user))
-    lock-result (ok {lock-result: lock-result,
-      commit-result: (maybe-stack-aggregation-commit current-cycle)})
-    error (err error)))
+    lock-result (ok {lock-result: lock-result, commit-result: (maybe-stack-aggregation-commit current-cycle)})
+    error (err error)
+  )
+)
 
 ;; Tries to lock delegated stx (delegate-stack-stx).
 ;; If user already stacked then extend and increase
 (define-private (lock-delegated-stx (user principal))
-  (let ((start-burn-ht (+ burn-block-height u1))
-        (pox-address (var-get pool-pox-address))
-        (buffer-amount (var-get stx-buffer))
-        (user-account (stx-account user))
-        (allowed-amount (min (get-delegated-amount user)
-                             (+ (get locked user-account) (get unlocked user-account))))
-        ;; Amount to lock must be leq allowed-amount and geq locked amount.
-        ;; Increase the locked amount if possible, but leave a buffer for revoke tx fees if possible.
-        ;; Decreasing the locked amount requires a cool down cycle.
-        (amount-ustx (if (> allowed-amount buffer-amount)
-                            (max (get locked user-account) (- allowed-amount buffer-amount))
-                            allowed-amount)))
+  (let (
+    (start-burn-ht (+ burn-block-height u1))
+    (pox-address (var-get pool-pox-address))
+    (buffer-amount (var-get stx-buffer))
+    (user-account (stx-account user))
+    (allowed-amount (min (get-delegated-amount user) (+ (get locked user-account) (get unlocked user-account))))
+
+    ;; Amount to lock must be leq allowed-amount and geq locked amount.
+    ;; Increase the locked amount if possible, but leave a buffer for revoke tx fees if possible.
+    ;; Decreasing the locked amount requires a cool down cycle.
+    (amount-ustx (if (> allowed-amount buffer-amount)
+      (max (get locked user-account) (- allowed-amount buffer-amount))
+      allowed-amount
+    ))
+  )
     (asserts! (var-get active) err-pox-address-deactivated)
-    (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-stx
-             user amount-ustx
-             pox-address start-burn-ht u1)
-      stacker-details  (begin
-                          (map-set locked-amounts user {amount-ustx: amount-ustx, unlock-height: (get unlock-burn-height stacker-details)})
-                          (ok stacker-details))
-      error (if (is-eq error 3) ;; check whether user is already stacked
-              (delegate-stack-extend-increase user amount-ustx pox-address)
-              (err (* u1000 (to-uint error)))))))
+
+    (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-stx user amount-ustx pox-address start-burn-ht u1)
+      stacker-details  
+        (begin
+          (map-set locked-amounts user {amount-ustx: amount-ustx, unlock-height: (get unlock-burn-height stacker-details)})
+          (ok stacker-details)
+        )
+      error 
+        (if (is-eq error 3) ;; check whether user is already stacked
+          (delegate-stack-extend-increase user amount-ustx pox-address)
+          (err (* u1000 (to-uint error)))
+        )
+    )
+  )
+)
 
 (define-private (lock-delegated-stx-fold (user principal) (result (list 30 (response {lock-amount: uint, stacker: principal, unlock-burn-height: uint} uint))))
-  (let ((stack-result (lock-delegated-stx user)))
-    (unwrap-panic (as-max-len? (append result stack-result) u30))))
+  (let (
+    (stack-result (lock-delegated-stx user))
+  )
+    (unwrap-panic (as-max-len? (append result stack-result) u30))
+  )
+)
 
 ;; Calls pox-3 delegate-stack-extend and delegate-stack-increase.
 ;; parameter amount-ustx must be lower or equal the stx balance and the delegated amount
 (define-private (delegate-stack-extend-increase (user principal)
-                  (amount-ustx uint)
-                  (pox-address {hashbytes: (buff 32), version: (buff 1)}))
-  (let ((status (stx-account user))
-        (locked-amount (get locked status)))
+  (amount-ustx uint)
+  (pox-address {hashbytes: (buff 32), version: (buff 1)})
+)
+  (let (
+    (status (stx-account user))
+    (locked-amount (get locked status))
+  )
     (asserts! (>= amount-ustx locked-amount) err-decrease-forbidden)
+
     (match (maybe-extend-for-next-cycle user pox-address status)
-      success-extend (let ((unlock-burn-height (get unlock-burn-height success-extend)))
-            (if (is-eq amount-ustx locked-amount)
-                ;; do not increase
-                (begin
-                  ;; update locked-amounts map if necessary
-                  (asserts! (> unlock-burn-height (get unlock-height status)) err-already-stacking)
-                  (map-extend-locked-amount user unlock-burn-height)
-                  (ok {lock-amount: locked-amount,
-                      stacker: user,
-                      unlock-burn-height: unlock-burn-height}))
-                ;; else increase
-                (let ((increase-by (- amount-ustx locked-amount)))
-                  (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-increase
-                          user pox-address increase-by)
-                    success-increase (begin
-                                      (map-extend-increase-locked-amount user increase-by unlock-burn-height)
-                                      (ok {lock-amount: (get total-locked success-increase),
-                                          stacker: user,
-                                          unlock-burn-height: unlock-burn-height}))
-                    error-increase (err (* u1000000000 (to-uint error-increase)))))))
-      error (err (* u1000000 (to-uint error))))))
+      success-extend 
+        (let (
+          (unlock-burn-height (get unlock-burn-height success-extend))
+        )
+          (if (is-eq amount-ustx locked-amount)
+            ;; do not increase
+            (begin
+              ;; update locked-amounts map if necessary
+              (asserts! (> unlock-burn-height (get unlock-height status)) err-already-stacking)
+              (map-extend-locked-amount user unlock-burn-height)
+
+              (ok {lock-amount: locked-amount, stacker: user, unlock-burn-height: unlock-burn-height})
+            )
+
+            ;; else increase
+            (let (
+              (increase-by (- amount-ustx locked-amount))
+            )
+              (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-increase user pox-address increase-by)
+                success-increase 
+                  (begin
+                    (map-extend-increase-locked-amount user increase-by unlock-burn-height)
+                    (ok {lock-amount: (get total-locked success-increase), stacker: user, unlock-burn-height: unlock-burn-height}))
+                error-increase 
+                  (err (* u1000000000 (to-uint error-increase)))
+              )
+            )
+          )
+        )
+      error 
+        (err (* u1000000 (to-uint error)))
+    )
+  )
+)
 
 ;; Tries to extend the user's locking to the next cycle
 ;; if not yet locked until the end of the next cycle.
 (define-private (maybe-extend-for-next-cycle
-                  (user principal)
-                  (pox-address {hashbytes: (buff 32), version: (buff 1)})
-                  (status {locked: uint, unlocked: uint, unlock-height: uint})
-                )
-  (let ((current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
-        (unlock-height (get unlock-height status)))
+  (user principal)
+  (pox-address {hashbytes: (buff 32), version: (buff 1)})
+  (status {locked: uint, unlocked: uint, unlock-height: uint})
+)
+  (let (
+    (current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
+    (unlock-height (get unlock-height status))
+  )
     (if (not-locked-for-cycle unlock-height (+ u1 current-cycle))
-      (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-extend
-             user pox-address u1)
-      (ok {stacker: user, unlock-burn-height: unlock-height}))))
+      (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-extend user pox-address u1)
+      (ok {stacker: user, unlock-burn-height: unlock-height})
+    )
+  )
+)
 
 ;; Tries to calls stack aggregation commit. If the minimum is met,
 ;; subsequent calls increase the total amount using
@@ -177,31 +216,52 @@
 ;; This index gives access to the internal map of the pox-3 contract
 ;; that handles the reward addresses.
 (define-private (maybe-stack-aggregation-commit (current-cycle uint))
-  (let ((reward-cycle (+ u1 current-cycle)))
+  (let (
+    (reward-cycle (+ u1 current-cycle))
+  )
     (match (map-get? pox-addr-indices reward-cycle)
-            ;; Total stacked already reached minimum.
-            ;; Call stack-aggregate-increase.
-            ;; It might fail because called in the same cycle twice.
-      index (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-increase (var-get pool-pox-address) reward-cycle index))
-              success (map-set last-aggregation reward-cycle block-height)
-              error (begin (print {err-increase-ignored: error}) false))
-            ;; Total stacked is still below minimum.
-            ;; Just try to commit, it might fail because minimum not yet met
+
+      ;; Total stacked already reached minimum.
+      ;; Call stack-aggregate-increase.
+      ;; It might fail because called in the same cycle twice.
+      index 
+        (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-increase (var-get pool-pox-address) reward-cycle index))
+          success 
+            (map-set last-aggregation reward-cycle block-height)
+          error 
+            (begin (print {err-increase-ignored: error}) false)
+        )
+         
+      ;; Total stacked is still below minimum.
+      ;; Just try to commit, it might fail because minimum not yet met
       (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle))
-        index (begin
-                (map-set pox-addr-indices reward-cycle index)
-                (map-set last-aggregation reward-cycle block-height))
-        error (begin (print {err-commit-ignored: error}) false))))) ;; ignore errors
+        index 
+          (begin
+            (map-set pox-addr-indices reward-cycle index)
+            (map-set last-aggregation reward-cycle block-height)
+          )
+        error 
+          (begin (print {err-commit-ignored: error}) false)
+        )
+    )
+  )
+) 
 
 (define-private (map-extend-locked-amount (user principal) (unlock-height uint))
   (match (map-get? locked-amounts user)
     locked-amount (map-set locked-amounts user (merge locked-amount {unlock-height: unlock-height}))
-    true))
+    true
+  )
+)
 
 (define-private (map-extend-increase-locked-amount (user principal) (increase-by uint) (unlock-height uint))
   (match (map-get? locked-amounts user)
     locked-amount (map-set locked-amounts user {amount-ustx: (+ (get amount-ustx locked-amount) increase-by), unlock-height: unlock-height})
-    true))
+    true
+  )
+)
+
+
 
 ;;
 ;; Public functions
@@ -212,39 +272,67 @@
 ;;
 ;; @param amount-ustx; amount to delegate. Can be higher than current stx balance.
 (define-public (delegate-stx (amount-ustx uint))
-  (let ((user tx-sender)
-        (current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)))
+  (let (
+    (user tx-sender)
+    (current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
+  )
     ;; Must be called directly by the tx-sender or by an allowed contract-caller
     (asserts! (check-caller-allowed) err-stacking-permission-denied)
+
     ;; Do 1. and 2.
+    ;; - pox: revoke-delegate-stx
+    ;; - pox: delegate-stx
     (try! (delegate-stx-inner amount-ustx (as-contract tx-sender) none))
+
     ;; Do 3. and 4.
-    (lock-and-commit user current-cycle)))
+    ;; - lock-delegated-stx
+    ;;   - pox: delegate-stack-stx
+    ;;   - delegate-stack-extend-increase
+    ;;      - maybe-extend-for-next-cycle
+    ;;         - pox: delegate-stack-extend
+    ;;      - pox: delegate-stack-increase
+    ;;
+    ;; - maybe-stack-aggregation-commit
+    ;;   - pox: stack-aggregation-increase
+    ;;   - pox: stack-aggregation-commit-indexed
+    (lock-and-commit user current-cycle)
+  )
+)
 
 ;; Stacks the delegated amount for the given user for the next cycle.
 ;; This function can be called by automation, friends or family for user that have delegated once.
 ;; This function can be called only after the current cycle is half through
 (define-public (delegate-stack-stx (user principal))
-  (let ((current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)))
+  (let (
+    (current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
+  )
     (asserts! (can-lock-now current-cycle) err-too-early)
     ;; Do 3.
     (try! (as-contract (lock-delegated-stx user)))
     ;; Do 4.
-    (ok (maybe-stack-aggregation-commit current-cycle))))
+    (ok (maybe-stack-aggregation-commit current-cycle))
+  )
+)
 
 ;; Stacks the delegated amount for the given users for the next cycle.
 ;; This function can be called by automation, friends or family for users that have delegated once.
 ;; This function can be called only after the current cycle is half through
 (define-public (delegate-stack-stx-many (users (list 30 principal)))
-  (let ((current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
-        (start-burn-ht (+ burn-block-height u1)))
+  (let (
+    (current-cycle (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle))
+    (start-burn-ht (+ burn-block-height u1))
+  )
     (asserts! (can-lock-now current-cycle) err-too-early)
+
     ;; Do 3. for users
-    (let ((locking-result
-            (as-contract (fold lock-delegated-stx-fold users (list)))))
+    (let (
+      (locking-result (as-contract (fold lock-delegated-stx-fold users (list))))
+    )
       ;; Do 4.
-      (ok {locking-result: locking-result,
-        commit-result: (maybe-stack-aggregation-commit current-cycle)}))))
+      (ok {locking-result: locking-result, commit-result: (maybe-stack-aggregation-commit current-cycle)})
+    )
+  )
+)
 
 ;;
 ;; Admin functions

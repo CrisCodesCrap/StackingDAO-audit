@@ -7,7 +7,7 @@ telemetry = true
 cache_dir = "./.cache"
 
 # ------------------------------
-# Mocks
+# Mainnet Contracts
 # ------------------------------
 
 [[project.requirements]]
@@ -25,218 +25,241 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1"
 
+
 # ------------------------------
-# Protocol
+# Core
 # ------------------------------
 
-[contracts.sip-010-trait-ft-standard]
-path = "contracts/sip-010-trait-ft-standard.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.nft-trait]
-path = "contracts/nft-trait.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-trait]
-path = "contracts/commission-trait.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.reserve-trait-v1]
-path = "contracts/reserve-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-trait-v1]
-path = "contracts/commission-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-trait-v1]
-path = "contracts/staking-trait-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.ststx-withdraw-nft]
-path = "contracts/ststx-withdraw-nft.clar"
+[contracts.dao]
+path = "contracts/core/dao.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.ststx-token]
-path = "contracts/ststx-token.clar"
+path = "contracts/core/ststx-token.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.sdao-token]
-path = "contracts/sdao-token.clar"
+[contracts.ststx-withdraw-nft]
+path = "contracts/core/ststx-withdraw-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.reserve-v1]
-path = "contracts/reserve-v1.clar"
-clarity_version = 2
-epoch = 2.4
 
-[contracts.stacking-dao-core-v1]
-path = "contracts/stacking-dao-core-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.tax-v1]
-path = "contracts/tax-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.commission-v1]
-path = "contracts/commission-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-1]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-2]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-3]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-4]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-5]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-6]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-7]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-8]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-9]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.stacker-10]
-path = "contracts/stacker-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.dao]
-path = "contracts/dao.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v0]
-path = "contracts/strategy-v0.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.strategy-v1]
-path = "contracts/strategy-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-v0]
-path = "contracts/staking-v0.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.staking-v1]
-path = "contracts/staking-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.rewards-job-v1]
-path = "contracts/rewards-job-v1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.return-stx-job-v1]
-path = "contracts/return-stx-job-v1.clar"
-clarity_version = 2
-epoch = 2.4
+# ------------------------------
+# Genesis NFT
+# ------------------------------
 
 [contracts.stacking-dao-genesis-nft-minter]
-path = "contracts/stacking-dao-genesis-nft-minter.clar"
+path = "contracts/genesis-nft/stacking-dao-genesis-nft-minter.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-genesis-nft]
-path = "contracts/stacking-dao-genesis-nft.clar"
+path = "contracts/genesis-nft/stacking-dao-genesis-nft.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.block-info-v1]
-path = "contracts/block-info-v1.clar"
-clarity_version = 2
-epoch = 2.4
 
 # ------------------------------
-# Stacking Pools
+# Helpers
+# ------------------------------
+
+[contracts.block-info-v1]
+path = "contracts/helpers/block-info-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-trait]
+path = "contracts/helpers/commission-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.sip-010-trait-ft-standard]
+path = "contracts/helpers/sip-010-trait-ft-standard.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.nft-trait]
+path = "contracts/helpers/nft-trait.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Keeper Jobs
+# ------------------------------
+
+[contracts.rewards-job-v1]
+path = "contracts/keeper-jobs/rewards-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.return-stx-job-v1]
+path = "contracts/keeper-jobs/return-stx-job-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.tax-v1]
+path = "contracts/keeper-jobs/tax-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Version 1
+# ------------------------------
+
+[contracts.reserve-trait-v1]
+path = "contracts/version-1/reserve-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-trait-v1]
+path = "contracts/version-1/commission-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-trait-v1]
+path = "contracts/version-1/staking-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.reserve-v1]
+path = "contracts/version-1/reserve-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v1]
+path = "contracts/version-1/stacking-dao-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.commission-v1]
+path = "contracts/version-1/commission-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v0]
+path = "contracts/version-1/strategy-v0.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-v0]
+path = "contracts/version-1/staking-v0.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-1]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-2]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-3]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-4]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-5]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-6]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-7]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-8]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-9]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacker-10]
+path = "contracts/version-1/stacker-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+
+# ------------------------------
+# Version 2
 # ------------------------------
 
 [contracts.stacking-delegate-trait-v1]
-path = "contracts/stacking-delegate-trait-v1.clar"
+path = "contracts/version-2/stacking-delegate-trait-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-delegate-1]
-path = "contracts/stacking-delegate-1.clar"
+path = "contracts/version-2/stacking-delegate-1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-pool-v1]
-path = "contracts/stacking-dao-pool-v1.clar"
+path = "contracts/version-2/stacking-dao-pool-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.strategy-v2]
-path = "contracts/strategy-v2.clar"
+path = "contracts/version-2/strategy-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-core-v2]
-path = "contracts/stacking-dao-core-v2.clar"
+path = "contracts/version-2/stacking-dao-core-v2.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-data-core-v1]
-path = "contracts/stacking-dao-data-core-v1.clar"
+path = "contracts/version-2/stacking-dao-data-core-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-data-pools-v1]
-path = "contracts/stacking-dao-data-pools-v1.clar"
+path = "contracts/version-2/stacking-dao-data-pools-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
 [contracts.stacking-dao-add-rewards-v1]
-path = "contracts/stacking-dao-add-rewards-v1.clar"
+path = "contracts/version-2/stacking-dao-add-rewards-v1.clar"
 clarity_version = 2
 epoch = 2.4
+
+
+# ------------------------------
+# Version 3
+# ------------------------------
+
+[contracts.sdao-token]
+path = "contracts/version-3/sdao-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.staking-v1]
+path = "contracts/version-3/staking-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 
 # ------------------------------
 # Tests
