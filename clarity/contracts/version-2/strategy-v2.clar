@@ -96,7 +96,9 @@
 )
 
 (define-private (perform-return-stx-helper (delegate <stacking-delegate-trait>))
-  (contract-call? delegate return-stx .reserve-v1)
+  ;; (contract-call? delegate return-stx .reserve-v1)
+  ;; TODO
+  (ok true)
 )
 
 ;;-------------------------------------
@@ -121,7 +123,7 @@
         (outflow-delegate-traits (filter is-outflow-delegate-trait delegate-traits))
         (outflow-delegate-trait (unwrap! (element-at? outflow-delegate-traits u0) (err ERR_DELEGATE_TRAIT)))
       )
-        (try! (contract-call? outflow-delegate-trait revoke-delegate-stx))
+        (try! (contract-call? outflow-delegate-trait revoke .reserve-v1))
 
         (ok true)
       )
@@ -224,8 +226,8 @@
   )
     (if (and (> amount u0) (is-some pool))
       (begin
-        (try! (contract-call? delegate revoke-delegate-stx))
-        (try! (contract-call? delegate delegate-stx .reserve-v1 amount (unwrap-panic pool)))
+        (try! (contract-call? delegate revoke .reserve-v1))
+        (try! (contract-call? delegate revoke-and-delegate .reserve-v1 amount (unwrap-panic pool) u10000)) ;; TODO: BLOCK HEIGHT
         (ok true)
       )
       (ok false)
