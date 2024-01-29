@@ -147,6 +147,8 @@
 
     ;; TODO: save cycle info
 
+    ;; TODO: handle rewards properly.. take commission etc
+
     ;; Rewards to reserve
     (if (> rewards u0)
       (try! (as-contract (return-stx-from-stacking reserve-contract rewards)))

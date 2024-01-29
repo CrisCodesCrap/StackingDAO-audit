@@ -74,7 +74,6 @@
   (var-get active-pools)
 )
 
-
 (define-read-only (get-pool-share (pool principal))
   (default-to
     u0

@@ -49,23 +49,32 @@
   (map-get? cycle-to-index cycle)
 )
 
-(define-read-only (is-error (response (response bool uint)))
-  (is-err response)
+;;-------------------------------------
+;; Helpers
+;;-------------------------------------
+
+(define-read-only (total-delegated) 
+  (let (
+    (delegates (contract-call? .data-pools-v1 get-pool-delegates (as-contract tx-sender)))
+  )
+    (fold + (map total-delegated-helper delegates) u0)
+  )
 )
 
-;; Can only prepare in last X blocks of cycle
-;; TODO: what if other pools do not do this??? -> force them by limited delegations
-(define-public (can-prepare)
+(define-read-only (total-delegated-helper (delegate principal)) 
   (let (
-    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
-    (start-block-current-cycle (contract-call? .pox-3-mock reward-cycle-to-burn-height current-cycle))
-    (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-3-mock get-pox-info))))
+    ;; TODO: update for mainnet
+    (delegation-state (contract-call? .pox-3-mock get-check-delegation delegate))
   )
-    (if (> burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-pools-v1 get-cycle-withdraw-offset)))
-      (ok true)
-      (ok false)
+    (if (is-some delegation-state)
+      (get amount-ustx (unwrap-panic delegation-state))
+      u0
     )
   )
+)
+
+(define-read-only (is-error (response (response bool uint)))
+  (is-err response)
 )
 
 ;;-------------------------------------
@@ -80,7 +89,7 @@
     (delegation-errors (filter is-error (map delegation delegates)))
     (delegation-error (element-at? delegation-errors u0))
   )
-    (asserts! (unwrap-panic (can-prepare)) (err ERR_CAN_NOT_PREPARE))
+    (asserts! (> (total-delegated) u0) (err ERR_CAN_NOT_PREPARE))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
     ;; 2. Aggregate
