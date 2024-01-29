@@ -49,6 +49,10 @@
   (map-get? cycle-to-index cycle)
 )
 
+(define-read-only (is-error (response (response bool uint)))
+  (is-err response)
+)
+
 ;; Can only prepare in last X blocks of cycle
 ;; TODO: what if other pools do not do this??? -> force them by limited delegations
 (define-public (can-prepare)
@@ -67,10 +71,6 @@
 ;;-------------------------------------
 ;; Public 
 ;;-------------------------------------
-
-(define-read-only (is-error (response (response bool uint)))
-  (is-err response)
-)
 
 (define-public (prepare)
   (let (
