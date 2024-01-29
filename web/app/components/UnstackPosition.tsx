@@ -46,21 +46,20 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     if (!canWithdraw) return;
 
     const postConditions = [
-
       // STX transfer from reserve
       makeContractSTXPostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         'reserve-v1',
-        FungibleConditionCode.Equal,
-        stxAmount * 1000000
+        FungibleConditionCode.GreaterEqual,
+        parseInt(stxAmount * 1000000, 10)
       ),
 
       // stSTX transfer from core
       makeContractFungiblePostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         'stacking-dao-core-v1',
-        FungibleConditionCode.Equal,
-        stStxAmount * 1000000,
+        FungibleConditionCode.GreaterEqual,
+        parseInt(stStxAmount * 1000000, 10),
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
           'ststx-token',
