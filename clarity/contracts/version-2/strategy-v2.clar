@@ -248,6 +248,10 @@
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
 
+    ;; TODO: calculate overlocked amounts for each pool + save total-overlock along the way
+    ;; Using this info, we can calculate the amount of STX per pool
+    ;; And provide to next method
+
     ;; TODO: check for errors
     (map calculate-inflow-pool active-pools new-stx-stacking-list)
 
@@ -258,6 +262,14 @@
 (define-read-only (calculate-stx-for-pool (pool principal) (new-stx-stacking uint))
   (let (
     (default-share (contract-call? .data-pools-v1 get-pool-share pool))
+
+    ;; TODO: NEED TO TAKE "OVERLOCKED" INTO ACCOUNT
+    ;; because of direct stacking and revoking of delegates it can happen
+    ;; that a delegate has locked more than it should. 
+    ;; However, as there is an inflow we do not want to revoke a delegate
+    ;; So we need to take the "overlocked" amount into account
+
+
     
     ;; TODO: get from pools-data
     (direct-share u12)
@@ -273,6 +285,7 @@
       (* direct-share direct-dependence)
     ))
 
+    ;; TODO: based on pools-data?
     (stx-for-default u12)
     (stx-for-direct u123)
   )
@@ -287,10 +300,8 @@
   (let (
     (pool-list (list-30-principal pool))
 
-    ;; TODO: this needs to update for direct stacking
-    ;; 
-    ;; (total-stx-for-pool (/ (* new-stx-stacking (contract-call? .data-pools-v1 get-pool-share pool)) u10000))
-    (total-stx-for-pool (calculate-stx-for-pool pool new-stx-stacking))
+    ;; TODO: should be param
+    ;; (total-stx-for-pool (calculate-stx-for-pool pool new-stx-stacking))
 
     (total-stx-for-pool-list (list-30-uint total-stx-for-pool))
     (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
@@ -303,6 +314,10 @@
     (ok true)
   )
 )
+
+;;
+;; TODO: would be nice if pool owner can decide how to distribute the 10 delegates?? 
+;;
 
 (define-public (calculate-inflow-delegate (delegate principal) (pool principal) (total-stx-for-pool uint))
   (let (

@@ -50,7 +50,7 @@
 )
 
 ;; Can only prepare in last X blocks of cycle
-;; TODO: what if other pools do not do this???
+;; TODO: what if other pools do not do this??? -> force them by limited delegations
 (define-public (can-prepare)
   (let (
     (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))

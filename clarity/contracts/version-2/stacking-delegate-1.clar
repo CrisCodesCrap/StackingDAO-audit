@@ -246,6 +246,7 @@
       ;; TODO: can we delegate an amount < locked amount? -> can not be returned  yet..
       ;; This is also needed for the strategy to work (as 20% based on direct stacking) so can go down -> solve in strategy?
       ;; Assumed for now, otherwise fix in strategy and throw error here and do not handle excess at end of method
+      ;; FIX IN STRATEGY
 
       ;; Request STX from reserve if needed
       (if (> amount-ustx (+ contract-amount locked-amount))
