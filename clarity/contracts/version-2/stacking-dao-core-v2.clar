@@ -56,6 +56,7 @@
     (try! (contract-call? .dao check-is-enabled))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
+    ;; TODO: save data
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-deposit stx-amount))
     
     (try! (contract-call? .direct-stacking-helpers-v1 add-direct-stacking-pool tx-sender pool stx-amount))
@@ -86,6 +87,7 @@
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
 
+    ;; TODO: save data
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-init-withdraw stx-amount))
     (try! (contract-call? .data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
     
@@ -119,6 +121,7 @@
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
 
+    ;; TODO: save data
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-cancel-withdraw stx-amount))
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
     
@@ -157,6 +160,7 @@
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (> burn-block-height unlock-burn-height) (err ERR_WITHDRAW_LOCKED))
 
+    ;; TODO: save data
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-init-withdraw stx-amount))
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
 

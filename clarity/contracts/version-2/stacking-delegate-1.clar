@@ -5,6 +5,12 @@
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_DELEGATE_AMOUNT_LOCKED u41001)
+
+;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
@@ -14,7 +20,7 @@
 (define-data-var last-contract-amount uint u0)
 
 ;;-------------------------------------
-;; Variables
+;; Getters
 ;;-------------------------------------
 
 (define-read-only (get-target-locked-amount)
@@ -161,11 +167,11 @@
     (contract-amount (stx-get-balance (as-contract tx-sender)))
     (rewards-amount (calculate-rewards))
 
-    ;; TODO: this can be < 0, need if/else to check
-    (total-amount (- (+ locked-amount contract-amount) rewards-amount))
-
     (target-amount (get-target-locked-amount))
-
+    (total-amount (if (> (+ locked-amount contract-amount) rewards-amount)
+      (- (+ locked-amount contract-amount) rewards-amount)
+      u0
+    ))
     (excess-amount (if (> total-amount target-amount)
       (- total-amount target-amount)
       u0
@@ -243,10 +249,7 @@
       (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
       (contract-amount (stx-get-balance (as-contract tx-sender)))
     )
-      ;; TODO: can we delegate an amount < locked amount? -> can not be returned  yet..
-      ;; This is also needed for the strategy to work (as 20% based on direct stacking) so can go down -> solve in strategy?
-      ;; Assumed for now, otherwise fix in strategy and throw error here and do not handle excess at end of method
-      ;; FIX IN STRATEGY
+      (asserts! (>= amount-ustx locked-amount) (err ERR_DELEGATE_AMOUNT_LOCKED))
 
       ;; Request STX from reserve if needed
       (if (> amount-ustx (+ contract-amount locked-amount))
@@ -273,7 +276,17 @@
 ;; Admin
 ;;-------------------------------------
 
-;; TODO: return & update amounts?
+;; In case something goes wrong
+(define-public (update-amounts (target-locked uint) (last-locked uint) (last-contract uint))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (var-set target-locked-amount target-locked)
+    (var-set last-locked-amount last-locked)
+    (var-set last-contract-amount last-contract)
+    (ok true)
+  )
+)
 
 ;; Return all STX to the reserve
 (define-public (return-stx (reserve-contract <reserve-trait>))
