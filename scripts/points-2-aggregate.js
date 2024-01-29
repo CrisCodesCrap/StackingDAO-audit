@@ -34,8 +34,8 @@ async function userInfoAtBlockWithLP(address, blockHeight) {
       lp_balance: result["lp-balance"].value / 1000000
     }
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 5 seconds..", error);
-    await new Promise(r => setTimeout(r, 5 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
     return await userInfoAtBlockWithLP(address, blockHeight);
   }
 }
@@ -62,8 +62,8 @@ async function userInfoAtBlockWithoutLP(address, blockHeight) {
       lp_balance: 0
     }
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 5 seconds..", error);
-    await new Promise(r => setTimeout(r, 5 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
     return await userInfoAtBlockWithoutLP(address, blockHeight);
   }
 }
@@ -87,7 +87,7 @@ async function updateAllPoints(blockHeight) {
   //
   // 0. From flat addresses array to chuncked array
   //
-  const perChunk = 10;
+  const perChunk = 5;
   const addressesChunks = addresses.addresses.reduce((resultArray, item, index) => { 
     const chunkIndex = Math.floor(index / perChunk)
   
