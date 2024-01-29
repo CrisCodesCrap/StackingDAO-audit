@@ -87,6 +87,10 @@ async function getEvents(contract, offset) {
 // ----------------------------------------------
 
 function resolveUrl() {
+  if (process.env.STACKS_API) {
+    return process.env.STACKS_API
+  }
+
   if (env === 'mocknet') {
     return `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   } else if (env === 'testnet') {
