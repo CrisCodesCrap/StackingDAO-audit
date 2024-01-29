@@ -351,7 +351,7 @@ export default function Points() {
           )}
         </div>
 
-        <div className="mt-12">
+{/*        <div className="mt-12">
           <div className="w-full font-semibold text-2xl my-3">Leaderboard</div>
           <p className="text-sm text-gray-500 mb-2">
             A list of users sorted by points earned. Enter an address below to view its information.
@@ -448,7 +448,7 @@ export default function Points() {
               </div>
             </div>
           </div>
-        </div>
+        </div>*/}
 
       </div>
     </Container>
