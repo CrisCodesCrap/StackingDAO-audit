@@ -14,6 +14,8 @@
 ;; Variables
 ;;-------------------------------------
 
+(define-data-var last-selected-pool principal .stacking-pool-v1)
+
 (define-data-var target-locked-amount uint u0)
 
 (define-data-var last-locked-amount uint u0)
@@ -22,6 +24,10 @@
 ;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
+
+(define-read-only (get-last-selected-pool)
+  (var-get last-selected-pool)
+)
 
 (define-read-only (get-target-locked-amount)
   (var-get target-locked-amount)
@@ -141,14 +147,7 @@
   (let (
     (rewards (calculate-rewards))
   )
-    ;; TODO: handle rewards properly in separate contract. Take commission etc.
-
-    ;; Rewards to reserve
-    (if (> rewards u0)
-      (try! (as-contract (return-stx-from-stacking reserve-contract rewards)))
-      true
-    )
-
+    (try! (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards))
     (ok rewards)
   )
 )
@@ -257,6 +256,7 @@
 
       ;; Set target
       (var-set target-locked-amount amount-ustx)
+      (var-set last-selected-pool delegate-to)
 
       ;; Handle excess
       (try! (handle-excess reserve-contract))

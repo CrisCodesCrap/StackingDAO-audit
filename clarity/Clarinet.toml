@@ -254,8 +254,8 @@ path = "contracts/version-2/data-direct-stacking-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.add-rewards-v1]
-path = "contracts/version-2/add-rewards-v1.clar"
+[contracts.rewards-v1]
+path = "contracts/version-2/rewards-v1.clar"
 clarity_version = 2
 epoch = 2.4
 

@@ -14,9 +14,9 @@
   (contract-call? .pox-3-mock current-pox-reward-cycle)
 )
 
-(define-read-only (get-next-cycle-end-burn-height)
+(define-read-only (get-next-cycle-start-burn-height)
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u2))
+  (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
 )
 
 ;;-------------------------------------
@@ -60,9 +60,7 @@
 (define-public (perform-pool-delegation (pool principal) (delegates-info (list 10 { delegate: <stacking-delegate-trait>, amount: uint})))
   (let (
     (delegate-to-list (list-10-principal pool))
-
-    ;; TODO: is this block correct?
-    (burn-ht-list (list-10-uint (get-next-cycle-end-burn-height)))
+    (burn-ht-list (list-10-uint (get-next-cycle-start-burn-height)))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
