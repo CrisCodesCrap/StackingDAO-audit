@@ -1,6 +1,8 @@
 ;; @contract Direct Stacking Helpers
 ;; @version 1
 
+(impl-trait .direct-helpers-trait-v1.direct-helpers-trait)
+
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 (use-trait supported-protocol-trait .supported-protocol-trait-v1.supported-protocol-trait)
 
