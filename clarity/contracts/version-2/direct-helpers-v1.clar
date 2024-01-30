@@ -16,25 +16,11 @@
 ;; Direct Stacking Helpers  
 ;;-------------------------------------
 
-;; Helper method without `pool` argument
-;; Pool is chosen based on current direct stacking pool for user
-(define-public (add-direct-stacking (user principal) (amount uint))
-  (let (
-    (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
-    (current-direct-pool (if (is-some current-direct-stacking)
-      (some (get pool (unwrap-panic current-direct-stacking)))
-      none
-    ))
-  )
-    (add-direct-stacking-pool user current-direct-pool amount)
-  )
-)
-
 ;; Handle direct stacking for user
 ;; 1 - If user is direct stacking in same pool, increase amounts
 ;; 2 - If user is direct stacking in other pool, move all to newly selected pool
 ;; 3 - If user is not direct stacking yet, start direct stacking if pool selected
-(define-public (add-direct-stacking-pool (user principal) (pool (optional principal)) (amount uint))
+(define-public (add-direct-stacking (user principal) (pool (optional principal)) (amount uint))
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
   )
@@ -110,9 +96,9 @@
         (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
       )
         ;; User might have stacked more than direct amount
-        (if (> current-direct-amount amount)
+        (if (> amount current-direct-amount)
           (begin
-            (try! (stop-direct-stacking user))
+            (try! (as-contract (stop-direct-stacking user)))
             true
           )
           (begin
@@ -162,12 +148,12 @@
 ;; User can stop or reduce direct stacking.
 ;; To increase, a deposit is needed
 
-(define-public (stop-direct-stacking-user)
-  (stop-direct-stacking tx-sender)
-)
-
 (define-public (subtract-direct-stacking-user (amount uint))
   (subtract-direct-stacking tx-sender amount)
+)
+
+(define-public (stop-direct-stacking-user)
+  (stop-direct-stacking tx-sender)
 )
 
 ;;-------------------------------------
@@ -239,10 +225,12 @@
       u0
     ))
   )
+    (print { diff: diff, info: info })
+
     (if (> diff u0)
       (begin
         ;; TODO: would be better to use try!
-        (unwrap-panic (subtract-direct-stacking user diff))
+        (unwrap-panic (as-contract (subtract-direct-stacking user diff)))
         true
       )
       false

@@ -5,8 +5,7 @@
 
 (define-trait direct-helpers-trait
   (
-    (add-direct-stacking (principal uint) (response bool uint))
-    (add-direct-stacking-pool (principal (optional principal) uint) (response bool uint))
+    (add-direct-stacking (principal (optional principal) uint) (response bool uint))
     (subtract-direct-stacking (principal uint) (response bool uint))
     (stop-direct-stacking (principal) (response bool uint))
   )

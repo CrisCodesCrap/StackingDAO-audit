@@ -63,7 +63,7 @@
     (try! (contract-call? .dao check-is-enabled))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
-    (try! (contract-call? direct-helpers add-direct-stacking-pool tx-sender pool stx-amount))
+    (try! (contract-call? direct-helpers add-direct-stacking tx-sender pool stx-amount))
 
     (try! (stx-transfer? stx-amount tx-sender (contract-of reserve-contract)))
     (try! (contract-call? .ststx-token mint-for-protocol ststx-amount tx-sender))
@@ -116,6 +116,7 @@
   (reserve-contract <reserve-trait>) 
   (direct-helpers <direct-helpers-trait>)
   (nft-id uint)
+  (pool (optional principal))
 )
   (let (
     (receiver tx-sender)
@@ -137,7 +138,7 @@
 
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
     
-    (try! (contract-call? direct-helpers add-direct-stacking tx-sender stx-amount))
+    (try! (contract-call? direct-helpers add-direct-stacking tx-sender pool stx-amount))
 
     ;; Burn NFT, send back stSTX
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
