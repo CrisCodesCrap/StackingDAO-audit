@@ -6,9 +6,10 @@
 ;;-------------------------------------
 
 (begin
-  ;; TODO: set arkadiko & bitflow as supported protocol
-
-  true
+  ;; TODO: add Bitflow as supported protocol
+  (var-set supported-protocols (list
+    .protocol-arkadiko-v1
+  ))
 )
 
 ;;-------------------------------------
@@ -91,4 +92,11 @@
   (var-get supported-protocols)
 )
 
-;; TODO: setters
+(define-public (set-supported-protocols (protocols (list 50 principal)))
+  (begin
+    (try! (contract-call? .dao check-is-protocol tx-sender))
+
+    (var-set supported-protocols protocols)
+    (ok true)
+  )
+)

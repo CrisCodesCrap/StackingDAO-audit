@@ -107,7 +107,8 @@
         (current-pool-amount (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount current-direct-pool))
         (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
       )
-        (if (is-eq current-direct-amount amount)
+        ;; User might have stacked more than direct amount
+        (if (> current-direct-amount amount)
           (begin
             (try! (stop-direct-stacking user))
             true
@@ -128,7 +129,7 @@
 )
 
 (define-public (stop-direct-stacking (user principal))
- (let (
+  (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
   )
     (try! (contract-call? .dao check-is-protocol tx-sender))
@@ -150,6 +151,21 @@
     )
     (ok true)
   )
+)
+
+;;-------------------------------------
+;; User
+;;-------------------------------------
+
+;; User can stop or reduce direct stacking.
+;; To increase, a deposit is needed
+
+(define-public (stop-direct-stacking-user)
+  (stop-direct-stacking tx-sender)
+)
+
+(define-public (subtract-direct-stacking-user (amount uint))
+  (subtract-direct-stacking tx-sender amount)
 )
 
 ;;-------------------------------------

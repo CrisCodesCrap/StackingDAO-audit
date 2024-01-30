@@ -14,7 +14,11 @@
   ;; (let (
   ;;   (vault (contract-call? 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-vaults-data-v1-1 get-vault user .ststx.token))
   ;; )
-  ;;   (ok (get collateral vault))
+  ;;   ;; Check status
+  ;;   (if (is-eq (get status vault) u101)
+  ;;     (ok (get collateral vault))
+  ;;     (ok u0)
+  ;;   )
   ;; )
   (ok u0)
 )

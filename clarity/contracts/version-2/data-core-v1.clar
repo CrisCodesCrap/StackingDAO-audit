@@ -43,21 +43,23 @@
 )
 
 (define-read-only (get-withdrawals-by-nft (nft-id uint))
-  ;; TODO: get prev info from core v1
-
   (default-to
-    {
-      unlock-burn-height: u0,
-      stx-amount: u0,
-      ststx-amount: u0
-    }
+    ;; Default to info from stacking-dao-core-v1.
+    ;; Need to translate cycle-id into unlock-burn-height
+    (let (
+      (prev-info (contract-call? .stacking-dao-core-v1 get-withdrawals-by-nft nft-id))
+      (cycle-start-block (contract-call? .pox-3-mock reward-cycle-to-burn-height (get cycle-id prev-info)))
+    )
+      { unlock-burn-height: cycle-start-block, stx-amount: (get stx-amount prev-info), ststx-amount: (get ststx-amount prev-info) }
+    )
+
     (map-get? withdrawals-by-nft { nft-id: nft-id })
   )
 )
 
 (define-public (set-withdrawals-by-nft (nft-id uint) (stx-amount uint) (ststx-amount uint) (unlock-burn-height uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set withdrawals-by-nft { nft-id: nft-id } { stx-amount: stx-amount, ststx-amount: ststx-amount, unlock-burn-height: unlock-burn-height })
     (ok true)
@@ -66,7 +68,7 @@
 
 (define-public (delete-withdrawals-by-nft (nft-id uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-delete withdrawals-by-nft { nft-id: nft-id })
     (ok true)
