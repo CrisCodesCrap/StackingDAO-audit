@@ -1,8 +1,8 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/tests-utils.ts";
+import { qualifiedName } from "../wrappers/tests-utils.ts";
 
-import { DAO } from './helpers/dao-helpers.ts';
-import { Reserve } from './helpers/reserve-helpers.ts';
+import { DAO } from '../wrappers/dao-helpers.ts';
+import { Reserve } from '../wrappers/reserve-helpers.ts';
 
 //-------------------------------------
 // Core 

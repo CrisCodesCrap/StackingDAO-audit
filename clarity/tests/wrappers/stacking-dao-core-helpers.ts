@@ -59,7 +59,7 @@ class Core {
     ], this.deployer.address);
   }
 
-  deposit(caller: Account, amount: number, referrer: string = undefined) {
+  deposit(caller: Account, amount: number, referrer: string | undefined = undefined) {
     let referrerType = types.none();
     if (referrer) {
       referrerType = types.some(types.principal(referrer))

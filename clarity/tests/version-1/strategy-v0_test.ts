@@ -1,12 +1,12 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { hexToBytes, qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
+import { hexToBytes, qualifiedName, REWARD_CYCLE_LENGTH } from "../wrappers/tests-utils.ts";
 qualifiedName('')
 
-import { StrategyV0 as Strategy } from './helpers/strategy-helpers.ts';
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { Reserve } from './helpers/reserve-helpers.ts';
-import { Stacker } from './helpers/stacker-helpers.ts';
-import { Pox3Mock } from './helpers/pox-3-mock-helpers.ts';
+import { StrategyV0 as Strategy } from '../wrappers/strategy-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { Reserve } from '../wrappers/reserve-helpers.ts';
+import { Stacker } from '../wrappers/stacker-helpers.ts';
+import { Pox3Mock } from '../wrappers/pox-3-mock-helpers.ts';
 
 //-------------------------------------
 // Reward address

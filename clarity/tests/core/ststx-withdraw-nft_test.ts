@@ -1,8 +1,8 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "./helpers/tests-utils.ts";
+import { qualifiedName } from "../wrappers/tests-utils.ts";
 qualifiedName("")
 
-import { StStxWithdrawNft } from './helpers/ststx-withdraw-nft-helpers.ts';
+import { StStxWithdrawNft } from '../wrappers/ststx-withdraw-nft-helpers.ts';
 
 //-------------------------------------
 // Getters 

@@ -1,7 +1,7 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
 
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { Reserve } from './helpers/reserve-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { Reserve } from '../wrappers/reserve-helpers.ts';
 
 //-------------------------------------
 // Core 

@@ -1,10 +1,10 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from './helpers/tests-utils.ts';
+import { qualifiedName } from '../wrappers/tests-utils.ts';
 qualifiedName("")
 
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { ReturnStxJob } from './helpers/return-stx-job-helpers.ts';
-import { Reserve } from './helpers/reserve-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { ReturnStxJob } from '../wrappers/return-stx-job-helpers.ts';
+import { Reserve } from '../wrappers/reserve-helpers.ts';
 
 //-------------------------------------
 // Return STX Job 

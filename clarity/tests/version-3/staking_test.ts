@@ -1,11 +1,11 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "./helpers/tests-utils.ts";
+import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "../wrappers/tests-utils.ts";
 
-import { DAO } from './helpers/dao-helpers.ts';
-import { Staking } from './helpers/staking-helpers.ts';
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { SDAOToken } from './helpers/sdao-token-helpers.ts';
-import { Commission } from "./helpers/commission-helpers.ts";
+import { DAO } from '../wrappers/dao-helpers.ts';
+import { Staking } from '../wrappers/staking-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { SDAOToken } from '../wrappers/sdao-token-helpers.ts';
+import { Commission } from "../wrappers/commission-helpers.ts";
 
 //-------------------------------------
 // Core 

@@ -1,10 +1,9 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName, REWARD_CYCLE_LENGTH } from './helpers/tests-utils.ts';
+import { qualifiedName, REWARD_CYCLE_LENGTH } from '../wrappers/tests-utils.ts';
 qualifiedName("")
 
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { GenesisMinter, GenesisNFT } from './helpers/genesis-minter-helpers.ts';
-import { StStxToken } from './helpers/ststx-token-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { GenesisMinter, GenesisNFT } from '../wrappers/genesis-minter-helpers.ts';
 
 Clarinet.test({
   name: "genesis-nft: airdrop OG / Diamond / Gold",

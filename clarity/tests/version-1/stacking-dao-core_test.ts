@@ -1,8 +1,8 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from './helpers/tests-utils.ts';
+import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wrappers/tests-utils.ts';
 
-import { Core } from './helpers/stacking-dao-core-helpers.ts';
-import { DAO } from './helpers/dao-helpers.ts';
+import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { DAO } from '../wrappers/dao-helpers.ts';
 
 //-------------------------------------
 // Getters 
