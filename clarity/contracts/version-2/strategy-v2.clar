@@ -57,18 +57,17 @@
 
 ;; Perform delegation to pool
 ;; If amount in delegates-info list is 0, delegation is revoked. Otherwise, delegation is set.
-(define-public (perform-pool-delegation (reserve-contract <reserve-trait>) (pool principal) (delegates-info (list 10 { delegate: <stacking-delegate-trait>, amount: uint})))
+(define-public (perform-pool-delegation (pool principal) (delegates-info (list 10 { delegate: <stacking-delegate-trait>, amount: uint})))
   (let (
-    (reserve-list (list-10-reserve-trait reserve-contract))
     (delegate-to-list (list-10-principal pool))
 
     ;; TODO: is this block correct?
     (burn-ht-list (list-10-uint (get-next-cycle-end-burn-height)))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (let (
-      (helper-result (map perform-pool-delegation-helper delegates-info reserve-list delegate-to-list burn-ht-list))
+      (helper-result (map perform-pool-delegation-helper delegates-info delegate-to-list burn-ht-list))
       (helper-errors (filter is-error helper-result))
       (helper-error (element-at? helper-errors u0))
     )
@@ -78,14 +77,14 @@
   )
 )
 
-(define-private (perform-pool-delegation-helper (delegate-info { delegate: <stacking-delegate-trait>, amount: uint}) (reserve-contract <reserve-trait>) (delegate-to principal) (until-burn-ht uint))
+(define-private (perform-pool-delegation-helper (delegate-info { delegate: <stacking-delegate-trait>, amount: uint}) (delegate-to principal) (until-burn-ht uint))
   (let (
     (delegate-contract (get delegate delegate-info))
     (delegate-amount (get amount delegate-info))
   )
     (if (is-eq delegate-amount u0)
-      (try! (contract-call? delegate-contract revoke reserve-contract))
-      (try! (contract-call? delegate-contract revoke-and-delegate reserve-contract (get amount delegate-info) delegate-to until-burn-ht))
+      (try! (contract-call? delegate-contract revoke .reserve-v1))
+      (try! (contract-call? delegate-contract revoke-and-delegate .reserve-v1 (get amount delegate-info) delegate-to until-burn-ht))
     )
 
     (ok true)

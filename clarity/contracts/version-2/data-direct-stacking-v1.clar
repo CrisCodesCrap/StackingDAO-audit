@@ -48,7 +48,7 @@
 
 (define-public (set-total-directed-stacking (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set total-directed-stacking amount)
     (ok true)
@@ -57,7 +57,7 @@
 
 (define-public (set-direct-stacking-pool-amount (pool principal) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set direct-stacking-pool-amount pool amount)
     (ok true)
@@ -66,7 +66,7 @@
 
 (define-public (set-direct-stacking-user (user principal) (pool principal) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set direct-stacking-user user { pool: pool, amount: amount })
     (ok true)
@@ -75,7 +75,7 @@
 
 (define-public (delete-direct-stacking-user (user principal))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-delete direct-stacking-user user)
     (ok true)
@@ -94,7 +94,7 @@
 
 (define-public (set-supported-protocols (protocols (list 50 principal)))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set supported-protocols protocols)
     (ok true)

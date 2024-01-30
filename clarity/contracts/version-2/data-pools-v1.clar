@@ -29,7 +29,7 @@
 
 (define-public (set-cycle-withdraw-offset (offset uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set cycle-withdraw-offset offset)
     (ok true)
@@ -59,7 +59,7 @@
 
 (define-public (set-standard-commission (commission uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set standard-commission commission)
     (ok true)
@@ -68,7 +68,7 @@
 
 (define-public (set-pool-commission (pool principal) (commission uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set pool-commission pool commission)
     (ok true)
@@ -119,7 +119,7 @@
 
 (define-public (set-active-pools (pools (list 30 principal)))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set active-pools pools)
     (ok true)
@@ -128,7 +128,7 @@
 
 (define-public (set-pool-share (pool principal) (share uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set pool-share pool share)
     (ok true)
@@ -137,7 +137,7 @@
 
 (define-public (set-pool-delegates (pool principal) (delegates (list 30 principal)))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set pool-delegates pool delegates)
     (ok true)
@@ -146,7 +146,7 @@
 
 (define-public (set-delegate-share (delegate principal) (share uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set delegate-share delegate share)
     (ok true)

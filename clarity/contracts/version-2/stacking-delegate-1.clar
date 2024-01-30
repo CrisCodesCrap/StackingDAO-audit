@@ -136,18 +136,12 @@
   )
 )
 
-;; Detect amount changes and act.
-;; Additional STX are rewards.
-;; Based on target-lock, return excess STX
+;; If extra STX in (contract + locked) it means rewards were added
 (define-public (handle-rewards (reserve-contract <reserve-trait>))
   (let (
     (rewards (calculate-rewards))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
-    ;; TODO: save cycle info
-
-    ;; TODO: handle rewards properly.. take commission etc
+    ;; TODO: handle rewards properly in separate contract. Take commission etc.
 
     ;; Rewards to reserve
     (if (> rewards u0)
@@ -178,7 +172,6 @@
       (- total-amount target-amount)
       u0
     ))
-
   )
     (if (> excess-amount u0)
       (if (> contract-amount excess-amount)
@@ -190,12 +183,12 @@
   )
 )
 
+;; If target amount is lower than (contract + locked)
+;; we can return the STX held by the contract
 (define-public (handle-excess (reserve-contract <reserve-trait>))
   (let (
     (excess (calculate-excess))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
-
     ;; Not needed STX to reserve
     (if (> excess u0)
       (try! (as-contract (return-stx-from-stacking reserve-contract excess)))
@@ -215,7 +208,7 @@
     ;; Need to be done first
     (try! (handle-rewards reserve-contract))
 
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (let (
       (contract-amount (stx-get-balance (as-contract tx-sender)))
@@ -245,7 +238,7 @@
     ;; Revoke
     (try! (revoke-delegate-stx))
 
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (let (
       (locked-amount (get locked (get-stx-account (as-contract tx-sender))))

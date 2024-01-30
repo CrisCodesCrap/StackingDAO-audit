@@ -191,7 +191,7 @@
 
 (define-public (set-shutdown-deposits (shutdown bool))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
     
     (var-set shutdown-deposits shutdown)
     (ok true)

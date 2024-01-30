@@ -33,12 +33,12 @@
 ;; Handle direct stacking for user
 ;; 1 - If user is direct stacking in same pool, increase amounts
 ;; 2 - If user is direct stacking in other pool, move all to newly selected pool
-;; 3 - If user is not direct stacking yet .... TODO
+;; 3 - If user is not direct stacking yet, start direct stacking if pool selected
 (define-public (add-direct-stacking-pool (user principal) (pool (optional principal)) (amount uint))
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (if (is-some current-direct-stacking)
 
@@ -100,7 +100,7 @@
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (if (is-some current-direct-stacking)
       (let (
@@ -134,7 +134,7 @@
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
   )
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (if (is-some current-direct-stacking)
       (let (
@@ -173,6 +173,8 @@
 ;;-------------------------------------
 ;; Update direct stacking
 ;;-------------------------------------
+;; When stSTX is moved to another wallet or unsupported protocol, direct stacking will be stopped.
+;; Below helper methods that can be used by keeper jobs for this mechanism.
 
 (define-read-only (is-error (response (response uint uint)))
   (is-err response)

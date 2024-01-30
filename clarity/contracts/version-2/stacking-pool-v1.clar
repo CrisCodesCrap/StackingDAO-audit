@@ -271,7 +271,7 @@
 
 (define-public (set-pox-reward-address (new-address { version: (buff 1), hashbytes: (buff 32) }))
   (begin
-    (try! (contract-call? .dao check-is-protocol tx-sender))
+    (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set pox-reward-address new-address)
     (ok true)
