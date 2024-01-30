@@ -148,6 +148,8 @@
   (map-set contracts { address: .stacking-dao-genesis-nft-minter } { active: true })
 
   ;; Version 2
-    (map-set contracts { address: .direct-helpers-v1 } { active: true })
+  (map-set contracts { address: .direct-helpers-v1 } { active: true })
+  
+  (map-set contracts { address: .stacking-delegate-1 } { active: true })
 
 )

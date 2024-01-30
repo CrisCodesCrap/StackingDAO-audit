@@ -51,19 +51,6 @@
   ;; (stx-account account)
 )
 
-(define-read-only (get-delegated-amount (account principal))
-  (let (
-    ;; TODO: update for mainnet
-    (delegation-info (contract-call? .pox-3-mock get-check-delegation (as-contract tx-sender)))
-    (delegation-amount (if (is-none delegation-info)
-      u0
-      (unwrap-panic (get amount-ustx delegation-info))
-    ))
-  )
-    delegation-amount
-  )
-)
-
 ;;-------------------------------------
 ;; Pox Wrappers 
 ;;-------------------------------------
@@ -147,7 +134,10 @@
   (let (
     (rewards (calculate-rewards))
   )
-    (try! (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards))
+    (if (> rewards u0)
+      (try! (as-contract (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards)))
+      true
+    )
     (ok rewards)
   )
 )
@@ -193,7 +183,6 @@
       (try! (as-contract (return-stx-from-stacking reserve-contract excess)))
       true
     )
-
     (ok excess)
   )
 )
