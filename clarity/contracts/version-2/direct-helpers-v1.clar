@@ -4,7 +4,7 @@
 (impl-trait .direct-helpers-trait-v1.direct-helpers-trait)
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
-(use-trait supported-protocol-trait .supported-protocol-trait-v1.supported-protocol-trait)
+(use-trait protocol-trait .protocol-trait-v1.protocol-trait)
 
 ;;-------------------------------------
 ;; Constants 
@@ -184,7 +184,7 @@
   (unwrap-panic response)
 )
 
-(define-public (calculate-direct-stacking-info (protocols (list 50 <supported-protocol-trait>)) (user principal)) 
+(define-public (calculate-direct-stacking-info (protocols (list 50 <protocol-trait>)) (user principal)) 
   (let (
     (direct-stacking-info (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
     (direct-stacking (if (is-some direct-stacking-info)
@@ -212,7 +212,7 @@
   )
 )
 
-(define-public (get-user-balance-in-protocol (user principal) (protocol <supported-protocol-trait>)) 
+(define-public (get-user-balance-in-protocol (user principal) (protocol <protocol-trait>)) 
   (let (
     (supported-protocols (contract-call? .data-direct-stacking-v1 get-supported-protocols))
     (protocol-index (index-of? supported-protocols (contract-of protocol)))
@@ -225,7 +225,7 @@
   )
 )
 
-(define-public (update-direct-stacking (reserve <reserve-trait>) (protocols (list 50 <supported-protocol-trait>)) (user principal))
+(define-public (update-direct-stacking (reserve <reserve-trait>) (protocols (list 50 <protocol-trait>)) (user principal))
   (let (
     (info (try! (calculate-direct-stacking-info protocols user)))
     (stacking-stx (get direct-stacking-stx info))

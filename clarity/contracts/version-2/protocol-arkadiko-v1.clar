@@ -1,7 +1,7 @@
 ;; @contract Supported Protocol - Arkadiko
 ;; @version 1
 
-(impl-trait .supported-protocol-trait-v1.supported-protocol-trait)
+(impl-trait .protocol-trait-v1.protocol-trait)
 
 ;;-------------------------------------
 ;; Arkadiko 
