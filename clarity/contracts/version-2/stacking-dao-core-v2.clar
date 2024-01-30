@@ -59,6 +59,7 @@
     ;; TODO: save data
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-deposit stx-amount))
     
+    ;; TODO: make dynamic with trait
     (try! (contract-call? .direct-stacking-helpers-v1 add-direct-stacking-pool tx-sender pool stx-amount))
 
     (print { action: "deposit", data: { stacker: tx-sender, referrer: referrer, amount: ststx-amount, block-height: block-height } })
@@ -91,6 +92,7 @@
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-init-withdraw stx-amount))
     (try! (contract-call? .data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
     
+    ;; TODO: make dynamic with trait
     (try! (contract-call? .direct-stacking-helpers-v1 subtract-direct-stacking tx-sender stx-amount))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
@@ -125,6 +127,7 @@
     ;; (try! (contract-call? .data-core-v1 cycle-info-add-cancel-withdraw stx-amount))
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
     
+    ;; TODO: make dynamic with trait
     (try! (contract-call? .direct-stacking-helpers-v1 add-direct-stacking tx-sender stx-amount))
 
     ;; Burn NFT, send back stSTX

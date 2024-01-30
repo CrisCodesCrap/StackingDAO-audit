@@ -25,7 +25,6 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-1
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-1"
 
-
 # ------------------------------
 # Core
 # ------------------------------
@@ -210,6 +209,11 @@ path = "contracts/version-2/stacking-delegate-trait-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.supported-protocol-trait-v1]
+path = "contracts/version-2/supported-protocol-trait-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.stacking-delegate-1]
 path = "contracts/version-2/stacking-delegate-1.clar"
 clarity_version = 2
@@ -245,6 +249,11 @@ path = "contracts/version-2/data-pools-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.data-direct-stacking-v1]
+path = "contracts/version-2/data-direct-stacking-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.add-rewards-v1]
 path = "contracts/version-2/add-rewards-v1.clar"
 clarity_version = 2
@@ -252,6 +261,11 @@ epoch = 2.4
 
 [contracts.direct-stacking-helpers-v1]
 path = "contracts/version-2/direct-stacking-helpers-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.protocol-arkadiko-v1]
+path = "contracts/version-2/protocol-arkadiko-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
