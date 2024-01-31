@@ -49,6 +49,12 @@
   (map-get? cycle-to-index cycle)
 )
 
+(define-read-only (get-pox-info)
+  ;; TODO: update for mainnet
+  (unwrap-panic (contract-call? .pox-3-mock get-pox-info))
+)
+
+
 ;;-------------------------------------
 ;; Helpers
 ;;-------------------------------------

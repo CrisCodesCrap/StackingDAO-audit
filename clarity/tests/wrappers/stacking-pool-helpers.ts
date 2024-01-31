@@ -14,6 +14,10 @@ class StackingPool {
     this.deployer = deployer;
   }
 
+  getPoxInfo() {
+    return this.chain.callReadOnlyFn("stacking-pool-v1", "get-pox-info", [], this.deployer.address);
+  }
+
   prepare(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-pool-v1", "prepare", [
