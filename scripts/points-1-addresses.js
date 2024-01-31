@@ -78,6 +78,8 @@ async function start() {
   // 1) Deposited on StackingDAO (stSTX minted)
   // 2) Received stSTX from transfer (ex: swap in BitFlow)
 
+  const currentBlockHeight = await utils.getBlockHeight();
+
   const coreContractEvents = await utils.getAllEvents(coreContract);
   const tokenContractEvents = await utils.getAllEvents(tokenContract);
 
@@ -85,13 +87,15 @@ async function start() {
   const addresses = parseAllEventsForAddresses(allEvents);
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses', {"addresses": addresses})
+  await utils.writeFile('points-addresses-2', {"addresses": addresses})
 
   // Referrals
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals', referrers)
+  await utils.writeFile('points-referrals-2', referrers)
+
+  await utils.writeFile('points-last-block-addresses-2', { last_block: currentBlockHeight })
 };
 
 // start();
