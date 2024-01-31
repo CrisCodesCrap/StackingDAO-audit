@@ -117,7 +117,7 @@
     (last-contract (get-last-contract-amount))
 
     (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    (contract-amount (stx-get-balance (as-contract tx-sender)))
+    (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
 
     ;; Extra STX must be rewards
     (rewards (if (> (+ locked-amount contract-amount) (+ last-locked last-contract))
@@ -149,7 +149,7 @@
 (define-read-only (calculate-excess) 
   (let (
     (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    (contract-amount (stx-get-balance (as-contract tx-sender)))
+    (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
     (rewards-amount (calculate-rewards))
 
     (target-amount (get-target-locked-amount))
@@ -199,7 +199,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (let (
-      (contract-amount (stx-get-balance (as-contract tx-sender)))
+      (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
     )
       ;; Revoke
       (try! (revoke-delegate-stx))
@@ -230,7 +230,7 @@
 
     (let (
       (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-      (contract-amount (stx-get-balance (as-contract tx-sender)))
+      (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
     )
       (asserts! (>= amount-ustx locked-amount) (err ERR_DELEGATE_AMOUNT_LOCKED))
 
@@ -275,7 +275,7 @@
 ;; Return all STX to the reserve
 (define-public (return-stx (reserve-contract <reserve-trait>))
   (let (
-    (return-amount (stx-get-balance (as-contract tx-sender)))
+    (return-amount (get unlocked (get-stx-account (as-contract tx-sender))))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
