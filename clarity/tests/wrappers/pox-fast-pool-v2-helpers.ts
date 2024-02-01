@@ -14,13 +14,26 @@ class FastPoolV2 {
     this.deployer = deployer;
   }
 
+  getLockedInfoUser(user: string) {
+    return this.chain.callReadOnlyFn("pox-fast-pool-v2-mock", "get-locked-info-user", [
+      types.principal(user),
+    ], this.deployer.address);
+  }
+
+  notLockedForCycle(unlockBurnHeight: number, cycle: number) {
+    return this.chain.callReadOnlyFn("pox-fast-pool-v2-mock", "not-locked-for-cycle", [
+      types.uint(unlockBurnHeight),
+      types.uint(cycle)
+    ], this.deployer.address);
+  }
+
   delegateStx(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("pox-fast-pool-v2-mock", "delegate-stx", [
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
-    console.log("events:", block.receipts[0].events)
+    console.log("delegateStx events:", block.receipts[0].events)
     return block.receipts[0].result;
   }
 
@@ -30,6 +43,7 @@ class FastPoolV2 {
         types.principal(user),
       ], caller.address)
     ]);
+    console.log("delegateStackStx events:", block.receipts[0].events)
     return block.receipts[0].result;
   }
 

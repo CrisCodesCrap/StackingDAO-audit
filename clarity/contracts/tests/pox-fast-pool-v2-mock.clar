@@ -111,7 +111,7 @@
     (start-burn-ht (+ burn-block-height u1))
     (pox-address (var-get pool-pox-address))
     (buffer-amount (var-get stx-buffer))
-    (user-account (stx-account user))
+    (user-account (get-stx-account user))
     (allowed-amount (min (get-delegated-amount user) (+ (get locked user-account) (get unlocked user-account))))
 
     ;; Amount to lock must be leq allowed-amount and geq locked amount.
@@ -155,7 +155,7 @@
   (pox-address {hashbytes: (buff 32), version: (buff 1)})
 )
   (let (
-    (status (stx-account user))
+    (status (get-stx-account user))
     (locked-amount (get locked status))
   )
     (asserts! (>= amount-ustx locked-amount) err-decrease-forbidden)
@@ -237,7 +237,10 @@
           (print { action: "stack-aggregation-increase", reward-cycle: reward-cycle, index: index })
           (match (as-contract (contract-call? .pox-3-mock stack-aggregation-increase (var-get pool-pox-address) reward-cycle index))
             success 
-              (map-set last-aggregation reward-cycle block-height)
+              (begin
+                (print { action: "stack-aggregation-increase - result", success: success })
+                (map-set last-aggregation reward-cycle block-height)
+              )
             error 
               (begin (print {err-increase-ignored: error}) false)
           )
@@ -249,6 +252,7 @@
         (match (as-contract (contract-call? .pox-3-mock stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle))
           index 
             (begin
+              (print { action: "stack-aggregation-commit-indexed - result", index: index })
               (map-set pox-addr-indices reward-cycle index)
               (map-set last-aggregation reward-cycle block-height)
             )
@@ -469,3 +473,28 @@
 ;; The result is none if there is no allowance record.
 (define-read-only (get-allowance-contract-callers (sender principal) (calling-contract principal))
   (map-get? allowance-contract-callers { sender: sender, contract-caller: calling-contract}))
+
+
+;;
+;; Mock functions
+;;
+
+(define-read-only (get-stx-account (account principal))
+  ;; TODO: update for mainnet
+  (let (
+    (info (contract-call? .pox-3-mock stx-account-mock account))
+  )
+    { locked: (get locked info), unlock-height: (get unlock-height info), unlocked: (get unlocked info)}
+  )
+  ;; (stx-account account)
+)
+
+(define-read-only (get-locked-info-user (user principal))
+  (let (
+    (status (get-stx-account user))
+    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
+    (unlock-height (get unlock-height status))
+  )
+    { current-cycle: current-cycle, unlock-height: unlock-height, not-locked: (not-locked-for-cycle unlock-height (+ u1 current-cycle))}
+  )
+)
