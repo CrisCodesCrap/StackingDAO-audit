@@ -135,6 +135,7 @@
     (rewards (calculate-rewards))
   )
     (if (> rewards u0)
+      ;; TODO: should not be hardcoded
       (try! (as-contract (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards)))
       true
     )

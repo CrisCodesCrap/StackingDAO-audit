@@ -6,14 +6,29 @@
 ;;-------------------------------------
 
 (begin
-  (var-set active-pools (list .stacking-pool-v1))
+  (var-set active-pools (list .stacking-pool-v1 .pox-fast-pool-v2-mock))
 
+  ;; Pool commission
   (map-set pool-commission .stacking-pool-v1 u500)
-  (map-set pool-share .stacking-pool-v1 u10000)
+  (map-set pool-commission .pox-fast-pool-v2-mock u300)
 
-  ;; TODO: set up other delegates
-  (map-set pool-delegates .stacking-pool-v1 (list .stacking-delegate-1))
-  (map-set delegate-share .stacking-delegate-1 u10000)
+  ;; Pool share
+  (map-set pool-share .stacking-pool-v1 u7000)
+  (map-set pool-share .pox-fast-pool-v2-mock u3000)
+
+  ;; Pool delegates
+  (map-set pool-delegates .stacking-pool-v1 (list .stacking-delegate-1-1 .stacking-delegate-1-2 .stacking-delegate-1-3))
+  (map-set pool-delegates .pox-fast-pool-v2-mock (list .stacking-delegate-2-1 .stacking-delegate-2-2 .stacking-delegate-2-3))
+
+  ;; Delegate share
+  (map-set delegate-share .stacking-delegate-1-1 u5000)
+  (map-set delegate-share .stacking-delegate-1-2 u3000)
+  (map-set delegate-share .stacking-delegate-1-3 u2000)
+
+  (map-set delegate-share .stacking-delegate-2-1 u5000)
+  (map-set delegate-share .stacking-delegate-2-2 u3000)
+  (map-set delegate-share .stacking-delegate-2-3 u2000)
+
 )
 
 ;;-------------------------------------

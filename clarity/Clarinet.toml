@@ -219,11 +219,6 @@ path = "contracts/version-2/direct-helpers-trait-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.stacking-delegate-1]
-path = "contracts/version-2/stacking-delegate-1.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.stacking-pool-v1]
 path = "contracts/version-2/stacking-pool-v1.clar"
 clarity_version = 2
@@ -269,6 +264,40 @@ path = "contracts/version-2/protocol-arkadiko-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.strategy-v3-pools-v1]
+path = "contracts/version-2/strategy-v3-pools-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-1-1]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-1-2]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-1-3]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-1]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-2]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-delegate-2-3]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
 
 # ------------------------------
 # Version 3

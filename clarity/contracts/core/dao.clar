@@ -151,6 +151,12 @@
   (map-set contracts { address: .direct-helpers-v1 } { active: true })
   (map-set contracts { address: .stacking-pool-v1 } { active: true })
 
-  (map-set contracts { address: .stacking-delegate-1 } { active: true })
+  (map-set contracts { address: .stacking-delegate-1-1 } { active: true })
+  (map-set contracts { address: .stacking-delegate-1-2 } { active: true })
+  (map-set contracts { address: .stacking-delegate-1-3 } { active: true })
+
+  (map-set contracts { address: .stacking-delegate-2-1 } { active: true })
+  (map-set contracts { address: .stacking-delegate-2-2 } { active: true })
+  (map-set contracts { address: .stacking-delegate-2-3 } { active: true })
 
 )

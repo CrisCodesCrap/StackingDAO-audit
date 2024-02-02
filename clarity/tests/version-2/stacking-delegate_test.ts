@@ -31,7 +31,7 @@ Clarinet.test({
 
 
     block = chain.mineBlock([
-      Tx.transferSTX(10 * 1000000, qualifiedName("stacking-delegate-1"), deployer.address)
+      Tx.transferSTX(10 * 1000000, qualifiedName("stacking-delegate-1-1"), deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 

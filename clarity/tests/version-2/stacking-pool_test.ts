@@ -10,7 +10,7 @@ import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
 //-------------------------------------
 
 Clarinet.test({
-  name: "stacking-delegate: ",
+  name: "stacking-pool: ",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -28,7 +28,7 @@ Clarinet.test({
     let result = await stackingDelegate.revokeAndDelegate(deployer, 150000, qualifiedName("stacking-pool-v1"), 99999999);
     result.expectOk().expectBool(true);
 
-    let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1"));
+    let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(150000);
     call.result.expectTuple()["unlock-height"].expectUint(0);
@@ -37,7 +37,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
 
-    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1"));
+    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["locked"].expectUintWithDecimals(150000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(42);
@@ -45,9 +45,6 @@ Clarinet.test({
     // TODO: wait for unlock & unlock
 
     // 
-
-
-
 
   }
 });
