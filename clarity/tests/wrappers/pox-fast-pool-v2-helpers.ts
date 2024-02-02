@@ -14,6 +14,12 @@ class FastPoolV2 {
     this.deployer = deployer;
   }
 
+  getStxAccount(user: string) {
+    return this.chain.callReadOnlyFn("pox-fast-pool-v2-mock", "get-stx-account", [
+      types.principal(user)
+    ], this.deployer.address);
+  }
+
   getLockedInfoUser(user: string) {
     return this.chain.callReadOnlyFn("pox-fast-pool-v2-mock", "get-locked-info-user", [
       types.principal(user),

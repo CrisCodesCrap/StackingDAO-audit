@@ -25,7 +25,7 @@
 
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock current-pox-reward-cycle)
+  (contract-call? .pox-4-mock current-pox-reward-cycle)
 )
 
 ;;-------------------------------------

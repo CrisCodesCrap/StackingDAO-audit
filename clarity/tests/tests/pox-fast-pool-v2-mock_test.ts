@@ -3,7 +3,6 @@ import { qualifiedName } from "../wrappers/tests-utils.ts";
 qualifiedName("")
 
 import { FastPoolV2 } from '../wrappers/pox-fast-pool-v2-helpers.ts';
-import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
 import { Pox3Mock } from '../wrappers/pox-3-mock-helpers.ts';
 
@@ -20,7 +19,6 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
     
     let fastPool = new FastPoolV2(chain, deployer);
-    let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox3Mock(chain, deployer);
 
@@ -62,7 +60,7 @@ Clarinet.test({
     result.expectOk().expectTuple()["lock-result"].expectTuple()["unlock-burn-height"].expectUint(63);
 
     // STX account
-    call = await stackingDelegate.getStxAccount(deployer.address);
+    call = await fastPool.getStxAccount(deployer.address);
     call.result.expectTuple()["locked"].expectUintWithDecimals(999);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(99999001);
     call.result.expectTuple()["unlock-height"].expectUint(63);

@@ -51,7 +51,7 @@
 
 (define-read-only (get-pox-info)
   ;; TODO: update for mainnet
-  (unwrap-panic (contract-call? .pox-3-mock get-pox-info))
+  (unwrap-panic (contract-call? .pox-4-mock get-pox-info))
 )
 
 
@@ -70,7 +70,7 @@
 (define-read-only (total-delegated-helper (delegate principal)) 
   (let (
     ;; TODO: update for mainnet
-    (delegation-state (contract-call? .pox-3-mock get-check-delegation delegate))
+    (delegation-state (contract-call? .pox-4-mock get-check-delegation delegate))
   )
     (if (is-some delegation-state)
       (get amount-ustx (unwrap-panic delegation-state))
@@ -99,6 +99,7 @@
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
     ;; 2. Aggregate
+    ;; TODO: can fail? See fast pool
     (try! (aggregation))
 
     (print { action: "prepare", data: { delegation-errors: delegation-errors, block-height: block-height } })
@@ -114,18 +115,22 @@
 (define-private (delegation (delegate principal))
   (let (
     ;; TODO: update for mainnet
-    (delegation-info (contract-call? .pox-3-mock get-check-delegation delegate))
+    (delegation-info (contract-call? .pox-4-mock get-check-delegation delegate))
     (delegation-amount (if (is-none delegation-info)
       u0
       (unwrap-panic (get amount-ustx delegation-info))
     ))
+
+    ;; TODO !! see fast pool
+    ;; (allowed-amount (min (get-delegated-amount user) (+ (get locked user-account) (get unlocked user-account))))
+
   )
     (if (is-eq delegation-amount u0)
       ;; No delegation, do nothing
       false
 
       ;; TODO: update for mainnet
-      (if (is-none (contract-call? .pox-3-mock get-stacker-info delegate))
+      (if (is-none (contract-call? .pox-4-mock get-stacker-info delegate))
         ;; Not stacking yet
         (begin 
           (try! (as-contract (delegate-stack-stx delegate delegation-amount)))
@@ -164,7 +169,7 @@
 
 (define-private (aggregation)
   (let (
-    (next-cycle (+ (contract-call? .pox-3-mock current-pox-reward-cycle) u1))
+    (next-cycle (+ (contract-call? .pox-4-mock current-pox-reward-cycle) u1))
     (index (map-get? cycle-to-index next-cycle))
   )
     (if (is-none index)
@@ -192,15 +197,15 @@
 
 (define-read-only (get-stx-account (account principal))
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock stx-account-mock account)
+  (contract-call? .pox-4-mock stx-account-mock account)
   ;; (stx-account account)
 )
 
 (define-public (not-extended-next-cycle (delegate principal))
   (let (
     ;; TODO: update for mainnet
-    (current-cycle (contract-call? .pox-3-mock current-pox-reward-cycle))
-    (next-cycle-height (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+    (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
+    (next-cycle-height (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
     (unlock-height (get unlock-height (get-stx-account delegate)))
   )
     (ok (<= unlock-height next-cycle-height))
@@ -216,7 +221,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height u1))
+    (match (as-contract (contract-call? .pox-4-mock delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height u1))
       result (ok result)
       error (err (to-uint error))
     )
@@ -228,7 +233,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock delegate-stack-extend stacker (get-pox-reward-address) u1))
+    (match (as-contract (contract-call? .pox-4-mock delegate-stack-extend stacker (get-pox-reward-address) u1))
       result (ok result)
       error (err (to-uint error))
     )
@@ -240,7 +245,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock delegate-stack-increase stacker (get-pox-reward-address) increase-by))
+    (match (as-contract (contract-call? .pox-4-mock delegate-stack-increase stacker (get-pox-reward-address) increase-by))
       result (ok result)
       error (err (to-uint error))
     )
@@ -252,7 +257,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock stack-aggregation-commit-indexed (get-pox-reward-address) reward-cycle))
+    (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (get-pox-reward-address) reward-cycle))
       result (ok result)
       error (err (to-uint error))
     )
@@ -264,7 +269,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
+    (match (as-contract (contract-call? .pox-4-mock stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
       result (ok result)
       error (err (to-uint error))
     )

@@ -47,7 +47,7 @@
 
 (define-read-only (get-stx-account (account principal))
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock stx-account-mock account)
+  (contract-call? .pox-4-mock stx-account-mock account)
   ;; (stx-account account)
 )
 
@@ -60,7 +60,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock delegate-stx amount-ustx delegate-to none none))
+    (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to none none))
       result (ok result)
       error (err (to-uint error))
     )
@@ -72,7 +72,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-3-mock revoke-delegate-stx))
+    (match (as-contract (contract-call? .pox-4-mock revoke-delegate-stx))
       result (ok result)
       error (err (to-uint error))
     )

@@ -11,12 +11,12 @@
 
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock current-pox-reward-cycle)
+  (contract-call? .pox-4-mock current-pox-reward-cycle)
 )
 
 (define-read-only (get-next-cycle-start-burn-height)
   ;; TODO: update for mainnet
-  (contract-call? .pox-3-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
+  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
 )
 
 ;;-------------------------------------

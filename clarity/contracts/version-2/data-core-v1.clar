@@ -48,7 +48,7 @@
     ;; Need to translate cycle-id into unlock-burn-height
     (let (
       (prev-info (contract-call? .stacking-dao-core-v1 get-withdrawals-by-nft nft-id))
-      (cycle-start-block (contract-call? .pox-3-mock reward-cycle-to-burn-height (get cycle-id prev-info)))
+      (cycle-start-block (contract-call? .pox-4-mock reward-cycle-to-burn-height (get cycle-id prev-info)))
     )
       { unlock-burn-height: cycle-start-block, stx-amount: (get stx-amount prev-info), ststx-amount: (get ststx-amount prev-info) }
     )
