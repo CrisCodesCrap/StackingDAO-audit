@@ -2,33 +2,6 @@
 ;; @version 1
 ;;
 
-
-;; 
-;; Based on direct stacking and pool shares, we can calculate the target amount to stack.
-;; However, we can not directly use this target amount because tokens in some delegates are locked and the amount can not be decreased.
-;; 
-;; This algorithm always aims for the target amounts while taking into account the following rules:
-;;  1) If there is a net inflow, never stop a delegate from stacking. 
-;;  2) If there is a net outflow, each pool should reach the exact target. 
-;;
-;; Because of rule #1 we need to take the locked amounts into account and devide the remaining inflow across
-;; all delegates proportionally to the target inflow.
-;;
-;; Because of rule #2 a pool must revoke one or more delegates to reach the target. As we can not decrease the amount of stacked
-;; per delegate, this will always lead to some idle STX.
-;;
-
-
-
-
-;; THE IDEA
-
-;; Just calculate the wanted new pool amounts here
-;; Already taking into account the locked amounts
-
-
-
-
 ;;-------------------------------------
 ;; Core
 ;;-------------------------------------

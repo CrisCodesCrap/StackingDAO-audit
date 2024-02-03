@@ -85,6 +85,8 @@
 
 (define-private (request-stx-to-stack (reserve-contract <reserve-trait>) (amount uint))
   (begin
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     (try! (as-contract (contract-call? reserve-contract request-stx-to-stack amount)))
 
     (var-set last-locked-amount (get locked (get-stx-account (as-contract tx-sender))))
@@ -97,6 +99,8 @@
 
 (define-private (return-stx-from-stacking (reserve-contract <reserve-trait>) (amount uint))
   (begin
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     (try! (as-contract (contract-call? reserve-contract return-stx-from-stacking amount)))
 
     (var-set last-locked-amount (get locked (get-stx-account (as-contract tx-sender))))
@@ -134,8 +138,10 @@
   (let (
     (rewards (calculate-rewards))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     (if (> rewards u0)
-      ;; TODO: should not be hardcoded
+      ;; TODO: should not be hardcoded, create trait
       (try! (as-contract (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards)))
       true
     )
@@ -179,6 +185,8 @@
   (let (
     (excess (calculate-excess))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     ;; Not needed STX to reserve
     (if (> excess u0)
       (try! (as-contract (return-stx-from-stacking reserve-contract excess)))
@@ -194,6 +202,8 @@
 
 (define-public (revoke (reserve-contract <reserve-trait>))
   (begin 
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     ;; Need to be done first
     (try! (handle-rewards reserve-contract))
 
@@ -221,6 +231,8 @@
 
 (define-public (revoke-and-delegate (reserve-contract <reserve-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
   (begin
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+
     ;; Need to be done first
     (try! (handle-rewards reserve-contract))
 

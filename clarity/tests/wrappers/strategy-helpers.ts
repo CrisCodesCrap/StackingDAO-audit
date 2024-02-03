@@ -246,7 +246,8 @@ class StrategyV3 {
     let block = this.chain.mineBlock([
       Tx.contractCall("strategy-v3", "execute", [
         types.principal(pool),
-        types.list(delegates.map(item => types.principal(item)))
+        types.list(delegates.map(item => types.principal(item))),
+        types.principal(qualifiedName("reserve-v1"))
       ], caller.address)
     ]);
     return block.receipts[0].result;

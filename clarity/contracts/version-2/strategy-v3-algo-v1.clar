@@ -6,7 +6,6 @@
 ;; Reach target
 ;;
 ;; Try to reach target for each element, but take into account locked.
-;; TODO: add info
 ;;
 ;;-------------------------------------
 
@@ -71,8 +70,6 @@
     (- locked actual-change)
   )
 )
-
-
 
 ;;-------------------------------------
 ;; Lowest Combination

@@ -4,7 +4,7 @@ import { qualifiedName } from "../wrappers/tests-utils.ts";
 import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
 
-import { StrategyV3, StrategyV3InflowV1, StrategyV3AlgoV1 } from '../wrappers/strategy-helpers.ts';
+import { StrategyV3, StrategyV3AlgoV1 } from '../wrappers/strategy-helpers.ts';
 
 //-------------------------------------
 // Core 
@@ -18,7 +18,6 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
-    let strategyInflow = new StrategyV3InflowV1(chain, deployer)
     let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
     let strategyV3 = new StrategyV3(chain, deployer)
 

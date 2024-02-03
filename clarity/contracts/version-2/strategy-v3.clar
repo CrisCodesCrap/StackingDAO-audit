@@ -5,13 +5,9 @@
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 
-    ;;  inflow: (>= (get inflow new-amounts) u0),
-    ;;     outflow: (> (get outflow new-amounts) u0),
-    ;;     amounts: target-reach
-    ;;         { pool: pool, stacking-amount: stacking-amount }
-
-
-
+;;-------------------------------------
+;; Maps
+;;-------------------------------------
 
 (define-map prepare-pools-data
   principal
@@ -29,6 +25,9 @@
   }
 )
 
+;;-------------------------------------
+;; Getters
+;;-------------------------------------
 
 (define-read-only (get-prepare-pools-data (pool principal))
   (default-to
@@ -51,14 +50,14 @@
   )
 )
 
-
-
+;;-------------------------------------
+;; Step 1: prepare pools
+;;-------------------------------------
 
 (define-public (prepare-pools)
   (let (
     (stacking-per-pool (contract-call? .strategy-v3-pools-v1 calculate-stacking-per-pool))
   )
-
     ;; TODO: check errors
     (map map-pool-stacking-amount stacking-per-pool)
 
@@ -71,15 +70,17 @@
   (map-set prepare-pools-data (get pool info) { stacking-amount: (get stacking-amount info), last-updated-burn-height: burn-block-height })
 )
 
-
-
-
+;;-------------------------------------
+;; Step 2: prepare pool delegates
+;;-------------------------------------
 
 (define-public (prepare-delegates (pool principal))
   (let (
     (pool-info (get-prepare-pools-data pool))
     (stacking-per-delegate (contract-call? .strategy-v3-delegates-v1 calculate-stacking-per-delegate pool (get stacking-amount pool-info)))
   )
+    ;; TODO: can only call if Step 1 was done recently
+
     ;; TODO: check errors
     (map map-delegate-stacking-amount stacking-per-delegate)
 
@@ -92,23 +93,18 @@
   (map-set prepare-delegates-data (get delegate info) { stacking-amount: (get stacking-amount info), last-updated-burn-height: burn-block-height })
 )
 
-
-
-;; 1) Save pool calculations
-;; 2) For each pool, save delegate amoutns
-;; 3) For each pool, execute
-
-
 ;;-------------------------------------
-;; 3) Execute
+;; Step 3: execute stacking for  pool
 ;;-------------------------------------
 
-(define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)))
+(define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>))
   (let (
 
     ;; TODO: check delegates correct (loop over both lists and check if same contract)
 
-    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-next-cycle-start-burn-height))))
+    ;; TODO: can only call if Step 1 AND 2 was done recently
+
+    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-next-cycle-start-burn-height)) (list-30-reserve-trait reserve)))
     (helper-errors (filter is-error helper-result))
     (helper-error (element-at? helper-errors u0))
   )
@@ -117,18 +113,17 @@
   )
 )
 
-(define-private (perform-pool-delegation-helper (delegate <stacking-delegate-trait>) (delegate-to principal) (until-burn-ht uint))
+(define-private (perform-pool-delegation-helper (delegate <stacking-delegate-trait>) (delegate-to principal) (until-burn-ht uint) (reserve <reserve-trait>))
   (let (
     (delegate-info (get-prepare-delegates-data (contract-of delegate)))
     (amount (get stacking-amount delegate-info))
   )
     (if (is-eq amount u0)
-      (contract-call? delegate revoke .reserve-v1)
-      (contract-call? delegate revoke-and-delegate .reserve-v1 amount delegate-to until-burn-ht)
+      (contract-call? delegate revoke reserve)
+      (contract-call? delegate revoke-and-delegate reserve amount delegate-to until-burn-ht)
     )
   )
 )
-
 
 ;;-------------------------------------
 ;; PoX info 
@@ -143,7 +138,6 @@
   ;; TODO: update for mainnet
   (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
 )
-
 
 ;;-------------------------------------
 ;; Helpers
@@ -160,3 +154,8 @@
 (define-read-only (list-30-principal (item principal)) 
   (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
 )
+
+(define-read-only (list-30-reserve-trait (item <reserve-trait>)) 
+  (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
+)
+
