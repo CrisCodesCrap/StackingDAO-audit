@@ -50,14 +50,14 @@
 
 ;; Deposit STX for stSTX
 (define-public (deposit 
-  (reserve-contract <reserve-trait>) 
+  (reserve <reserve-trait>) 
   (direct-helpers <direct-helpers-trait>)
   (stx-amount uint)
   (referrer (optional principal)) 
   (pool (optional principal))
 )
   (let (
-    (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
     (ststx-amount (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
@@ -65,7 +65,7 @@
 
     (try! (contract-call? direct-helpers add-direct-stacking tx-sender pool stx-amount))
 
-    (try! (stx-transfer? stx-amount tx-sender (contract-of reserve-contract)))
+    (try! (stx-transfer? stx-amount tx-sender (contract-of reserve)))
     (try! (contract-call? .ststx-token mint-for-protocol ststx-amount tx-sender))
 
     (print { action: "deposit", data: { stacker: tx-sender, amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
@@ -78,7 +78,7 @@
 ;; The stSTX tokens are transferred to this contract, and are burned on the actual withdrawal.
 ;; An NFT is minted for the user as a token representation of the withdrawal.
 (define-public (init-withdraw 
-  (reserve-contract <reserve-trait>) 
+  (reserve <reserve-trait>) 
   (direct-helpers <direct-helpers-trait>)
   (ststx-amount uint)
 )
@@ -86,21 +86,21 @@
     (sender tx-sender)
     (unlock-burn-height (unwrap-panic (get-withdraw-unlock-burn-height)))
 
-    (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve-contract)))
+    (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
     (stx-amount (/ (* ststx-amount stx-ststx) u1000000))
-    (total-stx (unwrap-panic (contract-call? reserve-contract get-total-stx)))
+    (total-stx (unwrap-panic (contract-call? reserve get-total-stx)))
 
     (nft-id (unwrap-panic (contract-call? .ststx-withdraw-nft get-last-token-id)))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     (try! (contract-call? .data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
     
     (try! (contract-call? direct-helpers subtract-direct-stacking tx-sender stx-amount))
 
     ;; Transfer stSTX token to contract, only burn on actual withdraw
-    (try! (as-contract (contract-call? reserve-contract lock-stx-for-withdrawal stx-amount)))
+    (try! (as-contract (contract-call? reserve lock-stx-for-withdrawal stx-amount)))
     (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
     (try! (as-contract (contract-call? .ststx-withdraw-nft mint-for-protocol sender)))
 
@@ -113,7 +113,7 @@
 ;; Cancel init withdrawal for given NFT. 
 ;; The NFT will be burned, and the user will receive back the STX tokens.
 (define-public (cancel-withdraw 
-  (reserve-contract <reserve-trait>) 
+  (reserve <reserve-trait>) 
   (direct-helpers <direct-helpers-trait>)
   (nft-id uint)
   (pool (optional principal))
@@ -128,7 +128,7 @@
     (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
 
@@ -145,8 +145,8 @@
     (try! (as-contract (contract-call? .ststx-token transfer ststx-amount tx-sender receiver none)))
     ;; Only way to decrease the `stx-for-withdrawals` is by calling `request-stx-for-withdrawal`
     ;; However, this will also transfer STX so we need to transfer it back
-    (try! (as-contract (contract-call? reserve-contract request-stx-for-withdrawal stx-amount tx-sender)))
-    (try! (as-contract (stx-transfer? stx-amount tx-sender (contract-of reserve-contract))))
+    (try! (as-contract (contract-call? reserve request-stx-for-withdrawal stx-amount tx-sender)))
+    (try! (as-contract (stx-transfer? stx-amount tx-sender (contract-of reserve))))
 
     (print { action: "cancel-withdraw", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
 
@@ -156,7 +156,7 @@
 
 ;; Actual withdrawal for given NFT. 
 ;; The NFT and stSTX tokens will be burned and the user will receive STX tokens.
-(define-public (withdraw (reserve-contract <reserve-trait>) (nft-id uint))
+(define-public (withdraw (reserve <reserve-trait>) (nft-id uint))
   (let (
     (receiver tx-sender)
 
@@ -168,7 +168,7 @@
     (nft-owner (unwrap! (contract-call? .ststx-withdraw-nft get-owner nft-id) (err ERR_GET_OWNER)))
   )
     (try! (contract-call? .dao check-is-enabled))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (> burn-block-height unlock-burn-height) (err ERR_WITHDRAW_LOCKED))
@@ -176,7 +176,7 @@
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
 
     ;; STX to user, burn stSTX
-    (try! (as-contract (contract-call? reserve-contract request-stx-for-withdrawal stx-amount receiver)))
+    (try! (as-contract (contract-call? reserve request-stx-for-withdrawal stx-amount receiver)))
     (try! (contract-call? .ststx-token burn-for-protocol (get ststx-amount withdrawal-entry) (as-contract tx-sender)))
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
 

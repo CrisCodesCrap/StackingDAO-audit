@@ -5,9 +5,10 @@
 
 (define-trait stacking-delegate-trait
   (
-    (revoke (<reserve-trait>) (response bool uint))
-    (revoke-and-delegate (<reserve-trait> uint principal uint) (response bool uint))
-    (handle-rewards (<reserve-trait>) (response uint uint))
-    (handle-excess (<reserve-trait>) (response uint uint))
+    (delegate-stx (uint principal (optional uint)) (response bool uint))
+    (revoke-delegate-stx () (response bool uint))
+
+    (request-stx-to-stack (<reserve-trait> uint) (response uint uint))
+    (return-stx-from-stacking (<reserve-trait> uint) (response uint uint))
   )
 )

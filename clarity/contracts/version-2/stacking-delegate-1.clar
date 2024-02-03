@@ -1,55 +1,8 @@
-;; @contract Stacking Delegate Contract
+;; @contract Stacking Delegate
 ;; @version 1
 
 (impl-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
-
-;;-------------------------------------
-;; Constants 
-;;-------------------------------------
-
-(define-constant ERR_DELEGATE_AMOUNT_LOCKED u41001)
-
-;;-------------------------------------
-;; Variables
-;;-------------------------------------
-
-(define-data-var last-selected-pool principal .stacking-pool-v1)
-
-(define-data-var target-locked-amount uint u0)
-
-(define-data-var last-locked-amount uint u0)
-(define-data-var last-contract-amount uint u0)
-
-;;-------------------------------------
-;; Getters
-;;-------------------------------------
-
-(define-read-only (get-last-selected-pool)
-  (var-get last-selected-pool)
-)
-
-(define-read-only (get-target-locked-amount)
-  (var-get target-locked-amount)
-)
-
-(define-read-only (get-last-locked-amount)
-  (var-get last-locked-amount)
-)
-
-(define-read-only (get-last-contract-amount)
-  (var-get last-contract-amount)
-)
-
-;;-------------------------------------
-;; PoX Helpers 
-;;-------------------------------------
-
-(define-read-only (get-stx-account (account principal))
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock stx-account-mock account)
-  ;; (stx-account account)
-)
 
 ;;-------------------------------------
 ;; Pox Wrappers 
@@ -80,225 +33,49 @@
 )
 
 ;;-------------------------------------
-;; Reserve Wrappers
+;; Reserve 
 ;;-------------------------------------
 
-(define-private (request-stx-to-stack (reserve-contract <reserve-trait>) (amount uint))
+(define-public (request-stx-to-stack (reserve <reserve-trait>) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    (try! (as-contract (contract-call? reserve-contract request-stx-to-stack amount)))
-
-    (var-set last-locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
-    (var-set last-contract-amount (+ (get-last-contract-amount) amount))
-
-    (ok true)
-  )
-)
-
-(define-private (return-stx-from-stacking (reserve-contract <reserve-trait>) (amount uint))
-  (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    (try! (as-contract (contract-call? reserve-contract return-stx-from-stacking amount)))
-
-    (var-set last-locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
-    (var-set last-contract-amount (- (get-last-contract-amount) amount))
-
-    (ok true)
-  )
-)
-
-;;-------------------------------------
-;; Handle rewards
-;;-------------------------------------
-
-(define-read-only (calculate-rewards) 
-  (let (
-    (last-locked (get-last-locked-amount))
-    (last-contract (get-last-contract-amount))
-
-    (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
-
-    ;; Extra STX must be rewards
-    (rewards (if (> (+ locked-amount contract-amount) (+ last-locked last-contract))
-      (- (+ locked-amount contract-amount) (+ last-locked last-contract))
-      u0
-    ))
-  )
-    rewards
-  )
-)
-
-;; If extra STX in (contract + locked) it means rewards were added
-(define-public (handle-rewards (reserve-contract <reserve-trait>))
-  (let (
-    (rewards (calculate-rewards))
-  )
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    (if (> rewards u0)
-      ;; TODO: should not be hardcoded, create trait
-      (try! (as-contract (contract-call? .rewards-v1 add-rewards (var-get last-selected-pool) rewards)))
-      true
-    )
-    (ok rewards)
-  )
-)
-
-;;-------------------------------------
-;; Handle excess amount
-;;-------------------------------------
-
-(define-read-only (calculate-excess) 
-  (let (
-    (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-    (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
-    (rewards-amount (calculate-rewards))
-
-    (target-amount (get-target-locked-amount))
-    (total-amount (if (> (+ locked-amount contract-amount) rewards-amount)
-      (- (+ locked-amount contract-amount) rewards-amount)
-      u0
-    ))
-    (excess-amount (if (> total-amount target-amount)
-      (- total-amount target-amount)
-      u0
-    ))
-  )
-    (if (> excess-amount u0)
-      (if (> contract-amount excess-amount)
-        (- contract-amount excess-amount)
-        contract-amount
-      )
-      u0
-    )
-  )
-)
-
-;; If target amount is lower than (contract + locked)
-;; we can return the STX held by the contract
-(define-public (handle-excess (reserve-contract <reserve-trait>))
-  (let (
-    (excess (calculate-excess))
-  )
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    ;; Not needed STX to reserve
-    (if (> excess u0)
-      (try! (as-contract (return-stx-from-stacking reserve-contract excess)))
-      true
-    )
-    (ok excess)
-  )
-)
-
-;;-------------------------------------
-;; Delegation 
-;;-------------------------------------
-
-(define-public (revoke (reserve-contract <reserve-trait>))
-  (begin 
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    ;; Need to be done first
-    (try! (handle-rewards reserve-contract))
-
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    (let (
-      (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
-    )
-      ;; Revoke
-      (try! (revoke-delegate-stx))
-
-      ;; Return STX
-      (if (> contract-amount u0)
-        (try! (as-contract (return-stx-from-stacking reserve-contract contract-amount)))
-        true
-      )
-
-      ;; Set target
-      (var-set target-locked-amount u0)
-
-      ;; TODO: print info
-
-      (ok true)
-    )
+    (as-contract (contract-call? reserve request-stx-to-stack amount))
   )
 )
 
-(define-public (revoke-and-delegate (reserve-contract <reserve-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
+(define-public (return-stx-from-stacking (reserve <reserve-trait>) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
-
-    ;; Need to be done first
-    (try! (handle-rewards reserve-contract))
-
-    ;; Revoke
-    (try! (revoke-delegate-stx))
-
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
-    (let (
-      (locked-amount (get locked (get-stx-account (as-contract tx-sender))))
-      (contract-amount (get unlocked (get-stx-account (as-contract tx-sender))))
-    )
-      (asserts! (>= amount-ustx locked-amount) (err ERR_DELEGATE_AMOUNT_LOCKED))
-
-      ;; Request STX from reserve if needed
-      (if (> amount-ustx (+ contract-amount locked-amount))
-        (try! (as-contract (request-stx-to-stack reserve-contract (- amount-ustx (+ contract-amount locked-amount)))))
-        true
-      )
-
-      ;; Delegate STX
-      (try! (delegate-stx amount-ustx delegate-to (some until-burn-ht)))
-
-      ;; Set target
-      (var-set target-locked-amount amount-ustx)
-      (var-set last-selected-pool delegate-to)
-
-      ;; Handle excess
-      (try! (handle-excess reserve-contract))
-
-      ;; TODO: print info
-
-      (ok true)
-    )
+    (as-contract (contract-call? reserve return-stx-from-stacking amount))
   )
 )
 
+;;-------------------------------------
+;; PoX Helpers 
+;;-------------------------------------
+
+(define-read-only (get-stx-account (account principal))
+  ;; TODO: update for mainnet
+  (contract-call? .pox-4-mock stx-account-mock account)
+  ;; (stx-account account)
+)
 
 ;;-------------------------------------
 ;; Admin
 ;;-------------------------------------
 
-;; In case something goes wrong
-(define-public (update-amounts (target-locked uint) (last-locked uint) (last-contract uint))
-  (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
-
-    (var-set target-locked-amount target-locked)
-    (var-set last-locked-amount last-locked)
-    (var-set last-contract-amount last-contract)
-    (ok true)
-  )
-)
-
 ;; Return all STX to the reserve
-(define-public (return-stx (reserve-contract <reserve-trait>))
+(define-public (return-stx (reserve <reserve-trait>))
   (let (
     (return-amount (get unlocked (get-stx-account (as-contract tx-sender))))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     (if (> return-amount u0)
-      (try! (as-contract (contract-call? reserve-contract return-stx-from-stacking return-amount)))
+      (try! (as-contract (contract-call? reserve return-stx-from-stacking return-amount)))
       u0
     )
     (ok return-amount)
