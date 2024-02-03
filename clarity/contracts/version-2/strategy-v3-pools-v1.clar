@@ -1,6 +1,8 @@
 ;; @contract Strategy V3 Pools V1
 ;; @version 1
 ;;
+
+
 ;; 
 ;; Based on direct stacking and pool shares, we can calculate the target amount to stack.
 ;; However, we can not directly use this target amount because tokens in some delegates are locked and the amount can not be decreased.
@@ -16,6 +18,17 @@
 ;; per delegate, this will always lead to some idle STX.
 ;;
 
+
+
+
+;; THE IDEA
+
+;; Just calculate the wanted new pool amounts here
+;; Already taking into account the locked amounts
+
+
+
+
 ;;-------------------------------------
 ;; Core
 ;;-------------------------------------
@@ -24,12 +37,13 @@
   (let (
     (new-amounts (calculate-new-amounts))
   )
-    (if (>= (get inflow new-amounts) u0)
-      (calculate-inflow new-amounts)
-      (calculate-outflow new-amounts)
-    )
+    (calculate-reach-target (get new-total-direct-stacking new-amounts) (get new-total-normal-stacking new-amounts))
   )
 )
+
+;;-------------------------------------
+;; New amounts
+;;-------------------------------------
 
 (define-read-only (calculate-new-amounts)
   (let (
@@ -61,113 +75,28 @@
 )
 
 ;;-------------------------------------
-;; Inflow
+;; Pool target
 ;;-------------------------------------
 
-(define-read-only (calculate-inflow (new-amounts { new-total-direct-stacking: uint, new-total-normal-stacking: uint, inflow: uint, outflow:uint  }))
+(define-read-only (calculate-reach-target (new-total-direct-stacking uint) (new-total-normal-stacking uint))
   (let (
     (pools (contract-call? .data-pools-v1 get-active-pools))
 
-    (new-total-normal-stacking-list (list-30-uint (get new-total-normal-stacking new-amounts)))
-    (new-total-direct-stacking-list (list-30-uint (get new-total-direct-stacking new-amounts)))
+    (new-total-normal-stacking-list (list-30-uint new-total-normal-stacking))
+    (new-total-direct-stacking-list (list-30-uint new-total-direct-stacking))
 
     (targets (map calculate-stacking-target-for-pool pools new-total-normal-stacking-list new-total-direct-stacking-list))
     (locked (map calculate-locked-for-pool pools))
-    (locked-sum (fold + locked u0))
 
-    (overlocked (map calculate-overlocked locked targets))
-    (target-inflow (map calculate-inflow-target locked targets))
-
-    (deviations (map calculate-inflow-target-deviation (list-30-uint locked-sum) target-inflow))
-    (deviations-sum (fold + deviations u0))
-    (deviations-percentages (map calculate-inflow-target-deviation-percentage deviations (list-30-uint deviations-sum)))
-
+    (stacking-amounts (contract-call? .strategy-v3-algo-v1 calculate-reach-target targets locked))
   )
-    (map calculate-inflow-new-stacking pools locked deviations-percentages (list-30-uint (get inflow new-amounts)))
+    (map map-pool-stacking-amount pools stacking-amounts)
   )
 )
 
-(define-read-only (calculate-inflow-target (locked uint) (target uint))
-  (if (> target locked)
-    (- target locked)
-    u0
-  )
+(define-read-only (map-pool-stacking-amount (pool principal) (stacking-amount uint))
+  { pool: pool, stacking-amount: stacking-amount }
 )
-
-(define-read-only (calculate-inflow-target-deviation (current-stacking uint) (target-inflow uint))
-  (/ (* target-inflow u10000) current-stacking)
-)
-
-(define-read-only (calculate-inflow-target-deviation-percentage (deviation uint) (total-deviation uint))
-  ;; TODO: devide by 10k?
-  (/ (* deviation u10000) total-deviation)
-)
-
-(define-read-only (calculate-inflow-new-stacking (pool principal) (locked uint) (deviation-percentage uint) (total-inflow uint))
-  (let (
-    (inflow (/ (* total-inflow deviation-percentage) u10000))
-  )
-    { pool: pool, inflow: (+ locked inflow), outflow: u0 }
-  )
-)
-
-;;-------------------------------------
-;; Outflow
-;;-------------------------------------
-
-(define-read-only (calculate-outflow (new-amounts { new-total-direct-stacking: uint, new-total-normal-stacking: uint, inflow: uint, outflow:uint  }))
-  (let (
-    (pools (contract-call? .data-pools-v1 get-active-pools))
-
-    (new-total-normal-stacking-list (list-30-uint (get new-total-normal-stacking new-amounts)))
-    (new-total-direct-stacking-list (list-30-uint (get new-total-direct-stacking new-amounts)))
-
-    (targets (map calculate-stacking-target-for-pool pools new-total-normal-stacking-list new-total-direct-stacking-list))
-    (locked (map calculate-locked-for-pool pools))
-    (locked-sum (fold + locked u0))
-
-    (overlocked (map calculate-overlocked locked targets))
-
-
-    ;; Update for outflow
-    (target-outflow (map calculate-outflow-target locked targets))
-
-    (deviations (map calculate-outflow-target-deviation (list-30-uint locked-sum) target-outflow))
-    (deviations-sum (fold + deviations u0))
-    (deviations-percentages (map calculate-outflow-target-deviation-percentage deviations (list-30-uint deviations-sum)))
-
-  )
-    (map calculate-outflow-new-stacking pools locked deviations-percentages (list-30-uint (get outflow new-amounts)))
-  )
-)
-
-(define-read-only (calculate-outflow-target (locked uint) (target uint))
-  (if (> locked target)
-    (- locked target)
-    u0
-  )
-)
-
-(define-read-only (calculate-outflow-target-deviation (current-stacking uint) (target-outflow uint))
-  (/ (* target-outflow u10000) current-stacking)
-)
-
-(define-read-only (calculate-outflow-target-deviation-percentage (deviation uint) (total-deviation uint))
-  ;; TODO: devide by 10k?
-  (/ (* deviation u10000) total-deviation)
-)
-
-(define-read-only (calculate-outflow-new-stacking (pool principal) (locked uint) (deviation-percentage uint) (total-outflow uint))
-  (let (
-    (outflow (/ (* total-outflow deviation-percentage) u10000))
-  )
-    { pool: pool, inflow: u0, outflow: outflow }
-  )
-)
-
-;;-------------------------------------
-;; Inflow & Outflow - Helpers
-;;-------------------------------------
 
 (define-read-only (calculate-stacking-target-for-pool (pool principal) (new-total-normal-stacking uint) (new-total-direct-stacking uint))
   (let (
@@ -194,18 +123,15 @@
   )
 )
 
+;;-------------------------------------
+;; Pool locked
+;;-------------------------------------
+
 (define-read-only (calculate-locked-for-pool (pool principal))
   (let (
     (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
   )
     (fold + (map get-locked-stx delegates) u0)
-  )
-)
-
-(define-read-only (calculate-overlocked (locked uint) (target uint))
-  (if (> locked target)
-    (- locked target)
-    u0
   )
 )
 
@@ -215,10 +141,6 @@
 
 (define-read-only (list-30-uint (item uint)) 
   (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
-)
-
-(define-read-only (max-of (a uint) (b uint))
-  (if (>= a b) a b)
 )
 
 (define-read-only (get-locked-stx (account principal))

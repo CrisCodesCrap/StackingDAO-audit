@@ -149,6 +149,10 @@ path = "contracts/version-1/staking-v0.clar"
 clarity_version = 2
 epoch = 2.4
 
+# ------------------------------
+# Version 1 - Stackers
+# ------------------------------
+
 [contracts.stacker-1]
 path = "contracts/version-1/stacker-1.clar"
 clarity_version = 2
@@ -268,6 +272,25 @@ epoch = 2.4
 path = "contracts/version-2/strategy-v3-pools-v1.clar"
 clarity_version = 2
 epoch = 2.4
+
+[contracts.strategy-v3-delegates-v1]
+path = "contracts/version-2/strategy-v3-delegates-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3-algo-v1]
+path = "contracts/version-2/strategy-v3-algo-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.strategy-v3]
+path = "contracts/version-2/strategy-v3.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ------------------------------
+# Version 2 - Delegates
+# ------------------------------
 
 [contracts.stacking-delegate-1-1]
 path = "contracts/version-2/stacking-delegate-1.clar"

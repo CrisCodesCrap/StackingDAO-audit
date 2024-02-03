@@ -211,3 +211,80 @@ class StrategyV1 {
 
 }
 export { StrategyV1 };
+
+// ---------------------------------------------------------
+// Strategy V3
+// ---------------------------------------------------------
+
+class StrategyV3 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  preparePools(caller: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("strategy-v3", "prepare-pools", [
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  prepareDelegates(caller: Account, pool: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("strategy-v3", "prepare-delegates", [
+        types.principal(pool)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  execute(caller: Account, pool: string, delegates: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("strategy-v3", "execute", [
+        types.principal(pool),
+        types.list(delegates.map(item => types.principal(item)))
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { StrategyV3 };
+
+// ---------------------------------------------------------
+// Strategy V3 - Algo V1
+// ---------------------------------------------------------
+
+class StrategyV3AlgoV1 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  calculateLowestCombination(outflow: number, locked: number[]) {
+    return this.chain.callReadOnlyFn("strategy-v3-algo-v1", "calculate-lowest-combination", [
+      types.uint(outflow * 1000000),
+      types.list(locked.map(lock => types.uint(lock * 1000000)))
+    ], this.deployer.address);
+  }
+
+  calculateReachTarget(target: number[], locked: number[]) {
+    return this.chain.callReadOnlyFn("strategy-v3-algo-v1", "calculate-reach-target", [
+      types.list(target.map(item => types.uint(item * 1000000))),
+      types.list(locked.map(item => types.uint(item * 1000000)))
+    ], this.deployer.address);
+  }
+
+ 
+
+
+}
+export { StrategyV3AlgoV1 };
+
