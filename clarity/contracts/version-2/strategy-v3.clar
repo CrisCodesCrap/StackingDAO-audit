@@ -54,10 +54,17 @@
 ;; Step 1: prepare pools
 ;;-------------------------------------
 
+;;
+;; TODO: can only prepare and execute in last X blocks (see data pools withdrawal offset)
+;;
+
+
 (define-public (prepare-pools)
   (let (
     (stacking-per-pool (contract-call? .strategy-v3-pools-v1 calculate-stacking-per-pool))
   )
+    ;; TODO: can only do once per cycle
+
     ;; TODO: check errors
     (map map-pool-stacking-amount stacking-per-pool)
 
@@ -99,6 +106,8 @@
 
 (define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>))
   (let (
+
+    ;; TODO: can only do once per cycle
 
     ;; TODO: check delegates correct (loop over both lists and check if same contract)
 

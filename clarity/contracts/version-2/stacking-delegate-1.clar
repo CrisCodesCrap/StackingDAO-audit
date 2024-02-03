@@ -224,6 +224,8 @@
       ;; Set target
       (var-set target-locked-amount u0)
 
+      ;; TODO: print info
+
       (ok true)
     )
   )
@@ -262,6 +264,8 @@
 
       ;; Handle excess
       (try! (handle-excess reserve-contract))
+
+      ;; TODO: print info
 
       (ok true)
     )
