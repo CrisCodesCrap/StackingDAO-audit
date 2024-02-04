@@ -283,9 +283,50 @@ class StrategyV3AlgoV1 {
     ], this.deployer.address);
   }
 
- 
-
-
 }
 export { StrategyV3AlgoV1 };
+
+// ---------------------------------------------------------
+// Strategy V3 - Pools V1
+// ---------------------------------------------------------
+
+class StrategyV3PoolsV1 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  calculateStackingPerPool() {
+    return this.chain.callReadOnlyFn("strategy-v3-pools-v1", "calculate-stacking-per-pool", [
+    ], this.deployer.address);
+  }
+
+}
+export { StrategyV3PoolsV1 };
+
+// ---------------------------------------------------------
+// Strategy V3 - Delegates V1
+// ---------------------------------------------------------
+
+class StrategyV3DelegatesV1 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  calculateStackingPerDelegate(pool: string, totalToStack: number) {
+    return this.chain.callReadOnlyFn("strategy-v3-delegates-v1", "calculate-stacking-per-delegate", [
+      types.principal(pool),
+      types.uint(totalToStack * 1000000)
+    ], this.deployer.address);
+  }
+
+}
+export { StrategyV3DelegatesV1 };
 

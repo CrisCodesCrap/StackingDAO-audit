@@ -16,6 +16,9 @@
 ;; Directed Stacking
 ;;-------------------------------------
 
+;; This % of normal stacking total will be divided according to direct stacking rates
+(define-data-var direct-stacking-dependence uint u2000) ;; 20% in bps
+
 (define-data-var total-directed-stacking uint u0)
 
 ;; Map pool to amount used for direct stacking
@@ -28,6 +31,10 @@
     pool: principal, 
     amount: uint,
   }
+)
+
+(define-read-only (get-direct-stacking-dependence)
+  (var-get direct-stacking-dependence)
 )
 
 (define-read-only (get-total-directed-stacking)
@@ -45,6 +52,14 @@
   (map-get? direct-stacking-user user)
 )
 
+(define-public (set-direct-stacking-dependence (dependence uint))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (var-set direct-stacking-dependence dependence)
+    (ok true)
+  )
+)
 
 (define-public (set-total-directed-stacking (amount uint))
   (begin

@@ -82,7 +82,7 @@
     
     (direct-dependence (if (is-eq new-total-direct-stacking u0)
       u0
-      u2000 ;; TODO: add to pool data
+      (contract-call? .data-direct-stacking-v1 get-direct-stacking-dependence)
     )) 
     (direct-dependence-rest (- u10000 direct-dependence))
 

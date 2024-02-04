@@ -51,7 +51,6 @@
 )
 
 (define-read-only (calculate-target-deviation-percentage (deviation uint) (total-deviation uint))
-  ;; TODO: devide by 10k?
   (/ (* deviation u100000000) total-deviation)
 )
 
