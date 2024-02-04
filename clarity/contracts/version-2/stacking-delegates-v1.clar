@@ -77,8 +77,6 @@
 
 (define-private (request-stx-to-stack (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
-
     (try! (as-contract (contract-call? delegate request-stx-to-stack reserve amount)))
 
     (map-set last-locked-amount (contract-of delegate) (get locked (get-stx-account (contract-of delegate))))
@@ -91,8 +89,6 @@
 
 (define-private (return-stx-from-stacking (delegate  <stacking-delegate-trait>) (reserve <reserve-trait>) (amount uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
-
     (try! (as-contract (contract-call? delegate return-stx-from-stacking reserve amount)))
 
     (map-set last-locked-amount (contract-of delegate) (get locked (get-stx-account (contract-of delegate))))
@@ -132,6 +128,7 @@
     (rewards (calculate-rewards delegate))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
     (if (> rewards u0)
       (try! (as-contract (contract-call? rewards-contract add-rewards (get-last-selected-pool delegate) rewards)))
@@ -195,12 +192,12 @@
 
 (define-public (revoke (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (begin 
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
-
     ;; Need to be done first
     (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
     (let (
       (contract-amount (get unlocked (get-stx-account (contract-of delegate))))
@@ -226,8 +223,6 @@
 
 (define-public (revoke-and-delegate (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
-
     ;; Need to be done first
     (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
 
@@ -235,6 +230,8 @@
     (try! (contract-call? delegate revoke-delegate-stx))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
     (let (
       (locked-amount (get locked (get-stx-account (contract-of delegate))))

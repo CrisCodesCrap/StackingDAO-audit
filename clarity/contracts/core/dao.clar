@@ -150,6 +150,7 @@
   ;; Version 2
   (map-set contracts { address: .direct-helpers-v1 } { active: true })
   (map-set contracts { address: .stacking-pool-v1 } { active: true })
+  (map-set contracts { address: .rewards-v1 } { active: true })
   (map-set contracts { address: .strategy-v3 } { active: true })
   (map-set contracts { address: .stacking-delegates-v1 } { active: true })
 

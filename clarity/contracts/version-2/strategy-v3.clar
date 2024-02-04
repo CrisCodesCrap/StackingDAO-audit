@@ -163,6 +163,9 @@
     (helper-errors (filter is-error helper-result))
     (helper-error (element-at? helper-errors u0))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
+
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
     (asserts! (has-prepared-delegates pool) (err ERR_NOT_PREPARED_YET))
     (asserts! (not (has-executed-pool pool)) (err ERR_HAS_EXECUTED))
