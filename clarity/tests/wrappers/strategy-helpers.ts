@@ -225,6 +225,18 @@ class StrategyV3 {
     this.deployer = deployer;
   }
 
+  getPreparePoolsData(pool: string) {
+    return this.chain.callReadOnlyFn("strategy-v3", "get-prepare-pools-data", [
+      types.principal(pool),
+    ], this.deployer.address);
+  }
+
+  getPrepareDelegatesData(delegate: string) {
+    return this.chain.callReadOnlyFn("strategy-v3", "get-prepare-delegates-data", [
+      types.principal(delegate),
+    ], this.deployer.address);
+  }
+
   preparePools(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("strategy-v3", "prepare-pools", [

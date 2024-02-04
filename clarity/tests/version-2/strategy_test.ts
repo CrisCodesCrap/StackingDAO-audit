@@ -136,7 +136,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy-v3: ",
+  name: "strategy-v3: prepare pools, delegates and execute",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -146,12 +146,21 @@ Clarinet.test({
     let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
     let strategyV3 = new StrategyV3(chain, deployer)
 
+    // Move to cycle 1
+    await chain.mineEmptyBlockUntil(22);
 
     let block = chain.mineBlock([
       Tx.transferSTX(150000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
+    // Move to end of cycle 1, where we can prepare
+    await chain.mineEmptyBlockUntil(21 + 15);
+
+
+    //
+    // Prepare pools, prepare delegates and execute pools
+    //
 
     let result = await strategyV3.preparePools(deployer);
     result.expectOk().expectBool(true);
@@ -162,7 +171,6 @@ Clarinet.test({
     result = await strategyV3.prepareDelegates(deployer, qualifiedName("pox-fast-pool-v2-mock"));
     result.expectOk().expectBool(true);
 
-
     result = await strategyV3.execute(
       deployer, 
       qualifiedName("stacking-pool-v1"),
@@ -170,62 +178,50 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    // let call = await strategyV3AlgoV1.calculateLowestCombination(38000, [65000, 26000, 19500, 13000, 6500, 65000, 26000, 19500, 13000, 6500, 65000, 26000, 19500, 13000, 6500, 65000, 26000, 19500, 13000, 6500, 65000, 26000, 19500, 13000, 6500, 65000, 26000, 19500, 13000, 6500]);
-    // call.result.expectOk().expectBool(true);
+    result = await strategyV3.execute(
+      deployer, 
+      qualifiedName("pox-fast-pool-v2-mock"),
+      [qualifiedName("stacking-delegate-2-1"), qualifiedName("stacking-delegate-2-2"), qualifiedName("stacking-delegate-2-3")]
+    );
+    result.expectOk().expectBool(true);
+
+    
+    //
+    // Check data
+    //
+
+    let call = await strategyV3.getPreparePoolsData(qualifiedName("stacking-pool-v1"));
+    call.result.expectTuple()["cycle-prepared-pool"].expectUint(1);
+    call.result.expectTuple()["cycle-prepared-delegates"].expectUint(1);
+    call.result.expectTuple()["cycle-executed-pool"].expectUint(1);
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(105000);
+
+    
+    call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(52500);
+
+    call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-2"));
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(31500);
+
+    call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-3"));
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(21000);
 
 
+    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectTuple()["locked"].expectUintWithDecimals(0);
+    call.result.expectTuple()["unlocked"].expectUintWithDecimals(52500);
+    call.result.expectTuple()["unlock-height"].expectUint(0);
 
-    // let call = await strategyV3AlgoV1.calculateReachTarget(
-    //   [120000, 210000, 230000, 130000, 90000],
-    //   [210000, 110000, 180000, 130000, 120000]
-    // );
-    // call.result.expectOk().expectBool(true);
+    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-2"));
+    call.result.expectTuple()["locked"].expectUintWithDecimals(0);
+    call.result.expectTuple()["unlocked"].expectUintWithDecimals(31500);
+    call.result.expectTuple()["unlock-height"].expectUint(0);
 
+    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-3"));
+    call.result.expectTuple()["locked"].expectUintWithDecimals(0);
+    call.result.expectTuple()["unlocked"].expectUintWithDecimals(21000);
+    call.result.expectTuple()["unlock-height"].expectUint(0);
 
-
-    // let block = chain.mineBlock([
-    //   Tx.transferSTX(150000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
-    // ]);
-    // block.receipts[0].result.expectOk().expectBool(true);
-
-
-    // let result = await stackingDelegate.revokeAndDelegate(deployer, 150000, qualifiedName("stacking-pool-v1"), 99999999);
-    // result.expectOk().expectBool(true);
-
-    // let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
-    // call.result.expectTuple()["locked"].expectUintWithDecimals(0);
-    // call.result.expectTuple()["unlocked"].expectUintWithDecimals(150000);
-    // call.result.expectTuple()["unlock-height"].expectUint(0);
-
-    // result = await stackingPool.prepare(deployer);
-    // result.expectOk().expectBool(true);
-
-
-    // call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
-    // call.result.expectTuple()["locked"].expectUintWithDecimals(150000);
-    // call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
-    // call.result.expectTuple()["unlock-height"].expectUint(42);
-
-    // // TODO: wait for unlock & unlock
-
-    // // 
-
-
-    // block = chain.mineBlock([
-    //   Tx.transferSTX(20000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
-    // ]);
-    // block.receipts[0].result.expectOk().expectBool(true);
-
-    // // stacking-pool-v1 has already locked 150k
-    // // There is now an extra pool, and extra inflow of 20k
-    // // Targets are 70% and 30% for new pool. New pool target is 30% * 170k = 51k
-    // // So first pool has overlocked, and can only add the idle 20k to new pool
-
-    // call = await strategyInflow.getNewStacking();
-    // call.result.expectList()[0].expectTuple()["new-stacking"].expectUintWithDecimals(150000);
-    // call.result.expectList()[0].expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
-    // call.result.expectList()[1].expectTuple()["new-stacking"].expectUintWithDecimals(20000);
-    // call.result.expectList()[1].expectTuple()["pool"].expectPrincipal(qualifiedName("pox-fast-pool-v2-mock"));
   }
 });
 

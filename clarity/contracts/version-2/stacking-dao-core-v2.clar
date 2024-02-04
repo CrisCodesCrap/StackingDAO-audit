@@ -34,7 +34,7 @@
     (start-block-current-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height current-cycle))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-4-mock get-pox-info))))
   )
-    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-pools-v1 get-cycle-withdraw-offset)))
+    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-core-v1 get-cycle-withdraw-offset)))
       ;; Can withdraw next cycle
       (ok (+ start-block-current-cycle u1))
 

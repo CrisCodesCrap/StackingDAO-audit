@@ -28,6 +28,27 @@
 )
 
 ;;-------------------------------------
+;; Cycle Withdraw Offset
+;;-------------------------------------
+
+;; In the last X blocks of the cycle
+;; TODO: update for mainnet, set to 288
+(define-data-var cycle-withdraw-offset uint u8) ;; 2 days
+
+(define-read-only (get-cycle-withdraw-offset)
+  (var-get cycle-withdraw-offset)
+)
+
+(define-public (set-cycle-withdraw-offset (offset uint))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (var-set cycle-withdraw-offset offset)
+    (ok true)
+  )
+)
+
+;;-------------------------------------
 ;; Withdrawal NFT 
 ;;-------------------------------------
 
