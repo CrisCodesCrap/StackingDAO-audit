@@ -191,8 +191,8 @@
     (print { action: "perform-pool-delegation-helper", pool: delegate-to, delegate: delegate, amount: amount, block-height: block-height })
 
     (if (is-eq amount u0)
-      (contract-call? .stacking-delegates-v1 revoke delegate reserve rewards-contract)
-      (contract-call? .stacking-delegates-v1 revoke-and-delegate delegate reserve rewards-contract amount delegate-to until-burn-ht)
+      (contract-call? .delegates-handler-v1 revoke delegate reserve rewards-contract)
+      (contract-call? .delegates-handler-v1 revoke-and-delegate delegate reserve rewards-contract amount delegate-to until-burn-ht)
     )
   )
 )

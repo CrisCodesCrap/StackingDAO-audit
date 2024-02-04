@@ -120,10 +120,6 @@
       u0
       (unwrap-panic (get amount-ustx delegation-info))
     ))
-
-    ;; TODO !! see fast pool
-    ;; (allowed-amount (min (get-delegated-amount user) (+ (get locked user-account) (get unlocked user-account))))
-
   )
     (if (is-eq delegation-amount u0)
       ;; No delegation, do nothing

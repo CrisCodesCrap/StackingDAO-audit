@@ -2,6 +2,7 @@
 ;; @version 1
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
+(use-trait rewards-trait .rewards-trait-v1.rewards-trait)
 
 (define-trait stacking-delegate-trait
   (
@@ -10,5 +11,7 @@
 
     (request-stx-to-stack (<reserve-trait> uint) (response uint uint))
     (return-stx-from-stacking (<reserve-trait> uint) (response uint uint))
+
+    (handle-rewards (principal uint <rewards-trait>) (response uint uint))
   )
 )

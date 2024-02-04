@@ -3,6 +3,7 @@
 
 (impl-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
+(use-trait rewards-trait .rewards-trait-v1.rewards-trait)
 
 ;;-------------------------------------
 ;; Pox Wrappers 
@@ -39,6 +40,7 @@
 (define-public (request-stx-to-stack (reserve <reserve-trait>) (amount uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     (as-contract (contract-call? reserve request-stx-to-stack amount))
   )
@@ -47,8 +49,27 @@
 (define-public (return-stx-from-stacking (reserve <reserve-trait>) (amount uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     (as-contract (contract-call? reserve return-stx-from-stacking amount))
+  )
+)
+
+;;-------------------------------------
+;; Rewards 
+;;-------------------------------------
+
+(define-public (handle-rewards (pool principal) (rewards uint) (rewards-contract <rewards-trait>))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
+
+    (if (> rewards u0)
+      ;; TODO: must be done in delegate itself
+      (try! (as-contract (contract-call? rewards-contract add-rewards pool rewards)))
+      true
+    )
+    (ok rewards)
   )
 )
 

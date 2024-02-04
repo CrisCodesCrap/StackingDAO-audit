@@ -123,17 +123,15 @@
 )
 
 ;; If extra STX in (contract + locked) it means rewards were added
-(define-public (handle-rewards (delegate principal) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
+(define-public (handle-rewards (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (let (
-    (rewards (calculate-rewards delegate))
+    (rewards (calculate-rewards (contract-of delegate)))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
-    (if (> rewards u0)
-      (try! (as-contract (contract-call? rewards-contract add-rewards (get-last-selected-pool delegate) rewards)))
-      true
-    )
+    (try! (as-contract (contract-call? delegate handle-rewards (get-last-selected-pool (contract-of delegate)) rewards rewards-contract)))
+
     (ok rewards)
   )
 )
@@ -193,7 +191,7 @@
 (define-public (revoke (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (begin 
     ;; Need to be done first
-    (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
+    (try! (handle-rewards delegate reserve rewards-contract))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
@@ -224,7 +222,7 @@
 (define-public (revoke-and-delegate (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
   (begin
     ;; Need to be done first
-    (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
+    (try! (handle-rewards delegate reserve rewards-contract))
 
     ;; Revoke
     (try! (contract-call? delegate revoke-delegate-stx))
