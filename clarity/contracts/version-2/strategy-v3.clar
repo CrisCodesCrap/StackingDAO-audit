@@ -4,6 +4,7 @@
 
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
+(use-trait rewards-trait .rewards-trait-v1.rewards-trait)
 
 ;;-------------------------------------
 ;; Constants 
@@ -153,12 +154,12 @@
 ;; Step 3: execute stacking for  pool
 ;;-------------------------------------
 
-(define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>))
+(define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (let (
     (saved-delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
     (compare-errors (filter not (map compare-delegates saved-delegates delegates)))
 
-    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-next-cycle-start-burn-height)) (list-30-reserve-trait reserve)))
+    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-next-cycle-start-burn-height)) (list-30-reserve-trait reserve) (list-30-rewards-trait rewards-contract)))
     (helper-errors (filter is-error helper-result))
     (helper-error (element-at? helper-errors u0))
   )
@@ -179,7 +180,7 @@
   (is-eq saved-delegate (contract-of delegate))
 )
 
-(define-private (perform-pool-delegation-helper (delegate <stacking-delegate-trait>) (delegate-to principal) (until-burn-ht uint) (reserve <reserve-trait>))
+(define-private (perform-pool-delegation-helper (delegate <stacking-delegate-trait>) (delegate-to principal) (until-burn-ht uint) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (let (
     (delegate-info (get-prepare-delegates-data (contract-of delegate)))
     (amount (get stacking-amount delegate-info))
@@ -187,8 +188,8 @@
     (print { action: "perform-pool-delegation-helper", pool: delegate-to, delegate: delegate, amount: amount, block-height: block-height })
 
     (if (is-eq amount u0)
-      (contract-call? .stacking-delegates-v1 revoke delegate reserve)
-      (contract-call? .stacking-delegates-v1 revoke-and-delegate delegate reserve amount delegate-to until-burn-ht)
+      (contract-call? .stacking-delegates-v1 revoke delegate reserve rewards-contract)
+      (contract-call? .stacking-delegates-v1 revoke-and-delegate delegate reserve rewards-contract amount delegate-to until-burn-ht)
     )
   )
 )
@@ -224,6 +225,10 @@
 )
 
 (define-read-only (list-30-reserve-trait (item <reserve-trait>)) 
+  (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
+)
+
+(define-read-only (list-30-rewards-trait (item <rewards-trait>)) 
   (list item item item item item item item item item item item item item item item item item item item item item item item item item item item item item item)
 )
 

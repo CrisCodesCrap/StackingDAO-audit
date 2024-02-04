@@ -1,6 +1,7 @@
 ;; @contract Rewards
 ;; @version 1
 
+(impl-trait .rewards-trait-v1.rewards-trait)
 (use-trait commission-trait .commission-trait-v1.commission-trait)
 (use-trait staking-trait .staking-trait-v1.staking-trait)
 

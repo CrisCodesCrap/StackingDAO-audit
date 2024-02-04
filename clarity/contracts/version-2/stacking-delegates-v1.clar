@@ -3,6 +3,7 @@
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
+(use-trait rewards-trait .rewards-trait-v1.rewards-trait)
 
 ;;-------------------------------------
 ;; Constants 
@@ -126,15 +127,14 @@
 )
 
 ;; If extra STX in (contract + locked) it means rewards were added
-(define-public (handle-rewards (delegate principal) (reserve <reserve-trait>))
+(define-public (handle-rewards (delegate principal) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (let (
     (rewards (calculate-rewards delegate))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     (if (> rewards u0)
-      ;; TODO: should not be hardcoded, create trait
-      (try! (as-contract (contract-call? .rewards-v1 add-rewards (get-last-selected-pool delegate) rewards)))
+      (try! (as-contract (contract-call? rewards-contract add-rewards (get-last-selected-pool delegate) rewards)))
       true
     )
     (ok rewards)
@@ -193,12 +193,12 @@
 ;; Delegation 
 ;;-------------------------------------
 
-(define-public (revoke (delegate <stacking-delegate-trait>) (reserve <reserve-trait>))
+(define-public (revoke (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (begin 
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     ;; Need to be done first
-    (try! (handle-rewards (contract-of delegate) reserve))
+    (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
@@ -224,12 +224,12 @@
   )
 )
 
-(define-public (revoke-and-delegate (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
+(define-public (revoke-and-delegate (delegate <stacking-delegate-trait>) (reserve <reserve-trait>) (rewards-contract <rewards-trait>) (amount-ustx uint) (delegate-to principal) (until-burn-ht uint))
   (begin
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     ;; Need to be done first
-    (try! (handle-rewards (contract-of delegate) reserve))
+    (try! (handle-rewards (contract-of delegate) reserve rewards-contract))
 
     ;; Revoke
     (try! (contract-call? delegate revoke-delegate-stx))

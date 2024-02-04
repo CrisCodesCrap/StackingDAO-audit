@@ -81,8 +81,8 @@
     (delegate-amount (get amount delegate-info))
   )
     (if (is-eq delegate-amount u0)
-      (try! (contract-call? .stacking-delegates-v1 revoke delegate-contract .reserve-v1))
-      (try! (contract-call? .stacking-delegates-v1 revoke-and-delegate delegate-contract .reserve-v1 (get amount delegate-info) delegate-to until-burn-ht))
+      (try! (contract-call? .stacking-delegates-v1 revoke delegate-contract .reserve-v1 .rewards-v1))
+      (try! (contract-call? .stacking-delegates-v1 revoke-and-delegate delegate-contract .reserve-v1 .rewards-v1 (get amount delegate-info) delegate-to until-burn-ht))
     )
 
     (ok true)
