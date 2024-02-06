@@ -25,7 +25,7 @@ export async function makeContractCall(options: ContractCallOptions, onComplete:
       "contractAddress": options.contractAddress,
       "functionName": options.functionName,
       "functionArgs": options.functionArgs.map(arg => cvToHex(arg)),
-      "postConditions": options.postConditions.map((pc) => Buffer.from(serializePostCondition(pc)).toString('hex')),
+      "postConditions": options.postConditions?.map((pc) => Buffer.from(serializePostCondition(pc)).toString('hex')),
       "postConditionMode": options.postConditionMode,
       "anchorMode": 3,
     };

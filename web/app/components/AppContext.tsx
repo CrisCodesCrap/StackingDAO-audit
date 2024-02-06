@@ -7,6 +7,7 @@ import { stacksNetwork } from '../common/utils';
 import { UserData } from '@stacks/auth';
 
 interface AppContextProps {
+  stxAddress: string | undefined;
   stxBalance: number;
   setStxBalance: (balance: string | undefined) => void;
   stStxBalance: number;
