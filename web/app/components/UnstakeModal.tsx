@@ -6,7 +6,6 @@ import { InputAmount } from './InputAmount';
 import { stacksNetwork as network } from '../common/utils';
 import { Alert } from './Alert';
 import { useAppContext } from './AppContext'
-import { useConnect } from '@stacks/connect-react';
 import {
   uintCV, contractPrincipalCV,
   FungibleConditionCode,
@@ -14,11 +13,10 @@ import {
   createAssetInfo,
 } from '@stacks/transactions'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork } from '../common/utils';
 
 export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
 
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState('');
@@ -38,7 +36,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       ),
     ];
 
-    await doContractCall({
+    await makeContractCall({
       contractAddress,
       contractName: 'staking-v1',
       functionName: 'unstake',
@@ -48,13 +46,11 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       ],
       postConditionMode: 0x01,
       network: stacksNetwork,
-      onFinish: data => {
-        console.log('finished broadcasting unstaking tx!', data);
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-        setShowUnstakeModal(false);
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+      setShowUnstakeModal(false);
+    });
   };
 
   const unstakeMaxAmount = () => {

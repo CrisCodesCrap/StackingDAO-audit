@@ -17,10 +17,10 @@ import {
 } from '@stacks/transactions'
 import { Alert } from './Alert';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork, resolveProvider, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds } from '../common/utils';
+import { makeContractCall } from '../common/contract-call';
 
 export function Unstack() {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
 
   const { stStxBalance, stxPrice, stxRatio, bitcoinBlocksLeft, setCurrentTxId, setCurrentTxStatus } = useAppContext();
@@ -80,7 +80,7 @@ export function Unstack() {
       )
     ];
 
-    await doContractCall({
+    await makeContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'init-withdraw',
@@ -90,11 +90,10 @@ export function Unstack() {
       ],
       postConditionMode: 0x01,
       network: stacksNetwork,
-      onFinish: async data => {
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+    });
   };
 
   return (

@@ -39,6 +39,7 @@ interface AppContextProps {
   setCurrentTxMessage: (message: string | undefined) => void;
 
   userData: UserData | undefined;
+  okProvider: hash | undefined;
 }
 
 export const AppContext = createContext<AppContextProps>({
@@ -71,7 +72,8 @@ export const AppContext = createContext<AppContextProps>({
   currentTxMessage: undefined,
   setCurrentTxMessage: () => {},
 
-  userData: undefined
+  userData: undefined,
+  okxProvider: undefined
 });
 
 const DENOMINATOR = 1000000;
@@ -79,6 +81,7 @@ const DENOMINATOR = 1000000;
 export const AppContextProvider = (props: any) => {
   const [userData, setUserData] = useState<UserData>({});
   const [stxAddress, setStxAddress] = useState('');
+  const [okxProvider, setOkxProvider] = useState({});
   const [stxBalance, setStxBalance] = useState(0);
   const [stStxBalance, setStStxBalance] = useState(0);
   const [sDaoBalance, setSDaoBalance] = useState(0);
@@ -221,6 +224,10 @@ export const AppContextProvider = (props: any) => {
         sDaoBalance: sDaoBalance,
         stxPrice: stxPrice,
         stxRatio: stxRatio,
+        stxAddress: stxAddress,
+        setStxAddress: setStxAddress,
+        okxProvider: okxProvider,
+        setOkxProvider: setOkxProvider,
         stackingApy: stackingApy,
         stackingCycle: stackingCycle,
         stackedStx: stackedStx,

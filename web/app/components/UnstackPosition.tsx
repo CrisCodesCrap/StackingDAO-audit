@@ -16,11 +16,11 @@ import {
 } from '@stacks/transactions'
 import { useAppContext } from './AppContext'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, resolveProvider, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds } from '../common/utils';
+import { makeContractCall } from '../common/contract-call';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const { nextRewardCycleBlocks, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const [canWithdraw, setCanWithdraw] = useState(false);
   const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
@@ -79,7 +79,8 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         uintCV(id)
       )
     ];
-    await doContractCall({
+
+    await makeContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'withdraw',
@@ -89,11 +90,10 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       ],
       postConditions: postConditions,
       network: stacksNetwork,
-      onFinish: async data => {
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+    });
   };
 
   return (

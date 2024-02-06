@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import { useConnect } from '@stacks/connect-react';
+import { useAppContext } from './AppContext';
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { useSTXAddress } from '../common/use-stx-address';
@@ -14,6 +15,7 @@ export const WalletConnectButton = ({ className, signOut }) => {
     'bg-neutral-950 text-white hover:bg-neutral-800'
   )
 
+  const { setStxAddress, setOkxProvider } = useAppContext();
   const { doOpenAuth } = useConnect();
   const stxAddress = useSTXAddress();
   const [truncatedAddress, setTruncatedAddress] = useState(stxAddress);
@@ -22,8 +24,12 @@ export const WalletConnectButton = ({ className, signOut }) => {
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
-    if (provider) {
-      await doOpenAuth(true, undefined, provider);
+    if (provider?.isOkxWallet) {
+      const resp = await provider.connect();
+      setStxAddress(resp['address']);
+      setOkxProvider(provider);
+    } else if (provider) {
+      doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
@@ -34,7 +40,14 @@ export const WalletConnectButton = ({ className, signOut }) => {
     setShowChooseWalletModal(false);
 
     const provider = resolveProvider();
-    await doOpenAuth(true, undefined, provider);
+
+    if (providerString == "okx") {
+      const resp = await provider.connect();
+      setStxAddress(resp['address']);
+      setOkxProvider(provider);
+    } else {
+      doOpenAuth(true, undefined, provider);
+    }
   };
 
   const updateButtonLabel = (entered: boolean) => {

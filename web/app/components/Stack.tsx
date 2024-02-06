@@ -13,18 +13,16 @@ import {
   standardPrincipalCV,
   noneCV,
   FungibleConditionCode,
-  makeStandardSTXPostCondition,
-  makeContractFungiblePostCondition,
-  createAssetInfo
+  makeStandardSTXPostCondition
 } from '@stacks/transactions';
 import { useSTXAddress } from '../common/use-stx-address';
 import { CommissionModal } from './CommissionModal';
 import { useSearchParams } from 'next/navigation'
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork } from '../common/utils';
+import { makeContractCall } from '../common/contract-call';
 
 export function Stack() {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const searchParams = useSearchParams();
   const referral = searchParams.get('referral');
 
@@ -77,7 +75,8 @@ export function Stack() {
       referralParam = someCV(standardPrincipalCV(referral));
     }
 
-    await doContractCall({
+    await makeContractCall({
+      stxAddress: stxAddress,
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'deposit',
@@ -88,12 +87,11 @@ export function Stack() {
       ],
       postConditions,
       network: stacksNetwork,
-      onFinish: async data => {
-        setAmounts(0);
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setAmounts(0);
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+    });
   };
 
   return (

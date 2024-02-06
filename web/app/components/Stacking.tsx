@@ -17,7 +17,7 @@ export function Stacking() {
   const stxAddress = useSTXAddress();
   const { doOpenAuth } = useConnect();
 
-  const { stStxBalance, stxBalance, stxRatio, stackingApy } = useAppContext();
+  const { stStxBalance, stxBalance, stxRatio, stackingApy, setStxAddress, setOkxProvider } = useAppContext();
   const searchParams = useSearchParams();
   const referral = searchParams.get('referral');
 
@@ -30,8 +30,12 @@ export function Stacking() {
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
-    if (provider) {
-      await doOpenAuth(true, undefined, provider);
+    if (provider?.isOkxWallet) {
+      const resp = await provider.connect();
+      setStxAddress(resp['address']);
+      setOkxProvider(provider);
+    } else if (provider) {
+      doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
@@ -42,7 +46,13 @@ export function Stacking() {
     setShowChooseWalletModal(false);
 
     const provider = resolveProvider();
-    await doOpenAuth(true, undefined, provider);
+    if (provider?.isOkxWallet) {
+      const resp = await provider.connect();
+      setStxAddress(resp['address']);
+      setOkxProvider(provider);
+    } else {
+      await doOpenAuth(true, undefined, provider);
+    }
   };
 
   useEffect(() => {
