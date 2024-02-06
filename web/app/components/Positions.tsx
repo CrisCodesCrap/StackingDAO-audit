@@ -99,7 +99,7 @@ export function Positions() {
     const fetchBitflowBalance = async () => {
       const resultWallet = await callReadOnlyFunction({
         contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
-        contractName: 'stx-ststx-lp-token-v-1-1',
+        contractName: 'stx-ststx-lp-token-v-1-2',
         functionName: 'get-balance',
         functionArgs: [
           standardPrincipalCV(stxAddress)
@@ -121,11 +121,11 @@ export function Positions() {
 
       const resultStaked = await callReadOnlyFunction({
         contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
-        contractName: 'earn-stx-ststx-v-1-1',
+        contractName: 'earn-stx-ststx-v-1-2',
         functionName: 'get-user-data',
         functionArgs: [
           contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, "ststx-token"),
-          contractPrincipalCV("SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M", "stx-ststx-lp-token-v-1-1"),
+          contractPrincipalCV("SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M", "stx-ststx-lp-token-v-1-2"),
           standardPrincipalCV(stxAddress)
         ],
         senderAddress: stxAddress,
@@ -275,7 +275,7 @@ export function Positions() {
                       {' '} STX-stSTX-LP
                     </div>
                     <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
-                      stSTX yield
+                      stSTX yield + yield on Bitflow
                     </span>
                   </div>
                 </div>
