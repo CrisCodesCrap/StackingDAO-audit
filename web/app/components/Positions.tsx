@@ -15,7 +15,7 @@ import { useSTXAddress } from '../common/use-stx-address';
 export function Positions() {
   const stxAddress = useSTXAddress();
 
-  const { stStxBalance, stxBalance, stackingApy, bitcoinBlocksLeft } = useAppContext();
+  const { stStxBalance, stxBalance, stackingApy } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
   const [unstackNfts, setUnstackNfts] = useState([]);
   const [unstackNftData, setUnstackNftData] = useState({});

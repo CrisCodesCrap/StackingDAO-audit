@@ -175,13 +175,8 @@ export const AppContextProvider = (props: any) => {
           setBitcoinBlocksLeft(Math.max(0, blocksUntilNextCycle));
           setNextRewardCycleBlocks(response['next_reward_cycle_in']);
 
-          const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
           const currentTimestamp = Date.now(); // in milliseconds
-          const startTimestamp = currentTimestamp - blocksSinceStart*10*60000; // 10 minutes per block time 60,000 milliseconds per minute
-          const endTimestamp = currentTimestamp + blocksUntilNextCycle*10*60000;
-          // const daysPassed = Math.round(
-          //   (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
-          // );
+          const endTimestamp = currentTimestamp + response['next_reward_cycle_in'] * 10 * 60000;
           const daysLeft = Math.max(
             0,
             Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
