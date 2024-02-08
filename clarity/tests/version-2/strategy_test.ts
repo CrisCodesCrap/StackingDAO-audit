@@ -2,8 +2,6 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName } from "../wrappers/tests-utils.ts";
 
 import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
-import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
-
 import { StrategyV3, StrategyV3PoolsV1, StrategyV3DelegatesV1, StrategyV3AlgoV1 } from '../wrappers/strategy-helpers.ts';
 
 //-------------------------------------
@@ -17,6 +15,7 @@ Clarinet.test({
 
     let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
 
+    // Overall inflow
     let call = await strategyV3AlgoV1.calculateReachTarget(
       [120000, 210000, 230000, 130000, 90000],
       [210000, 110000, 180000, 130000, 120000]
@@ -27,6 +26,7 @@ Clarinet.test({
     call.result.expectList()[3].expectUintWithDecimals(130000);
     call.result.expectList()[4].expectUintWithDecimals(120000);  // Outflow so stay at locked
 
+    // Overall inflow
     call = await strategyV3AlgoV1.calculateReachTarget(
       [110000, 80000, 120000, 110000, 90000],
       [100000, 100000, 100000, 100000, 100000]
@@ -37,6 +37,16 @@ Clarinet.test({
     call.result.expectList()[3].expectUintWithDecimals(102500);
     call.result.expectList()[4].expectUintWithDecimals(100000); // Outflow so stay at locked
 
+    // Overall outflow
+    call = await strategyV3AlgoV1.calculateReachTarget(
+      [80000, 70000, 130000, 110000, 90000],
+      [100000, 100000, 100000, 100000, 100000]
+    );
+    call.result.expectList()[0].expectUintWithDecimals(93333.334);
+    call.result.expectList()[1].expectUintWithDecimals(89999.9992);
+    call.result.expectList()[2].expectUintWithDecimals(100000); // Inflow so stay at locked
+    call.result.expectList()[3].expectUintWithDecimals(100000); // Inflow so stay at locked
+    call.result.expectList()[4].expectUintWithDecimals(96666.667);
   }
 });
 
@@ -139,11 +149,8 @@ Clarinet.test({
   name: "strategy-v3: prepare pools, delegates and execute",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
-    let stackingPool = new StackingPool(chain, deployer);
-    let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
     let strategyV3 = new StrategyV3(chain, deployer)
 
     // Move to cycle 1
@@ -190,19 +197,19 @@ Clarinet.test({
     // Check data
     //
 
-    let call = await strategyV3.getPreparePoolsData(qualifiedName("stacking-pool-v1"));
+    let call = await strategyV3.getCyclePreparedPools();
+    call.result.expectUint(1);
+
+    call = await strategyV3.getPreparePoolsData(qualifiedName("stacking-pool-v1"));
     call.result.expectTuple()["cycle-prepared-pool"].expectUint(1);
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(1);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(1);
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(105000);
-
     
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(52500);
-
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-2"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(31500);
-
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-3"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(21000);
 

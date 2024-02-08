@@ -225,6 +225,11 @@ class StrategyV3 {
     this.deployer = deployer;
   }
 
+  getCyclePreparedPools() {
+    return this.chain.callReadOnlyFn("strategy-v3", "get-cycle-prepared-pools", [
+    ], this.deployer.address);
+  }
+
   getPreparePoolsData(pool: string) {
     return this.chain.callReadOnlyFn("strategy-v3", "get-prepare-pools-data", [
       types.principal(pool),

@@ -14,6 +14,12 @@ class StackingDelegate {
     this.deployer = deployer;
   }
 
+  getStxAccount(user: string) {
+    return this.chain.callReadOnlyFn("stacking-delegate-1-1", "get-stx-account", [
+      types.principal(user)
+    ], this.deployer.address);
+  }
+
   delegateStx(caller: Account, amount: number, delegateTo: string, untilBurnHeight: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-delegate-1-1", "delegate-stx", [

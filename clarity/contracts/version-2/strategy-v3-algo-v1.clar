@@ -22,12 +22,10 @@
     (deviations (map calculate-target-deviation target-change (list-30-uint total-target)))
     (deviations-sum (fold + deviations u0))
     (deviations-percentages (map calculate-target-deviation-percentage deviations (list-30-uint deviations-sum)))
-
-    (total-change (list-30-uint (- total-target total-locked )))
   )
     (if (> total-target total-locked)
-      (map calculate-inflow-new-stacking locked deviations-percentages total-change)
-      (map calculate-outflow-new-stacking locked deviations-percentages total-change)
+      (map calculate-inflow-new-stacking locked deviations-percentages (list-30-uint (- total-target total-locked)))
+      (map calculate-outflow-new-stacking locked deviations-percentages (list-30-uint (- total-locked total-target)))
     )
   )
 )
@@ -203,10 +201,6 @@
 
 (define-read-only (get-min-of (a uint) (b uint))
   (if (< a b) a b)
-)
-
-(define-read-only (get-max-of (a uint) (b uint))
-  (if (>= a b) a b)
 )
 
 (define-read-only (list-30-uint (item uint)) 
