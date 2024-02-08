@@ -129,19 +129,6 @@
 ;; Stacking thresholds
 (define-constant STACKING_THRESHOLD_25 (if is-in-mainnet u20000 u8000))
 
-;; MOCK
-;; Allow to set stx-account details for any user
-;; These values are used for PoX only
-(define-map mock-stx-account-details principal {unlocked: uint, locked: uint, unlock-height: uint})
-
-(define-read-only (get-stx-account (user principal))
-    (default-to (stx-account user) (map-get? mock-stx-account-details user)))
-
-(define-public (mock-set-stx-account (user principal) (details {unlocked: uint, locked: uint, unlock-height: uint}))
-    (if (map-set mock-stx-account-details user details)
-         (ok true) (err u9999))) ;; define manually the error type
-;; MOCK END
-
 ;; This function can only be called once, when it boots up
 (define-public (set-burnchain-parameters (first-burn-height uint)
                                          (prepare-cycle-length uint)
@@ -927,7 +914,7 @@
           delegated-to: (some tx-sender) })
 
       ;; MOCK - Update stx-account-map
-      (map-set stx-account-map { account: stacker } (merge (stx-account-mock tx-sender) { 
+      (map-set stx-account-map { account: stacker } (merge (stx-account-mock stacker) { 
           locked: amount-ustx, 
           unlock-height: unlock-burn-height,
       }))
@@ -990,7 +977,7 @@
 ;; This method locks up an additional amount of STX from `tx-sender`'s, indicated
 ;; by `increase-by`.  The `tx-sender` must already be Stacking.
 (define-public (stack-increase (increase-by uint))
-   (let ((stacker-info (stx-account tx-sender))
+   (let ((stacker-info (stx-account-mock tx-sender))
          (amount-stacked (get locked stacker-info))
          (amount-unlocked (get unlocked stacker-info))
          (unlock-height (get unlock-height stacker-info))
@@ -1034,7 +1021,7 @@
 ;;    and associates `pox-addr` with the rewards
 (define-public (stack-extend (extend-count uint)
                              (pox-addr { version: (buff 1), hashbytes: (buff 32) }))
-   (let ((stacker-info (stx-account tx-sender))
+   (let ((stacker-info (stx-account-mock tx-sender))
          ;; to extend, there must already be an etry in the stacking-state
          (stacker-state (unwrap! (get-stacker-info tx-sender) (err ERR_STACK_EXTEND_NOT_LOCKED)))
          (amount-ustx (get locked stacker-info))
@@ -1195,7 +1182,7 @@
       ;; stacking-state is unchanged, so no need to update
 
       ;; MOCK - Update stx-account-map
-      (map-set stx-account-map { account: tx-sender } (merge (stx-account-mock tx-sender) {
+      (map-set stx-account-map { account: stacker } (merge (stx-account-mock stacker) {
         locked: new-total-locked
       }))
 
@@ -1294,7 +1281,7 @@
           delegated-to: (some tx-sender) })
 
       ;; MOCK - Update stx-account-map
-      (map-set stx-account-map { account: tx-sender } (merge (stx-account-mock tx-sender) {
+      (map-set stx-account-map { account: stacker } (merge (stx-account-mock stacker) {
         unlock-height: new-unlock-ht,
       }))
 

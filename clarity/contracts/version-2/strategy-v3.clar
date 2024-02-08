@@ -198,6 +198,18 @@
 )
 
 ;;-------------------------------------
+;; Step 4: return unlocked STX to reserve
+;;-------------------------------------
+
+(define-public (return-unlocked-stx (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>))
+  (ok (map return-unlocked-stx-helper delegates (list-30-reserve-trait reserve)))
+)
+
+(define-private (return-unlocked-stx-helper (delegate <stacking-delegate-trait>) (reserve <reserve-trait>))
+  (contract-call? .delegates-handler-v1 handle-excess delegate reserve)
+)
+
+;;-------------------------------------
 ;; PoX info 
 ;;-------------------------------------
 

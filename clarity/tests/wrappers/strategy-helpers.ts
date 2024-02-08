@@ -271,6 +271,16 @@ class StrategyV3 {
     return block.receipts[0].result;
   }
 
+  returnUnlockedStx(caller: Account, delegates: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("strategy-v3", "return-unlocked-stx", [
+        types.list(delegates.map(item => types.principal(item))),
+        types.principal(qualifiedName("reserve-v1")),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
 }
 export { StrategyV3 };
 
@@ -317,8 +327,21 @@ class StrategyV3PoolsV1 {
     this.deployer = deployer;
   }
 
+  calculateNewAmounts() {
+    return this.chain.callReadOnlyFn("strategy-v3-pools-v1", "calculate-new-amounts", [
+    ], this.deployer.address);
+  }
+
   calculateStackingPerPool() {
     return this.chain.callReadOnlyFn("strategy-v3-pools-v1", "calculate-stacking-per-pool", [
+    ], this.deployer.address);
+  }
+
+  calculateStackingTargetForPool(pool: string, newTotalNormalStacking: number, newTotalDirectStacking: number) {
+    return this.chain.callReadOnlyFn("strategy-v3-pools-v1", "calculate-stacking-target-for-pool", [
+      types.principal(pool),
+      types.uint(newTotalNormalStacking * 1000000),
+      types.uint(newTotalDirectStacking * 1000000),
     ], this.deployer.address);
   }
 
