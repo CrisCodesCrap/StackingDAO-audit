@@ -98,8 +98,7 @@
     (asserts! (> (total-delegated) u0) (err ERR_CAN_NOT_PREPARE))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
-    ;; 2. Aggregate
-    ;; TODO: can fail? See fast pool
+    ;; 2. Aggregate - will fail if min not reached
     (try! (aggregation))
 
     (print { action: "prepare", data: { delegation-errors: delegation-errors, block-height: block-height } })

@@ -39,7 +39,6 @@ class FastPoolV2 {
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
-    console.log("delegateStx events:", block.receipts[0].events)
     return block.receipts[0].result;
   }
 
@@ -49,7 +48,6 @@ class FastPoolV2 {
         types.principal(user),
       ], caller.address)
     ]);
-    console.log("delegateStackStx events:", block.receipts[0].events)
     return block.receipts[0].result;
   }
 

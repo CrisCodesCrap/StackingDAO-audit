@@ -41,12 +41,11 @@
         (asserts! (< (get unlock-height (stx-account-mock account)) burn-block-height) (err 80002))
         (asserts! (> locked-amount u0) (err 80003))
 
-        (unwrap! (as-contract (stx-transfer? locked-amount tx-sender account)) (err 80004))
-
-        (map-set stx-account-map { account: account } (merge (stx-account-mock account) { 
+        (map-set stx-account-map { account: account } { 
             locked: u0, 
-            unlock-height: u0
-        }))
+            unlock-height: u0,
+            unlocked: (stx-get-balance account)
+        })
 
         (ok locked-amount)
     )
@@ -1119,7 +1118,7 @@
                     (stacker principal)
                     (pox-addr { version: (buff 1), hashbytes: (buff 32) })
                     (increase-by uint))
-    (let ((stacker-info (stx-account stacker))
+    (let ((stacker-info (stx-account-mock stacker))
           (existing-lock (get locked stacker-info))
           (available-stx (get unlocked stacker-info))
           (unlock-height (get unlock-height stacker-info)))
@@ -1212,7 +1211,7 @@
                     (stacker principal)
                     (pox-addr { version: (buff 1), hashbytes: (buff 32) })
                     (extend-count uint))
-    (let ((stacker-info (stx-account stacker))
+    (let ((stacker-info (stx-account-mock stacker))
           ;; to extend, there must already be an entry in the stacking-state
           (stacker-state (unwrap! (get-stacker-info stacker) (err ERR_STACK_EXTEND_NOT_LOCKED)))
           (amount-ustx (get locked stacker-info))

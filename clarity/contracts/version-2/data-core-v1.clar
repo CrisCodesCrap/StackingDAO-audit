@@ -32,8 +32,7 @@
 ;;-------------------------------------
 
 ;; In the last X blocks of the cycle
-;; TODO: update for mainnet, set to 288
-(define-data-var cycle-withdraw-offset uint u8) ;; 2 days
+(define-data-var cycle-withdraw-offset uint (if is-in-mainnet u288 u10)) ;; 2 days
 
 (define-read-only (get-cycle-withdraw-offset)
   (var-get cycle-withdraw-offset)

@@ -6,7 +6,7 @@ import { StrategyV0 as Strategy } from '../wrappers/strategy-helpers.ts';
 import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
 import { Reserve } from '../wrappers/reserve-helpers.ts';
 import { Stacker } from '../wrappers/stacker-helpers.ts';
-import { Pox3Mock } from '../wrappers/pox-3-mock-helpers.ts';
+import { Pox3Mock } from '../wrappers/pox-mock-helpers.ts';
 
 //-------------------------------------
 // Reward address

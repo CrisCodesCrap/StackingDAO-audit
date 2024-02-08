@@ -35,10 +35,47 @@ class Pox3Mock {
     return block.receipts[0].result;
   }
 
-  allowContractCaller(caller: Account) {
+}
+export { Pox3Mock };
+
+// ---------------------------------------------------------
+// PoX-4 Mock
+// ---------------------------------------------------------
+
+class Pox4Mock {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  burnHeightForRewardCycle(height: number) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "burn-height-to-reward-cycle", [
+      types.uint(height),
+    ], this.deployer.address);
+  }
+
+  getStackerInfo(stacker: string) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "get-stacker-info", [
+      types.principal(stacker),
+    ], this.deployer.address);
+  }
+
+  unlock(caller: Account, account: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("pox-3-mock", "allow-contract-caller", [
-        types.principal(qualifiedName("pox-fast-pool-v2-mock")),
+      Tx.contractCall("pox-4-mock", "unlock-mock", [
+        types.principal(account),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  allowContractCaller(caller: Account, contract: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("pox-4-mock", "allow-contract-caller", [
+        types.principal(contract),
         types.none()
       ], caller.address)
     ]);
@@ -47,4 +84,4 @@ class Pox3Mock {
 
 
 }
-export { Pox3Mock };
+export { Pox4Mock };

@@ -4,7 +4,7 @@ qualifiedName("")
 
 import { FastPoolV2 } from '../wrappers/pox-fast-pool-v2-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
-import { Pox3Mock } from '../wrappers/pox-3-mock-helpers.ts';
+import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
 
 
 //-------------------------------------
@@ -20,16 +20,16 @@ Clarinet.test({
     
     let fastPool = new FastPoolV2(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
-    let pox = new Pox3Mock(chain, deployer);
+    let pox = new Pox4Mock(chain, deployer);
 
 
     // Need to allow the pool to manage our stacking
     // Because delegating & locking is done for the user by the contract
-    let result = await pox.allowContractCaller(deployer);
+    let result = await pox.allowContractCaller(deployer, qualifiedName("pox-fast-pool-v2-mock"));
     result.expectOk().expectBool(true);
-    result = await pox.allowContractCaller(wallet_1);
+    result = await pox.allowContractCaller(wallet_1, qualifiedName("pox-fast-pool-v2-mock"));
     result.expectOk().expectBool(true);
-    result = await pox.allowContractCaller(wallet_2);
+    result = await pox.allowContractCaller(wallet_2, qualifiedName("pox-fast-pool-v2-mock"));
     result.expectOk().expectBool(true);
 
 
@@ -40,8 +40,8 @@ Clarinet.test({
 
 
     let call = await stackingPool.getPoxInfo();
-    console.log("Block:", chain.blockHeight);
-    console.log("PoX Info:", call.result);
+    // console.log("Block:", chain.blockHeight);
+    // console.log("PoX Info:", call.result);
 
     // Commit failed as minimum not reached
     // TODO: Keeps 1 STX. Why?
@@ -53,9 +53,9 @@ Clarinet.test({
     result.expectOk().expectTuple()["lock-result"].expectTuple()["unlock-burn-height"].expectUint(63);
 
     // Commit succeeded as minimum reached
-    result = await fastPool.delegateStx(wallet_1, 120000);
+    result = await fastPool.delegateStx(wallet_1, 200000);
     result.expectOk().expectTuple()["commit-result"].expectBool(true);
-    result.expectOk().expectTuple()["lock-result"].expectTuple()["lock-amount"].expectUintWithDecimals(120000 - 1);
+    result.expectOk().expectTuple()["lock-result"].expectTuple()["lock-amount"].expectUintWithDecimals(200000 - 1);
     result.expectOk().expectTuple()["lock-result"].expectTuple()["stacker"].expectPrincipal(wallet_1.address);
     result.expectOk().expectTuple()["lock-result"].expectTuple()["unlock-burn-height"].expectUint(63);
 
@@ -90,8 +90,8 @@ Clarinet.test({
     await chain.mineEmptyBlockUntil(21 + 15);
 
     call = await stackingPool.getPoxInfo();
-    console.log("Block:", chain.blockHeight);
-    console.log("PoX Info:", call.result);
+    // console.log("Block:", chain.blockHeight);
+    // console.log("PoX Info:", call.result);
 
     // Already locked for next cycle
     call = await fastPool.notLockedForCycle(63, 1 + 1)

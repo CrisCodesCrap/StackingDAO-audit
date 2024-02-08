@@ -345,6 +345,12 @@ class StrategyV3DelegatesV1 {
     ], this.deployer.address);
   }
 
+  calculateLockedForPool(pool: string) {
+    return this.chain.callReadOnlyFn("strategy-v3-delegates-v1", "calculate-locked-for-pool", [
+      types.principal(pool),
+    ], this.deployer.address);
+  }
+
 }
 export { StrategyV3DelegatesV1 };
 

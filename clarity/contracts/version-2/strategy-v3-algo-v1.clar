@@ -49,7 +49,10 @@
 )
 
 (define-read-only (calculate-target-deviation-percentage (deviation uint) (total-deviation uint))
-  (/ (* deviation u100000000) total-deviation)
+  (if (is-eq total-deviation u0)
+    u0
+    (/ (* deviation u100000000) total-deviation)
+  )
 )
 
 (define-read-only (calculate-inflow-new-stacking (locked uint) (deviation-percentage uint) (total-change uint))

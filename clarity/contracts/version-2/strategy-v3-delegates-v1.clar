@@ -28,11 +28,8 @@
 (define-read-only (calculate-inflow (pool principal) (total-to-stack uint))
   (let (
     (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
-
     (targets (map calculate-stacking-target-for-delegate delegates (list-30-uint total-to-stack)))
-
     (locked (map get-locked-stx delegates))
-
     (stacking-amounts (contract-call? .strategy-v3-algo-v1 calculate-reach-target targets locked))
   )
     (map map-delegate-stacking-amount delegates stacking-amounts)
@@ -56,7 +53,6 @@
     (delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
     (locked (map get-locked-stx delegates))
     (stacking-amounts (contract-call? .strategy-v3-algo-v1 calculate-lowest-combination outflow locked))
-
   )
     (map map-delegate-stacking-amount delegates stacking-amounts)
   )
