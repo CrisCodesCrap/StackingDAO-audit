@@ -10,11 +10,11 @@ const scriptAggregate = require('./points-2-aggregate.js');
 
 async function start() {
 
-  const lastBlockHeight = await utils.readFile('points-last-block-2');
+  const lastBlockHeight = await utils.readFile('points-last-block-3');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
-  const lastAddressesBlockHeight = await utils.readFile('points-last-block-addresses-2');
+  const lastAddressesBlockHeight = await utils.readFile('points-last-block-addresses-3');
 
   console.log("[run] Next block:", nextBlockHeight, ", current block:", currentBlockHeight);
 
