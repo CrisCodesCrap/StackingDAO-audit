@@ -44,7 +44,7 @@ export function Stack() {
     setAmount(amount);
     setAmountInDollars(stxPrice * amount);
     setStStxReceived(amount / stxRatio);
-    setStxReceivedBitflow(await bitflowOut(amount));
+    // setStxReceivedBitflow(await bitflowOut(amount));
 
     const maxBalance = (stxBalance - 2);
     if (amount > maxBalance) {
@@ -69,7 +69,7 @@ export function Stack() {
     setAmount(amount);
     setAmountInDollars(stxPrice * amount);
     setStStxReceived(amount / stxRatio);
-    setStxReceivedBitflow(await bitflowOut(amount));
+    // setStxReceivedBitflow(await bitflowOut(amount));
 
     setButtonText("Stack");
     setButtonDisabled(false);
@@ -131,9 +131,9 @@ export function Stack() {
     setBitflowRatio(Number(out));
   }
 
-  useEffect(() => {
-    if (stxAddress) bitflowRate();
-  }, [stxAddress]);
+  // useEffect(() => {
+  //   if (stxAddress) bitflowRate();
+  // }, [stxAddress]);
 
   return (
     <>
@@ -249,7 +249,7 @@ export function Stack() {
             </button>
           </div>
 
-          <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-4 bg-slate-50 rounded-xl border-2 border-gray-100">
+{/*          <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-4 bg-slate-50 rounded-xl border-2 border-gray-100">
             <span className='font-bold'>Buy stSTX on Bitflow</span>
             <div className="grid grid-cols-1 sm:grid-cols-2">
               <div className="text-gray-600 place-content-start">
@@ -318,7 +318,7 @@ export function Stack() {
             >
               Buy
             </button>
-          </div>
+          </div>*/}
         </div>
       </div>
     </>
