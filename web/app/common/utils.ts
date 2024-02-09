@@ -77,6 +77,12 @@ export const resolveProvider = () => {
   }
 };
 
+export async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 export const formatSeconds = function (totalmins)  {
   if (Math.sign(totalmins) != -1) {
     const mins= totalmins % 60;

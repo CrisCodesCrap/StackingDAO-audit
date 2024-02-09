@@ -8,7 +8,7 @@ import { useAppContext } from './AppContext'
 import { ApyModal } from './ApyModal'
 import { RatioModal } from './RatioModal'
 import { UnstackPosition } from './UnstackPosition'
-import { stacksNetwork, getRPCClient, coreApiUrl } from '../common/utils'
+import { stacksNetwork, getRPCClient, coreApiUrl, asyncForEach } from '../common/utils'
 import Link from 'next/link'
 import { useSTXAddress } from '../common/use-stx-address';
 
@@ -20,6 +20,7 @@ export function Positions() {
   const [unstackNfts, setUnstackNfts] = useState([]);
   const [unstackNftData, setUnstackNftData] = useState({});
   const [genesisNfts, setGenesisNfts] = useState([]);
+  const [genesisNftInfo, setGenesisNftInfo] = useState({});
   const [currentCycleId, setCurrentCycleId] = useState(3);
   const [bitflowLpWallet, setBitflowLpWallet] = useState(0);
   const [bitflowLpStaked, setBitflowLpStaked] = useState(0);
@@ -38,6 +39,39 @@ export function Positions() {
 
     setCurrentCycleId(Number(result?.value));
   };
+
+  const fetchNftType = async (id: string) => {
+    const result = await callReadOnlyFunction({
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
+      contractName: 'stacking-dao-genesis-nft',
+      functionName: 'get-genesis-type',
+      functionArgs: [
+        uintCV(id)
+      ],
+      senderAddress: stxAddress,
+      network: stacksNetwork
+    });
+
+    return Number(result?.value);
+  };
+
+  const getNftInfo = async () => {
+    const nftInfo = {};
+    await asyncForEach(genesisNfts, async (nftId) => {
+      const nftType = await fetchNftType(nftId);
+      nftInfo[nftId] = {
+        type: nftType,
+        name: nftType == 0 ? 'Normal' : nftType == 1 ? 'OG' : nftType == 2 ? 'Gold' : 'Diamond',
+        url: nftType == 0 ? '/genesis-nft.png' : nftType == 1 ? '/genesis-og.png' : nftType == 2 ? '/genesis-gold.png' : '/genesis-diamond.png'
+      }
+    });
+
+    setGenesisNftInfo(nftInfo);
+  };
+
+  useEffect(() => {
+    if (genesisNfts.length > 0) getNftInfo();
+  }, [genesisNfts]);
 
   useEffect(() => {
     const fetchNft = async (id: string) => {
@@ -206,11 +240,11 @@ export function Positions() {
             <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
-                  <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/genesis-nft.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                  <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src={genesisNftInfo[id]?.url} style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
                 </div>
                 <div className="flex-grow flex justify-between">
                   <div>
-                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Genesis NFT</span>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Genesis {genesisNftInfo[id]?.name} NFT</span>
                     <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Stacking DAO Genesis NFT</span>
                   </div>
                   <div className="text-right">
