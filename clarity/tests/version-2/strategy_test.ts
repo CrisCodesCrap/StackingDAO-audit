@@ -19,14 +19,22 @@ Clarinet.test({
 
     let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
 
-    // Overall inflow
+    // Overall outflow
     let call = await strategyV3AlgoV1.calculateReachTarget(
+      [147000, 63000],
+      [175000, 75000]
+    );
+    call.result.expectList()[0].expectUintWithDecimals(147000);
+    call.result.expectList()[1].expectUintWithDecimals(63000);
+
+    // Overall inflow
+    call = await strategyV3AlgoV1.calculateReachTarget(
       [120000, 210000, 230000, 130000, 90000],
       [210000, 110000, 180000, 130000, 120000]
     );
     call.result.expectList()[0].expectUintWithDecimals(210000);
-    call.result.expectList()[1].expectUintWithDecimals(129999.9998);
-    call.result.expectList()[2].expectUintWithDecimals(189999.9999);
+    call.result.expectList()[1].expectUintWithDecimals(130000);
+    call.result.expectList()[2].expectUintWithDecimals(190000);
     call.result.expectList()[3].expectUintWithDecimals(130000);
     call.result.expectList()[4].expectUintWithDecimals(120000);  // Outflow so stay at locked
 
@@ -46,11 +54,11 @@ Clarinet.test({
       [80000, 70000, 130000, 110000, 90000],
       [100000, 100000, 100000, 100000, 100000]
     );
-    call.result.expectList()[0].expectUintWithDecimals(93333.334);
-    call.result.expectList()[1].expectUintWithDecimals(89999.9992);
+    call.result.expectList()[0].expectUintWithDecimals(93333.333334);
+    call.result.expectList()[1].expectUintWithDecimals(90000);
     call.result.expectList()[2].expectUintWithDecimals(100000); // Inflow so stay at locked
     call.result.expectList()[3].expectUintWithDecimals(100000); // Inflow so stay at locked
-    call.result.expectList()[4].expectUintWithDecimals(96666.667);
+    call.result.expectList()[4].expectUintWithDecimals(96666.666667);
   }
 });
 
@@ -393,7 +401,7 @@ Clarinet.test({
     call.result.expectTuple()["cycle-prepared-pool"].expectUint(2);
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(2);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(2);
-    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(147000.000158);
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(147000);
     
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(87500);
@@ -407,7 +415,7 @@ Clarinet.test({
     call.result.expectTuple()["cycle-prepared-pool"].expectUint(2);
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(2);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(2);
-    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(63000.000243);
+    call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(63000);
 
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-2-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(37499);
@@ -416,12 +424,7 @@ Clarinet.test({
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-2-3"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(0); // 12k outflow so stopped this delegate
 
-
-    // TODO: issue
-    // We are stacking 210k STX
-    // BUT stacking-amount of 2 pools result in more than 210k STX
-
-
+    
     //
     // Prepare pools
     //
@@ -544,33 +547,33 @@ Clarinet.test({
     //
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(90999.998612);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(91000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-2"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(54599.999587);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(54600);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-3"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(36400.001530);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(36400);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-2-1"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(38998.999316);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(38999);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(1);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-2-2"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(23398.998982);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(23399);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(1);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-2-3"));
-    call.result.expectTuple()["locked"].expectUintWithDecimals(15599.000766);
+    call.result.expectTuple()["locked"].expectUintWithDecimals(15599);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(1);
     call.result.expectTuple()["unlock-height"].expectUint(REWARD_CYCLE_LENGTH * 5);
 

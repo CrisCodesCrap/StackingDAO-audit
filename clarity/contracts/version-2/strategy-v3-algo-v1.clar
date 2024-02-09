@@ -20,7 +20,9 @@
     ))
 
     (deviations (map calculate-target-deviation target-change (list-30-uint total-target)))
-    (deviations-sum (fold + deviations u0))
+    ;; When calculating target deviations we round up by adding 1
+    ;; So we need to subtract all the 1 additions again here
+    (deviations-sum (- (fold + deviations u0) (len deviations)))
     (deviations-percentages (map calculate-target-deviation-percentage deviations (list-30-uint deviations-sum)))
   )
     (if (> total-target total-locked)
@@ -45,19 +47,22 @@
 )
 
 (define-read-only (calculate-target-deviation (target-change uint) (new-total-target uint))
-  (/ (* target-change u100000000) new-total-target)
+  ;; There will be rounding errors when calculating targets to reach
+  ;; We must make sure the total end result is never above the total target when there is inflow
+  ;; Numbers are rounded down automatically. We want to round up here, so we add 1.
+  (+ (/ (* target-change u10000000000000) new-total-target) u1)
 )
 
 (define-read-only (calculate-target-deviation-percentage (deviation uint) (total-deviation uint))
   (if (is-eq total-deviation u0)
     u0
-    (/ (* deviation u100000000) total-deviation)
+    (/ (* deviation u10000000000000) total-deviation)
   )
 )
 
 (define-read-only (calculate-inflow-new-stacking (locked uint) (deviation-percentage uint) (total-change uint))
   (let (
-    (actual-change (/ (* total-change deviation-percentage) u100000000))
+    (actual-change (/ (* total-change deviation-percentage) u10000000000000))
   )
     (+ locked actual-change)
   )
@@ -65,7 +70,7 @@
 
 (define-read-only (calculate-outflow-new-stacking (locked uint) (deviation-percentage uint) (total-change uint))
   (let (
-    (actual-change (/ (* total-change deviation-percentage) u100000000))
+    (actual-change (/ (* total-change deviation-percentage) u10000000000000))
   )
     (- locked actual-change)
   )
