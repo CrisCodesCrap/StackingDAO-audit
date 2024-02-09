@@ -201,6 +201,9 @@
 ;; Helpers
 ;;-------------------------------------
 
+(define-read-only (round-down (a uint))
+  (/ (* a u999999) u1000000)
+)
 
 (define-read-only (get-min-of (a uint) (b uint))
   (if (< a b) a b)

@@ -205,7 +205,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "strategy-v3: prepare pools, delegates and execute",
+  name: "strategy-v3: start stacking, handle outflow, handle inflow (3 cycles)",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
