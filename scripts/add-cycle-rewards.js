@@ -15,10 +15,10 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'commission-v1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v0'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(10485000000),
-    tx.uintCV(76)
+    tx.uintCV(16060000000),
+    tx.uintCV(77)
   ],
-  fee: new BN(4000000, 10),
+  fee: new BN(1000000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
