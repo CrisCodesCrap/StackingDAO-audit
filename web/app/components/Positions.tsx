@@ -11,6 +11,7 @@ import { UnstackPosition } from './UnstackPosition'
 import { stacksNetwork, getRPCClient, coreApiUrl, asyncForEach } from '../common/utils'
 import Link from 'next/link'
 import { useSTXAddress } from '../common/use-stx-address';
+import { Nakamoto } from './Nakamoto'
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -155,11 +156,11 @@ export function Positions() {
 
       const resultStaked = await callReadOnlyFunction({
         contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
-        contractName: 'earn-stx-ststx-v-1-2',
+        contractName: 'earn-stx-ststx-v-1-1',
         functionName: 'get-user-data',
         functionArgs: [
           contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, "ststx-token"),
-          contractPrincipalCV("SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M", "stx-ststx-lp-token-v-1-2"),
+          contractPrincipalCV("SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M", "stx-ststx-lp-token-v-1-1"),
           standardPrincipalCV(stxAddress)
         ],
         senderAddress: stxAddress,
@@ -204,6 +205,15 @@ export function Positions() {
     <>
       {stxAddress && (
         <div className="w-full flex flex-col gap-1 mt-10 mb-10">
+          {stStxBalance > 0 || bitflowLpStaked > 0 || bitflowLpWallet > 0 || bitflowLpStaked2 > 0 || bitflowLpWallet2 > 0 ? (
+            <Nakamoto
+              bitflowLpWallet={bitflowLpWallet}
+              bitflowLpStaked={bitflowLpStaked}
+              bitflowLpWallet2={bitflowLpWallet2}
+              bitflowLpStaked2={bitflowLpStaked2}
+            />
+          ) : null}
+
           <span className="text-lg font-medium md:mb-4 md:text-2xl">Active Positions</span>
           
           {/* stSTX */}
