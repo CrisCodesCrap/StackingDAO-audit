@@ -149,11 +149,19 @@
 ;; To increase, a deposit is needed
 
 (define-public (subtract-direct-stacking-user (amount uint))
-  (subtract-direct-stacking tx-sender amount)
+  (let (
+    (user tx-sender)
+  )
+    (as-contract (subtract-direct-stacking user amount))
+  )
 )
 
 (define-public (stop-direct-stacking-user)
-  (stop-direct-stacking tx-sender)
+  (let (
+    (user tx-sender)
+  )
+    (as-contract (stop-direct-stacking user))
+  )
 )
 
 ;;-------------------------------------

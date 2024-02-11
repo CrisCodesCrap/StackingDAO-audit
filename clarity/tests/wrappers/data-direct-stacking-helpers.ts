@@ -14,6 +14,10 @@ class DataDirectStacking {
     this.deployer = deployer;
   }
 
+  getDirectStackingDependence() {
+    return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-direct-stacking-dependence", [], this.deployer.address);
+  }
+
   getTotalDirectStacking() {
     return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-total-directed-stacking", [], this.deployer.address);
   }
@@ -27,6 +31,20 @@ class DataDirectStacking {
   getDirectStackingUser(user: string) {
     return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-direct-stacking-user", [
       types.principal(user)
+    ], this.deployer.address);
+  }
+
+  setDirectStackingDependence(caller: Account, dependence: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "set-direct-stacking-dependence", [
+        types.uint(dependence ),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  getSupportedProtocols() {
+    return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-supported-protocols", [
     ], this.deployer.address);
   }
 

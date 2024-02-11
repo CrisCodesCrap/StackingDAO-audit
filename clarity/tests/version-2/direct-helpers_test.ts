@@ -66,6 +66,157 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "direct-helpers: add direct stacking multiple times",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dataDirectStacking = new DataDirectStacking(chain, deployer);
+    let directHelpers = new DirectHelpers(chain, deployer);
+
+    //
+    // No pool, so no direct stacking
+    //
+
+    let result = await directHelpers.addDirectStacking(deployer, wallet_1.address, undefined, 100)
+    result.expectOk().expectBool(true);
+
+    let call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectNone();
+
+    //
+    // Still no pool, so no direct stacking
+    //
+
+    result = await directHelpers.addDirectStacking(deployer, wallet_1.address, undefined, 200)
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectNone();
+
+    //
+    // Direct stack
+    //
+
+    result = await directHelpers.addDirectStacking(deployer, wallet_1.address, qualifiedName("stacking-pool-v1"), 500)
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(500);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(500);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(500);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+    //
+    // Direct stack - Different pool
+    //
+
+    result = await directHelpers.addDirectStacking(deployer, wallet_1.address, qualifiedName("pox-fast-pool-v2-mock"), 100)
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(600);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(600);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(600);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("pox-fast-pool-v2-mock"));
+
+    //
+    // Direct stack - Same pool
+    //
+
+    result = await directHelpers.addDirectStacking(deployer, wallet_1.address, qualifiedName("pox-fast-pool-v2-mock"), 50)
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(650);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(650);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(650);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("pox-fast-pool-v2-mock"));
+  }
+});
+
+Clarinet.test({
+  name: "direct-helpers: user can subtract direct stacking and stop",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dataDirectStacking = new DataDirectStacking(chain, deployer);
+    let directHelpers = new DirectHelpers(chain, deployer);
+
+    //
+    // Direct stack
+    //
+
+    let result = await directHelpers.addDirectStacking(deployer, wallet_1.address, qualifiedName("stacking-pool-v1"), 500)
+    result.expectOk().expectBool(true);
+
+    let call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(500);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(500);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(500);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+
+    //
+    // Subtract
+    //
+
+    result = await directHelpers.subtractDirectStackingUser(wallet_1, 100);
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(400);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(400);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(400);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+    //
+    // Stop
+    //
+
+    result = await directHelpers.stopDirectStackingUser(wallet_1);
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectNone();
+
+  }
+});
+
+Clarinet.test({
   name: "direct-helpers: subtract direct stacking if stSTX tokens move to unsupported protocol",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;

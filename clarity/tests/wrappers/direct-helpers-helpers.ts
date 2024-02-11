@@ -14,11 +14,11 @@ class DirectHelpers {
     this.deployer = deployer;
   }
 
-  addDirectStacking(caller: Account, user: string, pool: string, amount: number) {
+  addDirectStacking(caller: Account, user: string, pool: string | undefined, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("direct-helpers-v1", "add-direct-stacking", [
         types.principal(user),
-        types.some(types.principal(pool)),
+        pool == undefined ? types.none() : types.some(types.principal(pool)),
         types.uint(amount * 1000000),
       ], caller.address)
     ]);
