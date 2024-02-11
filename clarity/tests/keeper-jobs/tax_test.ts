@@ -4,7 +4,7 @@ qualifiedName("")
 
 import { SDAOToken } from '../wrappers/sdao-token-helpers.ts';
 import { Tax } from '../wrappers/tax-helpers.ts';
-import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { CoreV1 as Core } from '../wrappers/stacking-dao-core-helpers.ts';
 
 //-------------------------------------
 // Tax 

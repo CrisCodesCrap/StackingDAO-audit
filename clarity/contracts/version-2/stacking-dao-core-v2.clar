@@ -36,10 +36,10 @@
   )
     (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-core-v1 get-cycle-withdraw-offset)))
       ;; Can withdraw next cycle
-      (ok (+ start-block-current-cycle u1))
+      (ok (+ start-block-current-cycle cycle-length))
 
       ;; Withdraw cycle after next
-      (ok (+ start-block-current-cycle u2))
+      (ok (+ start-block-current-cycle cycle-length))
     )
   )
 )

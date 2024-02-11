@@ -3,7 +3,7 @@ import { PREPARE_PHASE_LENGTH, qualifiedName, REWARD_CYCLE_LENGTH } from "../wra
 
 import { DAO } from '../wrappers/dao-helpers.ts';
 import { Staking } from '../wrappers/staking-helpers.ts';
-import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { CoreV1 as Core } from '../wrappers/stacking-dao-core-helpers.ts';
 import { SDAOToken } from '../wrappers/sdao-token-helpers.ts';
 import { Commission } from "../wrappers/commission-helpers.ts";
 

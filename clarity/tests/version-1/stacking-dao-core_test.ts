@@ -1,7 +1,7 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
 import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wrappers/tests-utils.ts';
 
-import { Core } from '../wrappers/stacking-dao-core-helpers.ts';
+import { CoreV1 as Core } from '../wrappers/stacking-dao-core-helpers.ts';
 import { DAO } from '../wrappers/dao-helpers.ts';
 
 //-------------------------------------
@@ -9,7 +9,7 @@ import { DAO } from '../wrappers/dao-helpers.ts';
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: can get burn height",
+  name: "core-v1: can get burn height",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -30,7 +30,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: test STX to stSTX ratio",
+  name: "core-v1: test STX to stSTX ratio",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -101,7 +101,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: test deposit, STX to stSTX ratio and withdrawals",
+  name: "core-v1: test deposit, STX to stSTX ratio and withdrawals",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -194,7 +194,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: protocol can set commission",
+  name: "core-v1: protocol can set commission",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -221,7 +221,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: protocol can shut down deposits",
+  name: "core-v1: protocol can shut down deposits",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -265,7 +265,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: check if can withdraw",
+  name: "core-v1: check if can withdraw",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -321,7 +321,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: check init withdraw, taking into account prepare phase",
+  name: "core-v1: check init withdraw, taking into account prepare phase",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -387,7 +387,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: can not deposit, withdraw or add rewards if protocol not enabled",
+  name: "core-v1: can not deposit, withdraw or add rewards if protocol not enabled",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -412,7 +412,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: can not set commission higher than max",
+  name: "core-v1: can not set commission higher than max",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -427,7 +427,7 @@ Clarinet.test({
 });
 
 Clarinet.test({ 
-  name: "core: can not deposit with wrong reserve",
+  name: "core-v1: can not deposit with wrong reserve",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -443,7 +443,7 @@ Clarinet.test({
 });
 
 // Clarinet.test({
-//   name: "core: prints event on deposit with referrer",
+//   name: "core-v1: prints event on deposit with referrer",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
 
@@ -462,7 +462,7 @@ Clarinet.test({
 // });
 
 // Clarinet.test({
-//   name: "core: prints event on deposit without referrer",
+//   name: "core-v1: prints event on deposit without referrer",
 //   async fn(chain: Chain, accounts: Map<string, Account>) {
 //     let deployer = accounts.get("deployer")!;
 
@@ -485,7 +485,7 @@ Clarinet.test({
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: only protocol can use admin functions",
+  name: "core-v1: only protocol can use admin functions",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;

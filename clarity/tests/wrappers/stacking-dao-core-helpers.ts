@@ -2,10 +2,10 @@ import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts
 import { qualifiedName } from './tests-utils.ts';
 
 // ---------------------------------------------------------
-// Core
+// Core V1
 // ---------------------------------------------------------
 
-class Core {
+class CoreV1 {
   chain: Chain;
   deployer: Account;
 
@@ -120,6 +120,91 @@ class Core {
   setShutdownDeposits(caller: Account, shutdown: boolean) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v1", "set-shutdown-deposits", [
+        types.bool(shutdown),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { CoreV1 };
+
+
+// ---------------------------------------------------------
+// Core V2
+// ---------------------------------------------------------
+
+class Core {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getShutdownDeposits() {
+    return this.chain.callReadOnlyFn("stacking-dao-core-v2", "get-shutdown-deposits", [], this.deployer.address);
+  }
+
+  getWithdrawUnlockBurnHeight() {
+    return this.chain.callReadOnlyFn("stacking-dao-core-v2", "get-withdraw-unlock-burn-height", [], this.deployer.address);
+  }
+
+  deposit(caller: Account, amount: number, referrer: string | undefined = undefined, pool: string | undefined = undefined) {
+    let referrerType = types.none();
+    if (referrer) {
+      referrerType = types.some(types.principal(referrer))
+    }
+
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "deposit", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("direct-helpers-v1")),
+        types.uint(amount * 1000000),
+        referrer == undefined ? types.none() : types.some(types.principal(referrer)),
+        pool == undefined ? types.none() : types.some(types.principal(pool)),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  initWithdraw(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "init-withdraw", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("direct-helpers-v1")),
+        types.uint(amount * 1000000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  cancelWithdraw(caller: Account, nftId: number, pool: string | undefined) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "cancel-withdraw", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("direct-helpers-v1")),
+        types.uint(nftId * 1000000),
+        pool == undefined ? types.none() : types.some(types.principal(pool)),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  withdraw(caller: Account, nftId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "withdraw", [
+        types.principal(qualifiedName("reserve-v1")),
+        types.uint(nftId),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setShutdownDeposits(caller: Account, shutdown: boolean) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "set-shutdown-deposits", [
         types.bool(shutdown),
       ], caller.address)
     ]);
