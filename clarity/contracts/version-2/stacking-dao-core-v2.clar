@@ -13,6 +13,7 @@
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
 (define-constant ERR_GET_OWNER u19006)
+(define-constant ERR_WITHDRAW_CANCEL u19007)
 
 ;;-------------------------------------
 ;; Variables
@@ -122,6 +123,7 @@
     (receiver tx-sender)
 
     (withdrawal-entry (contract-call? .data-core-v1 get-withdrawals-by-nft nft-id))
+    (unlock-burn-height (get unlock-burn-height withdrawal-entry))
     (stx-amount (get stx-amount withdrawal-entry))
     (ststx-amount (get ststx-amount withdrawal-entry))
 
@@ -131,10 +133,7 @@
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
-
-    ;; TODO: cancel only in same cycle as withdraw-init
-    ;; Otherwise STX tokens were locked for withdrawal and not stacked in cycle
-    ;; while user would get rewards as stSTX amount stays the same
+    (asserts! (< burn-block-height unlock-burn-height) (err ERR_WITHDRAW_CANCEL))
 
     (try! (contract-call? .data-core-v1 delete-withdrawals-by-nft nft-id))
     
