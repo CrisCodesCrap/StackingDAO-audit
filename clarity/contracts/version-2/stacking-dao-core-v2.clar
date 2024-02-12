@@ -39,7 +39,7 @@
       (ok (+ start-block-current-cycle cycle-length))
 
       ;; Withdraw cycle after next
-      (ok (+ start-block-current-cycle cycle-length))
+      (ok (+ start-block-current-cycle cycle-length cycle-length))
     )
   )
 )

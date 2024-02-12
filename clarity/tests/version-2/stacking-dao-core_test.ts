@@ -4,28 +4,42 @@ import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wra
 import { Core} from '../wrappers/stacking-dao-core-helpers.ts';
 import { DAO } from '../wrappers/dao-helpers.ts';
 import { DataCore } from '../wrappers/data-core-helpers.ts';
+import { DataDirectStacking } from '../wrappers/data-direct-stacking-helpers.ts';
+import { Reserve } from '../wrappers/reserve-helpers.ts';
+import { StStxToken } from '../wrappers/ststx-token-helpers.ts';
 
 //-------------------------------------
-// Getters 
+// Core 
 //-------------------------------------
 
 Clarinet.test({
-  name: "core: deposit and withdraw",
+  name: "core: deposit and withdraw for normal stacking",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let core = new Core(chain, deployer);
     let dataCore = new DataCore(chain, deployer);
+    let reserve = new Reserve(chain, deployer);
 
     let result = await core.deposit(wallet_1, 1000, undefined, undefined);
     result.expectOk().expectUintWithDecimals(1000);
 
-    let call = await core.getWithdrawUnlockBurnHeight();
+    let call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(1000);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await core.getWithdrawUnlockBurnHeight();
     call.result.expectOk().expectUint(21);
 
     result = await core.initWithdraw(wallet_1, 200);
     result.expectOk().expectUint(0);
+
+    call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(1000);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(200);
 
     call = await dataCore.getWithdrawalsByNft(0);
     call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(200);
@@ -36,16 +50,248 @@ Clarinet.test({
 
     result = await core.withdraw(wallet_1, 0);
     result.expectOk().expectUintWithDecimals(200);
+
+    call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(800);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(0);
   },
 });
 
-// TODO: deposit/withdraw with direct stacking
+Clarinet.test({
+  name: "core: deposit and withdraw for direct stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
 
-// TODO: cancel withdraw normal and direct stacking
+    let core = new Core(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+    let dataDirectStacking = new DataDirectStacking(chain, deployer);
+    let reserve = new Reserve(chain, deployer);
+
+    let result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectUintWithDecimals(1000);
+
+    let call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(1000);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(1000);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(1000);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(1000);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+
+    call = await core.getWithdrawUnlockBurnHeight();
+    call.result.expectOk().expectUint(21);
+
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(0);
+
+    call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(1000);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(800);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+
+    call = await dataCore.getWithdrawalsByNft(0);
+    call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["stx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["unlock-burn-height"].expectUint(21);
+
+    chain.mineEmptyBlockUntil(21 + 2);
+
+    result = await core.withdraw(wallet_1, 0);
+    result.expectOk().expectUintWithDecimals(200);
+
+    call = await reserve.getTotalStx()
+    call.result.expectOk().expectUintWithDecimals(800);
+    call = await reserve.getStxForWithdrawals();
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(800);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+  },
+});
+
+Clarinet.test({
+  name: "core: withdraw at end of cycle",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+
+    let result = await core.deposit(wallet_1, 1000, undefined, undefined);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    chain.mineEmptyBlockUntil(19);
+
+    let call = await core.getWithdrawUnlockBurnHeight();
+    call.result.expectOk().expectUint(21 * 2);
+
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(0);
+
+    call = await dataCore.getWithdrawalsByNft(0);
+    call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["stx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["unlock-burn-height"].expectUint(42);
+
+    chain.mineEmptyBlockUntil(21 * 2 + 2);
+
+    result = await core.withdraw(wallet_1, 0);
+    result.expectOk().expectUintWithDecimals(200);
+  },
+});
+  
+Clarinet.test({
+  name: "core: cancel withdrawal while normal stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+    let stStxToken = new StStxToken(chain, deployer);
+
+    let result = await core.deposit(wallet_1, 1000, undefined, undefined);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    let call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = await core.getWithdrawUnlockBurnHeight();
+    call.result.expectOk().expectUint(21);
+
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(0);
+
+    call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(800);
+
+    result = await core.cancelWithdraw(wallet_1, 0, undefined);
+    result.expectOk().expectUintWithDecimals(200);
+
+    call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = await dataCore.getWithdrawalsByNft(0);
+    call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(0);
+    call.result.expectTuple()["stx-amount"].expectUintWithDecimals(0);
+    call.result.expectTuple()["unlock-burn-height"].expectUint(0);
+
+    chain.mineEmptyBlockUntil(21 * 2 + 2);
+
+    // Can not withdraw as NFT does not exist
+    result = await core.withdraw(wallet_1, 0);
+    result.expectErr().expectUint(19005);
+  },
+});
+
+Clarinet.test({
+  name: "core: cancel withdrawal while direct stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+  
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+    let stStxToken = new StStxToken(chain, deployer);
+    let dataDirectStacking = new DataDirectStacking(chain, deployer);
+
+    let result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectUintWithDecimals(1000);
+
+    let call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = await core.getWithdrawUnlockBurnHeight();
+    call.result.expectOk().expectUint(21);
+
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(0);
+
+    call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(800);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(800);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(800);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+    result = await core.cancelWithdraw(wallet_1, 0, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectUintWithDecimals(200);
+
+    call = await stStxToken.getBalance(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(1000);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(1000);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(1000);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(1000);
+    call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+    call = await dataCore.getWithdrawalsByNft(0);
+    call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(0);
+    call.result.expectTuple()["stx-amount"].expectUintWithDecimals(0);
+    call.result.expectTuple()["unlock-burn-height"].expectUint(0);
+
+    chain.mineEmptyBlockUntil(21 * 2 + 2);
+
+    // Can not withdraw as NFT does not exist
+    result = await core.withdraw(wallet_1, 0);
+    result.expectErr().expectUint(19005);
+  },
+});
+
+//-------------------------------------
+// Access 
+//-------------------------------------
+
+// TODO: set-shutdown-deposits
+
+//-------------------------------------
+// Errors 
+//-------------------------------------
+
+// TODO:
+// (define-constant ERR_WITHDRAW_LOCKED u19001)
+// (define-constant ERR_SHUTDOWN u19002)
+// (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
+// (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
+// (define-constant ERR_GET_OWNER u19006)
 
 
 
 
+//-------------------------------------
+// V1 
+//-------------------------------------
 
 // from V1:
 

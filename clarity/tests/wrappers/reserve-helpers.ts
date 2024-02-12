@@ -14,6 +14,10 @@ class Reserve {
     this.deployer = deployer;
   }
 
+  getStxForWithdrawals() {
+    return this.chain.callReadOnlyFn("reserve-v1", "get-stx-for-withdrawals", [], this.deployer.address);
+  }
+
   getStxStacking() {
     return this.chain.callReadOnlyFn("reserve-v1", "get-stx-stacking", [], this.deployer.address);
   }
