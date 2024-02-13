@@ -196,7 +196,7 @@
   ;; (stx-account account)
 )
 
-(define-public (not-extended-next-cycle (delegate principal))
+(define-read-only (not-extended-next-cycle (delegate principal))
   (let (
     ;; TODO: update for mainnet
     (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))

@@ -96,7 +96,7 @@
         (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
       )
         ;; User might have stacked more than direct amount
-        (if (> amount current-direct-amount)
+        (if (>= amount current-direct-amount)
           (begin
             (try! (as-contract (stop-direct-stacking user)))
             true
