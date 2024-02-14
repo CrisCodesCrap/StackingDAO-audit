@@ -134,7 +134,7 @@ export function Positions() {
     const fetchBitflowBalance = async () => {
       const resultWallet = await callReadOnlyFunction({
         contractAddress: "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M",
-        contractName: 'stx-ststx-lp-token-v-1-2',
+        contractName: 'stx-ststx-lp-token-v-1-1',
         functionName: 'get-balance',
         functionArgs: [
           standardPrincipalCV(stxAddress)
