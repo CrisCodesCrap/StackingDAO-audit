@@ -6,11 +6,18 @@
 (use-trait staking-trait .staking-trait-v1.staking-trait)
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_CAN_NOT_PROCESS_YET u45001)
+
+;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
 
 (define-data-var total-commission uint u0)
 (define-data-var total-rewards-left uint u0)
+(define-data-var rewards-unlock uint u0)
 
 ;;-------------------------------------
 ;; Getters
@@ -24,9 +31,22 @@
   (var-get total-rewards-left)
 )
 
+(define-read-only (get-rewards-unlock)
+  (var-get rewards-unlock)
+)
+
 (define-read-only (get-pox-cycle)
   ;; TODO: update for mainnet
   (contract-call? .pox-4-mock current-pox-reward-cycle)
+)
+
+(define-read-only (next-rewards-unlock)
+  (let (
+    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1)))
+    (withdrawal-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
+  )
+    (- start-block-next-cycle withdrawal-offset)
+  )
 )
 
 ;;-------------------------------------
@@ -36,7 +56,7 @@
 ;; Rewards might be transferred to the delegates. 
 ;; When executing a strategy, rewards in delegates are handled and added via `add-rewards`
 ;; Or they must be added manually by the pool owner via `add-rewards`
-;; Afterwards `process-rewards` need to be called (keeper?)
+;; The `process-rewards` method can be called at the end of each cycle.
 
 (define-public (add-rewards 
   (pool principal)
@@ -52,9 +72,12 @@
     (var-set total-commission (+ (var-get total-commission) commission-amount))
     (var-set total-rewards-left (+ (var-get total-rewards-left) rewards-left))
 
+    (var-set rewards-unlock (next-rewards-unlock))
+
     (stx-transfer? stx-amount tx-sender (as-contract tx-sender))
   )
 )
+
 
 (define-public (process-rewards 
   (commission-contract <commission-trait>) 
@@ -66,6 +89,7 @@
     (try! (contract-call? .dao check-is-protocol reserve))
     (try! (contract-call? .dao check-is-protocol (contract-of commission-contract)))
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))
+    (asserts! (> burn-block-height (var-get rewards-unlock)) (err ERR_CAN_NOT_PROCESS_YET))
 
     (if (> (var-get total-commission) u0)
       (try! (contract-call? commission-contract add-commission staking-contract (var-get total-commission)))

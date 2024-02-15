@@ -22,6 +22,14 @@ class Rewards {
     return this.chain.callReadOnlyFn("rewards-v1", "get-total-rewards-left", [], this.deployer.address);
   }
 
+  getRewardsUnlock() {
+    return this.chain.callReadOnlyFn("rewards-v1", "get-rewards-unlock", [], this.deployer.address);
+  }
+
+  nextRewardsUnlock() {
+    return this.chain.callReadOnlyFn("rewards-v1", "next-rewards-unlock", [], this.deployer.address);
+  }
+
   addRewards(caller: Account, pool: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("rewards-v1", "add-rewards", [

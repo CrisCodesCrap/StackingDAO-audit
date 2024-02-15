@@ -29,7 +29,7 @@
   (var-get shutdown-deposits)
 )
 
-(define-public (get-withdraw-unlock-burn-height)
+(define-read-only (get-withdraw-unlock-burn-height)
   (let (
     (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
     (start-block-current-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height current-cycle))
