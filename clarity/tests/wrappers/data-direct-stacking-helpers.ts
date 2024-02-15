@@ -19,7 +19,7 @@ class DataDirectStacking {
   }
 
   getTotalDirectStacking() {
-    return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-total-directed-stacking", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-total-direct-stacking", [], this.deployer.address);
   }
 
   getDirectStackingPoolAmount(pool: string) {
@@ -37,7 +37,26 @@ class DataDirectStacking {
   setDirectStackingDependence(caller: Account, dependence: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("data-direct-stacking-v1", "set-direct-stacking-dependence", [
-        types.uint(dependence ),
+        types.uint(dependence),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setTotalDirectStacking(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "set-total-direct-stacking", [
+        types.uint(amount * 1000000),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setDirectStackingPoolAmount(caller: Account, pool: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "set-direct-stacking-pool-amount", [
+        types.principal(pool),
+        types.uint(amount * 1000000),
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -47,6 +66,7 @@ class DataDirectStacking {
     return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-supported-protocols", [
     ], this.deployer.address);
   }
+
 
 }
 export { DataDirectStacking };

@@ -29,7 +29,7 @@
     (new-total-stacking (- (+ total-stacking total-idle) total-withdrawals))
 
     ;; New total amount to stack, for normal and direct
-    (new-total-direct-stacking (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
+    (new-total-direct-stacking (contract-call? .data-direct-stacking-v1 get-total-direct-stacking))
     (new-total-normal-stacking (- (+ total-stacking total-idle) total-withdrawals new-total-direct-stacking))
   )
     { 
@@ -90,7 +90,7 @@
     (total-normal-direct-stacking (/ (* new-total-normal-stacking direct-dependence) u10000))
 
     (normal-stacking (/ (* total-normal-stacking pool-share) u10000))
-    (normal-direct-stacking (/ (* total-normal-stacking direct-stacking-share) u10000))
+    (normal-direct-stacking (/ (* total-normal-direct-stacking direct-stacking-share) u10000))
   )
     (+ direct-stacking normal-stacking normal-direct-stacking)
   )

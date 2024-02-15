@@ -42,11 +42,11 @@
           
           ;; New amounts after stop
           (selected-pool-amount (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount (unwrap-panic pool)))
-          (total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
+          (total-amount (contract-call? .data-direct-stacking-v1 get-total-direct-stacking))
         )
           (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-user user (unwrap-panic pool) (+ current-direct-amount amount)))
           (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-pool-amount (unwrap-panic pool) (+ selected-pool-amount current-direct-amount amount)))            
-          (try! (contract-call? .data-direct-stacking-v1 set-total-directed-stacking (+ total-amount current-direct-amount amount)))
+          (try! (contract-call? .data-direct-stacking-v1 set-total-direct-stacking (+ total-amount current-direct-amount amount)))
           true
         )
 
@@ -65,11 +65,11 @@
         ;; Add new direct stacking data for selected pool
         (let (
           (selected-pool-amount (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount (unwrap-panic pool)))
-          (total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
+          (total-amount (contract-call? .data-direct-stacking-v1 get-total-direct-stacking))
         )
           (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-user user (unwrap-panic pool) amount))
           (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-pool-amount (unwrap-panic pool) (+ selected-pool-amount amount)))            
-          (try! (contract-call? .data-direct-stacking-v1 set-total-directed-stacking (+ total-amount amount)))
+          (try! (contract-call? .data-direct-stacking-v1 set-total-direct-stacking (+ total-amount amount)))
           true
         )
 
@@ -93,7 +93,7 @@
         (current-direct-pool (get pool (unwrap-panic current-direct-stacking)))
         (current-direct-amount (get amount (unwrap-panic current-direct-stacking)))
         (current-pool-amount (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount current-direct-pool))
-        (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
+        (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-direct-stacking))
       )
         ;; User might have stacked more than direct amount
         (if (>= amount current-direct-amount)
@@ -104,7 +104,7 @@
           (begin
             (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-user user current-direct-pool (- current-direct-amount amount)))
             (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-pool-amount current-direct-pool (- current-pool-amount amount)))                    
-            (try! (contract-call? .data-direct-stacking-v1 set-total-directed-stacking (- current-total-amount amount)))
+            (try! (contract-call? .data-direct-stacking-v1 set-total-direct-stacking (- current-total-amount amount)))
             true
           )
         )
@@ -127,12 +127,12 @@
         (current-direct-pool (get pool (unwrap-panic current-direct-stacking)))
         (current-direct-amount (get amount (unwrap-panic current-direct-stacking)))
         (current-pool-amount (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount current-direct-pool))
-        (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-directed-stacking))
+        (current-total-amount (contract-call? .data-direct-stacking-v1 get-total-direct-stacking))
       )
         ;; 1) User is direct stacking, remove current info
         (try! (contract-call? .data-direct-stacking-v1 delete-direct-stacking-user user))        
         (try! (contract-call? .data-direct-stacking-v1 set-direct-stacking-pool-amount current-direct-pool (- current-pool-amount current-direct-amount)))
-        (try! (contract-call? .data-direct-stacking-v1 set-total-directed-stacking (- current-total-amount current-direct-amount)))
+        (try! (contract-call? .data-direct-stacking-v1 set-total-direct-stacking (- current-total-amount current-direct-amount)))
         true
       )
       false
