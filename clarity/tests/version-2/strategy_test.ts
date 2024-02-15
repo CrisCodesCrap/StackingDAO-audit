@@ -95,6 +95,32 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "strategy-v3-algo-v1: calculate if nothing changes",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let strategyV3AlgoV1 = new StrategyV3AlgoV1(chain, deployer)
+
+    // Reach target
+    let call = await strategyV3AlgoV1.calculateReachTarget(
+      [175000, 75000],
+      [175000, 75000]
+    );
+    call.result.expectList()[0].expectUintWithDecimals(175000);
+    call.result.expectList()[1].expectUintWithDecimals(75000);
+
+    // Lowest combination
+    call = await strategyV3AlgoV1.calculateLowestCombination(0, [65000, 26000, 19500, 11000, 6500]);
+    call.result.expectList()[0].expectUintWithDecimals(65000);
+    call.result.expectList()[1].expectUintWithDecimals(26000);
+    call.result.expectList()[2].expectUintWithDecimals(19500);
+    call.result.expectList()[3].expectUintWithDecimals(11000);
+    call.result.expectList()[4].expectUintWithDecimals(6500);
+
+  }
+});
+
 //-------------------------------------
 // Pools V1 
 //-------------------------------------
@@ -179,7 +205,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("stacking-pool-v1"),
       [qualifiedName("stacking-delegate-1-1"), qualifiedName("stacking-delegate-1-2"), qualifiedName("stacking-delegate-1-3")]
     );
@@ -223,7 +249,7 @@ Clarinet.test({
     let stackingPool = new StackingPool(chain, deployer);
     let fastPool = new FastPoolV2(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
-    
+
 
     //
     // Add STX to reserve to stack
@@ -255,14 +281,14 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("stacking-pool-v1"),
       [qualifiedName("stacking-delegate-1-1"), qualifiedName("stacking-delegate-1-2"), qualifiedName("stacking-delegate-1-3")]
     );
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("pox-fast-pool-v2-mock"),
       [qualifiedName("stacking-delegate-2-1"), qualifiedName("stacking-delegate-2-2"), qualifiedName("stacking-delegate-2-3")]
     );
@@ -282,7 +308,7 @@ Clarinet.test({
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(1);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(1);
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(175000);
-    
+
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(87500);
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-2"));
@@ -296,7 +322,7 @@ Clarinet.test({
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(1);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(1);
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(75000);
-    
+
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-2-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(37500);
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-2-2"));
@@ -376,14 +402,14 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("stacking-pool-v1"),
       [qualifiedName("stacking-delegate-1-1"), qualifiedName("stacking-delegate-1-2"), qualifiedName("stacking-delegate-1-3")]
     );
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("pox-fast-pool-v2-mock"),
       [qualifiedName("stacking-delegate-2-1"), qualifiedName("stacking-delegate-2-2"), qualifiedName("stacking-delegate-2-3")]
     );
@@ -402,7 +428,7 @@ Clarinet.test({
     call.result.expectTuple()["cycle-prepared-delegates"].expectUint(2);
     call.result.expectTuple()["cycle-executed-pool"].expectUint(2);
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(147000);
-    
+
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-1"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(87500);
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-1-2"));
@@ -424,7 +450,7 @@ Clarinet.test({
     call = await strategyV3.getPrepareDelegatesData(qualifiedName("stacking-delegate-2-3"));
     call.result.expectTuple()["stacking-amount"].expectUintWithDecimals(0); // 12k outflow so stopped this delegate
 
-    
+
     //
     // Prepare pools
     //
@@ -517,14 +543,14 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("stacking-pool-v1"),
       [qualifiedName("stacking-delegate-1-1"), qualifiedName("stacking-delegate-1-2"), qualifiedName("stacking-delegate-1-3")]
     );
     result.expectOk().expectBool(true);
 
     result = await strategyV3.execute(
-      deployer, 
+      deployer,
       qualifiedName("pox-fast-pool-v2-mock"),
       [qualifiedName("stacking-delegate-2-1"), qualifiedName("stacking-delegate-2-2"), qualifiedName("stacking-delegate-2-3")]
     );

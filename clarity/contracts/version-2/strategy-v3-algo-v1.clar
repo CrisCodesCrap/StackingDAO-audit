@@ -94,15 +94,13 @@
     (overunlocked-many-start (get overunlocked combination-many-start))
     (overunlocked-many-end (get overunlocked combination-many-end))
 
-    (best-combination 
-      (if (and (< overunlocked-one overunlocked-many-start) (< overunlocked-one overunlocked-many-end))
-        combination-one
-        (if (and (< overunlocked-many-start overunlocked-one) (< overunlocked-many-start overunlocked-many-end))
-          combination-many-start
-          combination-many-end
-        )
+    (best-combination (if (and (< overunlocked-one overunlocked-many-start) (< overunlocked-one overunlocked-many-end))
+      combination-one
+      (if (and (< overunlocked-many-start overunlocked-one) (< overunlocked-many-start overunlocked-many-end))
+        combination-many-start
+        combination-many-end
       )
-    )
+    ))
 
     (indices (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
     (indices-sliced (unwrap-panic (slice? indices u0 (len locked))))
@@ -149,10 +147,16 @@
     (min-total (fold get-min-of totals u99999999999999))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
-    {
-      indices: (list (unwrap-panic (element-at? indices-start min-total-index))),
-      overunlocked: min-total
-    }
+    (if (is-eq outflow u0)
+      {
+        indices: (list ),
+        overunlocked: u0
+      }
+      {
+        indices: (list (unwrap-panic (element-at? indices-start min-total-index))),
+        overunlocked: min-total
+      }
+    )
   )
 )
 
@@ -173,10 +177,16 @@
     (min-total (fold get-min-of totals u99999999999999))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
-    {
-      indices: (unwrap-panic (slice? indices u0 (+ min-total-index u1))),
-      overunlocked: min-total
-    }
+    (if (is-eq outflow u0)
+      {
+        indices: (list ),
+        overunlocked: u0
+      }
+      {
+        indices: (unwrap-panic (slice? indices u0 (+ min-total-index u1))),
+        overunlocked: min-total
+      }
+    )
   )
 )
 
@@ -195,20 +205,22 @@
     (min-total (fold get-min-of totals u99999999999999))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
-    {
-      indices: (unwrap-panic (slice? indices-start min-total-index (len locked))),
-      overunlocked: min-total
-    }
+    (if (is-eq outflow u0)
+      {
+        indices: (list ),
+        overunlocked: u0
+      }
+      {
+        indices: (unwrap-panic (slice? indices-start min-total-index (len locked))),
+        overunlocked: min-total
+      }
+    )
   )
 )
 
 ;;-------------------------------------
 ;; Helpers
 ;;-------------------------------------
-
-(define-read-only (round-down (a uint))
-  (/ (* a u999999) u1000000)
-)
 
 (define-read-only (get-min-of (a uint) (b uint))
   (if (< a b) a b)
