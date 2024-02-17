@@ -62,11 +62,39 @@ class DataDirectStacking {
     return block.receipts[0].result;
   }
 
+  setDirectStackingUser(caller: Account, user: string, pool: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "set-direct-stacking-user", [
+        types.principal(user),
+        types.principal(pool),
+        types.uint(amount * 1000000),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  deleteDirectStackingUser(caller: Account, user: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "delete-direct-stacking-user", [
+        types.principal(user),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   getSupportedProtocols() {
     return this.chain.callReadOnlyFn("data-direct-stacking-v1", "get-supported-protocols", [
     ], this.deployer.address);
   }
 
+  setSupportedProtocols(caller: Account, protocols: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-direct-stacking-v1", "set-supported-protocols", [
+        types.list(protocols.map(protocol => types.principal(protocol))),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 
 }
 export { DataDirectStacking };

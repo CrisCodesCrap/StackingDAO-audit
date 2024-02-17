@@ -31,10 +31,46 @@ class DataCore {
     ], this.deployer.address);
   }
 
+  setCycleWithdrawOffset(caller: Account, offset: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-core-v1", "set-cycle-withdraw-offset", [
+        types.uint(offset)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  getMigratedNft(nftId: number) {
+    return this.chain.callReadOnlyFn("data-core-v1", "get-migrated-nft", [
+        types.uint(nftId)
+    ], this.deployer.address);
+  }
+
   getWithdrawalsByNft(nftId: number) {
     return this.chain.callReadOnlyFn("data-core-v1", "get-withdrawals-by-nft", [
         types.uint(nftId)
     ], this.deployer.address);
+  }
+
+  setWithdrawalsByNft(caller: Account, nftId: number, stxAmount: number, stStxAmount: number, unlockBurnHeight: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-core-v1", "set-withdrawals-by-nft", [
+        types.uint(nftId),
+        types.uint(stxAmount * 1000000),
+        types.uint(stStxAmount * 1000000),
+        types.uint(unlockBurnHeight)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  deleteWithdrawalsByNft(caller: Account, nftId: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-core-v1", "delete-withdrawals-by-nft", [
+        types.uint(nftId),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
   }
 
 }

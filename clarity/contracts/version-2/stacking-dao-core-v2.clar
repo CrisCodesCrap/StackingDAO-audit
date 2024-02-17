@@ -193,3 +193,20 @@
     (ok true)
   )
 )
+
+;;-------------------------------------
+;; Migrate stSTX from V1
+;;-------------------------------------
+
+(define-public (migrate-ststx (receiver principal))
+  (let (
+    (balance-v1 (unwrap-panic (contract-call? .ststx-token get-balance .stacking-dao-core-v1)))
+  )
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+    
+    (try! (contract-call? .ststx-token burn-for-protocol balance-v1 .stacking-dao-core-v1))
+    (try! (contract-call? .ststx-token mint-for-protocol balance-v1 (as-contract tx-sender)))
+
+    (ok true)
+  )
+)

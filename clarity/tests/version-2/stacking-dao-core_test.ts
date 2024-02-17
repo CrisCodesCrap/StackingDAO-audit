@@ -2,7 +2,6 @@ import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarine
 import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wrappers/tests-utils.ts';
 
 import { Core} from '../wrappers/stacking-dao-core-helpers.ts';
-import { DAO } from '../wrappers/dao-helpers.ts';
 import { DataCore } from '../wrappers/data-core-helpers.ts';
 import { DataDirectStacking } from '../wrappers/data-direct-stacking-helpers.ts';
 import { Reserve } from '../wrappers/reserve-helpers.ts';
