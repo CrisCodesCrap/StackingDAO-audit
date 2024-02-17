@@ -39,6 +39,7 @@ Clarinet.test({
     //
 
     result = stackingDelegate.returnStxFromStacking(deployer, "stacking-delegate-1-1", 300000);
+    result.expectOk().expectUintWithDecimals(300000);
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
     call.result.expectTuple()["locked"].expectUintWithDecimals(0);
@@ -334,6 +335,9 @@ Clarinet.test({
 
     call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
+
+    result = stackingDelegate.returnStx(deployer, "stacking-delegate-1-1");
+    result.expectOk().expectUintWithDecimals(0);
   }
 });
 

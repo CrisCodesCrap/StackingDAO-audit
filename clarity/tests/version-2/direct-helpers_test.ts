@@ -172,6 +172,9 @@ Clarinet.test({
     call.result.expectUintWithDecimals(0);
     call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
     call.result.expectNone();
+
+    result = await directHelpers.stopDirectStackingUser(wallet_1);
+    result.expectOk().expectBool(true);
   }
 });
 
@@ -251,12 +254,15 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
+    let call = await directHelpers.calculateDirectStackingInfo([qualifiedName("protocol-arkadiko-v1")], wallet_1.address);
+    call.result.expectOk().expectTuple()["balance-ststx"].expectUintWithDecimals(100);
+    call.result.expectOk().expectTuple()["direct-stacking-stx"].expectUintWithDecimals(0);
 
     // Add direct stacking
     result = await directHelpers.addDirectStacking(deployer, wallet_1.address, qualifiedName("stacking-pool-v1"), 100)
     result.expectOk().expectBool(true);
 
-    let call = await directHelpers.calculateDirectStackingInfo([qualifiedName("protocol-arkadiko-v1")], wallet_1.address);
+    call = await directHelpers.calculateDirectStackingInfo([qualifiedName("protocol-arkadiko-v1")], wallet_1.address);
     call.result.expectOk().expectTuple()["balance-ststx"].expectUintWithDecimals(100);
     call.result.expectOk().expectTuple()["direct-stacking-stx"].expectUintWithDecimals(100);
 
@@ -273,6 +279,10 @@ Clarinet.test({
     call = await directHelpers.calculateDirectStackingInfo([qualifiedName("protocol-arkadiko-v1")], wallet_1.address);
     call.result.expectOk().expectTuple()["balance-ststx"].expectUintWithDecimals(100 - 20);
     call.result.expectOk().expectTuple()["direct-stacking-stx"].expectUintWithDecimals(100 - 20);
+
+    // Update direct stacking
+    result = await directHelpers.updateDirectStacking(wallet_2, [qualifiedName("protocol-arkadiko-v1")], wallet_1.address);
+    result.expectOk().expectBool(true);
   }
 });
 

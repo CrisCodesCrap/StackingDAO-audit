@@ -42,6 +42,9 @@ Clarinet.test({
 
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(95);
+
+    result = await rewards.processRewards(deployer);
+    result.expectOk().expectBool(true);
   }
 });
 
