@@ -32,8 +32,8 @@ class DelegatesHandler {
     ], this.deployer.address);
   }
 
-  getLastContractAmount(delegate: string) {
-    return this.chain.callReadOnlyFn("delegates-handler-v1", "get-last-contract-amount", [
+  getLastUnlockedAmount(delegate: string) {
+    return this.chain.callReadOnlyFn("delegates-handler-v1", "get-last-unlocked-amount", [
       types.principal(delegate)
     ], this.deployer.address);
   }
@@ -97,6 +97,18 @@ class DelegatesHandler {
         types.uint(amount * 1000000),
         types.principal(delegateTo),
         types.uint(untilBurnHeight),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  updateAmounts(caller: Account, delegate: string, targetLocked: number, lastLocked: number, lastUnlocked: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "update-amounts", [
+        types.principal(delegate),
+        types.uint(targetLocked * 1000000),
+        types.uint(lastLocked * 1000000),
+        types.uint(lastUnlocked * 1000000),
       ], caller.address)
     ]);
     return block.receipts[0].result;

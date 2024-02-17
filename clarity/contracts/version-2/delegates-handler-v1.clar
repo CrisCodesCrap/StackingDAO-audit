@@ -160,7 +160,7 @@
   )
     (if (> excess-amount u0)
       (if (> unlocked-amount excess-amount)
-        (- unlocked-amount excess-amount)
+        excess-amount
         unlocked-amount
       )
       u0
