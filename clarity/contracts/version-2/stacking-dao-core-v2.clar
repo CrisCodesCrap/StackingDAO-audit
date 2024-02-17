@@ -89,7 +89,7 @@
 
     (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
     (stx-amount (/ (* ststx-amount stx-ststx) u1000000))
-    (total-stx (unwrap-panic (contract-call? reserve get-total-stx)))
+    (total-stx (try! (contract-call? reserve get-total-stx)))
 
     (nft-id (unwrap-panic (contract-call? .ststx-withdraw-nft get-last-token-id)))
   )

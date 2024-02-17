@@ -9,7 +9,7 @@
 
 (define-public (get-stx-per-ststx (reserve-contract <reserve-trait>))
   (let (
-    (stx-amount (unwrap-panic (contract-call? reserve-contract get-total-stx)))
+    (stx-amount (try! (contract-call? reserve-contract get-total-stx)))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of reserve-contract)))
     (ok (get-stx-per-ststx-helper stx-amount))

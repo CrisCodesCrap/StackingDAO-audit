@@ -215,7 +215,7 @@
   )
     (asserts! (is-some protocol-index) (err ERR_UNKNOWN_PROTOCOL))
 
-    (ok (try! (contract-call? protocol get-balance user)))
+    (ok balance)
   )
 )
 
