@@ -20,9 +20,9 @@ class StackingDelegate {
     ], this.deployer.address);
   }
 
-  delegateStx(caller: Account, amount: number, delegateTo: string, untilBurnHeight: number) {
+  delegateStx(caller: Account, delegate: string, amount: number, delegateTo: string, untilBurnHeight: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "delegate-stx", [
+      Tx.contractCall(delegate, "delegate-stx", [
         types.uint(amount * 1000000),
         types.principal(delegateTo),
         types.some(types.uint(untilBurnHeight))
@@ -31,17 +31,17 @@ class StackingDelegate {
     return block.receipts[0].result;
   }
 
-  revokeDelegateStx(caller: Account) {
+  revokeDelegateStx(caller: Account, delegate: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "revoke-delegate-stx", [
+      Tx.contractCall(delegate, "revoke-delegate-stx", [
       ], caller.address)
     ]);
     return block.receipts[0].result;
   }
 
-  requestStxToStack(caller: Account, amount: number) {
+  requestStxToStack(caller: Account, delegate: string, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "request-stx-to-stack", [
+      Tx.contractCall(delegate, "request-stx-to-stack", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000),
       ], caller.address)
@@ -49,9 +49,9 @@ class StackingDelegate {
     return block.receipts[0].result;
   }
 
-  returnStxFromStacking(caller: Account, amount: number) {
+  returnStxFromStacking(caller: Account, delegate: string, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "return-stx-from-stacking", [
+      Tx.contractCall(delegate, "return-stx-from-stacking", [
         types.principal(qualifiedName("reserve-v1")),
         types.uint(amount * 1000000),
       ], caller.address)
@@ -59,9 +59,20 @@ class StackingDelegate {
     return block.receipts[0].result;
   }
 
-  returnStx(caller: Account, amount: number) {
+  handleRewards(caller: Account, delegate: string, pool: string, rewards: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-delegate-1-1", "return-stx", [
+      Tx.contractCall(delegate, "handle-rewards", [
+        types.principal(pool),
+        types.uint(rewards * 1000000),
+        types.principal(qualifiedName("rewards-v1")),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  returnStx(caller: Account, delegate: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall(delegate, "return-stx", [
         types.principal(qualifiedName("reserve-v1")),
       ], caller.address)
     ]);

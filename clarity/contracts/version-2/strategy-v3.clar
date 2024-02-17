@@ -159,7 +159,7 @@
     (saved-delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
     (compare-errors (filter not (map compare-delegates saved-delegates delegates)))
 
-    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-next-cycle-start-burn-height)) (list-30-reserve-trait reserve) (list-30-rewards-trait rewards-contract)))
+    (helper-result (map perform-pool-delegation-helper delegates (list-30-principal pool) (list-30-uint (get-unlock-burn-height)) (list-30-reserve-trait reserve) (list-30-rewards-trait rewards-contract)))
     (helper-errors (filter is-error helper-result))
     (helper-error (element-at? helper-errors u0))
   )
@@ -218,9 +218,9 @@
   (contract-call? .pox-4-mock current-pox-reward-cycle)
 )
 
-(define-read-only (get-next-cycle-start-burn-height)
+(define-read-only (get-unlock-burn-height)
   ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
+  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u2))
 )
 
 ;;-------------------------------------

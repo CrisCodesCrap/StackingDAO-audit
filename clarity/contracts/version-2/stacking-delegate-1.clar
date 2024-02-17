@@ -14,7 +14,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to none none))
+    (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none))
       result (ok result)
       error (err (to-uint error))
     )
@@ -65,7 +65,6 @@
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
     (if (> rewards u0)
-      ;; TODO: must be done in delegate itself
       (try! (as-contract (contract-call? rewards-contract add-rewards pool rewards)))
       true
     )

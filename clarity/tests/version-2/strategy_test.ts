@@ -665,10 +665,64 @@ Clarinet.test({
   }
 });
 
-
 //-------------------------------------
 // Errors 
 //-------------------------------------
+
+Clarinet.test({
+  name: "strategy-v3: pool can not stack next cycle without delegates updating delegation",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let strategyV3DelegatesV1 = new StrategyV3DelegatesV1(chain, deployer)
+    let strategyV3 = new StrategyV3(chain, deployer)
+    let stackingPool = new StackingPool(chain, deployer);
+    let pox = new Pox4Mock(chain, deployer);
+
+    // 150k STX to reserve
+    let block = chain.mineBlock([
+      Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // 
+    // Stack and lock amount for pool
+    //
+
+    // Move to end of cycle 1, where we can prepare
+    await chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH + 15);
+
+    let result = await strategyV3.preparePools(deployer);
+    result.expectOk().expectBool(true);
+
+    result = await strategyV3.prepareDelegates(deployer, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectBool(true);
+
+    result = await strategyV3.execute(
+      deployer,
+      qualifiedName("stacking-pool-v1"),
+      [qualifiedName("stacking-delegate-1-1"), qualifiedName("stacking-delegate-1-2"), qualifiedName("stacking-delegate-1-3")]
+    );
+    result.expectOk().expectBool(true);
+
+    // 
+    // Stack and lock amount for pool
+    //
+
+    let call = await pox.getCheckDelegation(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(63);
+
+    result = await stackingPool.prepare(deployer);
+    result.expectOk().expectBool(true);
+
+    // Move to beginning of cycle 2
+    await chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 2 + 1);
+
+    // ERR_DELEGATION_EXPIRES_DURING_LOCK
+    result = await stackingPool.prepare(deployer);
+    result.expectErr().expectUint(21);
+  }
+});
 
 //-------------------------------------
 // Access 

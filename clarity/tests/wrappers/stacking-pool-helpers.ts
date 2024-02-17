@@ -58,5 +58,52 @@ class StackingPool {
     ], this.deployer.address);
   }
 
+  delegateStackStx(caller: Account, stacker: string, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "delegate-stack-stx", [
+        types.principal(stacker),
+        types.uint(amount * 1000000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  delegateStackExtend(caller: Account, stacker: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "delegate-stack-extend", [
+        types.principal(stacker),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  delegateStackIncrease(caller: Account, stacker: string, increaseBy: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "delegate-stack-increase", [
+        types.principal(stacker),
+        types.uint(increaseBy * 1000000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  stackAggregationCommitIndexed(caller: Account, rewardCycle: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "stack-aggregation-commit-indexed", [
+        types.uint(rewardCycle)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  stackAggregationIncrease(caller: Account, rewardCycle: number, rewardCycleIndex: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "stack-aggregation-increase", [
+        types.uint(rewardCycle),
+        types.uint(rewardCycleIndex),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StackingPool };

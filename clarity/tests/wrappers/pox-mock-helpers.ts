@@ -63,6 +63,20 @@ class Pox4Mock {
     ], this.deployer.address);
   }
 
+  getCheckDelegation(stacker: string) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "get-check-delegation", [
+      types.principal(stacker),
+    ], this.deployer.address);
+  }
+
+  getPartialStackedByCycle(rewardCycle: number, pool: string) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "get-partial-stacked-by-cycle", [
+      types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
+      types.uint(rewardCycle),
+      types.principal(pool),
+    ], this.deployer.address);
+  }
+
   unlock(caller: Account, account: string) {
     let block = this.chain.mineBlock([
       Tx.contractCall("pox-4-mock", "unlock-mock", [

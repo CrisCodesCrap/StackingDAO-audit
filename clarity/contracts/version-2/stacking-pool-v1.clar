@@ -98,10 +98,10 @@
     (asserts! (> (total-delegated) u0) (err ERR_CAN_NOT_PREPARE))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
-    ;; 2. Aggregate - will fail if min not reached
+    ;; 2. Aggregate
     (try! (aggregation))
 
-    (print { action: "prepare", data: { delegation-errors: delegation-errors, block-height: block-height } })
+    (print { action: "prepare-finished", data: { block-height: block-height } })
 
     (ok true)
   )
@@ -172,12 +172,14 @@
       (let (
         (reward-index (try! (as-contract (stack-aggregation-commit-indexed next-cycle))))
       )
+        (print { action: "aggreagation", data: { reward-index: reward-index, block-height: block-height } })
         (map-set cycle-to-index next-cycle reward-index)
         true
       )
 
       ;; Already have an index for cycle
       (begin
+        (print { action: "aggreagation", data: { reward-index: (unwrap-panic index), block-height: block-height } })
         (try! (as-contract (stack-aggregation-increase next-cycle (unwrap-panic index))))
         true
       )
@@ -214,6 +216,7 @@
 (define-public (delegate-stack-stx (stacker principal) (amount-ustx uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "delegate-stack-stx", data: { stacker: stacker, amount: amount-ustx, block-height: block-height } })
     
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height u1))
@@ -226,6 +229,7 @@
 (define-public (delegate-stack-extend (stacker principal))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "delegate-stack-extend", data: { stacker: stacker, block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock delegate-stack-extend stacker (get-pox-reward-address) u1))
@@ -238,6 +242,7 @@
 (define-public (delegate-stack-increase (stacker principal) (increase-by uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "delegate-stack-increase", data: { stacker: stacker, increase-by: increase-by, block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock delegate-stack-increase stacker (get-pox-reward-address) increase-by))
@@ -250,6 +255,7 @@
 (define-public (stack-aggregation-commit-indexed (reward-cycle uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "stack-aggregation-commit-indexed", data: { reward-cycle: reward-cycle, block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (get-pox-reward-address) reward-cycle))
@@ -262,6 +268,7 @@
 (define-public (stack-aggregation-increase (reward-cycle uint) (reward-cycle-index uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "stack-aggregation-increase", data: { reward-cycle: reward-cycle, reward-cycle-index: reward-cycle-index, block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
