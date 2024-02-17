@@ -10,7 +10,13 @@ import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
 import { DataDirectStacking } from '../wrappers/data-direct-stacking-helpers.ts';
 
 //-------------------------------------
-// Algo V1 
+// Strategy V2
+//-------------------------------------
+
+// TODO
+
+//-------------------------------------
+// Strategy V3 - Algo V1 
 //-------------------------------------
 
 Clarinet.test({
@@ -123,7 +129,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Pools V1 
+// Strategy V3 - Pools V1 
 //-------------------------------------
 
 Clarinet.test({
@@ -219,7 +225,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Delegates V1 
+// Strategy V3 - Delegates V1 
 //-------------------------------------
 
 Clarinet.test({
@@ -294,7 +300,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Core 
+// Strategy V3 - Core 
 //-------------------------------------
 
 Clarinet.test({
@@ -666,7 +672,7 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Errors 
+// Strategy V3 - Errors 
 //-------------------------------------
 
 Clarinet.test({
@@ -725,5 +731,5 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Access 
+// Strategy V3 - Access 
 //-------------------------------------

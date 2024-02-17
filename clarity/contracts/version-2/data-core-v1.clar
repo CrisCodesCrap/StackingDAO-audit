@@ -86,7 +86,8 @@
         (prev-info (contract-call? .stacking-dao-core-v1 get-withdrawals-by-nft nft-id))
         (cycle-start-block (if (> (get cycle-id prev-info) u0)
           ;; Need to translate cycle-id into unlock-burn-height
-          (contract-call? .pox-4-mock reward-cycle-to-burn-height (get cycle-id prev-info))
+          ;; TODO: update for mainnet
+          (contract-call? .pox-3-mock reward-cycle-to-burn-height (get cycle-id prev-info))
           u0
         ))
       )
