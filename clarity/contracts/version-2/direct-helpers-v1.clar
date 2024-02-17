@@ -198,8 +198,10 @@
     (protocol-balance-errors (filter is-error protocol-balances))
     (protocol-balance-error (element-at? protocol-balance-errors u0))
   )
-    ;; TODO: is this assert correct? Should we wrap in (err) in pool etc as well?
-    (asserts! (is-none protocol-balance-error) (err (unwrap-panic protocol-balance-error)))
+    (try! (if (is-some protocol-balance-error) 
+      (unwrap-panic protocol-balance-error)
+      (ok u0)
+    ))
 
     (let (
       (protocol-balances-unrwapped (map do-unwrap-panic protocol-balances))
@@ -215,12 +217,10 @@
   (let (
     (supported-protocols (contract-call? .data-direct-stacking-v1 get-supported-protocols))
     (protocol-index (index-of? supported-protocols (contract-of protocol)))
-
-    (balance (try! (contract-call? protocol get-balance user)))
   )
     (asserts! (is-some protocol-index) (err ERR_UNKNOWN_PROTOCOL))
 
-    (ok balance)
+    (contract-call? protocol get-balance user)
   )
 )
 
@@ -238,17 +238,15 @@
       u0
     ))
   )
-    (print { diff: diff, info: info })
-
     (if (> diff u0)
       (begin
-        ;; TODO: would be better to use try!
-        (unwrap-panic (as-contract (subtract-direct-stacking user diff)))
+        (try! (as-contract (subtract-direct-stacking user diff)))
         true
       )
       false
     )
   
+    (print { action: "update-direct-stacking", data: { user: user, info: info, block-height: block-height } })
     (ok true)
   )
 )
