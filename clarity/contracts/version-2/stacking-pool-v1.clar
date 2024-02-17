@@ -101,8 +101,7 @@
     ;; 2. Aggregate
     (try! (aggregation))
 
-    (print { action: "prepare-finished", data: { block-height: block-height } })
-
+    (print { action: "prepare", data: { block-height: block-height } })
     (ok true)
   )
 )

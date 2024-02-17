@@ -83,6 +83,7 @@
     ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
     (map-set last-contract-amount (contract-of delegate) (+ (get-last-contract-amount (contract-of delegate)) amount))
 
+    (print { action: "request-stx-to-stack", data: { delegate: (contract-of delegate), amount: amount, block-height: block-height } })
     (ok true)
   )
 )
@@ -95,6 +96,7 @@
     ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
     (map-set last-contract-amount (contract-of delegate) (- (get-last-contract-amount (contract-of delegate)) amount))
 
+    (print { action: "return-stx-from-stacking", data: { delegate: (contract-of delegate), amount: amount, block-height: block-height } })
     (ok true)
   )
 )
@@ -132,6 +134,7 @@
 
     (try! (as-contract (contract-call? delegate handle-rewards (get-last-selected-pool (contract-of delegate)) rewards rewards-contract)))
 
+    (print { action: "handle-excess", data: { delegate: (contract-of delegate), rewards: rewards, block-height: block-height } })
     (ok rewards)
   )
 )
@@ -179,6 +182,8 @@
       (try! (as-contract (return-stx-from-stacking delegate reserve excess)))
       true
     )
+
+    (print { action: "handle-excess", data: { delegate: (contract-of delegate), excess: excess, block-height: block-height } })
     (ok excess)
   )
 )
@@ -212,8 +217,7 @@
       ;; Set target
       (map-set target-locked-amount (contract-of delegate) u0)
 
-      ;; TODO: print info
-
+      (print { action: "revoke", data: { delegate: (contract-of delegate), block-height: block-height } })
       (ok true)
     )
   )
@@ -233,13 +237,13 @@
 
     (let (
       (locked-amount (get locked (get-stx-account (contract-of delegate))))
-      (contract-amount (get unlocked (get-stx-account (contract-of delegate))))
+      (unlocked-amount (get unlocked (get-stx-account (contract-of delegate))))
     )
       (asserts! (>= amount-ustx locked-amount) (err ERR_DELEGATE_AMOUNT_LOCKED))
 
       ;; Request STX from reserve if needed
-      (if (> amount-ustx (+ contract-amount locked-amount))
-        (try! (as-contract (request-stx-to-stack delegate reserve (- amount-ustx (+ contract-amount locked-amount)))))
+      (if (> amount-ustx (+ unlocked-amount locked-amount))
+        (try! (as-contract (request-stx-to-stack delegate reserve (- amount-ustx (+ unlocked-amount locked-amount)))))
         true
       )
 
@@ -253,8 +257,7 @@
       ;; Handle excess
       (try! (handle-excess delegate reserve))
 
-      ;; TODO: print info
-
+      (print { action: "revoke-and-delegate", data: { delegate: (contract-of delegate), amount: amount-ustx, delegate-to: delegate-to, until-burn-ht: until-burn-ht, block-height: block-height } })
       (ok true)
     )
   )

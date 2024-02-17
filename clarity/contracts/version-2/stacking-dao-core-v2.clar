@@ -69,8 +69,7 @@
     (try! (stx-transfer? stx-amount tx-sender (contract-of reserve)))
     (try! (contract-call? .ststx-token mint-for-protocol ststx-amount tx-sender))
 
-    (print { action: "deposit", data: { stacker: tx-sender, amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
-
+    (print { action: "deposit", data: { stacker: tx-sender, stxstx-amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
     (ok ststx-amount)
   )
 )
@@ -105,8 +104,7 @@
     (try! (contract-call? .ststx-token transfer ststx-amount tx-sender (as-contract tx-sender) none))
     (try! (as-contract (contract-call? .ststx-withdraw-nft mint-for-protocol sender)))
 
-    (print { action: "init-withdraw", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
-
+    (print { action: "init-withdraw", data: { stacker: tx-sender, nft-id: nft-id, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
     (ok nft-id)
   )
 )
@@ -148,7 +146,6 @@
     (try! (as-contract (stx-transfer? stx-amount tx-sender (contract-of reserve))))
 
     (print { action: "cancel-withdraw", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
-
     (ok stx-amount)
   )
 )
@@ -180,7 +177,6 @@
     (try! (as-contract (contract-call? .ststx-withdraw-nft burn-for-protocol nft-id)))
 
     (print { action: "withdraw", data: { stacker: tx-sender, ststx-amount: ststx-amount, stx-amount: stx-amount, block-height: block-height } })
-
     (ok stx-amount)
   )
 )

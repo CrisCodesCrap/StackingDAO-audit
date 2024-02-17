@@ -78,6 +78,8 @@
         false
       )
     )
+
+    (print { action: "add-direct-stacking", data: { user: user, pool: pool, amount: amount, is-direct-stacking: (is-some current-direct-stacking), block-height: block-height } })
     (ok true)
   )
 )
@@ -112,6 +114,7 @@
       )
       false
     )
+    (print { action: "subtract-direct-stacking", data: { user: user, amount: amount, is-direct-stacking: (is-some current-direct-stacking), block-height: block-height } })
     (ok true)
   )
 )
@@ -137,6 +140,8 @@
       )
       false
     )
+
+    (print { action: "stop-direct-stacking", data: { user: user, is-direct-stacking: (is-some current-direct-stacking), block-height: block-height } })
     (ok true)
   )
 )

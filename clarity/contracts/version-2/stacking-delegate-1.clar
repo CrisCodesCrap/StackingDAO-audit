@@ -12,6 +12,7 @@
 (define-public (delegate-stx (amount-ustx uint) (delegate-to principal) (until-burn-ht (optional uint)))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "delegate-stx", data: { amount: amount-ustx, delegate-to: delegate-to, until-burn-ht: until-burn-ht, block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none))
@@ -24,6 +25,7 @@
 (define-public (revoke-delegate-stx)
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (print { action: "revoke-delegate-stx", data: { block-height: block-height } })
 
     ;; TODO: update for mainnet
     (match (as-contract (contract-call? .pox-4-mock revoke-delegate-stx))
@@ -42,6 +44,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
+    (print { action: "request-stx-to-stack", data: { amount: amount, block-height: block-height } })
     (as-contract (contract-call? reserve request-stx-to-stack amount))
   )
 )
@@ -51,6 +54,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
+    (print { action: "return-stx-from-stacking", data: { amount: amount, block-height: block-height } })
     (as-contract (contract-call? reserve return-stx-from-stacking amount))
   )
 )
@@ -68,6 +72,8 @@
       (try! (as-contract (contract-call? rewards-contract add-rewards pool rewards)))
       true
     )
+
+    (print { action: "handle-rewards", data: { pool: pool, rewards: rewards, block-height: block-height } })
     (ok rewards)
   )
 )

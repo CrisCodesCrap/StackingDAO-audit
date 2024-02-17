@@ -111,13 +111,14 @@
 
     (var-set cycle-prepared-pools (get-pox-cycle))
 
+    (print { action: "prepare-pools", cycle-prepared-pools: (get-pox-cycle), block-height: block-height })
     (ok true)
   )
 )
 
 (define-private (map-pool-stacking-amount (info { pool: principal, stacking-amount: uint }))
   (begin
-    (print { action: "map-pool-stacking-amount", pool: (get pool info), stacking-amount: (get stacking-amount info), prepare-burn-height: burn-block-height, block-height: block-height })
+    (print { action: "map-pool-stacking-amount", pool: (get pool info), stacking-amount: (get stacking-amount info), block-height: block-height })
     (map-set prepare-pools-data (get pool info) (merge (get-prepare-pools-data (get pool info)) { stacking-amount: (get stacking-amount info), cycle-prepared-pool: (get-pox-cycle) }))
   )
 )
@@ -139,13 +140,14 @@
 
     (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-prepared-delegates: (get-pox-cycle) }))
 
+    (print { action: "prepare-delegates", pool: pool, cycle-prepared-delegates: (get-pox-cycle), block-height: block-height })
     (ok true)
   )
 )
 
 (define-private (map-delegate-stacking-amount (info { delegate: principal, stacking-amount: uint }))
   (begin
-    (print { action: "map-delegate-stacking-amount", pool: (get delegate info), stacking-amount: (get stacking-amount info), block-height: block-height })
+    (print { action: "map-delegate-stacking-amount", delegate: (get delegate info), stacking-amount: (get stacking-amount info), block-height: block-height })
     (map-set prepare-delegates-data (get delegate info) { stacking-amount: (get stacking-amount info) })
   )
 )
@@ -175,6 +177,7 @@
 
     (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-executed-pool: (get-pox-cycle) }))
 
+    (print { action: "execute", pool: pool, cycle-executed-pool: (get-pox-cycle), block-height: block-height })
     (ok true)
   )
 )
@@ -188,7 +191,7 @@
     (delegate-info (get-prepare-delegates-data (contract-of delegate)))
     (amount (get stacking-amount delegate-info))
   )
-    (print { action: "perform-pool-delegation-helper", pool: delegate-to, delegate: delegate, amount: amount, block-height: block-height })
+    (print { action: "perform-pool-delegation-helper", delegate: delegate, delegate-to: delegate-to, until-burn-ht: until-burn-ht, amount: amount, block-height: block-height })
 
     (if (is-eq amount u0)
       (contract-call? .delegates-handler-v1 revoke delegate reserve rewards-contract)

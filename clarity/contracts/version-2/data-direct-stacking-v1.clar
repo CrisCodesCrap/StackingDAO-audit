@@ -66,6 +66,8 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (var-set total-direct-stacking amount)
+
+    (print { action: "set-total-direct-stacking", data: { amount: amount, block-height: block-height } })
     (ok true)
   )
 )
@@ -75,6 +77,8 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set direct-stacking-pool-amount pool amount)
+
+    (print { action: "set-direct-stacking-pool-amount", data: { pool: pool, amount: amount, block-height: block-height } })
     (ok true)
   )
 )
@@ -84,6 +88,8 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set direct-stacking-user user { pool: pool, amount: amount })
+
+    (print { action: "set-direct-stacking-user", data: { user: user, pool: pool, amount: amount, block-height: block-height } })
     (ok true)
   )
 )
@@ -93,6 +99,8 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-delete direct-stacking-user user)
+
+    (print { action: "delete-direct-stacking-user", data: { user: user, block-height: block-height } })
     (ok true)
   )
 )

@@ -105,6 +105,8 @@
 
     (map-set migrated-nfts nft-id true)
     (map-set withdrawals-by-nft { nft-id: nft-id } { stx-amount: stx-amount, ststx-amount: ststx-amount, unlock-burn-height: unlock-burn-height })
+
+    (print { action: "set-withdrawals-by-nft", data: { nft-id: nft-id, stx-amount: stx-amount, ststx-amount: ststx-amount, unlock-burn-height: unlock-burn-height, block-height: block-height } })
     (ok true)
   )
 )
@@ -115,6 +117,8 @@
 
     (map-set migrated-nfts nft-id true)
     (map-delete withdrawals-by-nft { nft-id: nft-id })
+
+    (print { action: "delete-withdrawals-by-nft", data: { nft-id: nft-id, block-height: block-height } })
     (ok true)
   )
 )
