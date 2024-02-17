@@ -156,6 +156,22 @@ Clarinet.test({
     call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
     call.result.expectSome().expectTuple()["amount"].expectUintWithDecimals(650);
     call.result.expectSome().expectTuple()["pool"].expectPrincipal(qualifiedName("pox-fast-pool-v2-mock"));
+
+    //
+    // Normal stacking, stops direct stacking
+    //
+
+    result = await directHelpers.addDirectStacking(deployer, wallet_1.address, undefined, 50)
+    result.expectOk().expectBool(true);
+
+    call = await dataDirectStacking.getTotalDirectStacking()
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("stacking-pool-v1"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingPoolAmount(qualifiedName("pox-fast-pool-v2-mock"))
+    call.result.expectUintWithDecimals(0);
+    call = await dataDirectStacking.getDirectStackingUser(wallet_1.address);
+    call.result.expectNone();
   }
 });
 

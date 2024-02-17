@@ -311,7 +311,31 @@ Clarinet.test({
 // Admin 
 //-------------------------------------
 
+Clarinet.test({
+  name: "stacking-delegate: return STX to reserve",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
 
+    let stackingDelegate = new StackingDelegate(chain, deployer);
+
+    let block = chain.mineBlock([
+      Tx.transferSTX(1000000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 100);
+    result.expectOk().expectUintWithDecimals(100);
+
+    let call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call.result.expectTuple()["unlocked"].expectUintWithDecimals(100);
+    
+    result = stackingDelegate.returnStx(deployer, "stacking-delegate-1-1");
+    result.expectOk().expectUintWithDecimals(100);
+
+    call = await stackingDelegate.getStxAccount(qualifiedName("stacking-delegate-1-1"))
+    call.result.expectTuple()["unlocked"].expectUintWithDecimals(0);
+  }
+});
 
 //-------------------------------------
 // Errors 

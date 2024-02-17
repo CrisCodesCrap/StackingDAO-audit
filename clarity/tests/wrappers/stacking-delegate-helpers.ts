@@ -79,6 +79,5 @@ class StackingDelegate {
     return block.receipts[0].result;
   }
 
-
 }
 export { StackingDelegate };

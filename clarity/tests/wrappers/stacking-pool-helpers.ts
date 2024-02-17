@@ -105,5 +105,14 @@ class StackingPool {
     ]);
     return block.receipts[0].result;
   }
+
+  setPoxRewardAddress(caller: Account, version: string, hashbytes: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "set-pox-reward-address", [
+        types.tuple({ 'version': version, 'hashbytes': hashbytes}),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { StackingPool };

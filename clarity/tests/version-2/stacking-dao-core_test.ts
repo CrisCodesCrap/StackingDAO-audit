@@ -270,6 +270,37 @@ Clarinet.test({
 });
 
 //-------------------------------------
+// Admin 
+//-------------------------------------
+
+Clarinet.test({
+  name: "core: admin can shutdown deposits",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+  
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+
+    let result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectUintWithDecimals(1000);
+
+    result = await core.setShutdownDeposits(deployer, true);
+    result.expectOk().expectBool(true);
+
+    result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
+    result.expectErr().expectUint(19002);
+
+    result = await core.setShutdownDeposits(deployer, false);
+    result.expectOk().expectBool(true);
+
+    result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
+    result.expectOk().expectUintWithDecimals(1000);
+  },
+});
+
+
+//-------------------------------------
 // Access 
 //-------------------------------------
 

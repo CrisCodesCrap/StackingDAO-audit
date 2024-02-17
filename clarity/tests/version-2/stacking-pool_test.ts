@@ -1,5 +1,5 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { qualifiedName } from "../wrappers/tests-utils.ts";
+import { hexToBytes, qualifiedName } from "../wrappers/tests-utils.ts";
 
 import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
@@ -169,9 +169,16 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
 
+    let call = await stackingPool.getPoxRewardAddress();
+    call.result.expectTuple()["version"].expectBuff(hexToBytes("0x00"));
+    call.result.expectTuple()["hashbytes"].expectBuff(hexToBytes("0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac"));
 
+    let result = stackingPool.setPoxRewardAddress(deployer, "0x01", "0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ab");
+    result.expectOk().expectBool(true);
 
-
+    call = await stackingPool.getPoxRewardAddress();
+    call.result.expectTuple()["version"].expectBuff(hexToBytes("0x01"));
+    call.result.expectTuple()["hashbytes"].expectBuff(hexToBytes("0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ab"));
   }
 });
 
