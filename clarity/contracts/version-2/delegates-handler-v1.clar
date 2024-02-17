@@ -15,18 +15,17 @@
 ;; Maps
 ;;-------------------------------------
 
-;; TODO: move to data contract
-
 ;; Delegate to last selected pool
 (define-map last-selected-pool principal principal)
 
 ;; Delegate to target locked amount
 (define-map target-locked-amount principal uint)
 
+;; Delegate to last updated locked amount
 (define-map last-locked-amount principal uint)
 
-(define-map last-contract-amount principal uint)
-
+;; Delegate to last updated unlocked amount
+(define-map last-unlocked-amount principal uint)
 
 ;;-------------------------------------
 ;; Getters
@@ -54,10 +53,10 @@
   )
 )
 
-(define-read-only (get-last-contract-amount (delegate principal))
+(define-read-only (get-last-unlocked-amount (delegate principal))
   (default-to
     u0
-    (map-get? last-contract-amount delegate)
+    (map-get? last-unlocked-amount delegate)
   )
 )
 
@@ -81,7 +80,7 @@
 
     (map-set last-locked-amount (contract-of delegate) (get locked (get-stx-account (contract-of delegate))))
     ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
-    (map-set last-contract-amount (contract-of delegate) (+ (get-last-contract-amount (contract-of delegate)) amount))
+    (map-set last-unlocked-amount (contract-of delegate) (+ (get-last-unlocked-amount (contract-of delegate)) amount))
 
     (print { action: "request-stx-to-stack", data: { delegate: (contract-of delegate), amount: amount, block-height: block-height } })
     (ok true)
@@ -94,7 +93,7 @@
 
     (map-set last-locked-amount (contract-of delegate) (get locked (get-stx-account (contract-of delegate))))
     ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
-    (map-set last-contract-amount (contract-of delegate) (- (get-last-contract-amount (contract-of delegate)) amount))
+    (map-set last-unlocked-amount (contract-of delegate) (- (get-last-unlocked-amount (contract-of delegate)) amount))
 
     (print { action: "return-stx-from-stacking", data: { delegate: (contract-of delegate), amount: amount, block-height: block-height } })
     (ok true)
@@ -109,14 +108,14 @@
 (define-read-only (calculate-rewards (delegate principal)) 
   (let (
     (last-locked (get-last-locked-amount delegate))
-    (last-contract (get-last-contract-amount delegate))
+    (last-unlocked (get-last-unlocked-amount delegate))
 
     (locked-amount (get locked (get-stx-account delegate)))
-    (contract-amount (get unlocked (get-stx-account delegate)))
+    (unlocked-amount (get unlocked (get-stx-account delegate)))
 
     ;; Extra STX must be rewards
-    (rewards (if (> (+ locked-amount contract-amount) (+ last-locked last-contract))
-      (- (+ locked-amount contract-amount) (+ last-locked last-contract))
+    (rewards (if (> (+ locked-amount unlocked-amount) (+ last-locked last-unlocked))
+      (- (+ locked-amount unlocked-amount) (+ last-locked last-unlocked))
       u0
     ))
   )
@@ -146,12 +145,12 @@
 (define-read-only (calculate-excess (delegate principal)) 
   (let (
     (locked-amount (get locked (get-stx-account delegate)))
-    (contract-amount (get unlocked (get-stx-account delegate)))
+    (unlocked-amount (get unlocked (get-stx-account delegate)))
     (rewards-amount (calculate-rewards delegate))
 
     (target-amount (get-target-locked-amount delegate))
-    (total-amount (if (> (+ locked-amount contract-amount) rewards-amount)
-      (- (+ locked-amount contract-amount) rewards-amount)
+    (total-amount (if (> (+ locked-amount unlocked-amount) rewards-amount)
+      (- (+ locked-amount unlocked-amount) rewards-amount)
       u0
     ))
     (excess-amount (if (> total-amount target-amount)
@@ -160,9 +159,9 @@
     ))
   )
     (if (> excess-amount u0)
-      (if (> contract-amount excess-amount)
-        (- contract-amount excess-amount)
-        contract-amount
+      (if (> unlocked-amount excess-amount)
+        (- unlocked-amount excess-amount)
+        unlocked-amount
       )
       u0
     )
@@ -203,14 +202,14 @@
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
     (let (
-      (contract-amount (get unlocked (get-stx-account (contract-of delegate))))
+      (unlocked-amount (get unlocked (get-stx-account (contract-of delegate))))
     )
       ;; Revoke
       (try! (contract-call? delegate revoke-delegate-stx))
 
       ;; Return STX
-      (if (> contract-amount u0)
-        (try! (as-contract (return-stx-from-stacking delegate reserve contract-amount)))
+      (if (> unlocked-amount u0)
+        (try! (as-contract (return-stx-from-stacking delegate reserve unlocked-amount)))
         true
       )
 
@@ -268,13 +267,13 @@
 ;;-------------------------------------
 
 ;; In case something goes wrong
-(define-public (update-amounts (delegate principal) (target-locked uint) (last-locked uint) (last-contract uint))
+(define-public (update-amounts (delegate principal) (target-locked uint) (last-locked uint) (last-unlocked uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
     (map-set target-locked-amount delegate target-locked)
     (map-set last-locked-amount delegate last-locked)
-    (map-set last-contract-amount delegate last-contract)
+    (map-set last-unlocked-amount delegate last-unlocked)
     (ok true)
   )
 )
