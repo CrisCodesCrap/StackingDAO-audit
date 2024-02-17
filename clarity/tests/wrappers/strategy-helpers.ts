@@ -5,7 +5,6 @@ import { hexToBytes, qualifiedName } from './tests-utils.ts';
 // Strategy V0
 // ---------------------------------------------------------
 
-
 class StrategyV0 {
   chain: Chain;
   deployer: Account;
@@ -211,6 +210,43 @@ class StrategyV1 {
 
 }
 export { StrategyV1 };
+
+
+// ---------------------------------------------------------
+// Strategy V0
+// ---------------------------------------------------------
+
+class StrategyV2 {
+  chain: Chain;
+  deployer: Account;
+
+  constructor(chain: Chain, deployer: Account) {
+    this.chain = chain;
+    this.deployer = deployer;
+  }
+
+  getTotalStacking() {
+    return this.chain.callReadOnlyFn("strategy-v2", "get-total-stacking", [
+    ], this.deployer.address);
+  }
+
+  getInflowOutflow() {
+    return this.chain.callReadOnlyFn("strategy-v2", "get-outflow-inflow", [
+    ], this.deployer.address);
+  }
+
+  performPoolDelegation(caller: Account, pool: string, delegatesInfo: any[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("strategy-v2", "perform-pool-delegation", [
+        types.principal(pool),
+        types.list(delegatesInfo.map(info => types.tuple({ delegate: types.principal(info.delegate), amount: types.uint(info.amount * 1000000) })))
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+}
+export { StrategyV2 };
 
 // ---------------------------------------------------------
 // Strategy V3

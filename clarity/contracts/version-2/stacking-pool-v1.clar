@@ -110,12 +110,12 @@
 ;; Public - Other Delegates
 ;;-------------------------------------
 
-(define-public (delegate-stx (amount-ustx uint))
+(define-public (delegate-stx (amount-ustx uint) (until-burn-ht (optional uint)))
   (begin
     (print { action: "delegate-stx", data: { tx-sender: tx-sender, amount-ustx: amount-ustx, block-height: block-height } })
 
     ;; TODO: update for mainnet
-    (match (contract-call? .pox-4-mock delegate-stx amount-ustx (as-contract tx-sender) none none)
+    (match (contract-call? .pox-4-mock delegate-stx amount-ustx (as-contract tx-sender) until-burn-ht none)
       result (ok result)
       error (err (to-uint error))
     )

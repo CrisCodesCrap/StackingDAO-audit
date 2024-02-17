@@ -14,9 +14,9 @@
   (contract-call? .pox-4-mock current-pox-reward-cycle)
 )
 
-(define-read-only (get-next-cycle-start-burn-height)
+(define-read-only (get-next-cycle-end-burn-height)
   ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1))
+  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u2))
 )
 
 ;;-------------------------------------
@@ -33,19 +33,15 @@
     (total-withdrawals (unwrap-panic (contract-call? .reserve-v1 get-stx-for-withdrawals)))
     (total-idle (unwrap-panic (contract-call? .reserve-v1 get-stx-balance)))
 
-    (outflow 
-      (if (> total-withdrawals total-idle)
-        (- total-withdrawals total-idle)
-        u0
-      )
-    )
+    (outflow (if (> total-withdrawals total-idle)
+      (- total-withdrawals total-idle)
+      u0
+    ))
 
-    (inflow 
-      (if (> total-idle total-withdrawals )
-        (- total-idle total-withdrawals )
-        u0
-      )
-    )
+    (inflow (if (> total-idle total-withdrawals )
+      (- total-idle total-withdrawals )
+      u0
+    ))
   )
     { outflow: outflow, inflow: inflow, total-stacking: (get-total-stacking), total-idle: total-idle, total-withdrawals: total-withdrawals }
   )
@@ -60,7 +56,7 @@
 (define-public (perform-pool-delegation (pool principal) (delegates-info (list 10 { delegate: <stacking-delegate-trait>, amount: uint})))
   (let (
     (delegate-to-list (list-10-principal pool))
-    (burn-ht-list (list-10-uint (get-next-cycle-start-burn-height)))
+    (burn-ht-list (list-10-uint (get-next-cycle-end-burn-height)))
   )
     (try! (contract-call? .dao check-is-protocol contract-caller))
 
@@ -103,9 +99,5 @@
 )
 
 (define-read-only (list-10-principal (item principal)) 
-  (list item item item item item item item item item item)
-)
-
-(define-read-only (list-10-reserve-trait (item <reserve-trait>)) 
   (list item item item item item item item item item item)
 )

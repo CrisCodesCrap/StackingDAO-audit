@@ -46,10 +46,11 @@ class StackingPool {
     return block.receipts[0].result;
   }
 
-  delegateStx(caller: Account, amount: number) {
+  delegateStx(caller: Account, amount: number, untilBurnHeight: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-pool-v1", "delegate-stx", [
         types.uint(amount * 1000000),
+        types.some(types.uint(untilBurnHeight))
       ], caller.address)
     ]);
     return block.receipts[0].result;

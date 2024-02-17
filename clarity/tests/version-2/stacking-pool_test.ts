@@ -177,7 +177,7 @@ Clarinet.test({
     result = pox.allowContractCaller(wallet_1, qualifiedName("stacking-pool-v1"))
     result.expectOk().expectBool(true);
 
-    result = stackingPool.delegateStx(wallet_1, 1000);
+    result = stackingPool.delegateStx(wallet_1, 1000, 99);
     result.expectOk().expectBool(true);
 
     //
