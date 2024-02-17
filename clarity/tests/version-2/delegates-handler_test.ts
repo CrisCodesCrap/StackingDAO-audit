@@ -205,6 +205,8 @@ Clarinet.test({
     // Prepare pool
     //
 
+    chain.mineEmptyBlockUntil(19);
+
     result = stackingPool.prepare(deployer);
     result.expectOk().expectBool(true);
 
@@ -235,6 +237,8 @@ Clarinet.test({
 
     let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
     result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlockUntil(19);
 
     result = stackingPool.prepare(deployer);
     result.expectOk().expectBool(true);

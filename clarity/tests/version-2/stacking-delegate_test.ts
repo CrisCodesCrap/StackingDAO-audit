@@ -104,6 +104,8 @@ Clarinet.test({
     // Prepare pool
     //
 
+    chain.mineEmptyBlockUntil(19);
+
     result = stackingPool.prepare(wallet_1);
     result.expectOk().expectBool(true);
 
@@ -175,6 +177,8 @@ Clarinet.test({
     //
     // Prepare pool
     //
+
+    chain.mineEmptyBlockUntil(19);
 
     result = stackingPool.prepare(wallet_1);
     result.expectOk().expectBool(true);

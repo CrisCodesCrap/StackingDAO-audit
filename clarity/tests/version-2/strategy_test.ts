@@ -721,8 +721,8 @@ Clarinet.test({
     result = await stackingPool.prepare(deployer);
     result.expectOk().expectBool(true);
 
-    // Move to beginning of cycle 2
-    await chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 2 + 1);
+    // Move to end of cycle 2
+    await chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH * 2 + 18);
 
     // ERR_DELEGATION_EXPIRES_DURING_LOCK
     result = await stackingPool.prepare(deployer);

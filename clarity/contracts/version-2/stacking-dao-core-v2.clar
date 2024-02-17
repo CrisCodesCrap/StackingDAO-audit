@@ -32,15 +32,16 @@
 (define-read-only (get-withdraw-unlock-burn-height)
   (let (
     (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
-    (start-block-current-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height current-cycle))
+    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
     (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-4-mock get-pox-info))))
+    (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
   )
-    (if (< burn-block-height (- (+ start-block-current-cycle cycle-length) (contract-call? .data-core-v1 get-cycle-withdraw-offset)))
+    (if (< burn-block-height (- start-block-next-cycle withdraw-offset))
       ;; Can withdraw next cycle
-      (ok (+ start-block-current-cycle cycle-length))
+      (ok start-block-next-cycle)
 
       ;; Withdraw cycle after next
-      (ok (+ start-block-current-cycle cycle-length cycle-length))
+      (ok (+ start-block-next-cycle cycle-length))
     )
   )
 )

@@ -22,6 +22,7 @@
 ;;-------------------------------------
 
 (define-constant ERR_CAN_NOT_PREPARE u31001)
+(define-constant ERR_NO_DELEGATION u31002)
 
 ;;-------------------------------------
 ;; Maps
@@ -83,28 +84,90 @@
   (is-err response)
 )
 
+(define-read-only (can-prepare)
+  (let (
+    (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
+    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+    (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
+  )
+    (> burn-block-height (- start-block-next-cycle withdraw-offset))
+  )
+)
+
 ;;-------------------------------------
-;; Public 
+;; Public - StackingDAO Delegates
 ;;-------------------------------------
 
-(define-public (prepare)
+(define-public (prepare-stacking-dao)
   (let (
     (delegates (contract-call? .data-pools-v1 get-pool-delegates (as-contract tx-sender)))
+  )
+    (prepare-delegate-many delegates)
+  )
+)
 
+;;-------------------------------------
+;; Public - Other Delegates
+;;-------------------------------------
+
+(define-public (delegate-stx (amount-ustx uint))
+  (begin
+    (print { action: "delegate-stx", data: { tx-sender: tx-sender, amount-ustx: amount-ustx, block-height: block-height } })
+
+    ;; TODO: update for mainnet
+    (match (contract-call? .pox-4-mock delegate-stx amount-ustx (as-contract tx-sender) none none)
+      result (ok result)
+      error (err (to-uint error))
+    )
+  )
+)
+
+(define-public (revoke-delegate-stx)
+  (begin
+    (print { action: "revoke-delegate-stx", data: { tx-sender: tx-sender, block-height: block-height } })
+
+    ;; TODO: update for mainnet
+    (match (contract-call? .pox-4-mock revoke-delegate-stx)
+      result (ok result)
+      error (err (to-uint error))
+    )
+  )
+)
+
+(define-public (prepare-delegate (delegate principal))
+  (begin
+    (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
+    (asserts! (> (total-delegated-helper delegate) u0) (err ERR_NO_DELEGATION))
+
+    ;; 1. Delegate
+    (try! (delegation delegate))
+
+    ;; 2. Aggregate
+    (try! (aggregation))
+
+    (print { action: "prepare-delegate", data: { delegate: delegate, block-height: block-height } })
+    (ok true)
+  )
+)
+
+(define-public (prepare-delegate-many (delegates (list 50 principal)))
+  (let (
     ;; 1. Delegate
     (delegation-errors (filter is-error (map delegation delegates)))
     (delegation-error (element-at? delegation-errors u0))
   )
-    (asserts! (> (total-delegated) u0) (err ERR_CAN_NOT_PREPARE))
+    (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
+    (asserts! (> (total-delegated) u0) (err ERR_NO_DELEGATION))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
     ;; 2. Aggregate
     (try! (aggregation))
 
-    (print { action: "prepare", data: { block-height: block-height } })
+    (print { action: "prepare-delegate-many", data: { block-height: block-height } })
     (ok true)
   )
 )
+
 
 ;;-------------------------------------
 ;; Helpers 
@@ -171,14 +234,14 @@
       (let (
         (reward-index (try! (as-contract (stack-aggregation-commit-indexed next-cycle))))
       )
-        (print { action: "aggreagation", data: { reward-index: reward-index, block-height: block-height } })
+        (print { action: "aggregation", data: { reward-index: reward-index, block-height: block-height } })
         (map-set cycle-to-index next-cycle reward-index)
         true
       )
 
       ;; Already have an index for cycle
       (begin
-        (print { action: "aggreagation", data: { reward-index: (unwrap-panic index), block-height: block-height } })
+        (print { action: "aggregation", data: { reward-index: (unwrap-panic index), block-height: block-height } })
         (try! (as-contract (stack-aggregation-increase next-cycle (unwrap-panic index))))
         true
       )

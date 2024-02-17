@@ -40,7 +40,42 @@ class StackingPool {
 
   prepare(caller: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("stacking-pool-v1", "prepare", [
+      Tx.contractCall("stacking-pool-v1", "prepare-stacking-dao", [
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  delegateStx(caller: Account, amount: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "delegate-stx", [
+        types.uint(amount * 1000000),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  revokeDelegateStx(caller: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "revoke-delegate-stx", [
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  prepareDelegate(caller: Account, delegate: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "prepare-delegate", [
+        types.principal(delegate)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  prepareDelegateMany(caller: Account, delegates: string[]) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-pool-v1", "prepare-delegate-many", [
+        types.list(delegates.map(delegate => types.principal(delegate)))
       ], caller.address)
     ]);
     return block.receipts[0].result;
