@@ -69,6 +69,10 @@ export function Stacking() {
     }
   }, [stxAddress, stxBalance, stStxBalance]);
 
+  useEffect(() => {
+    if (referral) localStorage.setItem('stacking-referral', referral);
+  }, [referral]);
+
   return (
     <>
       <ChooseWalletModal

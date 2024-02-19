@@ -60,6 +60,10 @@ export function Stack() {
     setAmounts(event.target.value);
   };
 
+  useEffect(() => {
+    if (referral) localStorage.setItem('stacking-referral', referral);
+  }, [referral]);
+
   const buyStStx = async () => {
     window.open("https://app.bitflow.finance/trade", '_blank', 'noreferrer');
   }
@@ -83,8 +87,8 @@ export function Stack() {
     ];
  
     let referralParam = noneCV();
-    if (referral) {
-      referralParam = someCV(standardPrincipalCV(referral));
+    if (referral || localStorage.getItem('stacking-referral')) {
+      referralParam = someCV(standardPrincipalCV(referral || localStorage.getItem('stacking-referral')));
     }
 
     await makeContractCall({
@@ -130,10 +134,6 @@ export function Stack() {
     const out = await bitflowOut(1);
     setBitflowRatio(Number(out));
   }
-
-  // useEffect(() => {
-  //   if (stxAddress) bitflowRate();
-  // }, [stxAddress]);
 
   return (
     <>
