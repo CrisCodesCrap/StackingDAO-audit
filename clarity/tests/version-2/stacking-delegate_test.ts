@@ -349,9 +349,88 @@ Clarinet.test({
 // Errors 
 //-------------------------------------
 
+Clarinet.test({
+  name: "stacking-delegate: can not use reserve methods with wrong trait",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("stacking-delegate-1-1", "request-stx-to-stack", [
+        types.principal(qualifiedName("fake-reserve")),
+        types.uint(100 * 1000000),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+
+    block = chain.mineBlock([
+      Tx.contractCall("stacking-delegate-1-1", "return-stx-from-stacking", [
+        types.principal(qualifiedName("fake-reserve")),
+        types.uint(100 * 1000000),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "stacking-delegate: can not handle rewards with wrong trait",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("stacking-delegate-1-1", "handle-rewards", [
+        types.principal(qualifiedName("stacking-pool-v1")),
+        types.uint(100 * 1000000),
+        types.principal(qualifiedName("fake-rewards")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "stacking-delegate: can not use return STX with wrong trait",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("stacking-delegate-1-1", "return-stx", [
+        types.principal(qualifiedName("fake-reserve")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
 
 
 //-------------------------------------
 // Access 
 //-------------------------------------
 
+Clarinet.test({
+  name: "stacking-delegate: only protocol can call public functions",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stackingDelegate = new StackingDelegate(chain, deployer);
+
+    let result = stackingDelegate.delegateStx(wallet_1, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    result.expectErr().expectUint(20003);
+
+    result = await stackingDelegate.revokeDelegateStx(wallet_1, "stacking-delegate-1-1");
+    result.expectErr().expectUint(20003);
+
+    result = stackingDelegate.requestStxToStack(wallet_1, "stacking-delegate-1-1", 500000);
+    result.expectErr().expectUint(20003);
+
+    result = stackingDelegate.returnStxFromStacking(wallet_1, "stacking-delegate-1-1", 300000);
+    result.expectErr().expectUint(20003);
+
+    result = stackingDelegate.handleRewards(wallet_1, "stacking-delegate-1-1", qualifiedName("stacking-pool-v1"), 30);
+    result.expectErr().expectUint(20003);
+
+    result = stackingDelegate.returnStx(wallet_1, "stacking-delegate-1-1");
+    result.expectErr().expectUint(20003);
+  }
+});

@@ -107,7 +107,7 @@
 )
 
 ;;-------------------------------------
-;; Public - Other Delegates
+;; Public - Delegates
 ;;-------------------------------------
 
 (define-public (delegate-stx (amount-ustx uint) (until-burn-ht (optional uint)))
@@ -167,7 +167,6 @@
     (ok true)
   )
 )
-
 
 ;;-------------------------------------
 ;; Helpers 

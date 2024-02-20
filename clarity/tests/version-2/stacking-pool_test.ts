@@ -201,6 +201,21 @@ Clarinet.test({
     call.result.expectTuple()["locked"].expectUintWithDecimals(1000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(100000000 - 1000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
+
+    // ERR_STACKING_NO_SUCH_PRINCIPAL
+    // Can not prepare again as only delegated until burn block 42.
+    result = stackingPool.prepareDelegate(wallet_1, wallet_1.address);
+    result.expectErr().expectUint(4);
+
+    //
+    // Revoke
+    //
+
+    result = stackingPool.revokeDelegateStx(wallet_1);
+    result.expectOk().expectBool(true);
+
+    call = await pox.getCheckDelegation(wallet_1.address);
+    call.result.expectNone()
   }
 });
 
@@ -246,15 +261,8 @@ Clarinet.test({
 });
 
 //-------------------------------------
-// Errors 
-//-------------------------------------
-
-// Call wrappers directly
-
-//-------------------------------------
 // PoX Errors 
 //-------------------------------------
-
 
 Clarinet.test({
   name: "stacking-pool: can not prepare if threshold not met",
@@ -370,13 +378,105 @@ Clarinet.test({
   }
 });
 
+//-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "stacking-pool: can only prepare in last blocks",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stackingDelegate = new StackingDelegate(chain, deployer);
+    let stackingPool = new StackingPool(chain, deployer);
 
 
-// ERR_CAN_NOT_PREPARE
+    let block = chain.mineBlock([
+      Tx.transferSTX(500000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
+    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    result.expectOk().expectUintWithDecimals(500000);
+
+    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
+    result.expectOk().expectBool(true);
+
+
+    chain.mineEmptyBlockUntil(10);
+
+    result = stackingPool.prepareDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"));
+    result.expectErr().expectUint(205001);
+
+    result = stackingPool.prepareDelegateMany(wallet_1, [qualifiedName("stacking-delegate-1-1")])
+    result.expectErr().expectUint(205001);
+
+    chain.mineEmptyBlockUntil(15);
+
+    result = stackingPool.prepareDelegateMany(wallet_1, [qualifiedName("stacking-delegate-1-1")])
+    result.expectOk().expectBool(true);
+  }
+});
+
+Clarinet.test({
+  name: "stacking-pool: can not prepare delegate if nothing delegated",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stackingPool = new StackingPool(chain, deployer);
+
+    chain.mineEmptyBlockUntil(15);
+
+    let result = stackingPool.prepareDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"));
+    result.expectErr().expectUint(205002);
+
+    result = stackingPool.prepareDelegateMany(wallet_1, [qualifiedName("stacking-delegate-1-1")])
+    result.expectErr().expectUint(205002);
+  }
+});
 
 //-------------------------------------
 // Access 
 //-------------------------------------
 
-// PoX Wrappers & Admin
+Clarinet.test({
+  name: "stacking-pool: only protocol can use pox wrapper methods",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stackingPool = new StackingPool(chain, deployer);
+
+    let result = stackingPool.delegateStackStx(wallet_1, wallet_1.address, 100);
+    result.expectErr().expectUint(20003);
+
+    result = stackingPool.delegateStackExtend(wallet_1, wallet_1.address);
+    result.expectErr().expectUint(20003);
+
+    result = stackingPool.delegateStackIncrease(wallet_1, wallet_1.address, 10);
+    result.expectErr().expectUint(20003);
+
+    result = stackingPool.stackAggregationCommitIndexed(wallet_1, 10);
+    result.expectErr().expectUint(20003);
+
+    result = stackingPool.stackAggregationIncrease(wallet_1, 2, 2);
+    result.expectErr().expectUint(20003);
+
+  }
+});
+
+Clarinet.test({
+  name: "stacking-pool: only protocol can set pox reward address",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let stackingPool = new StackingPool(chain, deployer);
+
+    let result = stackingPool.setPoxRewardAddress(wallet_1, "0x01", "0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ab");
+    result.expectErr().expectUint(20003);
+  }
+});
+
