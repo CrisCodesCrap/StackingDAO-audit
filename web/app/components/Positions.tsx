@@ -11,7 +11,6 @@ import { UnstackPosition } from './UnstackPosition'
 import { stacksNetwork, getRPCClient, coreApiUrl, asyncForEach } from '../common/utils'
 import Link from 'next/link'
 import { useSTXAddress } from '../common/use-stx-address';
-import { Nakamoto } from './Nakamoto'
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -205,15 +204,6 @@ export function Positions() {
     <>
       {stxAddress && (
         <div className="w-full flex flex-col gap-1 mt-10 mb-10">
-          {stStxBalance > 0 || bitflowLpStaked > 0 || bitflowLpWallet > 0 || bitflowLpStaked2 > 0 || bitflowLpWallet2 > 0 ? (
-            <Nakamoto
-              bitflowLpWallet={bitflowLpWallet}
-              bitflowLpStaked={bitflowLpStaked}
-              bitflowLpWallet2={bitflowLpWallet2}
-              bitflowLpStaked2={bitflowLpStaked2}
-            />
-          ) : null}
-
           <span className="text-lg font-medium md:mb-4 md:text-2xl">Active Positions</span>
           
           {/* stSTX */}
