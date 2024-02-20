@@ -128,6 +128,7 @@
   (let (
     (rewards (calculate-rewards (contract-of delegate)))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of delegate)))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
@@ -174,6 +175,7 @@
   (let (
     (excess (calculate-excess (contract-of delegate)))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of delegate)))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
 
     ;; Not needed STX to reserve
@@ -198,6 +200,7 @@
     (try! (handle-rewards delegate reserve rewards-contract))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of delegate)))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
@@ -231,6 +234,7 @@
     (try! (contract-call? delegate revoke-delegate-stx))
 
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-protocol (contract-of delegate)))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 

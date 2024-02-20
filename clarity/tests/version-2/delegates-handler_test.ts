@@ -4,6 +4,7 @@ import { qualifiedName } from "../wrappers/tests-utils.ts";
 import { DelegatesHandler } from '../wrappers/delegates-handler-helper.ts';
 import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
+import { Rewards } from '../wrappers/rewards-helpers.ts';
 
 //-------------------------------------
 // Core 
@@ -37,14 +38,8 @@ Clarinet.test({
     call.result.expectSome().expectTuple()["pox-addr"].expectNone();
     call.result.expectSome().expectTuple()["until-burn-ht"].expectSome().expectUint(50);
 
-    // Add extra STX (= rewards)
-    block = chain.mineBlock([
-      Tx.transferSTX(10 * 1000000, qualifiedName("stacking-delegate-1-1"), deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
     call = await delegatesHandler.calculateRewards(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectUintWithDecimals(10);
+    call.result.expectUintWithDecimals(0);
 
     call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
     call.result.expectUintWithDecimals(0);
@@ -70,7 +65,7 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     let delegatesHandler = new DelegatesHandler(chain, deployer);
-    let pox = new Pox4Mock(chain, deployer);
+    let rewards = new Rewards(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.transferSTX(100 * 1000000, qualifiedName("reserve-v1"), deployer.address)
@@ -102,6 +97,15 @@ Clarinet.test({
 
     call = await delegatesHandler.calculateExcess(qualifiedName("stacking-delegate-1-1"));
     call.result.expectUintWithDecimals(0);
+
+    // Check data
+    call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"))
+    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
+
+    call = await rewards.getTotalCommission();
+    call.result.expectUintWithDecimals(0.5);
+    call = await rewards.getTotalRewardsLeft();
+    call.result.expectUintWithDecimals(9.5);
   }
 });
 
@@ -218,12 +222,8 @@ Clarinet.test({
   }
 });
 
-//-------------------------------------
-// Errors 
-//-------------------------------------
-
 Clarinet.test({
-  name: "delegates-handler: can not delegate less than locked amount",
+  name: "delegates-handler: check maps info",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -235,19 +235,25 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
+
+    // Delegate
     let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
     result.expectOk().expectBool(true);
 
-    chain.mineEmptyBlockUntil(19);
+    // Check data
+    let call = await delegatesHandler.getLastSelectedPool(qualifiedName("stacking-delegate-1-1"))
+    call.result.expectPrincipal(qualifiedName("stacking-pool-v1"));
 
-    result = stackingPool.prepare(deployer);
-    result.expectOk().expectBool(true);
+    call = await delegatesHandler.getTargetLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectUintWithDecimals(200000);
 
-    result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 190000, qualifiedName("stacking-pool-v1"), 50);
-    result.expectErr().expectUint(201001);
+    call = await delegatesHandler.getLastLockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectUintWithDecimals(0);
+
+    call = await delegatesHandler.getLastUnlockedAmount(qualifiedName("stacking-delegate-1-1"));
+    call.result.expectUintWithDecimals(200000);
   }
 });
-
 
 //-------------------------------------
 // Admin 
@@ -292,11 +298,98 @@ Clarinet.test({
 });
 
 //-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "delegates-handler: can not delegate less than locked amount",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let delegatesHandler = new DelegatesHandler(chain, deployer);
+    let stackingPool = new StackingPool(chain, deployer);
+
+    let block = chain.mineBlock([
+      Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    let result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlockUntil(19);
+
+    result = stackingPool.prepare(deployer);
+    result.expectOk().expectBool(true);
+
+    result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 190000, qualifiedName("stacking-pool-v1"), 50);
+    result.expectErr().expectUint(201001);
+  }
+});
+
+Clarinet.test({
+  name: "delegates-handler: can not handle rewards with wrong delegate, reserve or rewards trait",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
+        types.principal(qualifiedName("fake-stacking-delegate")),
+        types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("rewards-v1")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+
+    block = chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
+        types.principal(qualifiedName("stacking-delegate-1-1")),
+        types.principal(qualifiedName("fake-reserve")),
+        types.principal(qualifiedName("rewards-v1")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+
+    block = chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "handle-rewards", [
+        types.principal(qualifiedName("stacking-delegate-1-1")),
+        types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("fake-rewards")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "delegates-handler: can not handle excess with wrong delegate, reserve or rewards trait",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "handle-excess", [
+        types.principal(qualifiedName("fake-stacking-delegate")),
+        types.principal(qualifiedName("reserve-v1")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+
+    block = chain.mineBlock([
+      Tx.contractCall("delegates-handler-v1", "handle-excess", [
+        types.principal(qualifiedName("stacking-delegate-1-1")),
+        types.principal(qualifiedName("fake-reserve")),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
+
+//-------------------------------------
 // Access 
 //-------------------------------------
 
 Clarinet.test({
-  name: "delegates-handler: only protocol can update amounts",
+  name: "delegates-handler: only protocol can update amounts, revoke and delegate",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -304,6 +397,12 @@ Clarinet.test({
     let delegatesHandler = new DelegatesHandler(chain, deployer);
 
     let result = await delegatesHandler.updateAmounts(wallet_1, qualifiedName("stacking-delegate-1-1"), 100, 150, 50);
+    result.expectErr().expectUint(20003);
+
+    result = await delegatesHandler.revokeAndDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
+    result.expectErr().expectUint(20003);
+
+    result = await delegatesHandler.revoke(wallet_1, qualifiedName("stacking-delegate-1-1"));
     result.expectErr().expectUint(20003);
   }
 });

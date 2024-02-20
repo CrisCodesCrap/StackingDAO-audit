@@ -18,6 +18,7 @@
 
   ;; Pool delegates
   (map-set pool-delegates .stacking-pool-v1 (list .stacking-delegate-1-1 .stacking-delegate-1-2 .stacking-delegate-1-3))
+  ;; TODO: update for mainnet
   (map-set pool-delegates .pox-fast-pool-v2-mock (list .stacking-delegate-2-1 .stacking-delegate-2-2 .stacking-delegate-2-3))
 
   ;; Delegate share

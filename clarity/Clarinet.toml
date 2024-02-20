@@ -386,6 +386,26 @@ path = "contracts/tests/fake-reserve.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.fake-direct-helpers]
+path = "contracts/version-2/direct-helpers-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-stacking-delegate]
+path = "contracts/version-2/stacking-delegate-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-rewards]
+path = "contracts/version-2/rewards-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.fake-protocol]
+path = "contracts/tests/fake-protocol.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.marketplace-commission]
 path = "contracts/tests/marketplace-commission.clar"
 clarity_version = 2

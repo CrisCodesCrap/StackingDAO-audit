@@ -211,10 +211,9 @@ class Core {
     return block.receipts[0].result;
   }
 
-  migrateStStx(caller: Account, receiver: string) {
+  migrateStStx(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "migrate-ststx", [
-        types.principal(receiver),
       ], caller.address)
     ]);
     return block.receipts[0].result;

@@ -147,7 +147,7 @@ Clarinet.test({
     result = await dataDirectStacking.setDirectStackingUser(wallet_1, wallet_1.address, qualifiedName("stacking-pool-v1"), 500);
     result.expectErr().expectUint(20003);
 
-    result = await dataDirectStacking.setDirectStackingUser(wallet_1, wallet_1.address, qualifiedName("stacking-pool-v1"), 500);
+    result = await dataDirectStacking.deleteDirectStackingUser(wallet_1, wallet_1.address);
     result.expectErr().expectUint(20003);
 
     result = await dataDirectStacking.setSupportedProtocols(wallet_1, [qualifiedName("new-protocol"), qualifiedName("protocol-arkadiko-v1")])

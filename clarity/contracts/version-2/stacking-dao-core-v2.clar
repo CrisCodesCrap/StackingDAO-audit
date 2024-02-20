@@ -13,7 +13,7 @@
 (define-constant ERR_WITHDRAW_NOT_NFT_OWNER u204003)
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u204004)
 (define-constant ERR_GET_OWNER u204005)
-(define-constant ERR_WITHDRAW_CANCEL u204005)
+(define-constant ERR_WITHDRAW_CANCEL u204006)
 
 ;;-------------------------------------
 ;; Variables
@@ -63,6 +63,8 @@
     (ststx-amount (/ (* stx-amount u1000000) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of direct-helpers)))
     (asserts! (not (get-shutdown-deposits)) (err ERR_SHUTDOWN))
 
     (try! (contract-call? direct-helpers add-direct-stacking tx-sender pool stx-amount))
@@ -95,6 +97,7 @@
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of direct-helpers)))
 
     (try! (contract-call? .data-core-v1 set-withdrawals-by-nft nft-id stx-amount ststx-amount unlock-burn-height))
     
@@ -130,6 +133,7 @@
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+    (try! (contract-call? .dao check-is-protocol (contract-of direct-helpers)))
     (asserts! (is-some nft-owner) (err ERR_WITHDRAW_NFT_DOES_NOT_EXIST))
     (asserts! (is-eq (unwrap! nft-owner (err ERR_GET_OWNER)) tx-sender) (err ERR_WITHDRAW_NOT_NFT_OWNER))
     (asserts! (< burn-block-height unlock-burn-height) (err ERR_WITHDRAW_CANCEL))
@@ -199,7 +203,7 @@
 ;; Migrate stSTX from V1
 ;;-------------------------------------
 
-(define-public (migrate-ststx (receiver principal))
+(define-public (migrate-ststx)
   (let (
     (balance-v1 (unwrap-panic (contract-call? .ststx-token get-balance .stacking-dao-core-v1)))
   )

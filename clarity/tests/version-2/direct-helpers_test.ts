@@ -178,6 +178,10 @@ Clarinet.test({
   }
 });
 
+//-------------------------------------
+// Core - User
+//-------------------------------------
+
 Clarinet.test({
   name: "direct-helpers: user can subtract direct stacking and stop",
   async fn(chain: Chain, accounts: Map<string, Account>) {
@@ -233,6 +237,10 @@ Clarinet.test({
     call.result.expectNone();
   }
 });
+
+//-------------------------------------
+// Core - Supported protocols
+//-------------------------------------
 
 Clarinet.test({
   name: "direct-helpers: stSTX moved to unsupported protocol, subtract direct stacking",
@@ -306,7 +314,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "direct-helpers: stSTX moved to unsupported protocol, but still have enough stSTX so do not subtract direct stacking",
+  name: "direct-helpers: stSTX moved to unsupported protocol, but still have enough STX so do not subtract direct stacking",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -429,6 +437,57 @@ Clarinet.test({
 // Errors 
 //-------------------------------------
 
+Clarinet.test({
+  name: "direct-helpers: can not update direct stacking with wrong reserve",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+      Tx.contractCall("direct-helpers-v1", "update-direct-stacking", [
+        types.principal(qualifiedName("fake-reserve")),
+        types.list([qualifiedName("protocol-arkadiko-v1")].map(protocol => types.principal(protocol))),
+        types.principal(wallet_1.address),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(20003);
+  }
+});
+
+Clarinet.test({
+  name: "direct-helpers: can not update direct stacking with wrong protocols",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let directHelpers = new DirectHelpers(chain, deployer);
+
+    let result = await directHelpers.updateDirectStacking(wallet_2, [qualifiedName("fake-protocol")], wallet_1.address);
+    result.expectErr().expectUint(202001);
+  }
+});
+
 //-------------------------------------
 // Access 
 //-------------------------------------
+
+Clarinet.test({
+  name: "direct-helpers: only protocol can add, subtract or stop direct stacking",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let directHelpers = new DirectHelpers(chain, deployer);
+
+    let result = await directHelpers.addDirectStacking(wallet_1, wallet_2.address, qualifiedName("stacking-pool-v1"), 100)
+    result.expectErr().expectUint(20003);
+
+    result = await directHelpers.subtractDirectStacking(wallet_1, wallet_2.address, 20)
+    result.expectErr().expectUint(20003);
+
+    result = await directHelpers.stopDirectStacking(wallet_1, wallet_2.address);
+    result.expectErr().expectUint(20003);
+  }
+});

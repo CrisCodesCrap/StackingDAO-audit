@@ -149,7 +149,6 @@
 ;;-------------------------------------
 ;; User
 ;;-------------------------------------
-
 ;; User can stop or reduce direct stacking.
 ;; To increase, a deposit is needed
 
@@ -230,7 +229,7 @@
     (stacking-stx (get direct-stacking-stx info))
     (balance-ststx (get balance-ststx info))
 
-    (ratio (unwrap-panic (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
+    (ratio (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
     (stacking-ststx (/ (* stacking-stx u1000000) ratio))
 
     (diff (if (> stacking-ststx balance-ststx)
@@ -238,6 +237,8 @@
       u0
     ))
   )
+    (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
+
     (if (> diff u0)
       (begin
         (try! (as-contract (subtract-direct-stacking user diff)))

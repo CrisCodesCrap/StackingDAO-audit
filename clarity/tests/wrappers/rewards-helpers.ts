@@ -30,6 +30,10 @@ class Rewards {
     return this.chain.callReadOnlyFn("rewards-v1", "next-rewards-unlock", [], this.deployer.address);
   }
 
+  getPoxCycle() {
+    return this.chain.callReadOnlyFn("rewards-v1", "get-pox-cycle", [], this.deployer.address);
+  }
+
   addRewards(caller: Account, pool: string, amount: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("rewards-v1", "add-rewards", [
