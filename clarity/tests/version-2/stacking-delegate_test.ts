@@ -284,7 +284,7 @@ Clarinet.test({
 
     // Can not prepare as nothing delegated
     result = stackingPool.prepare(wallet_1);
-    result.expectErr().expectUint(31001);
+    result.expectErr().expectUint(205001);
   }
 });
 

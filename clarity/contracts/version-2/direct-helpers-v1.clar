@@ -10,7 +10,7 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_UNKNOWN_PROTOCOL u51001)
+(define-constant ERR_UNKNOWN_PROTOCOL u202001)
 
 ;;-------------------------------------
 ;; Direct Stacking Helpers  

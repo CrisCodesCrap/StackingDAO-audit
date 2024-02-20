@@ -244,7 +244,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await delegatesHandler.revokeAndDelegate(deployer, qualifiedName("stacking-delegate-1-1"), 190000, qualifiedName("stacking-pool-v1"), 50);
-    result.expectErr().expectUint(41001);
+    result.expectErr().expectUint(201001);
   }
 });
 

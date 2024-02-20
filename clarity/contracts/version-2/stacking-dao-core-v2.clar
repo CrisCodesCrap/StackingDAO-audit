@@ -8,12 +8,12 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_WITHDRAW_LOCKED u19001)
-(define-constant ERR_SHUTDOWN u19002)
-(define-constant ERR_WITHDRAW_NOT_NFT_OWNER u19004)
-(define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u19005)
-(define-constant ERR_GET_OWNER u19006)
-(define-constant ERR_WITHDRAW_CANCEL u19007)
+(define-constant ERR_WITHDRAW_LOCKED u204001)
+(define-constant ERR_SHUTDOWN u204002)
+(define-constant ERR_WITHDRAW_NOT_NFT_OWNER u204003)
+(define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u204004)
+(define-constant ERR_GET_OWNER u204005)
+(define-constant ERR_WITHDRAW_CANCEL u204005)
 
 ;;-------------------------------------
 ;; Variables

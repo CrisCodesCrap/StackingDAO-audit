@@ -10,11 +10,11 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_WRONG_DELEGATE_TRAIT u31001)
-(define-constant ERR_CAN_NOT_PREPARE u31002)
-(define-constant ERR_NOT_PREPARED_YET u31003)
-(define-constant ERR_HAS_ALREADY_PREPARED u31004)
-(define-constant ERR_HAS_EXECUTED u31005)
+(define-constant ERR_WRONG_DELEGATE_TRAIT u206001)
+(define-constant ERR_CAN_NOT_PREPARE u206002)
+(define-constant ERR_NOT_PREPARED_YET u206003)
+(define-constant ERR_HAS_ALREADY_PREPARED u206004)
+(define-constant ERR_HAS_EXECUTED u206005)
 
 ;;-------------------------------------
 ;; Variables 

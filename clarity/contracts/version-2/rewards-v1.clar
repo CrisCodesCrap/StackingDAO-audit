@@ -9,7 +9,7 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_CAN_NOT_PROCESS_YET u45001)
+(define-constant ERR_CAN_NOT_PROCESS_YET u203001)
 
 ;;-------------------------------------
 ;; Variables 

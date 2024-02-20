@@ -202,7 +202,7 @@ Clarinet.test({
 
     // Can not withdraw as NFT does not exist
     result = await core.withdraw(wallet_1, 0);
-    result.expectErr().expectUint(19005);
+    result.expectErr().expectUint(204004);
   },
 });
 
@@ -264,7 +264,7 @@ Clarinet.test({
 
     // Can not withdraw as NFT does not exist
     result = await core.withdraw(wallet_1, 0);
-    result.expectErr().expectUint(19005);
+    result.expectErr().expectUint(204004);
   },
 });
 
@@ -288,7 +288,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = await core.deposit(wallet_1, 1000, undefined, qualifiedName("stacking-pool-v1"));
-    result.expectErr().expectUint(19002);
+    result.expectErr().expectUint(204002);
 
     result = await core.setShutdownDeposits(deployer, false);
     result.expectOk().expectBool(true);

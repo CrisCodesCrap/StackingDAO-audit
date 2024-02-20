@@ -9,7 +9,7 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_DELEGATE_AMOUNT_LOCKED u41001)
+(define-constant ERR_DELEGATE_AMOUNT_LOCKED u201001)
 
 ;;-------------------------------------
 ;; Maps

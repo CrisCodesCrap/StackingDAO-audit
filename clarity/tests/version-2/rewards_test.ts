@@ -94,7 +94,7 @@ Clarinet.test({
 
     // Can not process rewards
     result = await rewards.processRewards(deployer);
-    result.expectErr().expectUint(45001);
+    result.expectErr().expectUint(203001);
 
     // Go to end of cycle
     await chain.mineEmptyBlockUntil(21 - 10 + 2);

@@ -21,8 +21,8 @@
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_CAN_NOT_PREPARE u31001)
-(define-constant ERR_NO_DELEGATION u31002)
+(define-constant ERR_CAN_NOT_PREPARE u205001)
+(define-constant ERR_NO_DELEGATION u205002)
 
 ;;-------------------------------------
 ;; Maps
