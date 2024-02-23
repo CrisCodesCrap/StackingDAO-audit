@@ -93,6 +93,7 @@ export function Unstack() {
     ];
 
     await makeContractCall({
+      stxAddress: stxAddress,
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'init-withdraw',
