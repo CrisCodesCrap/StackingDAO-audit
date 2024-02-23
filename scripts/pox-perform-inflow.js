@@ -14,20 +14,19 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.listCV([
-      tx.uintCV((120000 * 1000000) + (6 * 121000 * 1000000)),
-      tx.uintCV((77000 * 1000000) + (4 * 121000 * 1000000)),
-      tx.uintCV((88000 * 1000000) + (4 * 121000 * 1000000)),
-      tx.uintCV((26000 * 1000000) + (3 * 121000 * 1000000)),
-      tx.uintCV((55000 * 1000000) + (2 * 121000 * 1000000)),
-      tx.uintCV(4000 * 1000000),
-      tx.uintCV(102000 * 1000000),
-      tx.uintCV(102000 * 1000000),
-      tx.uintCV(102000 * 1000000),
-      tx.uintCV(102000 * 1000000)
+      tx.uintCV(140000 * 1000000),
+      tx.uintCV(30000 * 1000000),
+      tx.uintCV(0 * 1000000),
+      tx.uintCV(200000 * 1000000),
+      tx.uintCV(180000 * 1000000),
+      tx.uintCV(70000 * 1000000),
+      tx.uintCV(30000 * 1000000),
+      tx.uintCV(30000 * 1000000),
+      tx.uintCV(30000 * 1000000),
+      tx.uintCV(30000 * 1000000)
     ])
   ],
-  fee: new BN(10000000, 10),
-  nonce: new BN(26, 10),
+  fee: new BN(5000000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
