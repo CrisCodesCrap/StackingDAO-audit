@@ -249,10 +249,15 @@ Clarinet.test({
     result = await pox.unlock(deployer, qualifiedName("stacking-delegate-2-3"));
     result.expectOk().expectUintWithDecimals(14999);
 
+    call = await reserve.getStxBalance();
+    call.result.expectOk().expectUintWithDecimals(3);
+
     result = await strategyV3.returnUnlockedStx(deployer, [qualifiedName("stacking-delegate-1-3"), qualifiedName("stacking-delegate-2-3")])
     result.expectOk().expectList()[0].expectOk().expectUintWithDecimals(35000);
     result.expectOk().expectList()[1].expectOk().expectUintWithDecimals(14999);
 
+    call = await reserve.getStxBalance();
+    call.result.expectOk().expectUintWithDecimals(3 + 35000 + 14999);
 
     //
     // Data

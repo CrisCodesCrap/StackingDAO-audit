@@ -104,6 +104,7 @@
   (let (
     (stacking-per-pool (contract-call? .strategy-v3-pools-v1 calculate-stacking-per-pool))
   )
+    (try! (contract-call? .dao check-is-enabled))
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
     (asserts! (not (has-prepared-pools)) (err ERR_HAS_ALREADY_PREPARED))
 
@@ -132,6 +133,7 @@
     (pool-info (get-prepare-pools-data pool))
     (stacking-per-delegate (contract-call? .strategy-v3-delegates-v1 calculate-stacking-per-delegate pool (get stacking-amount pool-info)))
   )
+    (try! (contract-call? .dao check-is-enabled))
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
     (asserts! (has-prepared-pools) (err ERR_NOT_PREPARED_YET))
     (asserts! (not (has-prepared-delegates pool)) (err ERR_HAS_ALREADY_PREPARED))
@@ -165,6 +167,7 @@
     (helper-errors (filter is-error helper-result))
     (helper-error (element-at? helper-errors u0))
   )
+    (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
     (try! (contract-call? .dao check-is-protocol (contract-of rewards-contract)))
 
