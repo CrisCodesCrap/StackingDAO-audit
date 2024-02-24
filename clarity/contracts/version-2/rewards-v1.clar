@@ -35,14 +35,11 @@
   (var-get rewards-unlock)
 )
 
-(define-read-only (get-pox-cycle)
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock current-pox-reward-cycle)
-)
+
 
 (define-read-only (next-rewards-unlock)
   (let (
-    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u1)))
+    (start-block-next-cycle (reward-cycle-to-burn-height (+ (get-pox-cycle) u1)))
     (withdrawal-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
   )
     (- start-block-next-cycle withdrawal-offset)
@@ -108,3 +105,22 @@
   )
 )
 
+;;-------------------------------------
+;; PoX Helpers
+;;-------------------------------------
+
+(define-read-only (get-pox-cycle)
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? .pox-4-mock current-pox-reward-cycle)
+  )
+)
+
+(define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
+  )
+)

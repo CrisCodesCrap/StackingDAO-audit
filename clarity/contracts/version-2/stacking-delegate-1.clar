@@ -14,11 +14,18 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "delegate-stx", data: { amount: amount-ustx, delegate-to: delegate-to, until-burn-ht: until-burn-ht, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none))
-      result (ok result)
-      error (err (to-uint error))
+    (if is-in-mainnet
+      ;; TODO: Update to pox-4
+      (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stx amount-ustx delegate-to until-burn-ht none))
+        result (ok result)
+        error (err (to-uint error))
+      )
+      (match (as-contract (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none))
+        result (ok result)
+        error (err (to-uint error))
+      )
     )
+
   )
 )
 
@@ -27,10 +34,16 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "revoke-delegate-stx", data: { block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock revoke-delegate-stx))
-      result (ok result)
-      error (err (to-uint error))
+    (if is-in-mainnet
+      ;; TODO: Update to pox-4
+      (match (as-contract (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx))
+        result (ok result)
+        error (err (to-uint error))
+      )
+      (match (as-contract (contract-call? .pox-4-mock revoke-delegate-stx))
+        result (ok result)
+        error (err (to-uint error))
+      )
     )
   )
 )
@@ -83,9 +96,10 @@
 ;;-------------------------------------
 
 (define-read-only (get-stx-account (account principal))
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock stx-account-mock account)
-  ;; (stx-account account)
+  (if is-in-mainnet
+    (stx-account account)
+    (contract-call? .pox-4-mock stx-account-mock account)
+  )
 )
 
 ;;-------------------------------------

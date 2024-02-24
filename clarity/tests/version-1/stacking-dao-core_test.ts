@@ -16,12 +16,12 @@ Clarinet.test({
     let core = new Core(chain, deployer);
 
     let call = await core.getBurnHeight();
-    call.result.expectUint(4);
+    call.result.expectUint(5);
 
     chain.mineEmptyBlock(500);
 
     call = await core.getBurnHeight();
-    call.result.expectUint(504);
+    call.result.expectUint(505);
   },
 });
 
@@ -332,14 +332,14 @@ Clarinet.test({
     call.result.expectUint(0); 
 
     // Advance to next cycle
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH);
+    chain.mineEmptyBlockUntil(REWARD_CYCLE_LENGTH)
 
     // PoX cycle 1
     call = await core.getPoxCycle();
     call.result.expectUint(1); 
 
     // Advance to prepare phase
-    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH - PREPARE_PHASE_LENGTH - 2);
+    chain.mineEmptyBlock(REWARD_CYCLE_LENGTH - PREPARE_PHASE_LENGTH - 3);
 
     // Still in cycle 1
     call = await core.getPoxCycle();

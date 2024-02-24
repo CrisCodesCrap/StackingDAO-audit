@@ -86,8 +86,7 @@
         (prev-info (contract-call? .stacking-dao-core-v1 get-withdrawals-by-nft nft-id))
         (cycle-start-block (if (> (get cycle-id prev-info) u0)
           ;; Need to translate cycle-id into unlock-burn-height
-          ;; TODO: update for mainnet
-          (contract-call? .pox-3-mock reward-cycle-to-burn-height (get cycle-id prev-info))
+          (reward-cycle-to-burn-height (get cycle-id prev-info))
           u0
         ))
       )
@@ -120,5 +119,17 @@
 
     (print { action: "delete-withdrawals-by-nft", data: { nft-id: nft-id, block-height: block-height } })
     (ok true)
+  )
+)
+
+;;-------------------------------------
+;; PoX Helpers
+;;-------------------------------------
+
+(define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
   )
 )

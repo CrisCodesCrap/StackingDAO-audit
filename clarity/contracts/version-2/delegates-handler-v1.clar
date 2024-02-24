@@ -65,9 +65,10 @@
 ;;-------------------------------------
 
 (define-read-only (get-stx-account (account principal))
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock stx-account-mock account)
-  ;; (stx-account account)
+  (if is-in-mainnet
+    (stx-account account)
+    (contract-call? .pox-4-mock stx-account-mock account)
+  )
 )
 
 ;;-------------------------------------

@@ -31,9 +31,8 @@
 
 (define-read-only (get-withdraw-unlock-burn-height)
   (let (
-    (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
-    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
-    (cycle-length (get reward-cycle-length (unwrap-panic (contract-call? .pox-4-mock get-pox-info))))
+    (current-cycle (current-pox-reward-cycle))
+    (start-block-next-cycle (reward-cycle-to-burn-height (+ current-cycle u1)))
     (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
   )
     (if (< burn-block-height (- start-block-next-cycle withdraw-offset))
@@ -41,7 +40,7 @@
       (ok start-block-next-cycle)
 
       ;; Withdraw cycle after next
-      (ok (+ start-block-next-cycle cycle-length))
+      (ok (+ start-block-next-cycle (get-reward-cycle-length)))
     )
   )
 )
@@ -198,6 +197,35 @@
     (ok true)
   )
 )
+
+;;-------------------------------------
+;; PoX Helpers
+;;-------------------------------------
+
+(define-read-only (current-pox-reward-cycle) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? .pox-4-mock current-pox-reward-cycle)
+  )
+)
+
+(define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
+  )
+)
+
+(define-read-only (get-reward-cycle-length)
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (get reward-cycle-length (unwrap-panic (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-pox-info)))
+    (get reward-cycle-length (unwrap-panic (contract-call? .pox-4-mock get-pox-info)))
+  )
+)
+
 
 ;;-------------------------------------
 ;; Migrate stSTX from V1

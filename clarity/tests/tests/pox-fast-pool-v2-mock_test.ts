@@ -39,7 +39,7 @@ Clarinet.test({
     await chain.mineEmptyBlockUntil(22);
 
 
-    let call = await stackingPool.getPoxInfo();
+    let call = await pox.getPoxInfo();
     // console.log("Block:", chain.blockHeight);
     // console.log("PoX Info:", call.result);
 
@@ -89,7 +89,7 @@ Clarinet.test({
 
     await chain.mineEmptyBlockUntil(21 + 15);
 
-    call = await stackingPool.getPoxInfo();
+    call = await pox.getPoxInfo();
     // console.log("Block:", chain.blockHeight);
     // console.log("PoX Info:", call.result);
 

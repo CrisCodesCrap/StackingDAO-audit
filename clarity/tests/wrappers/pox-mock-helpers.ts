@@ -51,6 +51,11 @@ class Pox4Mock {
     this.deployer = deployer;
   }
 
+  getPoxInfo() {
+    return this.chain.callReadOnlyFn("pox-4-mock", "get-pox-info", [], this.deployer.address);
+  }
+
+
   burnHeightForRewardCycle(height: number) {
     return this.chain.callReadOnlyFn("pox-4-mock", "burn-height-to-reward-cycle", [
       types.uint(height),

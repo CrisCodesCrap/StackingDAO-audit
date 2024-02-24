@@ -112,7 +112,7 @@ Clarinet.test({
     let dataDirectStacking = new DataDirectStacking(chain, deployer);
 
     let call = await dataDirectStacking.getSupportedProtocols();
-    call.result.expectList()[0].expectPrincipal(qualifiedName("protocol-arkadiko-v1"));
+    call.result.expectList()[0].expectPrincipal(qualifiedName("protocol-arkadiko-mock"));
 
     let result = await dataDirectStacking.setSupportedProtocols(deployer, [qualifiedName("new-protocol"), qualifiedName("protocol-arkadiko-v1")])
     result.expectOk().expectBool(true);

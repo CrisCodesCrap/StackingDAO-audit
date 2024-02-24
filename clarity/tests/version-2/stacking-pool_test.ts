@@ -248,8 +248,8 @@ Clarinet.test({
     let stackingPool = new StackingPool(chain, deployer);
 
     let call = await stackingPool.getPoxRewardAddress();
-    call.result.expectTuple()["version"].expectBuff(hexToBytes("0x00"));
-    call.result.expectTuple()["hashbytes"].expectBuff(hexToBytes("0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac"));
+    call.result.expectTuple()["version"].expectBuff(hexToBytes("0x04"));
+    call.result.expectTuple()["hashbytes"].expectBuff(hexToBytes("0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc"));
 
     let result = stackingPool.setPoxRewardAddress(deployer, "0x01", "0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ab");
     result.expectOk().expectBool(true);

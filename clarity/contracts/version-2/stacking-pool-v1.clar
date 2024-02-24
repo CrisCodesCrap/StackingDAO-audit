@@ -28,8 +28,7 @@
 ;; Maps
 ;;-------------------------------------
 
-;; TODO: update for mainnet
-(define-data-var pox-reward-address { version: (buff 1), hashbytes: (buff 32) } { version: 0x00, hashbytes: 0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac })
+(define-data-var pox-reward-address { version: (buff 1), hashbytes: (buff 32) } { version: 0x04, hashbytes: 0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc })
 
 ;;-------------------------------------
 ;; Maps
@@ -50,10 +49,7 @@
   (map-get? cycle-to-index cycle)
 )
 
-(define-read-only (get-pox-info)
-  ;; TODO: update for mainnet
-  (unwrap-panic (contract-call? .pox-4-mock get-pox-info))
-)
+
 
 
 ;;-------------------------------------
@@ -70,8 +66,7 @@
 
 (define-read-only (total-delegated-helper (delegate principal)) 
   (let (
-    ;; TODO: update for mainnet
-    (delegation-state (contract-call? .pox-4-mock get-check-delegation delegate))
+    (delegation-state (get-check-delegation delegate))
   )
     (if (is-some delegation-state)
       (get amount-ustx (unwrap-panic delegation-state))
@@ -86,8 +81,8 @@
 
 (define-read-only (can-prepare)
   (let (
-    (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
-    (start-block-next-cycle (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+    (current-cycle (current-pox-reward-cycle))
+    (start-block-next-cycle (reward-cycle-to-burn-height (+ current-cycle u1)))
     (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
   )
     (> burn-block-height (- start-block-next-cycle withdraw-offset))
@@ -114,8 +109,7 @@
   (begin
     (print { action: "delegate-stx", data: { tx-sender: tx-sender, amount-ustx: amount-ustx, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (contract-call? .pox-4-mock delegate-stx amount-ustx (as-contract tx-sender) until-burn-ht none)
+    (match (pox-delegate-stx amount-ustx (as-contract tx-sender) until-burn-ht)
       result (ok result)
       error (err (to-uint error))
     )
@@ -126,8 +120,7 @@
   (begin
     (print { action: "revoke-delegate-stx", data: { tx-sender: tx-sender, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (contract-call? .pox-4-mock revoke-delegate-stx)
+    (match (pox-revoke-delegate-stx)
       result (ok result)
       error (err (to-uint error))
     )
@@ -174,8 +167,7 @@
 
 (define-private (delegation (delegate principal))
   (let (
-    ;; TODO: update for mainnet
-    (delegation-info (contract-call? .pox-4-mock get-check-delegation delegate))
+    (delegation-info (get-check-delegation delegate))
     (delegation-amount (if (is-none delegation-info)
       u0
       (unwrap-panic (get amount-ustx delegation-info))
@@ -185,8 +177,7 @@
       ;; No delegation, do nothing
       false
 
-      ;; TODO: update for mainnet
-      (if (is-none (contract-call? .pox-4-mock get-stacker-info delegate))
+      (if (is-none (get-stacker-info delegate))
         ;; Not stacking yet
         (begin 
           (try! (as-contract (delegate-stack-stx delegate delegation-amount)))
@@ -225,7 +216,7 @@
 
 (define-private (aggregation)
   (let (
-    (next-cycle (+ (contract-call? .pox-4-mock current-pox-reward-cycle) u1))
+    (next-cycle (+ (current-pox-reward-cycle) u1))
     (index (map-get? cycle-to-index next-cycle))
   )
     (if (is-none index)
@@ -250,20 +241,13 @@
 )
 
 ;;-------------------------------------
-;; PoX Helpers
+;; Helpers
 ;;-------------------------------------
-
-(define-read-only (get-stx-account (account principal))
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock stx-account-mock account)
-  ;; (stx-account account)
-)
 
 (define-read-only (not-extended-next-cycle (delegate principal))
   (let (
-    ;; TODO: update for mainnet
-    (current-cycle (contract-call? .pox-4-mock current-pox-reward-cycle))
-    (next-cycle-height (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ current-cycle u1)))
+    (current-cycle (current-pox-reward-cycle))
+    (next-cycle-height (reward-cycle-to-burn-height (+ current-cycle u1)))
     (unlock-height (get unlock-height (get-stx-account delegate)))
   )
     (ok (<= unlock-height next-cycle-height))
@@ -279,8 +263,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "delegate-stack-stx", data: { stacker: stacker, amount: amount-ustx, block-height: block-height } })
     
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height u1))
+    (match (as-contract (pox-delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height))
       result (ok result)
       error (err (to-uint error))
     )
@@ -292,8 +275,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "delegate-stack-extend", data: { stacker: stacker, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock delegate-stack-extend stacker (get-pox-reward-address) u1))
+    (match (as-contract (pox-delegate-stack-extend stacker (get-pox-reward-address)))
       result (ok result)
       error (err (to-uint error))
     )
@@ -305,8 +287,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "delegate-stack-increase", data: { stacker: stacker, increase-by: increase-by, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock delegate-stack-increase stacker (get-pox-reward-address) increase-by))
+    (match (as-contract (pox-delegate-stack-increase stacker (get-pox-reward-address) increase-by))
       result (ok result)
       error (err (to-uint error))
     )
@@ -318,8 +299,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "stack-aggregation-commit-indexed", data: { reward-cycle: reward-cycle, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (get-pox-reward-address) reward-cycle))
+    (match (as-contract (pox-stack-aggregation-commit-indexed (get-pox-reward-address) reward-cycle))
       result (ok result)
       error (err (to-uint error))
     )
@@ -331,8 +311,7 @@
     (try! (contract-call? .dao check-is-protocol contract-caller))
     (print { action: "stack-aggregation-increase", data: { reward-cycle: reward-cycle, reward-cycle-index: reward-cycle-index, block-height: block-height } })
 
-    ;; TODO: update for mainnet
-    (match (as-contract (contract-call? .pox-4-mock stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
+    (match (as-contract (pox-stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
       result (ok result)
       error (err (to-uint error))
     )
@@ -349,5 +328,109 @@
 
     (var-set pox-reward-address new-address)
     (ok true)
+  )
+)
+
+;;-------------------------------------
+;; PoX Helpers
+;;-------------------------------------
+
+(define-read-only (get-stx-account (account principal))
+  (if is-in-mainnet
+    (stx-account account)
+    (contract-call? .pox-4-mock stx-account-mock account)
+  )
+)
+
+(define-read-only (get-check-delegation (delegate principal))
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-check-delegation delegate)
+    (contract-call? .pox-4-mock get-check-delegation delegate)
+  )
+)
+
+(define-read-only (current-pox-reward-cycle) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? .pox-4-mock current-pox-reward-cycle)
+  )
+)
+
+(define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
+  )
+)
+
+(define-private (pox-delegate-stx (amount-ustx uint) (delegate-to principal) (until-burn-ht (optional uint))) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stx amount-ustx delegate-to until-burn-ht none)
+    (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none)
+  )
+)
+
+(define-private (pox-revoke-delegate-stx) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx)
+    (contract-call? .pox-4-mock revoke-delegate-stx)
+  )
+)
+
+(define-read-only (get-stacker-info (delegate principal)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-stacker-info delegate)
+    (contract-call? .pox-4-mock get-stacker-info delegate)
+  )
+)   
+
+(define-private (pox-delegate-stack-stx 
+  (stacker principal)
+  (amount-ustx uint)
+  (pox-addr { version: (buff 1), hashbytes: (buff 32) })
+  (start-burn-ht uint)
+) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-stx stacker amount-ustx pox-addr start-burn-ht u1)
+    (contract-call? .pox-4-mock delegate-stack-stx stacker amount-ustx pox-addr start-burn-ht u1)
+  )
+)
+
+(define-private (pox-delegate-stack-extend (stacker principal) (pox-addr { version: (buff 1), hashbytes: (buff 32) })) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-extend stacker pox-addr u1)
+    (contract-call? .pox-4-mock delegate-stack-extend stacker pox-addr u1)
+  )
+)
+
+(define-private (pox-delegate-stack-increase (stacker principal) (pox-addr { version: (buff 1), hashbytes: (buff 32) }) (increase-by uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-increase stacker pox-addr increase-by)
+    (contract-call? .pox-4-mock delegate-stack-increase stacker pox-addr increase-by)
+  )
+)
+
+(define-private (pox-stack-aggregation-commit-indexed (pox-addr { version: (buff 1), hashbytes: (buff 32) }) (reward-cycle uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-commit-indexed pox-addr reward-cycle)
+    (contract-call? .pox-4-mock stack-aggregation-commit-indexed pox-addr reward-cycle)
+  )
+)
+
+(define-private (pox-stack-aggregation-increase (pox-addr { version: (buff 1), hashbytes: (buff 32) }) (reward-cycle uint) (cycle-reward-index uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-increase pox-addr reward-cycle cycle-reward-index)
+    (contract-call? .pox-4-mock stack-aggregation-increase pox-addr reward-cycle cycle-reward-index)
   )
 )

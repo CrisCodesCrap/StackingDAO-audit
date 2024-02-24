@@ -5,19 +5,6 @@
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 
-;;-------------------------------------
-;; PoX info 
-;;-------------------------------------
-
-(define-read-only (get-pox-cycle)
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock current-pox-reward-cycle)
-)
-
-(define-read-only (get-next-cycle-end-burn-height)
-  ;; TODO: update for mainnet
-  (contract-call? .pox-4-mock reward-cycle-to-burn-height (+ (get-pox-cycle) u2))
-)
 
 ;;-------------------------------------
 ;; Inflow/outflow info 
@@ -84,6 +71,30 @@
     (print { action: "perform-pool-delegation-helper", data: { delegate-info: delegate-info, delegate-to: delegate-to, until-burn-ht: until-burn-ht, block-height: block-height } })
     (ok true)
   )
+)
+
+;;-------------------------------------
+;; PoX Helpers
+;;-------------------------------------
+
+(define-read-only (get-pox-cycle)
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? .pox-4-mock current-pox-reward-cycle)
+  )
+)
+
+(define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
+  )
+)
+
+(define-read-only (get-next-cycle-end-burn-height)
+  (reward-cycle-to-burn-height (+ (get-pox-cycle) u2))
 )
 
 ;;-------------------------------------

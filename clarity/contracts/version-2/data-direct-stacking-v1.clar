@@ -7,9 +7,15 @@
 
 (begin
   ;; TODO: add Bitflow as supported protocol
-  (var-set supported-protocols (list
-    .protocol-arkadiko-v1
-  ))
+
+  (if is-in-mainnet
+    (var-set supported-protocols (list
+      .protocol-arkadiko-v1
+    ))
+    (var-set supported-protocols (list
+      .protocol-arkadiko-mock
+    ))
+  )
 )
 
 ;;-------------------------------------

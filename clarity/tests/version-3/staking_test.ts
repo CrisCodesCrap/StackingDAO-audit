@@ -70,11 +70,11 @@ Clarinet.test({
     let call = await commission.getCycleRewardsEndBlock();
     call.result.expectUint(REWARD_CYCLE_LENGTH * 2 + PREPARE_PHASE_LENGTH);
 
-    // Current burn-block-height is 6, rewards end block is 21*2+3
-    // (21*2+3)-6 = 39
-    // Adding 39 STX as rewards
-    result = await staking.addRewards(deployer, 39, REWARD_CYCLE_LENGTH * 2 + PREPARE_PHASE_LENGTH);
-    result.expectOk().expectUintWithDecimals(39);
+    // Current burn-block-height is 7, rewards end block is 21*2+3
+    // (21*2+3)-7 = 38
+    // Adding 38 STX as rewards
+    result = await staking.addRewards(deployer, 38, REWARD_CYCLE_LENGTH * 2 + PREPARE_PHASE_LENGTH);
+    result.expectOk().expectUintWithDecimals(38);
 
     // Added 40 STX, for 40 blocks = 1 STX per block
     call = await staking.getRewardsPerBlock();
@@ -132,9 +132,9 @@ Clarinet.test({
     result = await staking.stake(wallet_3, 3000);
     result.expectOk().expectUintWithDecimals(3000);
 
-    // Current burn-block-height is 10
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 10, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
-    result.expectOk().expectUintWithDecimals(14);
+    // Current burn-block-height is 11
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 11, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
+    result.expectOk().expectUintWithDecimals(13);
 
     // 1 STX per block
     let call = await staking.getRewardsPerBlock();
@@ -224,7 +224,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(7);
+    call.result.expectUint(8);
 
     // New stake amounts
     call = await staking.getStakeAmountOf(wallet_1.address);
@@ -237,9 +237,9 @@ Clarinet.test({
     call = await staking.getCummRewardPerStake();
     call.result.expectUintWithDecimals(0);
 
-    // Burn block height is 8
-    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 8, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
-    result.expectOk().expectUintWithDecimals(16);
+    // Burn block height is 9
+    result = await staking.addRewards(deployer, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH - 9, REWARD_CYCLE_LENGTH + PREPARE_PHASE_LENGTH);
+    result.expectOk().expectUintWithDecimals(15);
 
     // Add 1 STX per block
     call = await staking.getRewardsPerBlock();
@@ -313,7 +313,7 @@ Clarinet.test({
 
     // Last increase block
     call = staking.getLastRewardIncreaseBlock();
-    call.result.expectUint(16);
+    call.result.expectUint(17);
 
     // New cumm reward per stake
     // Was 0.006333, adding 0.000333 (1 STX per block / 3000 STX staked)
@@ -386,11 +386,11 @@ Clarinet.test({
     let call = await staking.getRewardsEndBlock();
     call.result.expectUint(24);
 
-    // When adding first rewards, burn height was 6, so 100/(24-6) = 5.555 per block
-    // When adding rewards again, burn height was 9, so 200/(24-9) = 13.333 per block
+    // When adding first rewards, burn height was 7, so 100/(24-7) = 5.882 per block
+    // When adding rewards again, burn height was 10, so 200/(24-10) = 14.285 per block
     // So total is 17.763 per block
     call = await staking.getRewardsPerBlock();
-    call.result.expectUintWithDecimals(18.888888);
+    call.result.expectUintWithDecimals(20.168066);
 
     call = await staking.getPendingRewards(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(299.999);

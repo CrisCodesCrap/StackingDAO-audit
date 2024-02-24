@@ -24,10 +24,6 @@ class StackingPool {
     ], this.deployer.address);
   }
 
-  getPoxInfo() {
-    return this.chain.callReadOnlyFn("stacking-pool-v1", "get-pox-info", [], this.deployer.address);
-  }
-
   totalDelegated() {
     return this.chain.callReadOnlyFn("stacking-pool-v1", "total-delegated", [], this.deployer.address);
   }
