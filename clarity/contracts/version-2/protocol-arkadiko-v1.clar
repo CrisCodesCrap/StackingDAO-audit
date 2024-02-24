@@ -7,8 +7,7 @@
 ;; Arkadiko 
 ;;-------------------------------------
 
-;; Public method in case we can not use read-only
-(define-public (get-balance (user principal))
+(define-read-only (get-balance (user principal))
   (let (
     (vault (unwrap-panic (contract-call? 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1 get-vault user .ststx-token)))
   )

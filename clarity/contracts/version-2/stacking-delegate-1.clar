@@ -1,5 +1,13 @@
 ;; @contract Stacking Delegate
 ;; @version 1
+;;
+;; The protocol will be delegating STX to different pools. Delegates can not be reused across
+;; different pools. Multiple delegates are needed per pool, as the PoX stacking mechanism does
+;; not allow to simply decrease the amount stacked. It's only possible to stop stacking completely.
+;; That's why we need to divide the STX to stack across multiple delegation contracts, so that if there
+;; is an outflow, we can stop 1 delegate while all others continue to stack.
+;;
+;; This contract is kept as simple as possible as it will be activily delegating/stacking.
 
 (impl-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)

@@ -1,5 +1,16 @@
 ;; @contract Rewards
 ;; @version 1
+;;
+;; PoX rewards are added here via `add-rewards`. The pool owner can add the rewards
+;; here, or transfer the rewards to the delegates. The delegates will make sure these rewards
+;; are added here.
+;;
+;; Added rewards are kept in this contract until the end of the cycle. At the end of the
+;; cycle the method `process-rewards` can be called to actually add the STX rewards to the reserve.
+;;
+;; We can not add rewards during the cycle, as a user could stack right before the rewards are added,
+;; and unstack right after. His stSTX will become more valuable while his STX was never stacked.
+;; To prevent this, rewards can only be added in the last blocks (withdraw offset) of the cycle.
 
 (impl-trait .rewards-trait-v1.rewards-trait)
 (use-trait commission-trait .commission-trait-v1.commission-trait)

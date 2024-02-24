@@ -1,6 +1,12 @@
 ;; @contract Strategy V3 Pools V1
 ;; @version 1
 ;;
+;; Calculates amount of STX to stack per pool, while taking into account direct stacking.
+;; When a user selects a pool to direct stack, the STX will be stacked in that pool. However,
+;; all pool rewards are aggregated and distributed across all stSTX holders to allow for token
+;; fungibility. 
+;; That's why there's also a part of normal stacking STX that will be divided across pools, 
+;; according to the direct stacking ratios.
 
 ;;-------------------------------------
 ;; Core

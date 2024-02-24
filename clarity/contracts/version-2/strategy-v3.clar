@@ -1,6 +1,14 @@
 ;; @contract Stacking Strategy
 ;; @version 3
 ;;
+;; This is the main strategy to perform stacking each cycle:
+;; 1) prepare-pools - to save the amount of STX to stack per pool
+;; 2) prepare-delegates - to save the amount of STX to stack per delegate for given pool
+;; 3) execute - actual delegation to pools
+;; 4) return-unlocked-stx - return excess STX in delegates back to reserve
+;;
+;; This process can only be performed in the last blocks (withdraw offset) of a cycle.
+;; The process can only be performed once per cycle.
 
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)

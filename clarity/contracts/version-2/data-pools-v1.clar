@@ -1,5 +1,8 @@
 ;; @contract Data Pools
 ;; @version 1
+;;
+;; Save which pools are active, their commission and stacking share.
+;; Also set delegates per pool and the delegate share.
 
 ;;-------------------------------------
 ;; Init 

@@ -1,7 +1,10 @@
 ;; @contract Stacking Pool
 ;; @version 1
+;;
+;; Stacking DAO stacking pool
+;; One of the pools that will be used by the StackingDAO protocol.
+;; Others can also delegate to this pool directly.
 
-;; 
 ;; Stacking delegation
 ;;
 ;; 1) User needs to set correct amount to delegate
@@ -48,9 +51,6 @@
 (define-read-only (get-cycle-to-index (cycle uint))
   (map-get? cycle-to-index cycle)
 )
-
-
-
 
 ;;-------------------------------------
 ;; Helpers

@@ -1,5 +1,8 @@
 ;; @contract Direct Stacking Helpers
 ;; @version 1
+;;
+;; This contract helps to keep the direct stacking data up to date,
+;; based on the actions a user performs via stacking-dao-core-v2. 
 
 (impl-trait .direct-helpers-trait-v1.direct-helpers-trait)
 
@@ -84,6 +87,7 @@
   )
 )
 
+;; Subtract direct stacking and stop if amount >= current-direct-stacking
 (define-public (subtract-direct-stacking (user principal) (amount uint))
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
@@ -119,6 +123,7 @@
   )
 )
 
+;; Stop direct stacking for a user
 (define-public (stop-direct-stacking (user principal))
   (let (
     (current-direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
@@ -171,7 +176,7 @@
 ;;-------------------------------------
 ;; Update direct stacking
 ;;-------------------------------------
-;; When stSTX is moved to another wallet or unsupported protocol, direct stacking will be stopped.
+;; When stSTX is moved to another wallet or unsupported protocol, direct stacking should be stopped.
 ;; Below helper methods that can be used by keeper jobs for this mechanism.
 
 (define-read-only (is-error (response (response uint uint)))
@@ -182,13 +187,30 @@
   (unwrap-panic response)
 )
 
-(define-public (calculate-direct-stacking-info (protocols (list 50 <protocol-trait>)) (user principal)) 
+;; Get user balance for given protocol
+(define-public (get-user-balance-in-protocol (user principal) (protocol <protocol-trait>)) 
+  (let (
+    (supported-protocols (contract-call? .data-direct-stacking-v1 get-supported-protocols))
+    (protocol-index (index-of? supported-protocols (contract-of protocol)))
+  )
+    (asserts! (is-some protocol-index) (err ERR_UNKNOWN_PROTOCOL))
+
+    (contract-call? protocol get-balance user)
+  )
+)
+
+;; Get user STX and stSTX stacked, and amount direct stacked
+;; If returned direct-stacking-ststx > balance-ststx, we should call 'update-direct-stacking'
+(define-public (calculate-direct-stacking-info (reserve <reserve-trait>) (protocols (list 50 <protocol-trait>)) (user principal)) 
   (let (
     (direct-stacking-info (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
     (direct-stacking (if (is-some direct-stacking-info)
       (get amount (unwrap-panic direct-stacking-info))
       u0
     ))
+
+    (ratio (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
+    (direct-stacking-ststx (/ (* direct-stacking u1000000) ratio))
 
     (user-list (list user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user))
     
@@ -207,30 +229,17 @@
       (protocol-ststx (fold + protocol-balances-unrwapped u0))
       (wallet-ststx (unwrap-panic (contract-call? .ststx-token get-balance user)))
     )
-      (ok { direct-stacking-stx: direct-stacking, balance-ststx: (+ wallet-ststx protocol-ststx) })
+      (ok { direct-stacking-stx: direct-stacking, direct-stacking-ststx: direct-stacking-ststx, balance-ststx: (+ wallet-ststx protocol-ststx) })
     )
   )
 )
 
-(define-public (get-user-balance-in-protocol (user principal) (protocol <protocol-trait>)) 
-  (let (
-    (supported-protocols (contract-call? .data-direct-stacking-v1 get-supported-protocols))
-    (protocol-index (index-of? supported-protocols (contract-of protocol)))
-  )
-    (asserts! (is-some protocol-index) (err ERR_UNKNOWN_PROTOCOL))
-
-    (contract-call? protocol get-balance user)
-  )
-)
-
+;; Can be called to subtract direct stacking for user if needed.
 (define-public (update-direct-stacking (reserve <reserve-trait>) (protocols (list 50 <protocol-trait>)) (user principal))
   (let (
-    (info (try! (calculate-direct-stacking-info protocols user)))
-    (stacking-stx (get direct-stacking-stx info))
+    (info (try! (calculate-direct-stacking-info reserve protocols user)))
+    (stacking-ststx (get direct-stacking-ststx info))
     (balance-ststx (get balance-ststx info))
-
-    (ratio (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
-    (stacking-ststx (/ (* stacking-stx u1000000) ratio))
 
     (diff (if (> stacking-ststx balance-ststx)
       (- stacking-ststx balance-ststx)

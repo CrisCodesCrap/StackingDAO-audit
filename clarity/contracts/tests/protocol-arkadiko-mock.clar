@@ -7,8 +7,7 @@
 ;; Arkadiko 
 ;;-------------------------------------
 
-;; Public method in case we can not use read-only
-(define-public (get-balance (user principal))
+(define-read-only (get-balance (user principal))
   (ok (get-user-balance user))
 )
 

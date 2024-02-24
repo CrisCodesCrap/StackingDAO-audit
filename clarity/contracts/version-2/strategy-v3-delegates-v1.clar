@@ -1,6 +1,9 @@
 ;; @contract Strategy V3 Delegates V1
 ;; @version 1
 ;;
+;; Calculate delegation amounts for given pool.
+;; If there is an inflow, use the reach-target algorithm to calculate stacking amounts per delegate.
+;; If there is an outflow, use lowest-combination algorithm to calculate which delegates to stop
 
 ;;-------------------------------------
 ;; Core

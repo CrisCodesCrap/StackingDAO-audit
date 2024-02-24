@@ -1,5 +1,7 @@
 ;; @contract Core
 ;; @version 2
+;;
+;; Core contract for the user to interact with (deposit, withdraw)
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 (use-trait direct-helpers-trait .direct-helpers-trait-v1.direct-helpers-trait)

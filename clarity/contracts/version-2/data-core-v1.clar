@@ -1,5 +1,8 @@
 ;; @contract Data Core
 ;; @version 1
+;;
+;; Helper methods to get STX per stSTX.
+;; Storing withdrawal offset & withdrawal NFT info.
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 

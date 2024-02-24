@@ -63,6 +63,7 @@ class DirectHelpers {
 
   calculateDirectStackingInfo(protocols: string[], user: string) {
     return this.chain.callReadOnlyFn("direct-helpers-v1", "calculate-direct-stacking-info", [
+      types.principal(qualifiedName("reserve-v1")),
       types.list(protocols.map(protocol => types.principal(protocol))),
       types.principal(user),
     ], this.deployer.address);

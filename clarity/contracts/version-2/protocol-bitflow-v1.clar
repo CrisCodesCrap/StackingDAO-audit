@@ -7,8 +7,7 @@
 ;; BitFlow 
 ;;-------------------------------------
 
-;; Public method in case we can not use read-only
-(define-public (get-balance (user principal))
+(define-read-only (get-balance (user principal))
   (let (    
     ;; Wallet
     (balance (unwrap-panic (contract-call? 'SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2 get-balance user)))

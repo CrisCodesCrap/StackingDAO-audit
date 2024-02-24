@@ -1,5 +1,9 @@
 ;; @contract Data Direct Stacking
 ;; @version 1
+;;
+;; Tracks direct stacking info for user and pools.
+;; If user transfers stSTX to another wallet or unsupported protocol, 
+;; the direct stacking amount can be decrased.
 
 ;;-------------------------------------
 ;; Init 

@@ -1,13 +1,12 @@
 ;; @contract Strategy V3 Algo V1
 ;; @version 1
 ;;
+;; Contains 2 algorithms: reach-target & lowest-combination.
 
 ;;-------------------------------------
 ;; Reach target
-;;
-;; Try to reach target for each element, but take into account locked.
-;;
 ;;-------------------------------------
+;; Try to reach target for each element, while taking into account locked.
 
 (define-read-only (calculate-reach-target (target (list 30 uint)) (locked (list 30 uint)))
   (let (
@@ -78,11 +77,9 @@
 
 ;;-------------------------------------
 ;; Lowest Combination
-;;
+;;-------------------------------------
 ;; Find a combination of the locked list items, so that it's sum is larger than the given outflow.
 ;; And the difference as low as possible.
-;;
-;;-------------------------------------
 
 (define-read-only (calculate-lowest-combination (outflow uint) (locked (list 30 uint)))
   (let (

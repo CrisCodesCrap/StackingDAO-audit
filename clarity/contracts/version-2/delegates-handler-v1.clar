@@ -1,5 +1,11 @@
 ;; @contract Stacking Delegates
 ;; @version 1
+;;
+;; Delegate contracts in the protocol are difficult to replace as they are activily delegating/stacking. 
+;; So we want to keep the delegate contract itself as simple as possible.
+;; This contract adds some extra logic for the delegates.
+;;
+;; There are 4 important functions: delegate, revoke, handle-excess and handle-rewards.
 
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)

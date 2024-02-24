@@ -1,10 +1,12 @@
 ;; @contract Stacking Strategy
 ;; @version 2
 ;;
+;; Simple contract which allows protocol to delegate to a certain pool, given
+;; a list of delegate contracts.
+;; Amount calculations need to be done off chain.
 
 (use-trait stacking-delegate-trait .stacking-delegate-trait-v1.stacking-delegate-trait)
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
-
 
 ;;-------------------------------------
 ;; Inflow/outflow info 
