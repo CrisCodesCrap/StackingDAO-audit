@@ -176,7 +176,7 @@
 ;;-------------------------------------
 ;; Update direct stacking
 ;;-------------------------------------
-;; When stSTX is moved to another wallet or unsupported protocol, direct stacking should be stopped.
+;; When stSTX is moved to another wallet or unsupported protocol, direct stacking should be decreased.
 ;; Below helper methods that can be used by keeper jobs for this mechanism.
 
 (define-read-only (is-error (response (response uint uint)))
