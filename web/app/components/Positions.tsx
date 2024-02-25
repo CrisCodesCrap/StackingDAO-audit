@@ -208,7 +208,7 @@ export function Positions() {
           
           {/* stSTX */}
           {stStxBalance > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`stStxBalance`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/sdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -233,11 +233,11 @@ export function Positions() {
           )}
 
           {/* Withdraw NFT */}
-          {!isLoading && unstackNfts.map((id) => <UnstackPosition key={id} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
+          {!isLoading && unstackNfts.map((id) => <UnstackPosition key={`unstack-${id}`} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
 
           {/* Genesis NFT */}
-          {!isLoading && genesisNfts.map((id) => <>
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+          {!isLoading && genesisNfts.map((id) => (
+            <div key={`genesis-${id}`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src={genesisNftInfo[id]?.url} style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -258,11 +258,11 @@ export function Positions() {
                 </div>
               </div>
             </div>
-          </>)}
+          ))}
 
           {/* BitFlow LP V1.1 */}
           {bitflowLpStaked > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpStaked1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -290,7 +290,7 @@ export function Positions() {
           )}
 
           {bitflowLpWallet > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpWallet1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -319,7 +319,7 @@ export function Positions() {
 
           {/* BitFlow LP V1.2 */}
           {bitflowLpStaked2 > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpStaked2`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -347,7 +347,7 @@ export function Positions() {
           )}
 
           {bitflowLpWallet2 > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpWallet2`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -376,7 +376,7 @@ export function Positions() {
           
           {/* STX */}
           {stxBalance > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`stxBalance`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="STX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/stacks-stx-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
