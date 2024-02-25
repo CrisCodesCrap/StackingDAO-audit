@@ -6,19 +6,18 @@ const utils = require('./utils.js');
 // Constants
 //
 
-const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v3`;
+const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v5`;
 
 //
 // Contract calls
 //
 
-// Before LP contract was deployed, we can only get stSTX wallet balance
-async function userInfoAtBlockWithoutLP(address, blockHeight) {
+async function userWalletAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
       contractAddress: pointsContract.split(".")[0],
       contractName: pointsContract.split(".")[1],
-      functionName: "get-ststx-balance-at-block",
+      functionName: "get-user-wallet",
       functionArgs: [
         tx.standardPrincipalCV(address),
         tx.uintCV(blockHeight),
@@ -28,26 +27,20 @@ async function userInfoAtBlockWithoutLP(address, blockHeight) {
     });
 
     const result = tx.cvToJSON(userInfo).value.value;
-
-    return {
-      ststx_balance: result / 1000000,
-      lp_balance: 0
-    }
+    return result / 1000000;
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userInfoAtBlockWithoutLP(address, blockHeight);
+    return await userInfoAtBlock(address, blockHeight);
   }
 }
 
-
-// Once LP contract was deployed, we can take these tokens into account
-async function userInfoAtBlockWithLP(address, blockHeight) {
+async function userBitflowAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
       contractAddress: pointsContract.split(".")[0],
       contractName: pointsContract.split(".")[1],
-      functionName: "get-user-ststx-at-block",
+      functionName: "get-user-bitflow",
       functionArgs: [
         tx.standardPrincipalCV(address),
         tx.uintCV(blockHeight),
@@ -56,56 +49,22 @@ async function userInfoAtBlockWithLP(address, blockHeight) {
       network: utils.resolveNetwork()
     });
 
-    const result = tx.cvToJSON(userInfo).value;
-
-    return {
-      ststx_balance: result["ststx-balance"].value / 1000000,
-      lp_balance: result["lp-balance"].value / 1000000
-    }
+    const result = tx.cvToJSON(userInfo).value.value;
+    return result / 1000000;
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userInfoAtBlockWithLP(address, blockHeight);
+    return await userInfoAtBlock(address, blockHeight);
   }
 }
-
-// Once second LP deployed, we can take that into account
-async function userInfoAtBlockWithLP2(address, blockHeight) {
-  try {
-    const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: pointsContract.split(".")[0],
-      contractName: pointsContract.split(".")[1],
-      functionName: "get-user-ststx-at-block-2",
-      functionArgs: [
-        tx.standardPrincipalCV(address),
-        tx.uintCV(blockHeight),
-      ],
-      senderAddress: process.env.CONTRACT_ADDRESS,
-      network: utils.resolveNetwork()
-    });
-
-    const result = tx.cvToJSON(userInfo).value;
-
-    return {
-      ststx_balance: result["ststx-balance"].value / 1000000,
-      lp_balance: result["lp-balance"].value / 1000000
-    }
-  } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userInfoAtBlockWithLP2(address, blockHeight);
-  }
-}
-
 
 async function userInfoAtBlock(address, blockHeight) {
-  if (blockHeight < 132631) {
-    return await userInfoAtBlockWithoutLP(address, blockHeight);
+  const wallet = await userWalletAtBlock(address, blockHeight);
+  const bitflow = await userBitflowAtBlock(address, blockHeight);
+  return {
+    ststx_balance: wallet,
+    lp_balance: bitflow
   }
-  if (blockHeight < 135640) {
-    return await userInfoAtBlockWithLP(address, blockHeight);
-  }
-  return await userInfoAtBlockWithLP2(address, blockHeight);
 }
 
 //
