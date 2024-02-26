@@ -81,6 +81,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     ];
 
     await makeContractCall({
+      stxAddress: stxAddress,
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'withdraw',
