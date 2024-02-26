@@ -14,20 +14,28 @@ async function processing(broadcastedResult, tx, count) {
   const url = `${resolveUrl()}/extended/v1/tx/${tx}`;
   var result = await fetch(url);
   var value = await result.json();
-  console.log(count);
+
   if (value.tx_status === "success") {
-    console.log(`transaction ${tx} processed`);
-    console.log(value);
-    return true;
-  }
-  if (value.tx_status === "pending") {
-    console.log(value);
-  } else if (count === 3) {
-    console.log(value, broadcastedResult);
+    console.log(`Transaction ${tx} processed:`);
+    console.log(value.tx_result.repr);
+    return;
+
+  } else if (value.tx_status === "abort_by_response") {
+    console.log(`Transaction ${tx} failed!!`);
+    console.log(value.tx_result.repr);  
+    return;
+
+  } else if (value.tx_status === "pending") {
+    // console.log(value);
+    console.log(count);
+
+  } else if (value.tx_status === "abort_by_response") {
+    console.log(`Transaction ${tx} failed!!`);
+    console.log(value.tx_result.repr);  
   }
 
   if (count > 20) {
-    console.log("failed after 10 tries");
+    console.log("failed after 20 tries");
     console.log(value);
     return false;
   }
