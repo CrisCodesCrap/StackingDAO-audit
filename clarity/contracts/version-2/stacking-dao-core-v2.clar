@@ -73,7 +73,7 @@
     (try! (stx-transfer? stx-amount tx-sender (contract-of reserve)))
     (try! (contract-call? .ststx-token mint-for-protocol ststx-amount tx-sender))
 
-    (print { action: "deposit", data: { stacker: tx-sender, stxstx-amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
+    (print { action: "deposit", data: { stacker: tx-sender, stx-amount: stx-amount, stxstx-amount: ststx-amount, referrer: referrer, pool: pool, block-height: block-height } })
     (ok ststx-amount)
   )
 )
