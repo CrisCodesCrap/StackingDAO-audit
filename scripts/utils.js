@@ -61,6 +61,12 @@ async function getBlockHeight() {
   const currentBlock = result['stacks_tip_height'];
   return currentBlock;
 }
+async function getBurnBlockHeight() {
+  const url = `${resolveUrl()}/v2/info`;
+  const result = await request(url, { json: true });
+  const currentBlock = result['burn_block_height'];
+  return currentBlock;
+}
 
 async function getAllEvents(contract) {
   var allEvents = [];
@@ -196,6 +202,7 @@ exports.resolveNetwork = resolveNetwork;
 exports.processing = processing;
 exports.getNonce = getNonce;
 exports.getBlockHeight = getBlockHeight;
+exports.getBurnBlockHeight = getBurnBlockHeight;
 exports.getAllEvents = getAllEvents;
 exports.readFile = readFile;
 exports.writeFile = writeFile;
