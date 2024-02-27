@@ -19,7 +19,7 @@ async function preparePools() {
     functionName: 'prepare-pools',
     functionArgs: [],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
@@ -38,7 +38,7 @@ async function prepareDelegates(pool) {
       tx.contractPrincipalCV(pool.split(".")[0], pool.split(".")[1])
     ],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
@@ -60,7 +60,7 @@ async function execute(pool, delegates) {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, "rewards-v1"),
     ],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };

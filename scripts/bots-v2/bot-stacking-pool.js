@@ -19,7 +19,7 @@ async function prepareStackingDao() {
     functionName: 'prepare-stacking-dao',
     functionArgs: [],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
@@ -38,7 +38,7 @@ async function prepareOthers(delegates) {
       tx.listCV(delegates.map(delegate => tx.standardPrincipalCV(delegate)))
     ],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };

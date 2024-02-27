@@ -5,7 +5,6 @@ const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const PRIVATE_KEY = "de433bdfa14ec43aa1098d5be594c8ffb20a31485ff9de2923b2689471c401b801"
 
 const CONTRACT_NAME = 'stacking-dao-core-v2';
 const FUNCTION_NAME = 'deposit';
@@ -13,6 +12,7 @@ const FUNCTION_NAME = 'deposit';
 const STX_AMOUNT = '250000';
 
 async function transact() {
+
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: CONTRACT_NAME,
@@ -25,7 +25,7 @@ async function transact() {
       tx.noneCV()
     ],
     fee: new BN(1000000, 10),
-    senderKey: process.env.PRIVATE_KEY,
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
