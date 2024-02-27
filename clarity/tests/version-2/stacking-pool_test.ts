@@ -420,10 +420,10 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(15);
 
     let result = stackingPool.prepareDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"));
-    result.expectErr().expectUint(205002);
+    result.expectErr().expectUint(4);
 
     result = stackingPool.prepareDelegateMany(wallet_1, [qualifiedName("stacking-delegate-1-1")])
-    result.expectErr().expectUint(205002);
+    result.expectErr().expectUint(4);
   }
 });
 
