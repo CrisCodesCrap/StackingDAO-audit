@@ -10,6 +10,60 @@ const { S3 } = require('@aws-sdk/client-s3');
 // TX
 // ----------------------------------------------
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+// Wait for transaction to complete
+async function waitForTransactionCompletion(transactionId) {
+
+  process.stdout.write("Waiting on TX .")
+
+  // Wait 15 sec so API is updated
+  // TODO: update for mainnet
+  await sleep(5 * 1000);
+
+  const url = `${resolveUrl()}/extended/v1/tx/${transactionId}`;
+
+  return new Promise((resolve, reject) => {
+
+    let retries = 0;
+    const poll = async function() {
+
+      var result = await fetch(url);
+      var value = await result.json();
+      
+      if (value.tx_status === "success") {
+        console.log(" Success:", value.tx_result.repr)
+        resolve(value.tx_result.repr);
+      } else if (value.tx_status === "pending") {
+        process.stdout.write(".")
+        retries = 0;
+
+        // TODO: update for mainnet
+        setTimeout(poll, 3 * 1000);
+      } else if (value.error && value.error.includes("could not find transaction by ID")) {
+        retries += 1;
+        console.log("Dould not find TX, retries:", retries);
+        if (retries < 8) {
+          // TODO: update for mainnet
+          setTimeout(poll, 1 * 1000);
+        } else {
+          console.log("Could not find TX:", value)
+          resolve(value);
+        }
+      } else {
+        console.log(" Error:", value.tx_result.repr)
+        resolve(value.tx_result.repr);
+      }
+    }
+
+    poll();
+  })
+}
+
 async function processing(broadcastedResult, tx, count) {
   const url = `${resolveUrl()}/extended/v1/tx/${tx}`;
   var result = await fetch(url);
@@ -199,6 +253,7 @@ async function writeFile(filename, json) {
 
 exports.resolveUrl = resolveUrl;
 exports.resolveNetwork = resolveNetwork;
+exports.waitForTransactionCompletion = waitForTransactionCompletion;
 exports.processing = processing;
 exports.getNonce = getNonce;
 exports.getBlockHeight = getBlockHeight;

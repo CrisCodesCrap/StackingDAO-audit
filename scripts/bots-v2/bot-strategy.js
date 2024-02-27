@@ -4,8 +4,9 @@ const utils = require('../utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
-const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
-const PRIVATE_KEY = "de433bdfa14ec43aa1098d5be594c8ffb20a31485ff9de2923b2689471c401b801"
+const helpers = require('./helpers.js');
+
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 
 // ---------------------------------------------------------
 // Write
@@ -18,14 +19,14 @@ async function preparePools() {
     functionName: 'prepare-pools',
     functionArgs: [],
     fee: new BN(1000000, 10),
-    senderKey: PRIVATE_KEY,
+    senderKey: process.env.PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = await tx.broadcastTransaction(transaction, network);
+  return await utils.waitForTransactionCompletion(result, transaction.txid(), 0);
 };
 
 async function prepareDelegates(pool) {
@@ -37,14 +38,14 @@ async function prepareDelegates(pool) {
       tx.contractPrincipalCV(pool.split(".")[0], pool.split(".")[1])
     ],
     fee: new BN(1000000, 10),
-    senderKey: PRIVATE_KEY,
+    senderKey: process.env.PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = await tx.broadcastTransaction(transaction, network);
+  return await utils.waitForTransactionCompletion(result, transaction.txid(), 0);
 };
 
 async function execute(pool, delegates) {
@@ -59,62 +60,19 @@ async function execute(pool, delegates) {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, "rewards-v1"),
     ],
     fee: new BN(1000000, 10),
-    senderKey: PRIVATE_KEY,
+    senderKey: process.env.PRIVATE_KEY,
     postConditionMode: 1,
     network
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = await tx.broadcastTransaction(transaction, network);
+  return await utils.waitForTransactionCompletion(result, transaction.txid(), 0);
 };
 
 // ---------------------------------------------------------
 // Read
 // ---------------------------------------------------------
-
-async function getPoxCycle() {
-  const readResult = await tx.callReadOnlyFunction({
-    contractAddress: "ST000000000000000000002AMW42H",
-    contractName: "pox-3",
-    functionName: "current-pox-reward-cycle",
-    functionArgs: [],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
-
-  const result = tx.cvToJSON(readResult).value;
-  return result;
-}
-
-async function rewardCycleToBurnHeight(rewardCycle) {
-  const readResult = await tx.callReadOnlyFunction({
-    contractAddress: "ST000000000000000000002AMW42H",
-    contractName: "pox-3",
-    functionName: "reward-cycle-to-burn-height",
-    functionArgs: [
-      tx.uintCV(rewardCycle)
-    ],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
-
-  const result = tx.cvToJSON(readResult).value;
-  return result;
-}
-async function getCycleWithdrawOffset() {
-  const readResult = await tx.callReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: "data-core-v1",
-    functionName: "get-cycle-withdraw-offset",
-    functionArgs: [],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
-
-  const result = tx.cvToJSON(readResult).value;
-  return result;
-}
 
 async function hasPreparedPools() {
   const readResult = await tx.callReadOnlyFunction({
@@ -196,21 +154,8 @@ async function getPoolDelegates(pool) {
 // Run
 // ---------------------------------------------------------
 
-async function canPrepare() {
-  const burnBlock = await utils.getBurnBlockHeight();
-  console.log("burnBlock", burnBlock);
-  const poxCycle = await getPoxCycle();
-  console.log("poxCycle", poxCycle);
-  const startBlockNextCycle = await rewardCycleToBurnHeight(poxCycle + 1);
-  console.log("startBlockNextCycle", startBlockNextCycle);
-  const withdrawOffset = await getCycleWithdrawOffset();
-  console.log("withdrawOffset", withdrawOffset);
-
-  return (burnBlock > startBlockNextCycle - withdrawOffset)
-}
-
 async function run() {
-  const canPrepareResult = await canPrepare();
+  const canPrepareResult = await helpers.canPrepare();
   const hasPreparedPoolsResult = await hasPreparedPools()
 
   console.log("Can prepare:", canPrepareResult);
@@ -227,6 +172,8 @@ async function run() {
     console.log("Active pools:", getActivePoolsResult);
 
     console.log("\n")
+
+    let transactionPromises = [];
     for (const activePool of getActivePoolsResult) {
       const hasPreparedDelegatesResult = await hasPreparedDelegates(activePool)
       console.log("Pool:", activePool);
@@ -235,7 +182,8 @@ async function run() {
       if (!hasPreparedDelegatesResult) {
         // Prepare pool delegates
         console.log(" - Prepare delegates..");
-        await prepareDelegates(activePool)
+        transactionPromises.push(prepareDelegates(activePool))
+        // await prepareDelegates(activePool)
 
       } else {
         const hasExecutedPoolResult = await hasExecutedPool(activePool)
@@ -246,10 +194,15 @@ async function run() {
           const getPoolDelegatesResult = await getPoolDelegates(activePool);
           console.log(" - Pool delegates:", getPoolDelegatesResult);
           console.log(" - Execute..");
-          await execute(activePool, getPoolDelegatesResult);
+          transactionPromises.push(execute(activePool, getPoolDelegatesResult))
+          // await execute(activePool, getPoolDelegatesResult);
         }
       }
     }
+
+    console.log(" - TXs to broadcast:", transactionPromises.length);
+    const resultPromises = await Promise.all(transactionPromises);
+    console.log(" - TXs results:", resultPromises);
   }
 }
 
