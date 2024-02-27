@@ -24,16 +24,6 @@ class StackingPool {
     ], this.deployer.address);
   }
 
-  totalDelegated() {
-    return this.chain.callReadOnlyFn("stacking-pool-v1", "total-delegated", [], this.deployer.address);
-  }
-
-  totalDelegatedHelper(delegate: string) {
-    return this.chain.callReadOnlyFn("stacking-pool-v1", "total-delegated-helper", [
-      types.principal(delegate)
-    ], this.deployer.address);
-  }
-
   prepare(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-pool-v1", "prepare-stacking-dao", [

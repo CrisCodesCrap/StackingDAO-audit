@@ -52,11 +52,6 @@ Clarinet.test({
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000 - 200000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
 
-    call = await stackingPool.totalDelegated();
-    call.result.expectUintWithDecimals(200000);
-    call = await stackingPool.totalDelegatedHelper(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectUintWithDecimals(200000);
-
     //
     // Prepare again
     //
@@ -76,11 +71,6 @@ Clarinet.test({
     call.result.expectTuple()["locked"].expectUintWithDecimals(250000);
     call.result.expectTuple()["unlocked"].expectUintWithDecimals(500000 - 250000);
     call.result.expectTuple()["unlock-height"].expectUint(42);
-
-    call = await stackingPool.totalDelegated();
-    call.result.expectUintWithDecimals(250000);
-    call = await stackingPool.totalDelegatedHelper(qualifiedName("stacking-delegate-1-1"));
-    call.result.expectUintWithDecimals(250000);
   }
 });
 

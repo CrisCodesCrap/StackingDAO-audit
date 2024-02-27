@@ -25,7 +25,6 @@
 ;;-------------------------------------
 
 (define-constant ERR_CAN_NOT_PREPARE u205001)
-(define-constant ERR_NO_DELEGATION u205002)
 
 ;;-------------------------------------
 ;; Maps
@@ -55,25 +54,6 @@
 ;;-------------------------------------
 ;; Helpers
 ;;-------------------------------------
-
-(define-read-only (total-delegated) 
-  (let (
-    (delegates (contract-call? .data-pools-v1 get-pool-delegates (as-contract tx-sender)))
-  )
-    (fold + (map total-delegated-helper delegates) u0)
-  )
-)
-
-(define-read-only (total-delegated-helper (delegate principal)) 
-  (let (
-    (delegation-state (get-check-delegation delegate))
-  )
-    (if (is-some delegation-state)
-      (get amount-ustx (unwrap-panic delegation-state))
-      u0
-    )
-  )
-)
 
 (define-read-only (is-error (response (response bool uint)))
   (is-err response)
@@ -130,7 +110,6 @@
 (define-public (prepare-delegate (delegate principal))
   (begin
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
-    (asserts! (> (total-delegated-helper delegate) u0) (err ERR_NO_DELEGATION))
 
     ;; 1. Delegate
     (try! (delegation delegate))
@@ -150,7 +129,6 @@
     (delegation-error (element-at? delegation-errors u0))
   )
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
-    (asserts! (> (total-delegated) u0) (err ERR_NO_DELEGATION))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
     ;; 2. Aggregate
