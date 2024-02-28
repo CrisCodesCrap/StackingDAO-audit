@@ -292,7 +292,8 @@ export default function Points() {
                     </div>
                   </a>
                 </dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
+                {/*<dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>*/}
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">N/A</dd>
               </div>
 
               <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
