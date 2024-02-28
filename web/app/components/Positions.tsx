@@ -26,6 +26,7 @@ export function Positions() {
   const [bitflowLpStaked, setBitflowLpStaked] = useState(0);
   const [bitflowLpWallet2, setBitflowLpWallet2] = useState(0);
   const [bitflowLpStaked2, setBitflowLpStaked2] = useState(0);
+  const [zestProvision, setZestProvision] = useState(0);
 
   const getPoxCycle = async () => {
     const result = await callReadOnlyFunction({
@@ -189,6 +190,19 @@ export function Positions() {
       setBitflowLpStaked(Number(stakeBalance) / 1000000);
       setBitflowLpWallet2(Number(walletBalance2) / 1000000);
       setBitflowLpStaked2(Number(stakeBalance2) / 1000000);
+
+      const resultLendingZest = await callReadOnlyFunction({
+        contractAddress: "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N",
+        contractName: 'pool-read-supply',
+        functionName: 'get-supplied-balance-user-ststx',
+        functionArgs: [
+          standardPrincipalCV(stxAddress)
+        ],
+        senderAddress: stxAddress,
+        network: stacksNetwork
+      });
+      const lendingZestAmount = cvToJSON(resultLendingZest).value ? Number(resultLendingZest.value) / 1000000 : 0;
+      setZestProvision(lendingZestAmount);
     }
 
 
@@ -259,6 +273,35 @@ export function Positions() {
               </div>
             </div>
           ))}
+
+          {/* Zest lending stSTX */}
+          {zestProvision > 0 && (
+            <div key={`bitflowLpStaked1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+              <div className="flex gap-3 items-center text-left py-2">
+                <div className="w-10 h-10 relative flex-shrink-0">
+                  <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/zest.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                </div>
+                <div className="flex-grow flex justify-between">
+                  <div>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Zest Protocol</span>
+                    <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Lending stSTX on Zest</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                      {zestProvision.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                      {' '} stSTX
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                      stSTX yield + yield on Zest
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* BitFlow LP V1.1 */}
           {bitflowLpStaked > 0 && (
