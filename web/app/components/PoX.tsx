@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAppContext } from './AppContext';
 
 export function PoX() {
-  const { stackingCycle, stackedStx, cycleDaysLeft, bitcoinBlocksLeft } = useAppContext();
+  const { stackingCycle, stackedStx, cycleDaysLeft, nextRewardCycleBlocks } = useAppContext();
   const [endDate, setEndDate] = useState();
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function PoX() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">Bitcoin Blocks Left</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {bitcoinBlocksLeft}
+              {nextRewardCycleBlocks}
             </dd>
           </div>
         </dl>

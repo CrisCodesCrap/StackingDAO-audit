@@ -8,6 +8,8 @@ const utils = require('./utils.js');
 
 const coreContract = `${process.env.CONTRACT_ADDRESS}.stacking-dao-core-v1`;
 const tokenContract = `${process.env.CONTRACT_ADDRESS}.ststx-token`;
+const swap1Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1`;
+const swap2Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2`;
 
 //
 // Parse
@@ -68,6 +70,20 @@ function parseAllEventsForReferrers(allEvents) {
   return referrers;
 }
 
+function parseAllTransactionsForAddresses(allTransactions) {
+  var addresses = [];
+
+  for (const transaction of allTransactions) {
+    if (transaction.tx_type == "contract_call" && transaction.contract_call.function_name == "add-liquidity") {
+      addresses.push(transaction.sender_address);
+    }
+  }
+
+  // Remove duplicates
+  return [...new Set(addresses)]
+}
+
+
 //
 // Main
 //
@@ -78,20 +94,36 @@ async function start() {
   // 1) Deposited on StackingDAO (stSTX minted)
   // 2) Received stSTX from transfer (ex: swap in BitFlow)
 
+  const currentBlockHeight = await utils.getBlockHeight();
+
   const coreContractEvents = await utils.getAllEvents(coreContract);
   const tokenContractEvents = await utils.getAllEvents(tokenContract);
 
+  const swap1ContractTransactions = await utils.getAllTransactions(swap1Contract);
+  const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
+
+
+
   const allEvents = coreContractEvents.concat(tokenContractEvents);
-  const addresses = parseAllEventsForAddresses(allEvents);
+  const addressesFromEvents = parseAllEventsForAddresses(allEvents);
+
+  const allTransactions = swap1ContractTransactions.concat(swap2ContractTransactions);
+  const addressesFromTransactions = parseAllTransactionsForAddresses(allTransactions);
+
+  const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses', {"addresses": addresses})
+  await utils.writeFile('points-addresses-3', {"addresses": addresses})
+
+
 
   // Referrals
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals', referrers)
+  await utils.writeFile('points-referrals-3', referrers)
+
+  await utils.writeFile('points-last-block-addresses-3', { last_block: currentBlockHeight })
 };
 
 // start();

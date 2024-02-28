@@ -7,6 +7,7 @@ import { stacksNetwork } from '../common/utils';
 import { UserData } from '@stacks/auth';
 
 interface AppContextProps {
+  stxAddress: string | undefined;
   stxBalance: number;
   setStxBalance: (balance: string | undefined) => void;
   stStxBalance: number;
@@ -39,6 +40,7 @@ interface AppContextProps {
   setCurrentTxMessage: (message: string | undefined) => void;
 
   userData: UserData | undefined;
+  okProvider: hash | undefined;
 }
 
 export const AppContext = createContext<AppContextProps>({
@@ -71,7 +73,8 @@ export const AppContext = createContext<AppContextProps>({
   currentTxMessage: undefined,
   setCurrentTxMessage: () => {},
 
-  userData: undefined
+  userData: undefined,
+  okxProvider: undefined
 });
 
 const DENOMINATOR = 1000000;
@@ -79,6 +82,7 @@ const DENOMINATOR = 1000000;
 export const AppContextProvider = (props: any) => {
   const [userData, setUserData] = useState<UserData>({});
   const [stxAddress, setStxAddress] = useState('');
+  const [okxProvider, setOkxProvider] = useState({});
   const [stxBalance, setStxBalance] = useState(0);
   const [stStxBalance, setStStxBalance] = useState(0);
   const [sDaoBalance, setSDaoBalance] = useState(0);
@@ -89,7 +93,7 @@ export const AppContextProvider = (props: any) => {
   const [cycleDaysLeft, setCycleDaysLeft] = useState(0);
   const [nextRewardCycleBlocks, setNextRewardCycleBlocks] = useState(0);
   const [bitcoinBlocksLeft, setBitcoinBlocksLeft] = useState(0);
-  const [stackingApy, setStackingApy] = useState(7.21); // TODO: make dynamic
+  const [stackingApy, setStackingApy] = useState(6.35); // TODO: make dynamic
   const [currentTxStatus, setCurrentTxStatus] = useState('');
   const [currentTxId, setCurrentTxId] = useState('');
   const [currentTxMessage, setCurrentTxMessage] = useState('');
@@ -171,13 +175,8 @@ export const AppContextProvider = (props: any) => {
           setBitcoinBlocksLeft(Math.max(0, blocksUntilNextCycle));
           setNextRewardCycleBlocks(response['next_reward_cycle_in']);
 
-          const blocksSinceStart = 2100 - blocksUntilNextCycle;  // 2100 blocks in a cycle
           const currentTimestamp = Date.now(); // in milliseconds
-          const startTimestamp = currentTimestamp - blocksSinceStart*10*60000; // 10 minutes per block time 60,000 milliseconds per minute
-          const endTimestamp = currentTimestamp + blocksUntilNextCycle*10*60000;
-          // const daysPassed = Math.round(
-          //   (currentTimestamp - startTimestamp) / (1000 * 60 * 60 * 24)
-          // );
+          const endTimestamp = currentTimestamp + response['next_reward_cycle_in'] * 10 * 60000;
           const daysLeft = Math.max(
             0,
             Math.round((endTimestamp - currentTimestamp) / (1000 * 60 * 60 * 24))
@@ -221,6 +220,10 @@ export const AppContextProvider = (props: any) => {
         sDaoBalance: sDaoBalance,
         stxPrice: stxPrice,
         stxRatio: stxRatio,
+        stxAddress: stxAddress,
+        setStxAddress: setStxAddress,
+        okxProvider: okxProvider,
+        setOkxProvider: setOkxProvider,
         stackingApy: stackingApy,
         stackingCycle: stackingCycle,
         stackedStx: stackedStx,

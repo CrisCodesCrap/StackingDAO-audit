@@ -7,14 +7,14 @@ import { Alert } from './Alert';
 import { stacksNetwork as network } from '../common/utils';
 import { useAppContext } from './AppContext'
 import { useSTXAddress } from '../common/use-stx-address';
-import { useConnect } from '@stacks/connect-react';
 import {
   uintCV, contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
 } from '@stacks/transactions'
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork } from '../common/utils';
+import { makeContractCall } from '../common/contract-call';
 
 interface Props {
   showStakeModal: boolean;
@@ -24,7 +24,6 @@ interface Props {
 
 export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal, apy }) => {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
 
   const [errors, setErrors] = useState<string[]>([]);
   const [stakeAmount, setStakeAmount] = useState(0);
@@ -70,7 +69,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       )
     ];
     
-    await doContractCall({
+    await makeContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'staking-v1',
       functionName: 'stake',
@@ -80,12 +79,11 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       ],
       postConditions,
       network: stacksNetwork,
-      onFinish: async data => {
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-        setShowStakeModal(false);
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+      setShowStakeModal(false);
+    });
   };
 
   return (

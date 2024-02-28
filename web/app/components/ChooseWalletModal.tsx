@@ -168,6 +168,18 @@ export function ChooseWalletModal({
                         )}
                       </span>
                     </button>
+
+                    <button type="button" onClick={() => { onProviderChosen('okx'); }} disabled={!window.okxwallet} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
+                      <span>
+                      <img src="/okx-logo.png" className="w-12 h-12" />
+                      </span>
+                      <span className="flex flex-col text-left">
+                        <span>OKX Wallet</span>
+                        {!window.okxwallet && (
+                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                        )}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>

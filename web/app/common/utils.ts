@@ -66,6 +66,8 @@ export const resolveProvider = () => {
     return window.XverseProviders?.StacksProvider;
   } else if (providerName === 'asigna' && window.AsignaProvider) {
     return window.AsignaProvider;
+  } else if (providerName === 'okx' && window.okxwallet && window.okxwallet?.stacks) {
+    return window.okxwallet.stacks;
   } else if (window.LeatherProvider) {
     return window.LeatherProvider;
   } else if (window.HiroWalletProvider) {
@@ -74,6 +76,12 @@ export const resolveProvider = () => {
     return window.StacksProvider;
   }
 };
+
+export async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 export const formatSeconds = function (totalmins)  {
   if (Math.sign(totalmins) != -1) {

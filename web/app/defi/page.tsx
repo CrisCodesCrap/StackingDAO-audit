@@ -16,6 +16,15 @@ const activityItems = [
   },
   {
     user: {
+      name: 'Zest Protocol',
+      imageUrl: 'zest.svg'
+    },
+    commit: 'Use stSTX as collateral to borrow aeUSDC',
+    status: 'Launched',
+    link: 'https://www.zestprotocol.com/'
+  },
+  {
+    user: {
       name: 'Arkadiko Finance',
       imageUrl: '/diko.svg'
     },

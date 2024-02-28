@@ -8,23 +8,25 @@ import { useAppContext } from './AppContext'
 import { ApyModal } from './ApyModal'
 import { RatioModal } from './RatioModal'
 import { UnstackPosition } from './UnstackPosition'
-import { stacksNetwork, getRPCClient, coreApiUrl } from '../common/utils'
+import { stacksNetwork, getRPCClient, coreApiUrl, asyncForEach } from '../common/utils'
 import Link from 'next/link'
 import { useSTXAddress } from '../common/use-stx-address';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
 
-  const { stStxBalance, stxBalance, stackingApy, bitcoinBlocksLeft } = useAppContext();
+  const { stStxBalance, stxBalance, stackingApy } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
   const [unstackNfts, setUnstackNfts] = useState([]);
   const [unstackNftData, setUnstackNftData] = useState({});
   const [genesisNfts, setGenesisNfts] = useState([]);
+  const [genesisNftInfo, setGenesisNftInfo] = useState({});
   const [currentCycleId, setCurrentCycleId] = useState(3);
   const [bitflowLpWallet, setBitflowLpWallet] = useState(0);
   const [bitflowLpStaked, setBitflowLpStaked] = useState(0);
   const [bitflowLpWallet2, setBitflowLpWallet2] = useState(0);
   const [bitflowLpStaked2, setBitflowLpStaked2] = useState(0);
+  const [zestProvision, setZestProvision] = useState(0);
 
   const getPoxCycle = async () => {
     const result = await callReadOnlyFunction({
@@ -38,6 +40,39 @@ export function Positions() {
 
     setCurrentCycleId(Number(result?.value));
   };
+
+  const fetchNftType = async (id: string) => {
+    const result = await callReadOnlyFunction({
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
+      contractName: 'stacking-dao-genesis-nft',
+      functionName: 'get-genesis-type',
+      functionArgs: [
+        uintCV(id)
+      ],
+      senderAddress: stxAddress,
+      network: stacksNetwork
+    });
+
+    return Number(result?.value);
+  };
+
+  const getNftInfo = async () => {
+    const nftInfo = {};
+    await asyncForEach(genesisNfts, async (nftId) => {
+      const nftType = await fetchNftType(nftId);
+      nftInfo[nftId] = {
+        type: nftType,
+        name: nftType == 0 ? 'Normal' : nftType == 1 ? 'OG' : nftType == 2 ? 'Gold' : 'Diamond',
+        url: nftType == 0 ? '/genesis-nft.png' : nftType == 1 ? '/genesis-og.png' : nftType == 2 ? '/genesis-gold.png' : '/genesis-diamond.png'
+      }
+    });
+
+    setGenesisNftInfo(nftInfo);
+  };
+
+  useEffect(() => {
+    if (genesisNfts.length > 0) getNftInfo();
+  }, [genesisNfts]);
 
   useEffect(() => {
     const fetchNft = async (id: string) => {
@@ -155,6 +190,19 @@ export function Positions() {
       setBitflowLpStaked(Number(stakeBalance) / 1000000);
       setBitflowLpWallet2(Number(walletBalance2) / 1000000);
       setBitflowLpStaked2(Number(stakeBalance2) / 1000000);
+
+      const resultLendingZest = await callReadOnlyFunction({
+        contractAddress: "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N",
+        contractName: 'pool-read-supply',
+        functionName: 'get-supplied-balance-user-ststx',
+        functionArgs: [
+          standardPrincipalCV(stxAddress)
+        ],
+        senderAddress: stxAddress,
+        network: stacksNetwork
+      });
+      const lendingZestAmount = cvToJSON(resultLendingZest).value ? Number(resultLendingZest.value) / 1000000 : 0;
+      setZestProvision(lendingZestAmount);
     }
 
 
@@ -174,7 +222,7 @@ export function Positions() {
           
           {/* stSTX */}
           {stStxBalance > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`stStxBalance`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/sdao-logo.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -199,18 +247,18 @@ export function Positions() {
           )}
 
           {/* Withdraw NFT */}
-          {!isLoading && unstackNfts.map((id) => <UnstackPosition key={id} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
+          {!isLoading && unstackNfts.map((id) => <UnstackPosition key={`unstack-${id}`} id={id} cycleId={unstackNftData[id]['cycle-id']} stStxAmount={unstackNftData[id]['ststx-amount']} stxAmount={unstackNftData[id]['stx-amount']} currentCycleId={currentCycleId} />)}
 
           {/* Genesis NFT */}
-          {!isLoading && genesisNfts.map((id) => <>
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+          {!isLoading && genesisNfts.map((id) => (
+            <div key={`genesis-${id}`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
-                  <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/genesis-nft.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                  <img alt="Stacking Genesis NFT icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src={genesisNftInfo[id]?.url} style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
                 </div>
                 <div className="flex-grow flex justify-between">
                   <div>
-                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Genesis NFT</span>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Genesis {genesisNftInfo[id]?.name} NFT</span>
                     <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Stacking DAO Genesis NFT</span>
                   </div>
                   <div className="text-right">
@@ -224,11 +272,40 @@ export function Positions() {
                 </div>
               </div>
             </div>
-          </>)}
+          ))}
+
+          {/* Zest lending stSTX */}
+          {zestProvision > 0 && (
+            <div key={`bitflowLpStaked1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+              <div className="flex gap-3 items-center text-left py-2">
+                <div className="w-10 h-10 relative flex-shrink-0">
+                  <img alt="stSTX Zest icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/zest.svg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                </div>
+                <div className="flex-grow flex justify-between">
+                  <div>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">Zest Protocol</span>
+                    <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">Lending stSTX on Zest</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                      {zestProvision.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                      {' '} stSTX
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                      stSTX yield + yield on Zest
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* BitFlow LP V1.1 */}
           {bitflowLpStaked > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpStaked1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -256,7 +333,7 @@ export function Positions() {
           )}
 
           {bitflowLpWallet > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpWallet1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -275,7 +352,7 @@ export function Positions() {
                       {' '} STX-stSTX-LP
                     </div>
                     <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
-                      stSTX yield
+                      stSTX yield + yield on Bitflow
                     </span>
                   </div>
                 </div>
@@ -285,7 +362,7 @@ export function Positions() {
 
           {/* BitFlow LP V1.2 */}
           {bitflowLpStaked2 > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpStaked2`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -313,7 +390,7 @@ export function Positions() {
           )}
 
           {bitflowLpWallet2 > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`bitflowLpWallet2`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/bitflow-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
@@ -342,7 +419,7 @@ export function Positions() {
           
           {/* STX */}
           {stxBalance > 0 && (
-            <div tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
+            <div key={`stxBalance`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <img alt="STX asset icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/stacks-stx-logo.png" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />

@@ -16,11 +16,11 @@ import {
 } from '@stacks/transactions'
 import { useAppContext } from './AppContext'
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, resolveProvider, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds } from '../common/utils';
+import { makeContractCall } from '../common/contract-call';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const { nextRewardCycleBlocks, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const [canWithdraw, setCanWithdraw] = useState(false);
   const [withdrawalBlocksLeft, setWithdrawalBlocksLeft] = useState(2100);
@@ -46,21 +46,20 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
     if (!canWithdraw) return;
 
     const postConditions = [
-
       // STX transfer from reserve
       makeContractSTXPostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         'reserve-v1',
-        FungibleConditionCode.Equal,
-        stxAmount * 1000000
+        FungibleConditionCode.GreaterEqual,
+        parseInt(stxAmount * 1000000, 10)
       ),
 
       // stSTX transfer from core
       makeContractFungiblePostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         'stacking-dao-core-v1',
-        FungibleConditionCode.Equal,
-        stStxAmount * 1000000,
+        FungibleConditionCode.GreaterEqual,
+        parseInt(stStxAmount * 1000000, 10),
         createAssetInfo(
           process.env.NEXT_PUBLIC_STSTX_ADDRESS,
           'ststx-token',
@@ -80,7 +79,9 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         uintCV(id)
       )
     ];
-    await doContractCall({
+
+    await makeContractCall({
+      stxAddress: stxAddress,
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'stacking-dao-core-v1',
       functionName: 'withdraw',
@@ -90,11 +91,10 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       ],
       postConditions: postConditions,
       network: stacksNetwork,
-      onFinish: async data => {
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+    });
   };
 
   return (
@@ -120,7 +120,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
                 <span>Withdraw {stxAmount.toLocaleString()} STX</span>
               </button>
             ) : (
-              <a className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600" href="#">
+              <div className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600">
                 <span>Withdrawal available in {withdrawalBlocksLeft} Bitcoin blocks</span>
                 <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
                   <div className="flex max-w-xs flex-col items-center w-60">
@@ -131,7 +131,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
                     <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
                   </div>
                 </div>
-              </a>
+              </div>
             )}
           </div>
         </div>

@@ -6,47 +6,18 @@ const utils = require('./utils.js');
 // Constants
 //
 
-const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v1`;
+const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v5`;
 
 //
 // Contract calls
 //
 
-// Once LP contract was deployed, we can take these tokens into account
-async function userInfoAtBlockWithLP(address, blockHeight) {
+async function userWalletAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
       contractAddress: pointsContract.split(".")[0],
       contractName: pointsContract.split(".")[1],
-      functionName: "get-user-ststx-at-block",
-      functionArgs: [
-        tx.standardPrincipalCV(address),
-        tx.uintCV(blockHeight),
-      ],
-      senderAddress: process.env.CONTRACT_ADDRESS,
-      network: utils.resolveNetwork()
-    });
-
-    const result = tx.cvToJSON(userInfo).value;
-
-    return {
-      ststx_balance: result["ststx-balance"].value / 1000000,
-      lp_balance: result["lp-balance"].value / 1000000
-    }
-  } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 5 seconds..", error);
-    await new Promise(r => setTimeout(r, 5 * 1000));
-    return await userInfoAtBlockWithLP(address, blockHeight);
-  }
-}
-
-// Before LP contract was deployed, we can only get stSTX wallet balance
-async function userInfoAtBlockWithoutLP(address, blockHeight) {
-  try {
-    const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: pointsContract.split(".")[0],
-      contractName: pointsContract.split(".")[1],
-      functionName: "get-ststx-balance-at-block",
+      functionName: "get-user-wallet",
       functionArgs: [
         tx.standardPrincipalCV(address),
         tx.uintCV(blockHeight),
@@ -56,23 +27,44 @@ async function userInfoAtBlockWithoutLP(address, blockHeight) {
     });
 
     const result = tx.cvToJSON(userInfo).value.value;
-
-    return {
-      ststx_balance: result / 1000000,
-      lp_balance: 0
-    }
+    return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 5 seconds..", error);
-    await new Promise(r => setTimeout(r, 5 * 1000));
-    return await userInfoAtBlockWithoutLP(address, blockHeight);
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
+    return await userInfoAtBlock(address, blockHeight);
+  }
+}
+
+async function userBitflowAtBlock(address, blockHeight) {
+  try {
+    const userInfo = await tx.callReadOnlyFunction({
+      contractAddress: pointsContract.split(".")[0],
+      contractName: pointsContract.split(".")[1],
+      functionName: "get-user-bitflow",
+      functionArgs: [
+        tx.standardPrincipalCV(address),
+        tx.uintCV(blockHeight),
+      ],
+      senderAddress: process.env.CONTRACT_ADDRESS,
+      network: utils.resolveNetwork()
+    });
+
+    const result = tx.cvToJSON(userInfo).value.value;
+    return result / 1000000;
+  } catch (error) {
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
+    return await userInfoAtBlock(address, blockHeight);
   }
 }
 
 async function userInfoAtBlock(address, blockHeight) {
-  if (blockHeight < 132631) {
-    return await userInfoAtBlockWithoutLP(address, blockHeight);
+  const wallet = await userWalletAtBlock(address, blockHeight);
+  const bitflow = await userBitflowAtBlock(address, blockHeight);
+  return {
+    ststx_balance: wallet,
+    lp_balance: bitflow
   }
-  return await userInfoAtBlockWithLP(address, blockHeight);
 }
 
 //
@@ -80,14 +72,14 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses');
-  const referrals = await utils.readFile('points-referrals');
-  const aggregate = await utils.readFile('points-aggregate');
+  const addresses = await utils.readFile('points-addresses-3');
+  const referrals = await utils.readFile('points-referrals-3');
+  const aggregate = await utils.readFile('points-aggregate-3');
 
   //
   // 0. From flat addresses array to chuncked array
   //
-  const perChunk = 10;
+  const perChunk = 5;
   const addressesChunks = addresses.addresses.reduce((resultArray, item, index) => { 
     const chunkIndex = Math.floor(index / perChunk)
   
@@ -169,7 +161,7 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block');
+  const lastBlockHeight = await utils.readFile('points-last-block-3');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
@@ -181,8 +173,8 @@ async function start() {
     const aggregate = await updateAllPoints(nextBlockHeight);
     console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-    await utils.writeFile('points-aggregate', aggregate)
-    await utils.writeFile('points-last-block', { last_block: nextBlockHeight })
+    await utils.writeFile('points-aggregate-3', aggregate)
+    await utils.writeFile('points-last-block-3', { last_block: nextBlockHeight })
   }
 };
 

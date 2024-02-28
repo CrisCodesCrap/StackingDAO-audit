@@ -14,14 +14,14 @@ import {
   makeContractSTXPostCondition,
   FungibleConditionCode
 } from '@stacks/transactions';
-import { stacksNetwork, resolveProvider } from '../common/utils';
+import { stacksNetwork } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
 import { UnstakeModal } from '../components/UnstakeModal';
 import { useSTXAddress } from '../common/use-stx-address';
+import { makeContractCall } from '../common/contract-call';
 
 export function Stake() {
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const { sDaoBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const contractAddress = process.env.NEXT_PUBLIC_STSTX_ADDRESS || '';
 
@@ -43,18 +43,17 @@ export function Stake() {
       0n
     );
 
-    await doContractCall({
+    await makeContractCall({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
       contractName: 'staking-v1',
       functionName: 'claim-pending-rewards',
       functionArgs: [],
       postConditions: [postCondition],
       network: stacksNetwork,
-      onFinish: async data => {
-        setCurrentTxId(data.txId);
-        setCurrentTxStatus('pending');
-      }
-    }, resolveProvider() || window.StacksProvider);
+    }, async (error?, txId?) => {
+      setCurrentTxId(txId);
+      setCurrentTxStatus('pending');
+    });
   };
 
   useEffect(() => {

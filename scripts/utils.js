@@ -150,11 +150,44 @@ async function getEvents(contract, offset) {
   }
 }
 
+async function getAllTransactions(contract) {
+  var allTransactions = [];
+
+  var offset = 0;
+  var transactions = await getTransactions(contract, offset);
+  allTransactions = allTransactions.concat(transactions);
+
+  while (transactions.length > 0) {
+    offset += 50;
+    transactions = await getTransactions(contract, offset);
+    allTransactions = allTransactions.concat(transactions);
+  }
+  return allTransactions;
+}
+
+
+async function getTransactions(contract, offset) {
+  console.log("[utils] Fetch transactions for contract:", contract, "- offset:", offset);
+  try {
+    const url = `${resolveUrl()}/extended/v1/address/${contract}/transactions?limit=50&unanchored=false&offset=${offset}`;
+    const result = await request(url, { json: true });
+    return result.results;
+  } catch (error) {
+    console.log("[utils] Fetch failed, retry in 5 seconds. Error:", error);
+    await new Promise(r => setTimeout(r, 5 * 1000));
+    return getEvents(contract, offset);
+  }
+}
+
 // ----------------------------------------------
 // Network
 // ----------------------------------------------
 
 function resolveUrl() {
+  if (process.env.STACKS_API) {
+    return process.env.STACKS_API
+  }
+
   if (env === 'mocknet') {
     return `http://localhost:${process.env.LOCAL_STACKS_API_PORT}`;
   } else if (env === 'testnet') {
@@ -259,5 +292,6 @@ exports.getNonce = getNonce;
 exports.getBlockHeight = getBlockHeight;
 exports.getBurnBlockHeight = getBurnBlockHeight;
 exports.getAllEvents = getAllEvents;
+exports.getAllTransactions = getAllTransactions;
 exports.readFile = readFile;
 exports.writeFile = writeFile;
