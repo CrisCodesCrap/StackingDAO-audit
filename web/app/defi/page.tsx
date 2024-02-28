@@ -17,7 +17,7 @@ const activityItems = [
   {
     user: {
       name: 'Zest Protocol',
-      imageUrl: 'zest.jpg'
+      imageUrl: 'zest.svg'
     },
     commit: 'Use stSTX as collateral to borrow aeUSDC',
     status: 'Launched',

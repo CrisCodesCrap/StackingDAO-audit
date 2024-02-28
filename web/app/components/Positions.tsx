@@ -279,7 +279,7 @@ export function Positions() {
             <div key={`bitflowLpStaked1`} tabIndex="0" className="bg-white rounded-xl w-full" style={{'WebkitTapHighlightColor': 'transparent'}}>
               <div className="flex gap-3 items-center text-left py-2">
                 <div className="w-10 h-10 relative flex-shrink-0">
-                  <img alt="stSTX/STX LP Bitflow icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/zest.jpg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
+                  <img alt="stSTX Zest icon" loading="lazy" decoding="async" data-nimg="fill" className="rounded-full" src="/zest.svg" style={{'position': 'absolute', 'height': '100%', 'width': '100%', 'inset': '0px', 'color': 'transparent'}} />
                 </div>
                 <div className="flex-grow flex justify-between">
                   <div>
