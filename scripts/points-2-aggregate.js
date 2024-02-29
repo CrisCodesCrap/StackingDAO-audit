@@ -7,6 +7,7 @@ const utils = require('./utils.js');
 //
 
 const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v5`;
+const pointsHelperContract = `${process.env.CONTRACT_ADDRESS}.block-info-helper-v3`;
 
 //
 // Contract calls
@@ -31,7 +32,7 @@ async function userWalletAtBlock(address, blockHeight) {
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userInfoAtBlock(address, blockHeight);
+    return await userWalletAtBlock(address, blockHeight);
   }
 }
 
@@ -54,15 +55,40 @@ async function userBitflowAtBlock(address, blockHeight) {
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userInfoAtBlock(address, blockHeight);
+    return await userBitflowAtBlock(address, blockHeight);
+  }
+}
+
+async function userZestAtBlock(address, blockHeight) {
+  try {
+    const userInfo = await tx.callReadOnlyFunction({
+      contractAddress: pointsHelperContract.split(".")[0],
+      contractName: pointsHelperContract.split(".")[1],
+      functionName: "get-user-zest",
+      functionArgs: [
+        tx.standardPrincipalCV(address),
+        tx.uintCV(blockHeight),
+      ],
+      senderAddress: process.env.CONTRACT_ADDRESS,
+      network: utils.resolveNetwork()
+    });
+
+    const result = tx.cvToJSON(userInfo).value.value;
+    return result / 1000000;
+  } catch (error) {
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
+    return await userZestAtBlock(address, blockHeight);
   }
 }
 
 async function userInfoAtBlock(address, blockHeight) {
   const wallet = await userWalletAtBlock(address, blockHeight);
   const bitflow = await userBitflowAtBlock(address, blockHeight);
+  const zest = await userZestAtBlock(address, blockHeight);
   return {
     ststx_balance: wallet,
+    defi_balance: zest,
     lp_balance: bitflow
   }
 }
@@ -72,9 +98,9 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses-3');
-  const referrals = await utils.readFile('points-referrals-3');
-  const aggregate = await utils.readFile('points-aggregate-3');
+  const addresses = await utils.readFile('points-addresses-4');
+  const referrals = await utils.readFile('points-referrals-4');
+  const aggregate = await utils.readFile('points-aggregate-4');
 
   //
   // 0. From flat addresses array to chuncked array
@@ -105,7 +131,7 @@ async function updateAllPoints(blockHeight) {
       const addressIndex = addressChunk.indexOf(address);
       const userInfo = allPromise[addressIndex];
 
-      const newPoints = userInfo.ststx_balance + userInfo.lp_balance * 2.5;
+      const newPoints = userInfo.ststx_balance + userInfo.defi_balance * 1.5 + userInfo.lp_balance * 2.5;
 
       if (!aggregate[address]) {
         aggregate[address] = {
@@ -161,7 +187,7 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-3');
+  const lastBlockHeight = await utils.readFile('points-last-block-4');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
@@ -173,8 +199,8 @@ async function start() {
     const aggregate = await updateAllPoints(nextBlockHeight);
     console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-    await utils.writeFile('points-aggregate-3', aggregate)
-    await utils.writeFile('points-last-block-3', { last_block: nextBlockHeight })
+    await utils.writeFile('points-aggregate-4', aggregate)
+    await utils.writeFile('points-last-block-4', { last_block: nextBlockHeight })
   }
 };
 

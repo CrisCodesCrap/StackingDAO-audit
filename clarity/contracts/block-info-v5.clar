@@ -1,5 +1,5 @@
 ;; @contract Block Info
-;; @version 1
+;; @version 6
 ;;
 ;; Contract to get info at given block
 
@@ -48,7 +48,6 @@
 ;;-------------------------------------
 ;; Bitflow
 ;;-------------------------------------
-
 
 (define-read-only (get-user-bitflow (account principal) (block uint))
   (let (
