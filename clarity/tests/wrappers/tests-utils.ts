@@ -16,6 +16,14 @@ String.prototype.expectUintWithDecimals = function (value: number): bigint {
   return this.expectUint(Math.round(value * 1000000));
 };
 
+export function hexDecode(hex: string) {
+  let bytes = [];
+  hex.replace(/../g, function (pair) {
+      bytes.push(parseInt(pair, 16));
+  });
+  return new Uint8Array(bytes).buffer;
+}
+
 // Convert hex to bytes
 export function hexToBytes(hex: string) {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);

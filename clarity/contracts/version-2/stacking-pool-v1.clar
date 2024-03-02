@@ -27,14 +27,18 @@
 (define-constant ERR_CAN_NOT_PREPARE u205001)
 
 ;;-------------------------------------
-;; Maps
+;; Variables
 ;;-------------------------------------
 
 (define-data-var pox-reward-address { version: (buff 1), hashbytes: (buff 32) } { version: 0x04, hashbytes: 0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc })
+(define-data-var pox-signer-key (buff 33) 0x0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa)
 
 ;;-------------------------------------
 ;; Maps
 ;;-------------------------------------
+
+;; Map cycle to signer signature
+(define-map cycle-to-signer-signature uint (buff 65))
 
 ;; Map cycle to reward index
 (define-map cycle-to-index uint uint)
@@ -45,6 +49,14 @@
 
 (define-read-only (get-pox-reward-address)
   (var-get pox-reward-address)
+)
+
+(define-read-only (get-pox-signer-key)
+  (var-get pox-signer-key)
+)
+
+(define-read-only (get-cycle-to-signer-signature (cycle uint))
+  (map-get? cycle-to-signer-signature cycle)
 )
 
 (define-read-only (get-cycle-to-index (cycle uint))
@@ -102,7 +114,7 @@
 
     (match (pox-revoke-delegate-stx)
       result (ok result)
-      error (err (to-uint error))
+      error (err error)
     )
   )
 )
@@ -309,6 +321,25 @@
   )
 )
 
+(define-public (set-pox-signer-key (new-signer-key (buff 33)))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (var-set pox-signer-key new-signer-key)
+    (ok true)
+  )
+)
+
+(define-public (set-cycle-to-signer-signature (cycle uint) (signature (buff 65)))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (map-set cycle-to-signer-signature cycle signature)
+    (ok true)
+  )
+)
+
+
 ;;-------------------------------------
 ;; PoX Helpers
 ;;-------------------------------------
@@ -355,8 +386,14 @@
 (define-private (pox-revoke-delegate-stx) 
   (if is-in-mainnet
     ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx)
-    (contract-call? .pox-4-mock revoke-delegate-stx)
+    (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx)
+      result (ok result)
+      error (if (is-eq error 34) (ok true) (err (to-uint error)))
+    )
+    (match (contract-call? .pox-4-mock revoke-delegate-stx)
+      result (ok true)
+      error (if (is-eq error 34) (ok true) (err (to-uint error)))
+    )
   )
 )
 
@@ -401,7 +438,7 @@
   (if is-in-mainnet
     ;; TODO: Update to pox-4
     (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-commit-indexed pox-addr reward-cycle)
-    (contract-call? .pox-4-mock stack-aggregation-commit-indexed pox-addr reward-cycle)
+    (contract-call? .pox-4-mock stack-aggregation-commit-indexed pox-addr reward-cycle (get-cycle-to-signer-signature reward-cycle) (var-get pox-signer-key))
   )
 )
 

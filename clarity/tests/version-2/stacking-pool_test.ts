@@ -1,9 +1,42 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
-import { hexToBytes, qualifiedName } from "../wrappers/tests-utils.ts";
+import { hexToBytes, qualifiedName, hexDecode } from "../wrappers/tests-utils.ts";
 
 import { StackingDelegate } from '../wrappers/stacking-delegate-helpers.ts';
 import { StackingPool } from '../wrappers/stacking-pool-helpers.ts';
 import { Pox4Mock } from '../wrappers/pox-mock-helpers.ts';
+
+//-------------------------------------
+// Signer Signature 
+//-------------------------------------
+
+Clarinet.test({
+  name: "stacking-pool: signer signature",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let pox = new Pox4Mock(chain, deployer);
+
+    let call = await pox.getSignerKeyMessageHash(1, "agg-commit");
+    call.result.expectBuff(hexToBytes("0xd8135c290b1ed4eb95242cc54a759bababf6771a26692f5e8a0897d17e71a6e5"))
+
+    call = await pox.getSignerKeyMessageHash(2, "agg-commit");
+    call.result.expectBuff(hexToBytes("0xb848d39e98a18ea5c8443feac7a849badc96f3ab516d549aa45c787e1064a5aa"))
+
+    call = await pox.getSignerKeyMessageHash(3, "agg-commit");
+    call.result.expectBuff(hexToBytes("0x520ffb9eac3d87c3eb50852b02b27f43bde0cb102a505928687e75c2ac2e7900"))
+
+    call = await pox.getSignerKeyMessageHash(4, "agg-commit");
+    call.result.expectBuff(hexToBytes("0x4f55e3aa77ca7a67333149816dc019f6398e5f3706e7672429db3e5740fc72e0"))
+
+    // Public and private key for deployer (ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+    const publicKey = "0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa"
+    // Use script 'create-signer-sig'
+    const signedMessage = "8e9e8397a0f47dc2b4f26b840dc724b19949af05f41dbfcf0af02bb2614a97ad0b6488a4deeb70b62834c7fe443e44c9d986dee8f19ceb7f93673d00f29a56a200"
+
+    call = await pox.verifySignerKeySig(1, "agg-commit", signedMessage, publicKey);
+    call.result.expectOk().expectBool(true);
+  }
+});
 
 //-------------------------------------
 // Core 
@@ -17,6 +50,7 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     //
     // 500k STX to delegate-1-1
@@ -82,6 +116,7 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     //
     // 500k STX to delegate-1-1
@@ -144,7 +179,8 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
-    
+    await stackingPool.addSignatures(chain, deployer);
+
     //
     // Delegation contract
     //
@@ -176,7 +212,7 @@ Clarinet.test({
 
     chain.mineEmptyBlockUntil(19);
 
-    result = stackingPool.prepare(wallet_1);
+    result = stackingPool.prepare(wallet_1); // Prepares StackingDAO
     result.expectOk().expectBool(true);
 
     result = stackingPool.prepareDelegate(wallet_1, wallet_1.address);
@@ -201,6 +237,9 @@ Clarinet.test({
     // Revoke
     //
 
+    call = await pox.getCheckDelegation(wallet_1.address);
+    call.result.expectSome()
+
     result = stackingPool.revokeDelegateStx(wallet_1);
     result.expectOk().expectBool(true);
 
@@ -217,6 +256,7 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
 
 
@@ -232,9 +272,7 @@ Clarinet.test({
   name: "stacking-pool: can set pox reward address",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
-    let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
 
     let call = await stackingPool.getPoxRewardAddress();
@@ -261,6 +299,7 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.transferSTX(500000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
@@ -380,7 +419,7 @@ Clarinet.test({
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
-
+    await stackingPool.addSignatures(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.transferSTX(500000 * 1000000, qualifiedName("reserve-v1"), deployer.address)

@@ -2,6 +2,10 @@
 ;; Mock for: SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP.pox-fast-pool-v2
 ;;
 
+;; Private key: 7287ba251d44a4d3fd9276c88ce34c5c52a038955511cccaf77e61068649c17801
+(define-data-var pox-signer-key (buff 33) 0x03cd2cfdbd2ad9332828a7a13ef62cb999e063421c708e863a7ffed71fb61c88c9)
+(define-data-var pox-signer-signature (buff 65) 0xcab767d17923700b5d9bbb2f8c9abf861d2b6a1128e0d19c8a6ca7097752eaff2bc310f0a4c62f152eb2ff689c41371d08b5db24cf516ced51d42c536626da0300)
+
 ;; @contract pox-3 Self-Service Pool
 ;; @version 2
 ;; Changelog: fix decrease error, add stacking stats for this pool
@@ -249,7 +253,7 @@
       ;; Just try to commit, it might fail because minimum not yet met
       (begin
         (print { action: "stack-aggregation-commit-indexed", reward-cycle: reward-cycle })
-        (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle))
+        (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle (some (var-get pox-signer-signature)) (var-get pox-signer-key)))
           index 
             (begin
               (print { action: "stack-aggregation-commit-indexed - result", index: index })

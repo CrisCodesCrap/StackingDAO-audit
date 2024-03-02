@@ -17,6 +17,7 @@ Clarinet.test({
     let strategyV3DelegatesV1 = new StrategyV3DelegatesV1(chain, deployer)
     let strategyV3 = new StrategyV3(chain, deployer)
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     // 150k STX to reserve
     let block = chain.mineBlock([

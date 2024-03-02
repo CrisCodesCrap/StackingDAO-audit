@@ -1,5 +1,5 @@
 import { Tx, Chain, Account, types } from 'https://deno.land/x/clarinet/index.ts';
-import { qualifiedName } from './tests-utils.ts';
+import { hexDecode } from './tests-utils.ts';
 
 // ---------------------------------------------------------
 // PoX-3 Mock
@@ -76,9 +76,29 @@ class Pox4Mock {
 
   getPartialStackedByCycle(rewardCycle: number, pool: string) {
     return this.chain.callReadOnlyFn("pox-4-mock", "get-partial-stacked-by-cycle", [
-      types.tuple({ 'version': '0x00', 'hashbytes': '0xf632e6f9d29bfb07bc8948ca6e0dd09358f003ac'}),
+      types.tuple({ 'version': '0x04', 'hashbytes': '0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc'}),
       types.uint(rewardCycle),
       types.principal(pool),
+    ], this.deployer.address);
+  }
+
+  getSignerKeyMessageHash(rewardCycle: number, topic: string) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "get-signer-key-message-hash", [
+      types.tuple({ 'version': '0x04', 'hashbytes': '0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc'}),
+      types.uint(rewardCycle),
+      types.ascii(topic),
+      types.uint(1),
+    ], this.deployer.address);
+  }
+
+  verifySignerKeySig(rewardCycle: number, topic: string, signerSig: string, signerKey: string) {
+    return this.chain.callReadOnlyFn("pox-4-mock", "verify-signer-key-sig", [
+      types.tuple({ 'version': '0x04', 'hashbytes': '0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc'}),
+      types.uint(rewardCycle),
+      types.ascii(topic),
+      types.uint(1),
+      types.some(types.buff(hexDecode(signerSig))),
+      types.buff(hexDecode(signerKey))
     ], this.deployer.address);
   }
 

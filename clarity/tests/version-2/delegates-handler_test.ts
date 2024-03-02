@@ -166,6 +166,7 @@ Clarinet.test({
     let delegatesHandler = new DelegatesHandler(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     //
     // Stack 200k
@@ -308,6 +309,7 @@ Clarinet.test({
 
     let delegatesHandler = new DelegatesHandler(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     let block = chain.mineBlock([
       Tx.transferSTX(200000 * 1000000, qualifiedName("reserve-v1"), deployer.address)

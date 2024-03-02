@@ -57,6 +57,7 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     //
     // 500k STX to delegate-1-1
@@ -131,6 +132,7 @@ Clarinet.test({
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
 
     //
     // 500k STX to delegate-1-1

@@ -21,7 +21,7 @@ Clarinet.test({
     let fastPool = new FastPoolV2(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     let pox = new Pox4Mock(chain, deployer);
-
+    await stackingPool.addSignatures(chain, deployer);
 
     // Need to allow the pool to manage our stacking
     // Because delegating & locking is done for the user by the contract
