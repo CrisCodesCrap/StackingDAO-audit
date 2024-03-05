@@ -168,7 +168,7 @@
   (let (
     (stake-amount (get-stake-amount-of staker))
     (amount-owed-per-token (- (unwrap-panic (calculate-cumm-reward-per-stake)) (get-stake-cumm-reward-per-stake-of staker)))
-    (rewards (/ (* stake-amount amount-owed-per-token) u1000000))
+    (rewards (/ (* stake-amount amount-owed-per-token) u100000000000000))
   )
     (ok rewards)
   )
@@ -245,7 +245,7 @@
     (if (> current-total-staked u0)
       (let (
         (total-rewards-to-distribute (* (var-get rewards-per-block) block-diff))
-        (reward-added-per-token (/ (* total-rewards-to-distribute u1000000) current-total-staked))
+        (reward-added-per-token (/ (* total-rewards-to-distribute u100000000000000) current-total-staked))
         (new-cumm-reward-per-stake (+ current-cumm-reward-per-stake reward-added-per-token))
       )
         (ok new-cumm-reward-per-stake)
