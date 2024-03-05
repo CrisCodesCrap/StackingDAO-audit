@@ -167,7 +167,7 @@ export function Unstack() {
               stSTX
               <span className="text-tertiary-text text-base block">
                 Balance: {' '}
-                {stStxBalance.toLocaleString(undefined, {
+                {stStxBalance.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
                 })} 
@@ -191,7 +191,7 @@ export function Unstack() {
               </div>
               <span className="absolute top-0 right-0 translate-x-full text-tertiary-text text-xl">stSTX</span>
             </div>
-            <span className="text-tertiary-text">~${amountInDollars.toLocaleString()}</span>
+            <span className="text-tertiary-text">~${amountInDollars.toLocaleString('en-US')}</span>
             <button
               type="button"
               className="absolute right-0 top-1/2 -translate-y-3 bg-white rounded-full border border-additional-text py-2.5 px-1"
@@ -211,9 +211,9 @@ export function Unstack() {
             <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
             <a className="group max-w-max relative flex block gap-1" href="#">
               {Number(bitcoinBlocksLeft) <= 100 ? (
-                <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString()})</span>
+                <span>End of Cycle (~{formatSeconds(21000+(10*bitcoinBlocksLeft)).toLocaleString('en-US')})</span>
               ) : (
-                <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString()})</span>
+                <span>End of Cycle (~{formatSeconds(10*bitcoinBlocksLeft).toLocaleString('en-US')})</span>
               )}
 
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -245,7 +245,7 @@ export function Unstack() {
               You receive
             </div>
             <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-              {stxReceived.toLocaleString()} STX
+              {stxReceived.toLocaleString('en-US')} STX
             </div>
           </div>
 
@@ -296,7 +296,7 @@ export function Unstack() {
                 </div>
                 <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
                   1 stSTX = {' '}
-                  {bitflowRatio.toLocaleString(undefined, {
+                  {bitflowRatio.toLocaleString('en-US', {
                     maximumFractionDigits: 6,
                   })} 
                   {' '} STX
@@ -308,7 +308,7 @@ export function Unstack() {
                   You receive
                 </div>
                 <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-                  ~{stxReceivedBitflow.toLocaleString()} STX
+                  ~{stxReceivedBitflow.toLocaleString('en-US')} STX
                 </div>
               </div>
             </>

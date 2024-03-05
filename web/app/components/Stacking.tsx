@@ -105,7 +105,7 @@ export function Stacking() {
                   </div>
                 ) : (
                   <span className="text-lg block font-semibold">
-                    {stStxBalance.toLocaleString(undefined, {
+                    {stStxBalance.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })} 
@@ -125,7 +125,7 @@ export function Stacking() {
                   </div>
                 ) : (
                   <span className="text-lg block font-semibold">
-                    {stxBalance.toLocaleString(undefined, {
+                    {stxBalance.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })} 
@@ -160,7 +160,7 @@ export function Stacking() {
             </div>
             <div className="mt-4 flex gap-2 items-end font-medium">
               <span className="text-ststx text-5xl font-semibold">
-                ~{yieldPerYear.toLocaleString(undefined, {
+                ~{yieldPerYear.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}

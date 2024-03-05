@@ -175,7 +175,7 @@ export default function Points() {
             <div className="w-full text-center text-sm text-gray-500">
               Points are updated every 2 days. Last updated on {' '}
               <span className='font-semibold'>
-                {(new Date(lastUpdateBlock).toLocaleString())}
+                {(new Date(lastUpdateBlock).toLocaleString('en-US'))}
               </span>
               {' '}({Intl.DateTimeFormat().resolvedOptions().timeZone}). 
             </div>
@@ -202,7 +202,7 @@ export default function Points() {
                       </a>
                     </dt>
                     <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 flex">
-                      {(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString('en-US', { maximumFractionDigits: 0 })}
 
                       {nftType >= 0 ? (
                         <>
@@ -243,12 +243,12 @@ export default function Points() {
 
                   <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
                     <dt className="truncate text-sm font-medium text-gray-500">Your Stacking Points</dt>
-                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.user_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
+                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.user_points.toLocaleString('en-US', { maximumFractionDigits: 0 })}</dd>
                   </div>
 
                   <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
                     <dt className="truncate text-sm font-medium text-gray-500">Your Referral Points</dt>
-                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.referral_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
+                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{pointsInfo.referral_points.toLocaleString('en-US', { maximumFractionDigits: 0 })}</dd>
                   </div>
 
                   <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
@@ -258,7 +258,7 @@ export default function Points() {
                         <>N/A</>
                       ):(
                         <>
-                          #{userRank.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          #{userRank.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                         </>
                       )}
                     </dd>
@@ -292,13 +292,13 @@ export default function Points() {
                     </div>
                   </a>
                 </dt>
-                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString(undefined, { maximumFractionDigits: 0 })}</dd>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{totalPoints.toLocaleString('en-US', { maximumFractionDigits: 0 })}</dd>
               </div>
 
               <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
                 <dt className="truncate text-sm font-medium text-gray-500">Total Users</dt>
                 <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
-                  {allUsers.length.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  {allUsers.length.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </dd>
               </div>
             </dl>
@@ -457,13 +457,13 @@ export default function Points() {
                               </Link>
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {user[1].user_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                              {user[1].user_points.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {user[1].referral_points.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                              {user[1].referral_points.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {(user[1].user_points + user[1].referral_points).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                              {(user[1].user_points + user[1].referral_points).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                             </td>
                           </tr>
                         ))}

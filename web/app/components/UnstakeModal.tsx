@@ -95,7 +95,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
 
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         You are currently staking{' '}
-        {stakedAmount.toLocaleString(undefined, {
+        {stakedAmount.toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
         })}{' '}
@@ -103,7 +103,7 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={stakedAmount.toLocaleString()}
+          balance={stakedAmount.toLocaleString('en-US')}
           token="sDAO"
           inputName="unstakesDAO"
           inputId="unstakeAmount"

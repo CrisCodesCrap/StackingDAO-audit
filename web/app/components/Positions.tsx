@@ -234,7 +234,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {stStxBalance.toLocaleString(undefined, {
+                      {stStxBalance.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
@@ -288,7 +288,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {zestProvision.toLocaleString(undefined, {
+                      {zestProvision.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -317,7 +317,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {bitflowLpStaked.toLocaleString(undefined, {
+                      {bitflowLpStaked.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
@@ -345,7 +345,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {bitflowLpWallet.toLocaleString(undefined, {
+                      {bitflowLpWallet.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
@@ -374,7 +374,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {bitflowLpStaked2.toLocaleString(undefined, {
+                      {bitflowLpStaked2.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
@@ -402,7 +402,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {bitflowLpWallet2.toLocaleString(undefined, {
+                      {bitflowLpWallet2.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
@@ -431,7 +431,7 @@ export function Positions() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
-                      {stxBalance.toLocaleString(undefined, {
+                      {stxBalance.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })} 
