@@ -15,18 +15,18 @@ class Commission {
   }
 
   getStakingBasisPoints() {
-    return this.chain.callReadOnlyFn("commission-v1", "get-staking-basispoints", [
+    return this.chain.callReadOnlyFn("commission-v2", "get-staking-basispoints", [
     ], this.deployer.address);
   }
 
   getCycleRewardsEndBlock() {
-    return this.chain.callReadOnlyFn("commission-v1", "get-cycle-rewards-end-block", [
+    return this.chain.callReadOnlyFn("commission-v2", "get-cycle-rewards-end-block", [
     ], this.deployer.address);
   }
 
   addCommission(caller: Account, amount: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("commission-v1", "add-commission", [
+      Tx.contractCall("commission-v2", "add-commission", [
         types.principal(qualifiedName("staking-v1")),
         types.uint(amount * 1000000)
       ], caller.address)
@@ -36,7 +36,7 @@ class Commission {
 
   withdrawCommission(caller: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("commission-v1", "withdraw-commission", [
+      Tx.contractCall("commission-v2", "withdraw-commission", [
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -44,7 +44,7 @@ class Commission {
 
   setStakingBasisPoints(caller: Account, percentage: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("commission-v1", "set-staking-basispoints", [
+      Tx.contractCall("commission-v2", "set-staking-basispoints", [
         types.uint(percentage * 10000)
       ], caller.address)
     ]);

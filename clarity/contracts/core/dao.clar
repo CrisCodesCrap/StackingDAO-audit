@@ -130,6 +130,7 @@
   (map-set contracts { address: .stacking-dao-core-v1 } { active: true })
   (map-set contracts { address: .reserve-v1 } { active: true })
   (map-set contracts { address: .commission-v1 } { active: true })
+  (map-set contracts { address: .commission-v2 } { active: true })
   (map-set contracts { address: .tax-v1 } { active: true })
   (map-set contracts { address: .staking-v1 } { active: true })
   (map-set contracts { address: .staking-v0 } { active: true })

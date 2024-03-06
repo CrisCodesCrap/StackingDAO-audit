@@ -47,7 +47,7 @@ class Rewards {
   processRewards(caller: Account) {
     let block = this.chain.mineBlock([
       Tx.contractCall("rewards-v1", "process-rewards", [
-        types.principal(qualifiedName("commission-v1")),
+        types.principal(qualifiedName("commission-v2")),
         types.principal(qualifiedName("staking-v1")),
         types.principal(qualifiedName("reserve-v1")),
       ], caller.address)
