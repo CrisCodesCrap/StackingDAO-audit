@@ -159,7 +159,7 @@ export function Stack() {
                 Stacks
                 <span className="text-tertiary-text text-base block">
                   Balance: {' '}
-                  {stxBalance.toLocaleString(undefined, {
+                  {stxBalance.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 6,
                   })} 
@@ -183,7 +183,7 @@ export function Stack() {
                 </div>
                 <span className="absolute top-0 right-0 translate-x-full text-tertiary-text text-xl">STX</span>
               </div>
-              <span className="text-tertiary-text">~${amountInDollars.toLocaleString()}</span>
+              <span className="text-tertiary-text">~${amountInDollars.toLocaleString('en-US')}</span>
               <button
                 type="button"
                 className="absolute right-0 top-1/2 -translate-y-3 bg-white rounded-full border border-additional-text py-2.5 px-1"
@@ -231,7 +231,7 @@ export function Stack() {
               </div>
               <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
                 <span>
-                  ~{stStxReceived.toLocaleString(undefined, {
+                  ~{stStxReceived.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })} 
@@ -288,7 +288,7 @@ export function Stack() {
                   </div>
                   <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
                     1 stSTX = {' '}
-                    {bitflowRatio.toLocaleString(undefined, {
+                    {bitflowRatio.toLocaleString('en-US', {
                       maximumFractionDigits: 6,
                     })}
                     {' '} STX
@@ -300,7 +300,7 @@ export function Stack() {
                   </div>
                   <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
                     <span>
-                      ~{stxReceivedBitflow.toLocaleString(undefined, {
+                      ~{stxReceivedBitflow.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}

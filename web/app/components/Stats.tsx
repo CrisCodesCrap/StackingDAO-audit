@@ -69,7 +69,7 @@ export function Stats() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">TVL</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(totalStx).toLocaleString()} <span className="text-xs">STX</span>
+              {Math.ceil(totalStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
             </dd>
           </div>
 
@@ -78,7 +78,7 @@ export function Stats() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">TVL</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              ${Math.ceil(totalStx * stxPrice).toLocaleString()}
+              ${Math.ceil(totalStx * stxPrice).toLocaleString('en-US')}
             </dd>
           </div>
 
@@ -87,7 +87,7 @@ export function Stats() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">Stacked</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(stackingStx).toLocaleString()} <span className="text-xs">STX</span>
+              {Math.ceil(stackingStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
             </dd>
           </div>
 
@@ -96,7 +96,7 @@ export function Stats() {
           >
             <dt className="text-sm font-medium leading-6 text-gray-500">Idle</dt>
             <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(idleStx).toLocaleString()} <span className="text-xs">STX</span>
+              {Math.ceil(idleStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
             </dd>
           </div>
         </dl>

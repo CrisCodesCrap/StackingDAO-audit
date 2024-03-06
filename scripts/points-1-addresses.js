@@ -113,7 +113,7 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-3', {"addresses": addresses})
+  await utils.writeFile('points-addresses-4', {"addresses": addresses})
 
 
 
@@ -121,9 +121,9 @@ async function start() {
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals-3', referrers)
+  await utils.writeFile('points-referrals-4', referrers)
 
-  await utils.writeFile('points-last-block-addresses-3', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-4', { last_block: currentBlockHeight })
 };
 
 // start();

@@ -110,7 +110,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={sDaoBalance.toLocaleString(undefined, {
+          balance={sDaoBalance.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}

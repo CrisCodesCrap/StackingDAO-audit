@@ -11,6 +11,9 @@ cache_dir = "./.cache"
 # ------------------------------
 
 [[project.requirements]]
+contract_id = "SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.pool-reserve-data"
+
+[[project.requirements]]
 contract_id = "SP3C0TCQS0C0YY8E0V3EJ7V4X9571885D44M8EFWF.arkadiko-automation-trait-v1"
 
 
@@ -38,7 +41,6 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2
 
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2"
-
 
 [[project.requirements]]
 contract_id = "ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1"
@@ -85,6 +87,11 @@ epoch = 2.4
 
 [contracts.block-info-v1]
 path = "contracts/helpers/block-info-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-helper-v2]
+path = "contracts/block-info-helper-v2.clar"
 clarity_version = 2
 epoch = 2.4
 

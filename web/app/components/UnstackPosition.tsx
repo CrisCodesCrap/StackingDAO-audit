@@ -111,13 +111,13 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         </div>
         <div className="flex-grow flex justify-between">
           <div>
-            <span className="text-lg font-semibold line-clamp-1 text-ellipsis">NFT #{id} unlocks {stStxAmount.toLocaleString()} stSTX in cycle #{cycleId}</span>
+            <span className="text-lg font-semibold line-clamp-1 text-ellipsis">NFT #{id} unlocks {stStxAmount.toLocaleString('en-US')} stSTX in cycle #{cycleId}</span>
             <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">StackingDAO Stacked STX</span>
           </div>
           <div className="text-right">
             {canWithdraw ? (
               <button type="button" disabled={!canWithdraw} className="flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg bg-ststx text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full">
-                <span>Withdraw {stxAmount.toLocaleString()} STX</span>
+                <span>Withdraw {stxAmount.toLocaleString('en-US')} STX</span>
               </button>
             ) : (
               <div className="group max-w-max relative mx-1 bg-gray flex flex-col items-center justify-center text-gray-500 hover:text-gray-600">

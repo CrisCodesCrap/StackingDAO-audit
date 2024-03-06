@@ -133,9 +133,9 @@ export default function Cycles() {
         <div className="w-full text-center hidden md:block font-semibold text-4xl my-8">StackingDAO Cycles</div>
 
         {inflow > 0 ? (
-          <div className="w-full text-center hidden md:block text-md my-8">Net inflow for next cycle: {inflow.toLocaleString(undefined, { maximumFractionDigits: 0 })} STX</div>
+          <div className="w-full text-center hidden md:block text-md my-8">Net inflow for next cycle: {inflow.toLocaleString('en-US', { maximumFractionDigits: 0 })} STX</div>
         ):(
-          <div className="w-full text-center hidden md:block text-md my-8">Net outflow for next cycle: {Math.abs(inflow).toLocaleString(undefined, { maximumFractionDigits: 0 })} STX</div>
+          <div className="w-full text-center hidden md:block text-md my-8">Net outflow for next cycle: {Math.abs(inflow).toLocaleString('en-US', { maximumFractionDigits: 0 })} STX</div>
         )}
 
         <div className="mt-8 flow-root">
@@ -173,12 +173,12 @@ export default function Cycles() {
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                         {cycle.number}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.deposited.toLocaleString()}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.withrdaw_init.toLocaleString()}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.withdraw_out.toLocaleString()}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.stacked.toLocaleString()}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.commission.toLocaleString()}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.rewards.toLocaleString()}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.deposited.toLocaleString('en-US')}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.withrdaw_init.toLocaleString('en-US')}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.withdraw_out.toLocaleString('en-US')}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.stacked.toLocaleString('en-US')}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.commission.toLocaleString('en-US')}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{cycle.rewards.toLocaleString('en-US')}</td>
                     </tr>
                   ))}
                 </tbody>
