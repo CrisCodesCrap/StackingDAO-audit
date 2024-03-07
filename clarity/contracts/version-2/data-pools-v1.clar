@@ -34,8 +34,13 @@
   (map-set delegate-share .stacking-delegate-2-1 u5000)
   (map-set delegate-share .stacking-delegate-2-2 u3000)
   (map-set delegate-share .stacking-delegate-2-3 u2000)
-
 )
+
+;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_POOL_OWNER_SHARE u2011001)
 
 ;;-------------------------------------
 ;; Commission
@@ -44,8 +49,17 @@
 ;; If specific pool commission is not set
 (define-data-var standard-commission uint u500) ;; 5% in bps
 
-;; Map pool rewards STX address to commission
+;; Map pool to commission
 (define-map pool-commission principal uint)
+
+;; Map pool to info for commision share
+(define-map pool-owner-commission 
+  principal 
+  {
+    receiver: principal,
+    share: uint, ;; bps
+  }
+)
 
 (define-read-only (get-standard-commission)
   (var-get standard-commission)
@@ -55,6 +69,16 @@
   (default-to
     (var-get standard-commission)
     (map-get? pool-commission pool)
+  )
+)
+
+(define-read-only (get-pool-owner-commission (pool principal))
+  (default-to
+    {
+      receiver: .rewards-v1,
+      share: u0
+    }
+    (map-get? pool-owner-commission pool)
   )
 )
 
@@ -75,6 +99,17 @@
     (ok true)
   )
 )
+
+(define-public (set-pool-owner-commission (pool principal) (receiver principal) (share uint))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (<= share u10000) (err ERR_POOL_OWNER_SHARE))
+
+    (map-set pool-owner-commission pool { receiver: receiver, share: share })
+    (ok true)
+  )
+)
+
 
 ;;-------------------------------------
 ;; Pool and Delegates

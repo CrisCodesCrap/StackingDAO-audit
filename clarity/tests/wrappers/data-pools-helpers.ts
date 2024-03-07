@@ -25,6 +25,12 @@ class DataPools {
     ], this.deployer.address);
   }
 
+  getPoolOwnerCommission(pool: string) {
+    return this.chain.callReadOnlyFn("data-pools-v1", "get-pool-owner-commission", [
+        types.principal(pool)
+    ], this.deployer.address);
+  }
+
   setStandardCommission(caller: Account, commission: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("data-pools-v1", "set-standard-commission", [
@@ -44,6 +50,16 @@ class DataPools {
     return block.receipts[0].result;
   }
 
+  setPoolOwnerCommission(caller: Account, pool: string, receiver: string, share: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("data-pools-v1", "set-pool-owner-commission", [
+        types.principal(pool),
+        types.principal(receiver),
+        types.uint(share * 10000)
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 
   getActivePools() {
     return this.chain.callReadOnlyFn("data-pools-v1", "get-active-pools", [

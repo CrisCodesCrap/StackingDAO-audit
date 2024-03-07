@@ -56,6 +56,27 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "data-pools: protocol can update pool owner commission",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dataPools = new DataPools(chain, deployer);
+
+    let call = await dataPools.getPoolOwnerCommission(qualifiedName("stacking-pool-v1"))
+    call.result.expectTuple()["receiver"].expectPrincipal(qualifiedName("rewards-v1"));
+    call.result.expectTuple()["share"].expectUint(0);
+
+    let result = dataPools.setPoolOwnerCommission(deployer, qualifiedName("stacking-pool-v1"), wallet_1.address, 0.25)
+    result.expectOk().expectBool(true);
+
+    call = await dataPools.getPoolOwnerCommission(qualifiedName("stacking-pool-v1"))
+    call.result.expectTuple()["receiver"].expectPrincipal(wallet_1.address);
+    call.result.expectTuple()["share"].expectUint(0.25 * 10000);
+  }
+});
+
+Clarinet.test({
   name: "data-pools: protocol can update active pools list",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -133,6 +154,23 @@ Clarinet.test({
 });
 
 //-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "data-pools: can not set pool owner share above 100%",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let dataPools = new DataPools(chain, deployer);
+
+    let result = dataPools.setPoolOwnerCommission(deployer, qualifiedName("stacking-pool-v1"), wallet_1.address, 1.1)
+    result.expectErr().expectUint(2011001);
+  }
+});
+
+//-------------------------------------
 // Access 
 //-------------------------------------
 
@@ -148,6 +186,9 @@ Clarinet.test({
     result.expectErr().expectUint(20003);
 
     result = dataPools.setPoolCommission(wallet_1, qualifiedName("stacking-pool-v1"), 100);
+    result.expectErr().expectUint(20003);
+
+    result = dataPools.setPoolOwnerCommission(wallet_1, qualifiedName("stacking-pool-v1"), wallet_1.address, 0.25)
     result.expectErr().expectUint(20003);
 
     result = dataPools.setActivePools(wallet_1, [qualifiedName("stacking-pool-v1"), qualifiedName("new-pool-v1")]);
