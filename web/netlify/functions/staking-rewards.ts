@@ -92,7 +92,7 @@ export const handler: Handler = async (event, context) => {
         "contractAddress": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG",
         "symbol": "stSTX",
         "slug": "stacked-stx",
-        "baseSlug": "stacks-2-4",
+        "baseSlug": "stacks",
         "supply": stStxSupply, // LST balance
         "apr": 6.35, // in %
         "fee": 5, // in %
