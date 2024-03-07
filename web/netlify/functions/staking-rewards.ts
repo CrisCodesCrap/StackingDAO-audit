@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { stacksNetwork } from "@/app/common/utils";
 import { Handler } from "@netlify/functions";
