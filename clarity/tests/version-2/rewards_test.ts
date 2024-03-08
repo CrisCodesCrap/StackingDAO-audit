@@ -117,6 +117,21 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "rewards: get stx",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let rewards = new Rewards(chain, deployer);
+
+    let result = await rewards.addRewards(deployer, qualifiedName("stacking-pool-v1"), 100);
+    result.expectOk().expectBool(true);
+
+    result = rewards.getStx(deployer, 100, deployer.address);
+    result.expectOk().expectUintWithDecimals(100);
+  }
+});
+
 //-------------------------------------
 // Errors 
 //-------------------------------------
@@ -146,3 +161,21 @@ Clarinet.test({
     result.expectOk().expectBool(true);
   }
 });
+
+//-------------------------------------
+// Access 
+//-------------------------------------
+
+Clarinet.test({
+  name: "rewards: only protocol can get stx",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let rewards = new Rewards(chain, deployer);
+
+    let result = rewards.getStx(wallet_1, 200, wallet_1.address);
+    result.expectErr().expectUint(20003);
+  }
+});
+

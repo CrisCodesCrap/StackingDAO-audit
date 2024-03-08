@@ -54,5 +54,15 @@ class Rewards {
     ]);
     return block.receipts[0].result;
   }
+
+  getStx(caller: Account, amount: number, receiver: string) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("rewards-v1", "get-stx", [
+        types.uint(amount * 1000000),
+        types.principal(receiver),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
 }
 export { Rewards };
