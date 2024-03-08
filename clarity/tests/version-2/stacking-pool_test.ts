@@ -249,18 +249,30 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "stacking-pool: use pox wrappers directly",
+  name: "stacking-pool: can prepare even if threshold not met",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPool(chain, deployer);
     await stackingPool.addSignatures(chain, deployer);
 
+    let block = chain.mineBlock([
+      Tx.transferSTX(500000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
 
+    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
+    result.expectOk().expectUintWithDecimals(500000);
 
+    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 50000, qualifiedName("stacking-pool-v1"), 42);
+    result.expectOk().expectBool(true);
 
+    chain.mineEmptyBlockUntil(19);
+
+    // ERR_STACKING_THRESHOLD_NOT_MET
+    result = stackingPool.prepare(deployer);
+    result.expectOk().expectBool(true);
   }
 });
 
@@ -292,33 +304,6 @@ Clarinet.test({
 // PoX Errors 
 //-------------------------------------
 
-Clarinet.test({
-  name: "stacking-pool: can not prepare if threshold not met",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let stackingDelegate = new StackingDelegate(chain, deployer);
-    let stackingPool = new StackingPool(chain, deployer);
-    await stackingPool.addSignatures(chain, deployer);
-
-    let block = chain.mineBlock([
-      Tx.transferSTX(500000 * 1000000, qualifiedName("reserve-v1"), deployer.address)
-    ]);
-    block.receipts[0].result.expectOk().expectBool(true);
-
-    let result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
-    result.expectOk().expectUintWithDecimals(500000);
-
-    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 50000, qualifiedName("stacking-pool-v1"), 42);
-    result.expectOk().expectBool(true);
-
-    chain.mineEmptyBlockUntil(19);
-
-    // ERR_STACKING_THRESHOLD_NOT_MET
-    result = stackingPool.prepare(deployer);
-    result.expectErr().expectUint(11);
-  }
-});
 
 Clarinet.test({
   name: "stacking-pool: can not delegate again without revoking first",

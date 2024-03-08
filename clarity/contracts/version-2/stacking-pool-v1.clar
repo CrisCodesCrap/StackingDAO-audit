@@ -126,8 +126,14 @@
     ;; 1. Delegate
     (try! (delegation delegate))
 
-    ;; 2. Aggregate
-    (try! (aggregation))
+    ;; 2. Aggregate - ignore error ERR_STACKING_THRESHOLD_NOT_MET
+    (match (aggregation)
+      success true
+      error (begin
+        (asserts! (is-eq error u11) (err error))
+        true
+      )
+    )
 
     (print { action: "prepare-delegate", data: { delegate: delegate, block-height: block-height } })
     (ok true)
@@ -143,8 +149,14 @@
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
     (asserts! (is-eq delegation-error none) (unwrap-panic delegation-error))
 
-    ;; 2. Aggregate
-    (try! (aggregation))
+    ;; 2. Aggregate - ignore error ERR_STACKING_THRESHOLD_NOT_MET
+    (match (aggregation)
+      success true
+      error (begin
+        (asserts! (is-eq error u11) (err error))
+        true
+      )
+    )
 
     (print { action: "prepare-delegate-many", data: { block-height: block-height } })
     (ok true)
