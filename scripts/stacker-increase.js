@@ -14,9 +14,10 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(220000 * 1000000)
+    tx.uintCV(550000 * 1000000)
   ],
-  fee: new BN(1500000, 10),
+  fee: new BN(1000000, 10),
+  nonce: new BN(98, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
