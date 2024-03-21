@@ -37,6 +37,8 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stx-ststx-lp-token-v-1-2
 [[project.requirements]]
 contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2"
 
+[[project.requirements]]
+contract_id = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-vaults-data-v1-1"
 
 # ------------------------------
 # Protocol
@@ -214,6 +216,11 @@ epoch = 2.4
 
 [contracts.block-info-v5]
 path = "contracts/block-info-v5.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v6]
+path = "contracts/block-info-v6.clar"
 clarity_version = 2
 epoch = 2.4
 
