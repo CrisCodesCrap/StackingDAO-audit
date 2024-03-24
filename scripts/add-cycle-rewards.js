@@ -15,8 +15,8 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'commission-v1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v0'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(20000000000),
-    tx.uintCV(79)
+    tx.uintCV(20830000000),
+    tx.uintCV(80)
   ],
   fee: new BN(1000000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
