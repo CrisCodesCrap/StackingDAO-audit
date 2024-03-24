@@ -5,13 +5,14 @@ import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';
 import { stacksNetwork as network } from '../common/utils';
 import { Alert } from './Alert';
-import { useAppContext } from './AppContext'
+import { useAppContext } from './AppContext/AppContext';
 import {
-  uintCV, contractPrincipalCV,
+  uintCV,
+  contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
-} from '@stacks/transactions'
+} from '@stacks/transactions';
 import { useSTXAddress } from '../common/use-stx-address';
 import { stacksNetwork } from '../common/utils';
 
@@ -36,21 +37,21 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       ),
     ];
 
-    await makeContractCall({
-      contractAddress,
-      contractName: 'staking-v1',
-      functionName: 'unstake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'sdao-token'),
-        amount,
-      ],
-      postConditionMode: 0x01,
-      network: stacksNetwork,
-    }, async (error?, txId?) => {
-      setCurrentTxId(txId);
-      setCurrentTxStatus('pending');
-      setShowUnstakeModal(false);
-    });
+    await makeContractCall(
+      {
+        contractAddress,
+        contractName: 'staking-v1',
+        functionName: 'unstake',
+        functionArgs: [contractPrincipalCV(contractAddress, 'sdao-token'), amount],
+        postConditionMode: 0x01,
+        network: stacksNetwork,
+      },
+      async (error?, txId?) => {
+        setCurrentTxId(txId);
+        setCurrentTxStatus('pending');
+        setShowUnstakeModal(false);
+      }
+    );
   };
 
   const unstakeMaxAmount = () => {

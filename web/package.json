@@ -14,6 +14,7 @@
     "@heroicons/react": "^1.0.6",
     "@netlify/functions": "^2.5.1",
     "@stacks/auth": "6.11.0",
+    "@stacks/common": "^6.10.0",
     "@stacks/connect": "7.5.0",
     "@stacks/connect-react": "22.3.0",
     "@stacks/network": "6.10.0",
@@ -38,5 +39,8 @@
     "tweetnacl-util": "^0.15.1",
     "typescript": "5.1.6"
   },
-  "prettier": "@stacks/prettier-config"
+  "prettier": "@stacks/prettier-config",
+  "devDependencies": {
+    "@stacks/prettier-config": "^0.0.10"
+  }
 }

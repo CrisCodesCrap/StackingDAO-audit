@@ -1,27 +1,23 @@
 // @ts-nocheck
 
-'use client'
+'use client';
 
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { RootLayout } from './components/RootLayout'
-import React, { useEffect, useState } from 'react'
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { RootLayout } from './components/RootLayout';
+import React, { useEffect, useState } from 'react';
 import { stacksNetwork } from './common/utils';
-import { AppContextProvider } from './components/AppContext'
+import { AppContextProvider } from './components/AppContext/AppContext';
 import { TxStatus } from './components/TxStatus';
 
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
-export default function Layout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
   const [userData, setUserData] = useState({});
 
@@ -91,5 +87,5 @@ export default function Layout({
         </Connect>
       </body>
     </html>
-  )
+  );
 }
