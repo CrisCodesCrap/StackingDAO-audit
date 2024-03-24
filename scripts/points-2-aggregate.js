@@ -105,7 +105,7 @@ async function userArkadikoAtBlock(address, blockHeight) {
   }
 }
 
-async function userInfoAtBlock(address, blockHeight) {
+async function userInfoAtBlockHelper(address, blockHeight) {
   const wallet = await userWalletAtBlock(address, blockHeight);
   const bitflow = await userBitflowAtBlock(address, blockHeight);
   const zest = await userZestAtBlock(address, blockHeight);
@@ -116,6 +116,37 @@ async function userInfoAtBlock(address, blockHeight) {
     defi_balance: zest + arkadiko,
     lp_balance: bitflow
   }
+}
+
+async function userInfoAtBlock(address, blockHeight) {
+  // Cycle 81 boost
+  const blockHeightStartCycle81 = 143913;
+  const blockHeightEndCycle81 = blockHeightStartCycle81 + 2100;
+
+  // Normal user info
+  const userInfo = await userInfoAtBlockHelper(address, blockHeight);
+
+  // End of cycle 81
+  if (blockHeight == blockHeightEndCycle81) {
+    const startUserInfo = await userInfoAtBlockHelper(address, blockHeightStartCycle81)
+
+    const total = userInfo.ststx_balance + userInfo.defi_balance + userInfo.lp_balance;
+    const totalStart = startUserInfo.ststx_balance + startUserInfo.defi_balance + startUserInfo.lp_balance;
+
+    if (total >= totalStart) {
+      // User gets 5x multiplier in cycle 81
+      const blockDiff = blockHeightEndCycle81 - blockHeightStartCycle81;
+
+      return {
+        ststx_balance: userInfo.ststx_balance + blockDiff * 4 * startUserInfo.ststx_balance,
+        defi_balance: userInfo.defi_balance + blockDiff * 4 * startUserInfo.defi_balance,
+        lp_balance: userInfo.lp_balance + blockDiff * 4 * startUserInfo.lp_balance
+      }
+    }
+
+  }
+
+  return userInfo;
 }
 
 //
