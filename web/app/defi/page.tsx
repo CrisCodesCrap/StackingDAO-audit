@@ -48,7 +48,7 @@ const activityItems = [
   {
     user: {
       name: 'Velar',
-      imageUrl: '/velar-logo.png',
+      imageUrl: '/velar.png',
     },
     commit: 'stSTX/aeUSDC trading pool',
     status: 'Launched',
