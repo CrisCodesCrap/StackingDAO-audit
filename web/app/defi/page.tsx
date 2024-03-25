@@ -11,6 +11,22 @@ const statuses = {
 const activityItems = [
   {
     user: {
+      name: 'Arkadiko Finance',
+      imageUrl: '/diko.svg',
+    },
+    commit: 'Use stSTX as collateral to mint USDA',
+    status: 'Launched',
+    link: 'https://arkadiko.finance/',
+    actions: [
+      {
+        primary: true,
+        name: 'Vault stSTX',
+        url: 'https://app.arkadiko.finance/vaults',
+      },
+    ],
+  },
+  {
+    user: {
       name: 'Bitflow AMM',
       imageUrl: '/bitflow-logo.png',
     },
@@ -31,6 +47,26 @@ const activityItems = [
   },
   {
     user: {
+      name: 'Velar',
+      imageUrl: '/velar-logo.png',
+    },
+    commit: 'stSTX/aeUSDC trading pool',
+    status: 'Launched',
+    link: 'https://app.velar.co/',
+    actions: [
+      {
+        name: 'Swap',
+        url: 'https://app.velar.co/swap',
+      },
+      {
+        primary: true,
+        name: 'Add liquidity',
+        url: 'https://app.velar.co/pool',
+      },
+    ],
+  },
+  {
+    user: {
       name: 'Zest Protocol',
       imageUrl: 'zest.svg',
     },
@@ -42,22 +78,6 @@ const activityItems = [
         primary: true,
         name: 'Add stSTX',
         url: 'https://app.zestprotocol.com/',
-      },
-    ],
-  },
-  {
-    user: {
-      name: 'Arkadiko Finance',
-      imageUrl: '/diko.svg',
-    },
-    commit: 'Use stSTX as collateral to mint USDA',
-    status: 'Launched',
-    link: 'https://arkadiko.finance/',
-    actions: [
-      {
-        primary: true,
-        name: 'Vault stSTX',
-        url: 'https://app.arkadiko.finance/vaults',
       },
     ],
   },

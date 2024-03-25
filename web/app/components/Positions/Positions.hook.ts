@@ -6,6 +6,7 @@ import {
   uintCV,
   cvToJSON,
   ClarityType,
+  cvToValue,
 } from '@stacks/transactions';
 import { IntegerType } from '@stacks/common';
 import { useAppContext } from '../AppContext/AppContext';
@@ -20,6 +21,7 @@ interface PositionsData {
   genesisNfts: IGenesisNFTData[];
   unstackNfts: IUnstackNFTData[];
   bitflowBalance: BitflowBalance;
+  velarBalance: VelarBalance;
 }
 
 interface BitflowBalance {
@@ -27,6 +29,11 @@ interface BitflowBalance {
   lpStaked: number;
   lpWallet2: number;
   lpStaked2: number;
+}
+
+interface VelarBalance {
+  lpWallet: number;
+  lpStaked: number;
 }
 
 interface IUnstackNFTData {
@@ -240,7 +247,8 @@ const fetchZestLendingProvision = async (stxAddress: string): Promise<number> =>
       senderAddress: stxAddress,
       network: stacksNetwork,
     });
-  } catch (e) { // any exception
+  } catch (e) {
+    // any exception
     return 0;
   }
 
@@ -249,6 +257,36 @@ const fetchZestLendingProvision = async (stxAddress: string): Promise<number> =>
     : 0;
 
   return lendingZestAmount;
+};
+
+const fetchVelarBalance = async (stxAddress: string): Promise<VelarBalance> => {
+  const resultWallet = callReadOnlyFunction({
+    contractAddress: 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1',
+    contractName: 'ststx-aeusdc',
+    functionName: 'get-balance',
+    functionArgs: [standardPrincipalCV(stxAddress)],
+    senderAddress: stxAddress,
+    network: stacksNetwork,
+  });
+
+  const resultStaked = callReadOnlyFunction({
+    contractAddress: 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1',
+    contractName: 'farming-ststx-aeusdc-core',
+    functionName: 'get-user-staked',
+    functionArgs: [standardPrincipalCV(stxAddress)],
+    senderAddress: stxAddress,
+    network: stacksNetwork,
+  });
+
+  const [wallet, staked] = await Promise.all([resultWallet, resultStaked]);
+
+  const walletBalance = cvToValue(wallet).value as number | undefined;
+  const stakeBalance = cvToJSON(staked).value ? cvToJSON(staked).value['end'].value : 0;
+
+  return {
+    lpWallet: Number(walletBalance) / 1000000,
+    lpStaked: Number(stakeBalance) / 1000000,
+  };
 };
 
 export function usePositionsData(stxAddress?: string): PositionsData {
@@ -267,6 +305,11 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     lpStaked2: 0,
   });
 
+  const [velarBalance, setVelarBalance] = useState<VelarBalance>({
+    lpWallet: 0,
+    lpStaked: 0,
+  });
+
   useEffect(() => {
     async function fetchData(stxAddress: string) {
       await Promise.all([
@@ -275,6 +318,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
         fetchBitflowBalance(stxAddress).then(setBitflowBalance),
         fetchGenesisBalance(stxAddress).then(setGenesisNfts),
         fetchZestLendingProvision(stxAddress).then(setZestProvision),
+        fetchVelarBalance(stxAddress).then(setVelarBalance),
       ]).catch(console.error);
     }
 
@@ -290,6 +334,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     unstackNfts,
     bitflowBalance,
     zestProvision,
+    velarBalance,
   };
 
   return data;

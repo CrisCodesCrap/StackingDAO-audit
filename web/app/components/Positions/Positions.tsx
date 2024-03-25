@@ -396,6 +396,111 @@ export function Positions() {
         </div>
       )}
 
+      {/* Velar LP */}
+      {positions.velarBalance.lpStaked > 0 && (
+        <div
+          key="velarLPStaked"
+          tabIndex={0}
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
+        >
+          <div className="flex gap-3 items-center text-left py-2">
+            <div className="w-10 h-10 relative flex-shrink-0">
+              <Image
+                alt="stSTX/STX LP Velar icon"
+                loading="lazy"
+                decoding="async"
+                data-nimg="fill"
+                fill
+                className="rounded-full"
+                src="/velar-logo.png"
+                style={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  inset: '0px',
+                  color: 'transparent',
+                }}
+              />
+            </div>
+            <div className="flex-grow flex justify-between">
+              <div>
+                <span className="text-lg font-semibold line-clamp-1 text-ellipsis">
+                  stSTX/aeUSDC
+                </span>
+                <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">
+                  Staked liquidity on Velar
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                  {positions.velarBalance.lpStaked.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{' '}
+                  STX-aeUSDC-LP
+                </div>
+                <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                  stSTX yield + yield on Velar
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {positions.velarBalance.lpWallet > 0 && (
+        <div
+          key="velarLpWallet"
+          tabIndex={0}
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
+        >
+          <div className="flex gap-3 items-center text-left py-2">
+            <div className="w-10 h-10 relative flex-shrink-0">
+              <Image
+                alt="stSTX/STX LP Velar icon"
+                loading="lazy"
+                decoding="async"
+                data-nimg="fill"
+                fill
+                className="rounded-full"
+                src="/velar-logo.png"
+                style={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  inset: '0px',
+                  color: 'transparent',
+                }}
+              />
+            </div>
+            <div className="flex-grow flex justify-between">
+              <div>
+                <span className="text-lg font-semibold line-clamp-1 text-ellipsis">
+                  stSTX/aeUSDC
+                </span>
+                <span className="text-sm text-secondary-text line-clamp-1 flex gap-1 flex-wrap">
+                  Liquidity on Velar
+                </span>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
+                  {positions.velarBalance.lpWallet.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{' '}
+                  STX-aeUSDC-LP
+                </div>
+                <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-ststx">
+                  stSTX yield
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* STX */}
       {positions.stxBalance > 0 && (
         <div
