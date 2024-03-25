@@ -1,9 +1,11 @@
-import Link from 'next/link'
-import clsx from 'clsx'
+import Link, { LinkProps } from 'next/link';
+import clsx from 'clsx';
+import { HTMLAttributeAnchorTarget } from 'react';
 
 interface ButtonProps {
   invert: boolean | undefined;
   href: string;
+  target?: HTMLAttributeAnchorTarget;
   className: string;
   children: any;
 }
@@ -11,25 +13,25 @@ interface ButtonProps {
 export function Button({ invert, href, className, children, ...props }: ButtonProps) {
   className = clsx(
     className,
-    'inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition',
+    'inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition text-center',
     invert
       ? 'bg-white text-neutral-950 hover:bg-neutral-200'
       : 'bg-neutral-950 text-white hover:bg-neutral-800'
-  )
+  );
 
-  let inner = <span className="relative top-px">{children}</span>
+  let inner = <span className="relative w-full text-center top-px">{children}</span>;
 
   if (href) {
     return (
-      <Link href={href} className={className} {...props}>
+      <Link href={href} target={props.target} className={className} {...props}>
         {inner}
       </Link>
-    )
+    );
   }
 
   return (
     <button className={className} {...props}>
       {inner}
     </button>
-  )
+  );
 }

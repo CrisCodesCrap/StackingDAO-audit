@@ -5,6 +5,8 @@ import { UnstackPosition } from '../UnstackPosition';
 import { usePositionsData } from './Positions.hook';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { Tooltip } from 'react-tooltip';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -19,10 +21,11 @@ export function Positions() {
 
       {/* stSTX */}
       {positions.stStxBalance > 0 && (
-        <div
+        <Link
+          href="/defi"
           key={`stStxBalance`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -44,6 +47,9 @@ export function Positions() {
                 }}
               />
             </div>
+            <Tooltip anchorSelect="#stStxBalance" place="top">
+              Earn additional yield in Stacks DeFi
+            </Tooltip>
             <div className="flex-grow flex justify-between">
               <div>
                 <span className="text-lg font-semibold line-clamp-1 text-ellipsis">stSTX</span>
@@ -51,7 +57,7 @@ export function Positions() {
                   StackingDAO Stacked STX
                 </span>
               </div>
-              <div className="text-right">
+              <div id="stStxBalance" className="text-right">
                 <div className="text-lg font-semibold whitespace-nowrap line-clamp-1">
                   {positions.stStxBalance.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
@@ -65,7 +71,7 @@ export function Positions() {
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Withdraw NFT */}
@@ -85,7 +91,7 @@ export function Positions() {
         <div
           key={`genesis-${nft.id}`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -132,7 +138,7 @@ export function Positions() {
         <div
           key={`zestProvision`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -185,7 +191,7 @@ export function Positions() {
         <div
           key={`bitflowLpStaked1`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -237,7 +243,7 @@ export function Positions() {
         <div
           key={`bitflowLpWallet1`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -290,7 +296,7 @@ export function Positions() {
         <div
           key={`bitflowLpStaked2`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -342,7 +348,7 @@ export function Positions() {
         <div
           key={`bitflowLpWallet2`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
@@ -395,7 +401,7 @@ export function Positions() {
         <div
           key={`stxBalance`}
           tabIndex={0}
-          className="bg-white rounded-xl w-full"
+          className="bg-white hover:bg-neutral-100 rounded-xl w-full py-2 px-4"
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           <div className="flex gap-3 items-center text-left py-2">
