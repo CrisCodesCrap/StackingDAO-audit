@@ -230,14 +230,19 @@ const fetchBitflowBalance = async (stxAddress: string): Promise<BitflowBalance> 
 };
 
 const fetchZestLendingProvision = async (stxAddress: string): Promise<number> => {
-  const resultLendingZest = await callReadOnlyFunction({
-    contractAddress: 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N',
-    contractName: 'pool-read-supply',
-    functionName: 'get-supplied-balance-user-ststx',
-    functionArgs: [standardPrincipalCV(stxAddress)],
-    senderAddress: stxAddress,
-    network: stacksNetwork,
-  });
+  let resultLendingZest;
+  try {
+    resultLendingZest = await callReadOnlyFunction({
+      contractAddress: 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N',
+      contractName: 'pool-read-supply',
+      functionName: 'get-supplied-balance-user-ststx',
+      functionArgs: [standardPrincipalCV(stxAddress)],
+      senderAddress: stxAddress,
+      network: stacksNetwork,
+    });
+  } catch (e) { // any exception
+    return 0;
+  }
 
   const lendingZestAmount = cvToJSON(resultLendingZest).value
     ? Number((resultLendingZest as any).value) / 1000000
