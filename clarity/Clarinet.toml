@@ -40,6 +40,15 @@ contract_id = "SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.earn-stx-ststx-v-1-2"
 [[project.requirements]]
 contract_id = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-vaults-data-v1-1"
 
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.ststx-aeusdc"
+
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.univ2-core"
+
+[[project.requirements]]
+contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.farming-ststx-aeusdc-core"
+
 # ------------------------------
 # Protocol
 # ------------------------------
@@ -221,6 +230,11 @@ epoch = 2.4
 
 [contracts.block-info-v6]
 path = "contracts/block-info-v6.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v8]
+path = "contracts/block-info-v8.clar"
 clarity_version = 2
 epoch = 2.4
 

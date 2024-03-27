@@ -18,7 +18,7 @@ async function start() {
     const data = fs.readFileSync("files/" + backupFolder + "/" + fileName + ".json");
     const json = JSON.parse(data);
 
-    const writeResult = await utils.writeFile(fileName.replace("-4", "-5"), json)
+    const writeResult = await utils.writeFile(fileName.replace("-4", "-7"), json)
     console.log("writeResult", writeResult);
   }
 };

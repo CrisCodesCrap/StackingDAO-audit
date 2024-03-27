@@ -105,15 +105,39 @@ async function userArkadikoAtBlock(address, blockHeight) {
   }
 }
 
+async function userVelarAtBlock(address, blockHeight) {
+  try {
+    const userInfo = await tx.callReadOnlyFunction({
+      contractAddress: process.env.CONTRACT_ADDRESS,
+      contractName: "block-info-v8",
+      functionName: "get-user-velar",
+      functionArgs: [
+        tx.standardPrincipalCV(address),
+        tx.uintCV(blockHeight),
+      ],
+      senderAddress: process.env.CONTRACT_ADDRESS,
+      network: utils.resolveNetwork()
+    });
+
+    const result = tx.cvToJSON(userInfo).value.value;
+    return result / 1000000;
+  } catch (error) {
+    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
+    await new Promise(r => setTimeout(r, 10 * 1000));
+    return await userZestAtBlock(address, blockHeight);
+  }
+}
+
 async function userInfoAtBlock(address, blockHeight) {
   const wallet = await userWalletAtBlock(address, blockHeight);
   const bitflow = await userBitflowAtBlock(address, blockHeight);
   const zest = await userZestAtBlock(address, blockHeight);
   const arkadiko = await userArkadikoAtBlock(address, blockHeight);
+  const velar = await userVelarAtBlock(address, blockHeight);
 
   return {
     ststx_balance: wallet,
-    defi_balance: zest + arkadiko,
+    defi_balance: zest + arkadiko + velar,
     lp_balance: bitflow
   }
 }
@@ -123,9 +147,9 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses-6');
-  const referrals = await utils.readFile('points-referrals-6');
-  const aggregate = await utils.readFile('points-aggregate-6');
+  const addresses = await utils.readFile('points-addresses-7');
+  const referrals = await utils.readFile('points-referrals-7');
+  const aggregate = await utils.readFile('points-aggregate-7');
 
   //
   // 0. From flat addresses array to chuncked array
@@ -212,7 +236,7 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-6');
+  const lastBlockHeight = await utils.readFile('points-last-block-7');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
@@ -224,8 +248,8 @@ async function start() {
     const aggregate = await updateAllPoints(nextBlockHeight);
     console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-    await utils.writeFile('points-aggregate-6', aggregate)
-    await utils.writeFile('points-last-block-6', { last_block: nextBlockHeight })
+    await utils.writeFile('points-aggregate-7', aggregate)
+    await utils.writeFile('points-last-block-7', { last_block: nextBlockHeight })
   }
 };
 
