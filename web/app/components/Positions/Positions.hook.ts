@@ -22,6 +22,7 @@ interface PositionsData {
   unstackNfts: IUnstackNFTData[];
   bitflowBalance: BitflowBalance;
   velarBalance: VelarBalance;
+  arkadikoBalance: ArkadikoBalance;
 }
 
 interface BitflowBalance {
@@ -34,6 +35,10 @@ interface BitflowBalance {
 interface VelarBalance {
   lpWallet: number;
   lpStaked: number;
+}
+
+interface ArkadikoBalance {
+  vault: number;
 }
 
 interface IUnstackNFTData {
@@ -289,6 +294,26 @@ const fetchVelarBalance = async (stxAddress: string): Promise<VelarBalance> => {
   };
 };
 
+const fetchArkadikoBalance = async (stxAddress: string): Promise<ArkadikoBalance> => {
+  const vaultRes = await callReadOnlyFunction({
+    contractAddress: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR',
+    contractName: 'arkadiko-vaults-data-v1-1',
+    functionName: 'get-vault',
+    functionArgs: [
+      standardPrincipalCV(stxAddress),
+      contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, 'ststx-token'),
+    ],
+    senderAddress: stxAddress,
+    network: stacksNetwork,
+  });
+
+  const vault = cvToJSON(vaultRes).value.value;
+
+  return {
+    vault: Number(vault.collateral.value) / 1000000 ?? 0,
+  };
+};
+
 export function usePositionsData(stxAddress?: string): PositionsData {
   const { stStxBalance, stxBalance, stackingApy } = useAppContext();
 
@@ -310,6 +335,10 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     lpStaked: 0,
   });
 
+  const [arkadikoBalance, setArkadikoBalance] = useState<ArkadikoBalance>({
+    vault: 0,
+  });
+
   useEffect(() => {
     async function fetchData(stxAddress: string) {
       await Promise.all([
@@ -319,6 +348,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
         fetchGenesisBalance(stxAddress).then(setGenesisNfts),
         fetchZestLendingProvision(stxAddress).then(setZestProvision),
         fetchVelarBalance(stxAddress).then(setVelarBalance),
+        fetchArkadikoBalance(stxAddress).then(setArkadikoBalance),
       ]).catch(console.error);
     }
 
@@ -335,6 +365,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     bitflowBalance,
     zestProvision,
     velarBalance,
+    arkadikoBalance,
   };
 
   return data;
