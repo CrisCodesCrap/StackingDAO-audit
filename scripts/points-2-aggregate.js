@@ -138,7 +138,7 @@ async function userInfoAtBlock(address, blockHeight) {
       const blockDiff = blockHeightEndCycle81 - blockHeightStartCycle81;
 
       return {
-        ststx_balance: userInfo.ststx_balance + totalStart * 5,
+        ststx_balance: userInfo.ststx_balance + Math.min(total, totalStart) * 5,
         defi_balance: userInfo.defi_balance,
         lp_balance: userInfo.lp_balance
       }
