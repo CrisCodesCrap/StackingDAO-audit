@@ -120,7 +120,7 @@ async function userInfoAtBlockHelper(address, blockHeight) {
 
 async function userInfoAtBlock(address, blockHeight) {
   // Cycle 81 boost
-  const blockHeightStartCycle81 = 143913;
+  const blockHeightStartCycle81 = 143630;
   const blockHeightEndCycle81 = blockHeightStartCycle81 + 2100;
 
   // Normal user info
