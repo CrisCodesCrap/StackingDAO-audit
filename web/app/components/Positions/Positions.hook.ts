@@ -246,8 +246,8 @@ const fetchZestLendingProvision = async (stxAddress: string): Promise<number> =>
   try {
     resultLendingZest = await callReadOnlyFunction({
       contractAddress: 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N',
-      contractName: 'pool-read-supply',
-      functionName: 'get-supplied-balance-user-ststx',
+      contractName: 'zststx-v1-0',
+      functionName: 'get-principal-balance',
       functionArgs: [standardPrincipalCV(stxAddress)],
       senderAddress: stxAddress,
       network: stacksNetwork,
@@ -257,9 +257,7 @@ const fetchZestLendingProvision = async (stxAddress: string): Promise<number> =>
     return 0;
   }
 
-  const lendingZestAmount = cvToJSON(resultLendingZest).value
-    ? Number((resultLendingZest as any).value) / 1000000
-    : 0;
+  const lendingZestAmount = (cvToValue(resultLendingZest).value ?? 0) / 1000000;
 
   return lendingZestAmount;
 };
