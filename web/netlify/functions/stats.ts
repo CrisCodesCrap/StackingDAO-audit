@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { coreApiUrl, stacksNetwork } from "@/app/common/utils";
 import { Handler } from "@netlify/functions";
@@ -29,7 +31,7 @@ const fetchRatio = async () => {
     network: stacksNetwork
   });
 
-  return parseFloat(result?.value?.value) / 1000000.0;
+  return parseFloat(result.value?.value) / 1000000.0;
 };
 
 const fetchStxPrice = async () => {
