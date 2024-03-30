@@ -147,7 +147,7 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions).concat(addressesFromArkadiko))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-7-22', {"addresses": addresses})
+  await utils.writeFile('points-addresses-7', {"addresses": addresses})
 
 
 
