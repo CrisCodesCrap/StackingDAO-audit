@@ -107,7 +107,35 @@ async function getTransactions(contract, offset) {
   } catch (error) {
     console.log("[utils] Fetch failed, retry in 5 seconds. Error:", error);
     await new Promise(r => setTimeout(r, 5 * 1000));
-    return getEvents(contract, offset);
+    return getTransactions(contract, offset);
+  }
+}
+
+async function getAllTransactionEvents(txId) {
+  let allTransactions = [];
+
+  let offset = 0;
+  let transactions = await getTransactionEvents(txId, offset);
+  allTransactions = allTransactions.concat(transactions);
+
+  while (transactions.length > 0) {
+    offset += 20;
+    transactions = await getTransactionEvents(txId, offset);
+    allTransactions = allTransactions.concat(transactions);
+  }
+  return allTransactions;
+}
+
+async function getTransactionEvents(txId, offset) {
+  console.log("[utils] Fetch transaction events with ID:", txId, "- offset:", offset);
+  try {
+    const url = `${resolveUrl()}/extended/v1/tx/events?tx_id=${txId}&offset=${offset}`;
+    const result = await request(url, { json: true });
+    return result.events;
+  } catch (error) {
+    console.log("[utils] Fetch failed, retry in 5 seconds. Error:", error);
+    await new Promise(r => setTimeout(r, 5 * 1000));
+    return getTransactionEvents(txId, offset);
   }
 }
 
@@ -127,7 +155,8 @@ function resolveUrl() {
   } else if (env === 'regtest') {
     return 'https://stacks-node-api.regtest.stacks.co';
   } else {
-    return 'https://api.hiro.so';
+    return 'https://cold-icy-meme.stacks-mainnet.quiknode.pro/77cf0476590dec108c09ccbd1a746d155883152e';
+    // return 'https://api.hiro.so';
   }
 }
 
@@ -223,5 +252,6 @@ exports.getNonce = getNonce;
 exports.getBlockHeight = getBlockHeight;
 exports.getAllEvents = getAllEvents;
 exports.getAllTransactions = getAllTransactions;
+exports.getAllTransactionEvents = getAllTransactionEvents;
 exports.readFile = readFile;
 exports.writeFile = writeFile;

@@ -16,15 +16,16 @@ async function start() {
 
   const lastAddressesBlockHeight = await utils.readFile('points-last-block-addresses-7');
 
-  console.log("[run] Next block:", nextBlockHeight, ", current block:", currentBlockHeight);
+  console.log("[run] Next block:", nextBlockHeight, ", current block:", currentBlockHeight, ", diff:", (nextBlockHeight - currentBlockHeight));
+  console.log(lastAddressesBlockHeight)
 
-  if (currentBlockHeight > nextBlockHeight) {
+//  if (currentBlockHeight > nextBlockHeight) {
     if (nextBlockHeight > lastAddressesBlockHeight.last_block) {
       await scriptAddresses.start();
     }
     
-    await scriptAggregate.start();
-  }
+    // await scriptAggregate.start();
+//  }
 
 };
 
