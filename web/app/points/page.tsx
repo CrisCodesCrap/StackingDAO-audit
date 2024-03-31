@@ -75,12 +75,12 @@ export default function Points() {
   }
 
   async function fetchPointsInfo() {
-    const url = "https://stackingdao-points.s3.amazonaws.com/points-aggregate-7.json";
+    const url = "https://stackingdao-points.s3.amazonaws.com/points-aggregate-7-all.json";
     const response = await fetch(url);
     const data = await response.json();
 
     const sumWithInitial = Object.values(data).reduce(
-      (accumulator, currentValue) => accumulator + currentValue['user_points'],
+      (accumulator, currentValue) => accumulator + currentValue['user_points'] + currentValue['referral_points'],
       0,
     );
     setTotalPoints(sumWithInitial);
