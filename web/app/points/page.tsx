@@ -80,7 +80,7 @@ export default function Points() {
     const data = await response.json();
 
     const sumWithInitial = Object.values(data).reduce(
-      (accumulator, currentValue) => accumulator + currentValue['user_points'],
+      (accumulator, currentValue) => accumulator + currentValue['user_points'] + currentValue['referral_points'],
       0,
     );
     setTotalPoints(sumWithInitial);
