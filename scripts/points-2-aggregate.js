@@ -101,7 +101,7 @@ async function userArkadikoAtBlock(address, blockHeight) {
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userZestAtBlock(address, blockHeight);
+    return await userArkadikoAtBlock(address, blockHeight);
   }
 }
 
@@ -124,7 +124,7 @@ async function userVelarAtBlock(address, blockHeight) {
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
     await new Promise(r => setTimeout(r, 10 * 1000));
-    return await userZestAtBlock(address, blockHeight);
+    return await userVelarAtBlock(address, blockHeight);
   }
 }
 
