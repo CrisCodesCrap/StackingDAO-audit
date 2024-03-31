@@ -147,7 +147,7 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses-7');
+  const addresses = await utils.readFile('points-addresses-7-arka');
   const referrals = await utils.readFile('points-referrals-7');
   const aggregate = await utils.readFile('points-aggregate-7');
 

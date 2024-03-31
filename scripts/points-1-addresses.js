@@ -121,19 +121,19 @@ async function start() {
 
   const currentBlockHeight = await utils.getBlockHeight();
 
-  const coreContractEvents = await utils.getAllEvents(coreContract);
-  const tokenContractEvents = await utils.getAllEvents(tokenContract);
+  // const coreContractEvents = await utils.getAllEvents(coreContract);
+  // const tokenContractEvents = await utils.getAllEvents(tokenContract);
 
-  const swap1ContractTransactions = await utils.getAllTransactions(swap1Contract);
-  const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
+  // const swap1ContractTransactions = await utils.getAllTransactions(swap1Contract);
+  // const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
 
 
 
-  const allEvents = coreContractEvents.concat(tokenContractEvents);
-  const addressesFromEvents = parseAllEventsForAddresses(allEvents);
+  // const allEvents = coreContractEvents.concat(tokenContractEvents);
+  // const addressesFromEvents = parseAllEventsForAddresses(allEvents);
 
-  const allTransactions = swap1ContractTransactions.concat(swap2ContractTransactions);
-  const addressesFromTransactions = parseAllTransactionsForAddresses(allTransactions);
+  // const allTransactions = swap1ContractTransactions.concat(swap2ContractTransactions);
+  // const addressesFromTransactions = parseAllTransactionsForAddresses(allTransactions);
 
   // Get Arkadiko addresses from the 2.0 migration
   const tx1 = await utils.getAllTransactionEvents('0x50cc74d96d5a404281c41123608783667539d9411c459e8e53b3116a3e18e66a');
@@ -144,20 +144,20 @@ async function start() {
   // console.log(readAddresses['addresses']);
   // const addresses = [...new Set(readAddresses['addresses'].concat(addressesFromArkadiko))];
 
-  const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions).concat(addressesFromArkadiko))]
-  console.log("[1-addresses] Got addresses:", addresses.length);
+  // const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions).concat(addressesFromArkadiko))]
+  // console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-7', {"addresses": addresses})
+  await utils.writeFile('points-addresses-7-arka', {"addresses": addressesFromArkadiko})
 
 
 
   // Referrals
-  const referrers = parseAllEventsForReferrers(coreContractEvents);
-  console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
+  // const referrers = parseAllEventsForReferrers(coreContractEvents);
+  // console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals-7', referrers)
+  // await utils.writeFile('points-referrals-7', referrers)
 
-  await utils.writeFile('points-last-block-addresses-7', { last_block: currentBlockHeight })
+  // await utils.writeFile('points-last-block-addresses-7', { last_block: currentBlockHeight })
 };
 
 // start();
