@@ -13,5 +13,5 @@ async function start(address, blockHeight) {
   console.log(info);
 };
 
-start('SP35GN8KN63CB87DGPF7T1C6P07RHNTFCC1T4TWCV', 144700);
+start('SP35GN8KN63CB87DGPF7T1C6P07RHNTFCC1T4TWCV', 144731);
 
