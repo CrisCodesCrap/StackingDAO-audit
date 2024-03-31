@@ -28,6 +28,7 @@ async function userWalletAtBlock(address, blockHeight) {
     });
 
     const result = tx.cvToJSON(userInfo).value.value;
+    console.log(tx.cvToJSON(userInfo));
     return result / 1000000;
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
@@ -50,6 +51,7 @@ async function userBitflowAtBlock(address, blockHeight) {
       network: utils.resolveNetwork()
     });
 
+    console.log(tx.cvToJSON(userInfo));
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
@@ -73,6 +75,7 @@ async function userZestAtBlock(address, blockHeight) {
       network: utils.resolveNetwork()
     });
 
+    console.log(tx.cvToJSON(userInfo));
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
@@ -260,3 +263,4 @@ async function start() {
 // ---------------------------------------------------------
 
 exports.start = start;
+exports.userInfoAtBlock = userInfoAtBlock;
