@@ -90,109 +90,115 @@ function classNames(...classes) {
 export default function Defi() {
   return (
     <Container className="mt-12">
-      <div className="py-10">
-        <div className="w-full text-center font-semibold text-4xl my-8">
-          StackingDAO DeFi Integrations
-        </div>
+      <div className="p-8 md:p-12 bg-white rounded-xl flex items-center shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A]">
+        <div className="flex flex-col w-full min-h-full">
+          <h1 className="text-4xl font-headings">StackingDAO DeFi Integrations</h1>
+          <p className="mt-4">
+            As more integrations launch, they will be listed below with a brief explanation on how
+            to use them.
+          </p>
 
-        <div className="bg-white shadow sm:rounded-lg mt-8">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-base font-semibold leading-6 text-gray-900">
-              Keep an eye on the integrations
-            </h3>
-            <div className="mt-2 text-sm text-ststx font-semibold">
-              <p>
-                As more integrations launch, they will be listed below with a brief explanation on
-                how to use them.
-              </p>
+          <div className="flow-root mt-8">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table className="flow-root w-full text-left whitespace-nowrap">
+                  <colgroup>
+                    <col className="w-full sm:w-3/12" />
+                    <col className="lg:w-3/12" />
+                    <col className="lg:w-3/12" />
+                    <col className="lg:w-3/12" />
+                  </colgroup>
+                  <tbody className="divide-y divide-white/5">
+                    {activityItems.map(item => (
+                      <tr key={item.commit}>
+                        <td className="py-4 pl-4 pr-8 sm:pl-0">
+                          <Link href={item.link} rel="noopener noreferrer" target="_blank">
+                            <div className="flex items-center gap-x-2">
+                              <img
+                                src={item.user.imageUrl}
+                                alt=""
+                                className="w-8 h-8 bg-gray-800 rounded-full"
+                              />
+                              <div className="text-sm font-semibold leading-6 truncate text-neutral-800">
+                                {item.user.name}
+                              </div>
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M11.25 2.25H15.75V6.75"
+                                  stroke="#1C3830"
+                                  stroke-width="1.5"
+                                  stroke-linecap="square"
+                                  stroke-linejoin="bevel"
+                                />
+                                <path
+                                  d="M7.5 10.5L14.5 3.5"
+                                  stroke="#1C3830"
+                                  stroke-width="1.5"
+                                  stroke-linecap="square"
+                                  stroke-linejoin="bevel"
+                                />
+                                <path
+                                  d="M13.5 9.75V14.25C13.5 14.6478 13.342 15.0294 13.0607 15.3107C12.7794 15.592 12.3978 15.75 12 15.75H3.75C3.35218 15.75 2.97064 15.592 2.68934 15.3107C2.40804 15.0294 2.25 14.6478 2.25 14.25V6C2.25 5.60218 2.40804 5.22064 2.68934 4.93934C2.97064 4.65804 3.35218 4.5 3.75 4.5H8.25"
+                                  stroke="#1C3830"
+                                  stroke-width="1.5"
+                                  stroke-linecap="square"
+                                  stroke-linejoin="bevel"
+                                />
+                              </svg>
+                            </div>
+                          </Link>
+                        </td>
+                        <td className="hidden py-4 pl-0 pr-4 sm:table-cell">
+                          <div className="flex gap-x-3">
+                            <div className="text-sm font-normal leading-6 text-sd-gray-darker">
+                              {item.commit}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 pl-0 pr-4 text-sm leading-6">
+                          <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
+                            <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
+                              {item.date}
+                            </time>
+                            <div
+                              className={classNames(
+                                statuses[item.status],
+                                'flex-none rounded-full p-1'
+                              )}
+                            >
+                              <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                            </div>
+                            <div className="sm:block text-sd-gray-darker">{item.status}</div>
+                          </div>
+                        </td>
+                        <td className="py-4 pl-0 pr-4 text-sm leading-6">
+                          <div className="flex flex-col justify-end align-middle md:flex-row gap-y-2 md:gap-x-2">
+                            {item.actions.map(value => (
+                              <Button
+                                key={value.name}
+                                invert={!value.primary}
+                                href={value.url}
+                                target="_blank"
+                              >
+                                {value.name}
+                              </Button>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-
-        <table className="mt-6 w-full whitespace-nowrap text-left">
-          <colgroup>
-            <col className="w-full sm:w-3/12" />
-            <col className="lg:w-3/12" />
-            <col className="lg:w-3/12" />
-            <col className="lg:w-3/12" />
-          </colgroup>
-          <thead className="border-b border-white/10 text-sm leading-6 text-neutral-800">
-            <tr>
-              <th scope="col" className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8" />
-              <th scope="col" className="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell" />
-              <th
-                scope="col"
-                className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8"
-              />
-              <th
-                scope="col"
-                className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8"
-              />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {activityItems.map(item => (
-              <tr key={item.commit}>
-                <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-                  <Link href={item.link} rel="noopener noreferrer" target="_blank">
-                    <div className="flex items-center gap-x-4">
-                      <img
-                        src={item.user.imageUrl}
-                        alt=""
-                        className="h-8 w-8 rounded-full bg-gray-800"
-                      />
-                      <div className="truncate text-sm font-semibold leading-6 text-neutral-800">
-                        {item.user.name}
-                      </div>
-                      <svg
-                        className="w-3 h-3 text-gray-400 dark:text-white"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="currentColor"
-                        viewBox="0 0 18 18"
-                      >
-                        <path d="M17 0h-5.768a1 1 0 1 0 0 2h3.354L8.4 8.182A1.003 1.003 0 1 0 9.818 9.6L16 3.414v3.354a1 1 0 0 0 2 0V1a1 1 0 0 0-1-1Z" />
-                        <path d="m14.258 7.985-3.025 3.025A3 3 0 1 1 6.99 6.768l3.026-3.026A3.01 3.01 0 0 1 8.411 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V9.589a3.011 3.011 0 0 1-1.742-1.604Z" />
-                      </svg>
-                    </div>
-                  </Link>
-                </td>
-                <td className="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-                  <div className="flex gap-x-3">
-                    <div className="font-normal text-sm leading-6">{item.commit}</div>
-                  </div>
-                </td>
-                <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
-                  <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
-                    <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
-                      {item.date}
-                    </time>
-                    <div
-                      className={classNames(statuses[item.status], 'flex-none rounded-full p-1')}
-                    >
-                      <div className="h-1.5 w-1.5 rounded-full bg-current" />
-                    </div>
-                    <div className="text-neutral-800 sm:block">{item.status}</div>
-                  </div>
-                </td>
-                <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
-                  <div className="flex flex-col md:flex-row justify-end align-middle gap-y-2 md:gap-x-2">
-                    {item.actions.map(value => (
-                      <Button
-                        key={value.name}
-                        invert={!value.primary}
-                        href={value.url}
-                        target="_blank"
-                      >
-                        {value.name}
-                      </Button>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </Container>
   );

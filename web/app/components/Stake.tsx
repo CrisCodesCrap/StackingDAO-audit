@@ -3,7 +3,7 @@
 'use client';
 
 import { Fragment, useEffect, useState } from 'react';
-import { Placeholder } from './Placeholder';
+import { PlaceholderBar } from './PlaceholderBar';
 import { StyledIcon } from './StyledIcon';
 import Link from 'next/link';
 import { Menu, Transition } from '@headlessui/react';
@@ -154,7 +154,7 @@ export function Stake() {
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 md:mb-1">Your staked sDAO tokens</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
                     <p className="text-lg font-semibold">{stakedTokens} sDAO</p>
@@ -164,7 +164,7 @@ export function Stake() {
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 md:mb-1">Total Staked</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
                     <p className="text-lg font-semibold">{totalStakedTokens} sDAO</p>
@@ -174,7 +174,7 @@ export function Stake() {
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 md:mb-1">Earned STX</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
                     <p className="text-lg font-semibold">{earnedRewards} STX</p>
@@ -184,7 +184,7 @@ export function Stake() {
               <div className="mt-3 md:mt-0">
                 <p className="text-sm leading-6 text-gray-500 md:mb-1">Current APR</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <p className="text-ststx">{apr}%</p>
                 )}

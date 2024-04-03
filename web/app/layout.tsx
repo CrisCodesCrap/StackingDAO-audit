@@ -68,12 +68,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <html lang="en" className="h-full bg-neutral-950 text-base antialiased">
+    <html lang="en" className="h-full text-base antialiased bg-neutral-100">
       <head>
         <link rel="shortcut icon" href="favicon.png" />
         <link rel="icon" href="favicon.ico" />
       </head>
-      <body className={`${inter.className} flex min-h-full flex-col`}>
+      <body className={`${inter.className} relative flex min-h-full flex-col`}>
         <Connect authOptions={authOptions}>
           {isClient && (
             <AppContextProvider userData={userData}>
@@ -85,6 +85,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </AppContextProvider>
           )}
         </Connect>
+        <svg
+          className="absolute bottom-0 left-0 -z-10"
+          xmlns="http://www.w3.org/2000/svg"
+          width="241"
+          height="210"
+          fill="none"
+        >
+          <path
+            fill="#E0E0E0"
+            d="m205.2 64.3456-8.247-6.4008c-9.592-7.4438-21.398-11.4826-33.554-11.4826H52.4078V0H163.389c22.536 0 44.427 7.49489 62.204 21.2883l8.237 6.3906-28.64 36.6667h.01ZM143.119 209.99H70.4414c-22.5368 0-44.4272-7.495-62.20427-21.289L0 182.311l28.6402-36.667 8.2371 6.401c9.5912 7.444 21.4084 11.493 33.5641 11.493h72.6776V210v-.01ZM158.967 81.7688H87.818c-19.5312 0-35.4207-15.8384-35.4207-35.3067H5.78513c0 45.092 36.80557 81.7689 82.03287 81.7689h71.149c19.531 0 35.421 15.838 35.421 35.307H241c0-45.092-36.806-81.7692-82.033-81.7692Z"
+          />
+        </svg>
       </body>
     </html>
   );
