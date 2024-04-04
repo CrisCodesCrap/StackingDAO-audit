@@ -413,7 +413,7 @@ export function Unstack() {
                 </div>
               </div>
 
-              {/* {isLoadingBitflowData ? (
+              {isLoadingBitflowData ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2">
                     <PlaceholderBar className="inline-flex w-20 h-4" />
@@ -431,25 +431,25 @@ export function Unstack() {
                   </div>
                 </>
               ) : (
-                <> */}
-              <div className="grid grid-cols-1 sm:grid-cols-2">
-                <div className="text-sd-gray">Conversion rate</div>
-                <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
-                  <div className="flex items-center font-semibold">
-                    1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
-                    <StxLogo className="inline w-5 h-5 ml-1.5" />
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <div className="text-sd-gray">Conversion rate</div>
+                    <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
+                      <div className="flex items-center font-semibold">
+                        1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                        <StxLogo className="inline w-5 h-5 ml-1.5" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2">
-                <div className="text-sd-gray">You receive</div>
-                <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
-                  ~{stxReceivedBitflow.toLocaleString('en-US')}
-                  <StxLogo className="inline w-5 h-5 ml-1.5" />
-                </div>
-              </div>
-              {/* </>
-              )} */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <div className="text-sd-gray">You receive</div>
+                    <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                      ~{stxReceivedBitflow.toLocaleString('en-US')}
+                      <StxLogo className="inline w-5 h-5 ml-1.5" />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <button
                 type="button"
