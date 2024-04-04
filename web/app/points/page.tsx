@@ -187,10 +187,10 @@ export default function Points() {
             {stxAddress ? (
               <dl className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                  <dt className="text-sm font-medium flex items-center gap-1 leading-6 text-sd-gray">
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Points
                     <div
-                      className="cursor-pointer relative flex flex-col items-center justify-center mx-1 max-w-max"
+                      className="relative flex flex-col items-center justify-center mx-1 cursor-pointer max-w-max"
                       id="yourPoints"
                     >
                       <Tooltip anchorSelect="#yourPoints" place="top">
@@ -267,7 +267,7 @@ export default function Points() {
                   </dd>
                 </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                  <dt className="text-sm font-medium flex items-center gap-1  leading-6 text-sd-gray">
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Stacking Points
                   </dt>
                   <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
@@ -279,7 +279,7 @@ export default function Points() {
                   </dd>
                 </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                  <dt className="text-sm font-medium flex items-center gap-1  leading-6 text-sd-gray">
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Referral Points
                   </dt>
                   <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
@@ -293,7 +293,7 @@ export default function Points() {
                   </dd>
                 </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                  <dt className="text-sm font-medium flex items-center gap-1  leading-6 text-sd-gray">
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Rank
                   </dt>
                   <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
@@ -324,10 +324,10 @@ export default function Points() {
 
             <dl className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
               <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                <dt className="text-sm font-medium flex items-center gap-1 leading-6 text-sd-gray">
+                <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                   Total Points
                   <div
-                    className="cursor-pointer relative flex flex-col items-center justify-center mx-1 group max-w-max"
+                    className="relative flex flex-col items-center justify-center mx-1 cursor-pointer group max-w-max"
                     id="totalPoints"
                   >
                     <Tooltip anchorSelect="#totalPoints" place="top">
@@ -360,7 +360,7 @@ export default function Points() {
                 </dd>
               </div>
               <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                <dt className="text-sm font-medium flex items-center gap-1  leading-6 text-sd-gray">
+                <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                   Total users
                 </dt>
                 <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
@@ -377,7 +377,7 @@ export default function Points() {
               <div className="flex gap-2 mt-6">
                 <button
                   type="button"
-                  className="flex gap-2 items-center justify-center rounded-lg py-4 px-6 font-semibold focus:outline-none text-base sm:text-xl bg-dark-green-600 text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
+                  className="flex items-center justify-center w-full gap-2 px-6 py-4 text-base font-semibold text-white rounded-lg focus:outline-none sm:text-xl bg-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50"
                   onClick={() => copyLink()}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" fill="none">
@@ -516,7 +516,7 @@ export default function Points() {
           <div className="flow-root mt-8">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <div className="overflow-hidden border-t border-sd-gray-light">
+                <div className="overflow-hidden border-t border-sd-gray-light rounded-b-xl">
                   <table className="min-w-full divide-y divide-sd-gray-light">
                     <thead>
                       <tr>
@@ -556,9 +556,9 @@ export default function Points() {
                       {topUsers.map(user => (
                         <tr
                           key={topUsers.indexOf(user) + Math.random()}
-                          className={user[0] == searchValue ? 'bg-dark-green/20' : 'bg-white'}
+                          className={user[0] == searchValue ? 'bg-dark-green-500/10' : 'bg-white'}
                         >
-                          <td className="pl-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+                          <td className="pl-6 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-10">
                             {allUsers.indexOf(user) == 0 ? (
                               <span className="text-2xl">🥇</span>
                             ) : allUsers.indexOf(user) == 1 ? (
