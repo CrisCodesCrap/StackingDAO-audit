@@ -7,6 +7,8 @@ import { usePositionsData } from './Positions.hook';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Tooltip } from 'react-tooltip';
+import StStxLogo from '../Logos/StStx';
+import StxLogo from '../Logos/Stx';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -34,7 +36,7 @@ export function Positions() {
               <Tooltip anchorSelect="#stStxBalance" place="top">
                 Earn additional yield in Stacks DeFi
               </Tooltip>
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -43,24 +45,7 @@ export function Positions() {
                         maximumFractionDigits: 2,
                       })}
                     </div>
-                    <svg
-                      className="inline ml-2"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="10" cy="10" r="10" fill="#C8ECE0"></circle>
-                      <path
-                        d="M11.9841 11.8973L14.1515 15.2812H12.5323L9.98797 11.3054L7.44361 15.2812H5.83304L8.00046 11.9061H4.89069V10.625H15.0938V11.8973H11.9841Z"
-                        fill="#308D8A"
-                      ></path>
-                      <path
-                        d="M15.1407 8.07765V9.36612V9.375H4.89072V8.07765H7.95453L5.80297 4.71875H7.42956L10.0114 8.77075L12.6019 4.71875H14.2285L12.0769 8.07765H15.1407Z"
-                        fill="#308D8A"
-                      ></path>
-                    </svg>
+                    <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
                   <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-dark-green-600">
                     {positions.stackingApy}% APY
@@ -69,13 +54,7 @@ export function Positions() {
               </div>
               <div className="flex items-center gap-3 py-2 mt-4 text-left">
                 <div className="shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none">
-                    <circle cx="20" cy="20" r="20" fill="#C8ECE0"></circle>
-                    <path
-                      fill="#308D8A"
-                      d="m23.9681 23.7946 4.3349 6.7679h-3.2383l-5.0888-7.9518-5.0887 7.9518h-3.2211l4.3348-6.7503H9.78137V21.25H30.1876v2.5446h-6.2195ZM30.2814 16.1553V18.75H9.78137v-2.5947H15.909l-4.3031-6.7178h3.2531l5.1638 8.104 5.181-8.104h3.2531l-4.3031 6.7178h6.1276Z"
-                    ></path>
-                  </svg>
+                  <StStxLogo className="w-10 h-10" />
                 </div>
                 <div className="flex justify-between flex-grow">
                   <div>
@@ -111,7 +90,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">1</div>
@@ -189,7 +168,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -270,7 +249,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -339,7 +318,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -409,7 +388,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -478,7 +457,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -548,7 +527,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -621,7 +600,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -695,7 +674,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -704,24 +683,7 @@ export function Positions() {
                         maximumFractionDigits: 2,
                       })}
                     </div>
-                    <svg
-                      className="inline ml-2"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="10" cy="10" r="10" fill="#C8ECE0"></circle>
-                      <path
-                        d="M11.9841 11.8973L14.1515 15.2812H12.5323L9.98797 11.3054L7.44361 15.2812H5.83304L8.00046 11.9061H4.89069V10.625H15.0938V11.8973H11.9841Z"
-                        fill="#308D8A"
-                      ></path>
-                      <path
-                        d="M15.1407 8.07765V9.36612V9.375H4.89072V8.07765H7.95453L5.80297 4.71875H7.42956L10.0114 8.77075L12.6019 4.71875H14.2285L12.0769 8.07765H15.1407Z"
-                        fill="#308D8A"
-                      ></path>
-                    </svg>
+                    <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
                   <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-dark-green-600">
                     stSTX yield
@@ -769,7 +731,7 @@ export function Positions() {
               className="w-full p-6 bg-white rounded-xl"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-sd-gray-light p-6 text-center flex items-center justify-center rounded-lg">
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
@@ -778,22 +740,7 @@ export function Positions() {
                         maximumFractionDigits: 2,
                       })}
                     </div>
-                    <svg
-                      className="inline ml-2"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="10" cy="10" r="10" fill="#514CF6" />
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M11.7816 8.2754C11.7433 8.21021 11.7488 8.12874 11.7925 8.06355L13.6207 5.3748C13.6699 5.29875 13.6754 5.20641 13.6316 5.13036C13.5878 5.04888 13.5057 5.00543 13.4182 5.00543H12.7066C12.63 5.00543 12.5534 5.04345 12.5041 5.11407L10.3694 8.26453C10.3147 8.34601 10.2271 8.38947 10.1286 8.38947H9.86043C9.76191 8.38947 9.67433 8.34058 9.6196 8.26453L7.4959 5.10864C7.45211 5.03802 7.37001 5 7.29338 5H6.58183C6.49425 5 6.40668 5.04888 6.36836 5.13036C6.32458 5.21184 6.33552 5.30418 6.37931 5.3748L8.20745 8.06899C8.25124 8.12874 8.25671 8.21021 8.2184 8.2754C8.18008 8.34601 8.1144 8.38403 8.03777 8.38403H5.24083C5.104 8.38403 5 8.49267 5 8.62303V9.20967C5 9.34547 5.10947 9.44867 5.24083 9.44867H14.7592C14.896 9.44867 15 9.34004 15 9.20967V8.62303C15 8.4981 14.9069 8.40033 14.7865 8.38403C14.7756 8.38403 14.7646 8.38403 14.7537 8.38403H11.9622C11.8856 8.38403 11.8144 8.34601 11.7816 8.2754ZM9.62507 11.7355L7.49043 14.886C7.44664 14.9565 7.36454 14.9946 7.28791 14.9946H6.57635C6.48878 14.9946 6.40668 14.9457 6.36289 14.8697C6.3191 14.7936 6.32458 14.6958 6.37384 14.6252L8.1965 11.9365C8.24029 11.8713 8.24576 11.7952 8.20745 11.7246C8.16913 11.6594 8.10345 11.616 8.02682 11.616H5.24083C5.10947 11.616 5 11.5128 5 11.377V10.7903C5 10.66 5.104 10.5513 5.24083 10.5513H14.7373C14.7373 10.5513 14.7537 10.5513 14.7592 10.5513C14.8905 10.5513 15 10.6545 15 10.7903V11.377C15 11.5074 14.896 11.616 14.7592 11.616H11.9677C11.8856 11.616 11.8199 11.654 11.7871 11.7246C11.7488 11.7952 11.7542 11.8713 11.798 11.931L13.6262 14.6252C13.6699 14.6958 13.6809 14.7882 13.6371 14.8697C13.5933 14.9511 13.5112 15 13.4236 15H12.7121C12.63 15 12.5588 14.962 12.515 14.8968L10.3804 11.7463C10.3257 11.6649 10.2381 11.6214 10.1396 11.6214H9.87138C9.77286 11.6214 9.68528 11.6703 9.63055 11.7463L9.62507 11.7355Z"
-                        fill="white"
-                      />
-                    </svg>
+                    <StxLogo className="inline w-5 h-5 ml-2" />
                   </div>
                   <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-sd-gray">
                     Not earning yield
@@ -802,21 +749,7 @@ export function Positions() {
               </div>
               <div className="flex items-center gap-3 py-2 mt-4 text-left">
                 <div className="shrink-0">
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="20" cy="20" r="20" fill="#514CF6" />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M23.5632 16.5508C23.4866 16.4204 23.4976 16.2575 23.5851 16.1271L27.2414 10.7496C27.3399 10.5975 27.3509 10.4128 27.2633 10.2607C27.1757 10.0978 27.0115 10.0109 26.8364 10.0109H25.4133C25.26 10.0109 25.1068 10.0869 25.0082 10.2281L20.7389 16.5291C20.6295 16.692 20.4543 16.7789 20.2573 16.7789H19.7209C19.5238 16.7789 19.3487 16.6812 19.2392 16.5291L14.9918 10.2173C14.9042 10.076 14.74 10 14.5868 10H13.1637C12.9885 10 12.8134 10.0978 12.7367 10.2607C12.6492 10.4237 12.671 10.6084 12.7586 10.7496L16.4149 16.138C16.5025 16.2575 16.5134 16.4204 16.4368 16.5508C16.3602 16.692 16.2288 16.7681 16.0755 16.7681H10.4817C10.208 16.7681 10 16.9853 10 17.2461V18.4193C10 18.6909 10.2189 18.8973 10.4817 18.8973H29.5184C29.792 18.8973 30 18.6801 30 18.4193V17.2461C30 16.9962 29.8139 16.8007 29.5731 16.7681C29.5512 16.7681 29.5293 16.7681 29.5074 16.7681H23.9245C23.7712 16.7681 23.6289 16.692 23.5632 16.5508ZM19.2501 23.471L14.9809 29.7719C14.8933 29.9131 14.7291 29.9892 14.5758 29.9892H13.1527C12.9776 29.9892 12.8134 29.8914 12.7258 29.7393C12.6382 29.5871 12.6492 29.3917 12.7477 29.2504L16.393 23.8729C16.4806 23.7426 16.4915 23.5904 16.4149 23.4493C16.3383 23.3188 16.2069 23.232 16.0536 23.232H10.4817C10.2189 23.232 10 23.0255 10 22.7539V21.5807C10 21.32 10.208 21.1027 10.4817 21.1027H29.4746C29.4746 21.1027 29.5074 21.1027 29.5184 21.1027C29.7811 21.1027 30 21.3091 30 21.5807V22.7539C30 23.0147 29.792 23.232 29.5184 23.232H23.9354C23.7712 23.232 23.6399 23.308 23.5742 23.4493C23.4976 23.5904 23.5085 23.7426 23.5961 23.862L27.2524 29.2504C27.3399 29.3917 27.3618 29.5763 27.2742 29.7393C27.1867 29.9023 27.0225 30 26.8473 30H25.4242C25.26 30 25.1177 29.924 25.0301 29.7936L20.7608 23.4927C20.6514 23.3297 20.4762 23.2428 20.2792 23.2428H19.7428C19.5457 23.2428 19.3706 23.3406 19.2611 23.4927L19.2501 23.471Z"
-                      fill="white"
-                    />
-                  </svg>
+                  <StxLogo className="w-10 h-10" />
                 </div>
                 <div className="flex justify-between flex-grow">
                   <div>

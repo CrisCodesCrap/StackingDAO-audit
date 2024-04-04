@@ -26,6 +26,8 @@ import { Stats } from './Stats';
 import { PoX } from './PoX';
 import { Tooltip } from 'react-tooltip';
 import { PlaceholderBar } from './PlaceholderBar';
+import StxLogo from './Logos/Stx';
+import StStxLogo from './Logos/StStx';
 
 export function Unstack() {
   const stxAddress = useSTXAddress();
@@ -184,7 +186,7 @@ export function Unstack() {
           </div>
 
           <div className="w-full mt-6">
-            <div className="w-full p-6 bg-sd-gray-light rounded-lg overflow-x-hidden font-medium">
+            <div className="w-full p-6 overflow-x-hidden font-medium rounded-lg bg-sd-gray-light">
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                   <span className="block text-sm text-sd-gray">Stacked balance</span>
@@ -241,7 +243,7 @@ export function Unstack() {
               </div>
             </div>
 
-            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium bg-sd-gray-light rounded-lg">
+            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium rounded-lg bg-sd-gray-light">
               <h4 className="font-base font semibold">Unstack from PoX</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2">
                 <div className="flex items-center gap-1.5">
@@ -292,7 +294,7 @@ export function Unstack() {
                             </clipPath>
                           </defs>
                         </svg>
-                        <span className="text-sd-gray-darker/50 block text-sm">
+                        <span className="block text-sm text-sd-gray-darker/50">
                           (~
                           {formatSeconds(21000 + 10 * bitcoinBlocksLeft).toLocaleString('en-US')})
                         </span>
@@ -347,7 +349,7 @@ export function Unstack() {
                               </clipPath>
                             </defs>
                           </svg>
-                          <span className="text-sd-gray-darker/50 block text-sm">
+                          <span className="block text-sm text-sd-gray-darker/50">
                             (~
                             {formatSeconds(10 * bitcoinBlocksLeft).toLocaleString('en-US')})
                           </span>
@@ -362,46 +364,8 @@ export function Unstack() {
                 <div className="text-sd-gray">Conversion rate</div>
                 <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
                   <div className="flex items-center font-semibold">
-                    1{' '}
-                    <svg
-                      className="ml-1.5 mr-2 inline"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="8" cy="8" r="8" fill="#1E3731" />
-                      <path
-                        d="M10.8115 6.60614L10.5377 6.38668C10.2193 6.13145 9.82742 5.99297 9.42392 5.99297H5.73961V4.3999H9.42358C10.1717 4.3999 10.8983 4.65688 11.4884 5.12982L11.7619 5.34894L10.8115 6.60614Z"
-                        fill="#7BF179"
-                      />
-                      <path
-                        d="M8.75079 11.5999H6.33828C5.59018 11.5999 4.86353 11.3429 4.27343 10.87L4 10.6509L4.9507 9.39366L5.22413 9.61313C5.54251 9.86835 5.93478 10.0072 6.33828 10.0072H8.75079V11.5999Z"
-                        fill="#7BF179"
-                      />
-                      <path
-                        d="M9.27694 7.20355H6.91517C6.26684 7.20355 5.73961 6.66048 5.73961 5.99297L4.19212 5.99297C4.19212 7.53906 5.41386 8.79661 6.91517 8.79661H9.27694C9.92528 8.79661 10.4527 9.33967 10.4527 10.0072H12C12 8.4611 10.7783 7.20355 9.27694 7.20355Z"
-                        fill="#7BF179"
-                      />
-                    </svg>
-                    = {stxRatio}{' '}
-                    <svg
-                      className="inline ml-1"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="8" cy="8" r="8" fill="#514CF6" />
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M9.42528 6.62032C9.39464 6.56817 9.39904 6.50299 9.43404 6.45084L10.8966 4.29984C10.936 4.239 10.9404 4.16513 10.9053 4.10429C10.8703 4.03911 10.8046 4.00435 10.7346 4.00435H10.1653C10.104 4.00435 10.0427 4.03476 10.0033 4.09126L8.29556 6.61163C8.2518 6.67681 8.18172 6.71157 8.10291 6.71157H7.88835C7.80953 6.71157 7.73947 6.67246 7.69568 6.61163L5.99672 4.08691C5.96169 4.03042 5.89601 4 5.8347 4H5.26546C5.1954 4 5.12534 4.03911 5.09469 4.10429C5.05966 4.16947 5.06842 4.24335 5.10345 4.29984L6.56596 6.45519C6.60099 6.50299 6.60537 6.56817 6.57472 6.62032C6.54407 6.67681 6.49152 6.70723 6.43022 6.70723H4.19267C4.0832 6.70723 4 6.79414 4 6.89843V7.36774C4 7.47638 4.08758 7.55894 4.19267 7.55894H11.8074C11.9168 7.55894 12 7.47203 12 7.36774V6.89843C12 6.79848 11.9256 6.72026 11.8292 6.70723C11.8205 6.70723 11.8117 6.70723 11.803 6.70723H9.5698C9.50848 6.70723 9.45156 6.67681 9.42528 6.62032ZM7.70006 9.38839L5.99234 11.9088C5.95731 11.9652 5.89163 11.9957 5.83032 11.9957H5.26108C5.19102 11.9957 5.12534 11.9565 5.09031 11.8957C5.05528 11.8349 5.05966 11.7567 5.09907 11.7002L6.5572 9.54917C6.59223 9.49703 6.59661 9.43617 6.56596 9.37971C6.53531 9.32753 6.48276 9.29279 6.42146 9.29279H4.19267C4.08758 9.29279 4 9.2102 4 9.10156V8.63227C4 8.52799 4.0832 8.44108 4.19267 8.44108H11.7898C11.7898 8.44108 11.803 8.44108 11.8074 8.44108C11.9124 8.44108 12 8.52363 12 8.63227V9.10156C12 9.20588 11.9168 9.29279 11.8074 9.29279H9.57416C9.50848 9.29279 9.45596 9.32321 9.42968 9.37971C9.39904 9.43617 9.4034 9.49703 9.43844 9.54481L10.901 11.7002C10.936 11.7567 10.9447 11.8305 10.9097 11.8957C10.8747 11.9609 10.809 12 10.7389 12H10.1697C10.104 12 10.0471 11.9696 10.012 11.9174L8.30432 9.39707C8.26055 9.33189 8.19047 9.29712 8.11167 9.29712H7.8971C7.81829 9.29712 7.74823 9.33625 7.70444 9.39707L7.70006 9.38839Z"
-                        fill="white"
-                      />
-                    </svg>
+                    1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                    <StxLogo className="inline ml-1.5 w-5 h-5" />
                   </div>
                 </div>
               </div>
@@ -409,22 +373,7 @@ export function Unstack() {
                 <div className="text-sd-gray">You receive</div>
                 <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
                   {stxReceived.toLocaleString('en-US')}
-                  <svg
-                    className="inline ml-1"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="8" cy="8" r="8" fill="#514CF6" />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M9.42528 6.62032C9.39464 6.56817 9.39904 6.50299 9.43404 6.45084L10.8966 4.29984C10.936 4.239 10.9404 4.16513 10.9053 4.10429C10.8703 4.03911 10.8046 4.00435 10.7346 4.00435H10.1653C10.104 4.00435 10.0427 4.03476 10.0033 4.09126L8.29556 6.61163C8.2518 6.67681 8.18172 6.71157 8.10291 6.71157H7.88835C7.80953 6.71157 7.73947 6.67246 7.69568 6.61163L5.99672 4.08691C5.96169 4.03042 5.89601 4 5.8347 4H5.26546C5.1954 4 5.12534 4.03911 5.09469 4.10429C5.05966 4.16947 5.06842 4.24335 5.10345 4.29984L6.56596 6.45519C6.60099 6.50299 6.60537 6.56817 6.57472 6.62032C6.54407 6.67681 6.49152 6.70723 6.43022 6.70723H4.19267C4.0832 6.70723 4 6.79414 4 6.89843V7.36774C4 7.47638 4.08758 7.55894 4.19267 7.55894H11.8074C11.9168 7.55894 12 7.47203 12 7.36774V6.89843C12 6.79848 11.9256 6.72026 11.8292 6.70723C11.8205 6.70723 11.8117 6.70723 11.803 6.70723H9.5698C9.50848 6.70723 9.45156 6.67681 9.42528 6.62032ZM7.70006 9.38839L5.99234 11.9088C5.95731 11.9652 5.89163 11.9957 5.83032 11.9957H5.26108C5.19102 11.9957 5.12534 11.9565 5.09031 11.8957C5.05528 11.8349 5.05966 11.7567 5.09907 11.7002L6.5572 9.54917C6.59223 9.49703 6.59661 9.43617 6.56596 9.37971C6.53531 9.32753 6.48276 9.29279 6.42146 9.29279H4.19267C4.08758 9.29279 4 9.2102 4 9.10156V8.63227C4 8.52799 4.0832 8.44108 4.19267 8.44108H11.7898C11.7898 8.44108 11.803 8.44108 11.8074 8.44108C11.9124 8.44108 12 8.52363 12 8.63227V9.10156C12 9.20588 11.9168 9.29279 11.8074 9.29279H9.57416C9.50848 9.29279 9.45596 9.32321 9.42968 9.37971C9.39904 9.43617 9.4034 9.49703 9.43844 9.54481L10.901 11.7002C10.936 11.7567 10.9447 11.8305 10.9097 11.8957C10.8747 11.9609 10.809 12 10.7389 12H10.1697C10.104 12 10.0471 11.9696 10.012 11.9174L8.30432 9.39707C8.26055 9.33189 8.19047 9.29712 8.11167 9.29712H7.8971C7.81829 9.29712 7.74823 9.33625 7.70444 9.39707L7.70006 9.38839Z"
-                      fill="white"
-                    />
-                  </svg>
+                  <StxLogo className="inline w-5 h-5 ml-1.5" />
                 </div>
               </div>
 
@@ -454,7 +403,7 @@ export function Unstack() {
               </button>
             </div>
 
-            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium bg-sd-gray-light rounded-lg">
+            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium rounded-lg bg-sd-gray-light">
               <h4 className="font-base font semibold">Sell stSTX on Bitflow</h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2">
@@ -464,96 +413,43 @@ export function Unstack() {
                 </div>
               </div>
 
-              {isLoadingBitflowData ? (
+              {/* {isLoadingBitflowData ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2">
-                    <PlaceholderBar className="w-20 inline-flex h-4" />
+                    <PlaceholderBar className="inline-flex w-20 h-4" />
                     <PlaceholderBar
-                      className="w-20 inline-flex h-4 sm:justify-self-end"
+                      className="inline-flex w-20 h-4 sm:justify-self-end"
                       color={PlaceholderBar.color.GRAY}
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2">
-                    <PlaceholderBar className="w-20 inline-flex h-4" />
+                    <PlaceholderBar className="inline-flex w-20 h-4" />
                     <PlaceholderBar
-                      className="w-20 inline-flex h-4 sm:justify-self-end"
+                      className="inline-flex w-20 h-4 sm:justify-self-end"
                       color={PlaceholderBar.color.GRAY}
                     />
                   </div>
                 </>
               ) : (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2">
-                    <div className="text-sd-gray">Conversion rate</div>
-                    <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
-                      <div className="flex items-center font-semibold">
-                        1{' '}
-                        <svg
-                          className="ml-1.5 mr-2 inline"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle cx="8" cy="8" r="8" fill="#1E3731" />
-                          <path
-                            d="M10.8115 6.60614L10.5377 6.38668C10.2193 6.13145 9.82742 5.99297 9.42392 5.99297H5.73961V4.3999H9.42358C10.1717 4.3999 10.8983 4.65688 11.4884 5.12982L11.7619 5.34894L10.8115 6.60614Z"
-                            fill="#7BF179"
-                          />
-                          <path
-                            d="M8.75079 11.5999H6.33828C5.59018 11.5999 4.86353 11.3429 4.27343 10.87L4 10.6509L4.9507 9.39366L5.22413 9.61313C5.54251 9.86835 5.93478 10.0072 6.33828 10.0072H8.75079V11.5999Z"
-                            fill="#7BF179"
-                          />
-                          <path
-                            d="M9.27694 7.20355H6.91517C6.26684 7.20355 5.73961 6.66048 5.73961 5.99297L4.19212 5.99297C4.19212 7.53906 5.41386 8.79661 6.91517 8.79661H9.27694C9.92528 8.79661 10.4527 9.33967 10.4527 10.0072H12C12 8.4611 10.7783 7.20355 9.27694 7.20355Z"
-                            fill="#7BF179"
-                          />
-                        </svg>
-                        = {stxRatio}{' '}
-                        <svg
-                          className="inline ml-1"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle cx="8" cy="8" r="8" fill="#514CF6" />
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M9.42528 6.62032C9.39464 6.56817 9.39904 6.50299 9.43404 6.45084L10.8966 4.29984C10.936 4.239 10.9404 4.16513 10.9053 4.10429C10.8703 4.03911 10.8046 4.00435 10.7346 4.00435H10.1653C10.104 4.00435 10.0427 4.03476 10.0033 4.09126L8.29556 6.61163C8.2518 6.67681 8.18172 6.71157 8.10291 6.71157H7.88835C7.80953 6.71157 7.73947 6.67246 7.69568 6.61163L5.99672 4.08691C5.96169 4.03042 5.89601 4 5.8347 4H5.26546C5.1954 4 5.12534 4.03911 5.09469 4.10429C5.05966 4.16947 5.06842 4.24335 5.10345 4.29984L6.56596 6.45519C6.60099 6.50299 6.60537 6.56817 6.57472 6.62032C6.54407 6.67681 6.49152 6.70723 6.43022 6.70723H4.19267C4.0832 6.70723 4 6.79414 4 6.89843V7.36774C4 7.47638 4.08758 7.55894 4.19267 7.55894H11.8074C11.9168 7.55894 12 7.47203 12 7.36774V6.89843C12 6.79848 11.9256 6.72026 11.8292 6.70723C11.8205 6.70723 11.8117 6.70723 11.803 6.70723H9.5698C9.50848 6.70723 9.45156 6.67681 9.42528 6.62032ZM7.70006 9.38839L5.99234 11.9088C5.95731 11.9652 5.89163 11.9957 5.83032 11.9957H5.26108C5.19102 11.9957 5.12534 11.9565 5.09031 11.8957C5.05528 11.8349 5.05966 11.7567 5.09907 11.7002L6.5572 9.54917C6.59223 9.49703 6.59661 9.43617 6.56596 9.37971C6.53531 9.32753 6.48276 9.29279 6.42146 9.29279H4.19267C4.08758 9.29279 4 9.2102 4 9.10156V8.63227C4 8.52799 4.0832 8.44108 4.19267 8.44108H11.7898C11.7898 8.44108 11.803 8.44108 11.8074 8.44108C11.9124 8.44108 12 8.52363 12 8.63227V9.10156C12 9.20588 11.9168 9.29279 11.8074 9.29279H9.57416C9.50848 9.29279 9.45596 9.32321 9.42968 9.37971C9.39904 9.43617 9.4034 9.49703 9.43844 9.54481L10.901 11.7002C10.936 11.7567 10.9447 11.8305 10.9097 11.8957C10.8747 11.9609 10.809 12 10.7389 12H10.1697C10.104 12 10.0471 11.9696 10.012 11.9174L8.30432 9.39707C8.26055 9.33189 8.19047 9.29712 8.11167 9.29712H7.8971C7.81829 9.29712 7.74823 9.33625 7.70444 9.39707L7.70006 9.38839Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </div>
-                    </div>
+                <> */}
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                <div className="text-sd-gray">Conversion rate</div>
+                <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
+                  <div className="flex items-center font-semibold">
+                    1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                    <StxLogo className="inline w-5 h-5 ml-1.5" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2">
-                    <div className="text-sd-gray">You receive</div>
-                    <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
-                      ~{stxReceivedBitflow.toLocaleString('en-US')}
-                      <svg
-                        className="inline ml-1"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle cx="8" cy="8" r="8" fill="#514CF6" />
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M9.42528 6.62032C9.39464 6.56817 9.39904 6.50299 9.43404 6.45084L10.8966 4.29984C10.936 4.239 10.9404 4.16513 10.9053 4.10429C10.8703 4.03911 10.8046 4.00435 10.7346 4.00435H10.1653C10.104 4.00435 10.0427 4.03476 10.0033 4.09126L8.29556 6.61163C8.2518 6.67681 8.18172 6.71157 8.10291 6.71157H7.88835C7.80953 6.71157 7.73947 6.67246 7.69568 6.61163L5.99672 4.08691C5.96169 4.03042 5.89601 4 5.8347 4H5.26546C5.1954 4 5.12534 4.03911 5.09469 4.10429C5.05966 4.16947 5.06842 4.24335 5.10345 4.29984L6.56596 6.45519C6.60099 6.50299 6.60537 6.56817 6.57472 6.62032C6.54407 6.67681 6.49152 6.70723 6.43022 6.70723H4.19267C4.0832 6.70723 4 6.79414 4 6.89843V7.36774C4 7.47638 4.08758 7.55894 4.19267 7.55894H11.8074C11.9168 7.55894 12 7.47203 12 7.36774V6.89843C12 6.79848 11.9256 6.72026 11.8292 6.70723C11.8205 6.70723 11.8117 6.70723 11.803 6.70723H9.5698C9.50848 6.70723 9.45156 6.67681 9.42528 6.62032ZM7.70006 9.38839L5.99234 11.9088C5.95731 11.9652 5.89163 11.9957 5.83032 11.9957H5.26108C5.19102 11.9957 5.12534 11.9565 5.09031 11.8957C5.05528 11.8349 5.05966 11.7567 5.09907 11.7002L6.5572 9.54917C6.59223 9.49703 6.59661 9.43617 6.56596 9.37971C6.53531 9.32753 6.48276 9.29279 6.42146 9.29279H4.19267C4.08758 9.29279 4 9.2102 4 9.10156V8.63227C4 8.52799 4.0832 8.44108 4.19267 8.44108H11.7898C11.7898 8.44108 11.803 8.44108 11.8074 8.44108C11.9124 8.44108 12 8.52363 12 8.63227V9.10156C12 9.20588 11.9168 9.29279 11.8074 9.29279H9.57416C9.50848 9.29279 9.45596 9.32321 9.42968 9.37971C9.39904 9.43617 9.4034 9.49703 9.43844 9.54481L10.901 11.7002C10.936 11.7567 10.9447 11.8305 10.9097 11.8957C10.8747 11.9609 10.809 12 10.7389 12H10.1697C10.104 12 10.0471 11.9696 10.012 11.9174L8.30432 9.39707C8.26055 9.33189 8.19047 9.29712 8.11167 9.29712H7.8971C7.81829 9.29712 7.74823 9.33625 7.70444 9.39707L7.70006 9.38839Z"
-                          fill="white"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                <div className="text-sd-gray">You receive</div>
+                <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                  ~{stxReceivedBitflow.toLocaleString('en-US')}
+                  <StxLogo className="inline w-5 h-5 ml-1.5" />
+                </div>
+              </div>
+              {/* </>
+              )} */}
 
               <button
                 type="button"

@@ -15,6 +15,8 @@ import { resolveProvider } from '../common/utils';
 import { Stats } from './Stats';
 import { PoX } from './PoX';
 import { Tooltip } from 'react-tooltip';
+import StxLogo from './Logos/Stx';
+import StStxLogo from './Logos/StStx';
 
 export function Stacking() {
   const stxAddress = useSTXAddress();
@@ -171,10 +173,10 @@ export function Stacking() {
                   </div>
                 ) : null}
               </div>
-              <div className="mt-4 w-full p-6 bg-sd-gray-light rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:justify-between font-medium">
+              <div className="w-full p-6 mt-4 rounded-lg bg-sd-gray-light">
+                <div className="flex flex-col font-medium sm:flex-row sm:justify-between">
                   <div>
-                    <p className="text-sd-gray text-sm">Stacked</p>
+                    <p className="text-sm text-sd-gray">Stacked</p>
                     {isLoading ? (
                       <div className="flex w-full h-3 my-3 rounded-md bg-sd-gray-light animate-pulse">
                         <div className="flex items-center w-[75%]">
@@ -185,29 +187,17 @@ export function Stacking() {
                         <div className="w-[25%] bg-gray-400 rounded-r-md" />
                       </div>
                     ) : (
-                      <span className="inline-flex items-center text-base sm:text-2xl font-semibold">
+                      <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
                         {stStxBalance.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="ml-1.5 inline"
-                          width="20"
-                          height="20"
-                          fill="none"
-                        >
-                          <circle cx="10" cy="10" r="10" fill="#C8ECE0" />
-                          <path
-                            fill="#308D8A"
-                            d="m11.9841 11.8973 2.1674 3.3839h-1.6192l-2.54433-3.9758-2.54436 3.9758H5.83304l2.16742-3.3751H4.89069V10.625H15.0938v1.2723h-3.1097ZM15.1407 8.07765V9.375H4.89072V8.07765h3.06381l-2.15156-3.3589h1.62659l2.58184 4.052 2.5905-4.052h1.6266l-2.1516 3.3589h3.0638Z"
-                          />
-                        </svg>
+                        <StStxLogo className="w-5 h-5 ml-1.5 inline" />
                       </span>
                     )}
                   </div>
                   <div className="mt-4 sm:mt-0 sm:text-end">
-                    <p className="text-sd-gray text-sm">Available</p>
+                    <p className="text-sm text-sd-gray">Available</p>
                     {isLoading ? (
                       <div className="flex w-full h-3 my-3 rounded-md bg-sd-gray-light animate-pulse">
                         <div className="flex items-center w-[75%]">
@@ -218,26 +208,12 @@ export function Stacking() {
                         <div className="w-[25%] bg-gray-400 rounded-r-md" />
                       </div>
                     ) : (
-                      <span className="inline-flex items-center text-base sm:text-2xl font-semibold">
+                      <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
                         {stxBalance.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
-                        <svg
-                          className="ml-1.5 inline"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          fill="none"
-                        >
-                          <circle cx="10" cy="10" r="10" fill="#514CF6" />
-                          <path
-                            fill="#fff"
-                            fill-rule="evenodd"
-                            d="M11.7816 8.2754c-.0383-.06519-.0328-.14666.0109-.21185l1.8282-2.68875c.0492-.07605.0547-.16839.0109-.24444-.0438-.08148-.1259-.12493-.2134-.12493h-.7116c-.0766 0-.1532.03802-.2025.10864l-2.1347 3.15046c-.0547.08148-.1423.12494-.2408.12494h-.26817c-.09852 0-.1861-.04889-.24083-.12494L7.4959 5.10864C7.45211 5.03802 7.37001 5 7.29338 5h-.71155c-.08758 0-.17515.04888-.21347.13036-.04378.08148-.03284.17382.01095.24444l1.82814 2.69419c.04379.05975.04926.14122.01095.20641-.03832.07061-.104.10863-.18063.10863H5.24083c-.13683 0-.24083.10864-.24083.239v.58664c0 .1358.10947.239.24083.239h9.51837c.1368 0 .2408-.10863.2408-.239v-.58664c0-.12493-.0931-.2227-.2135-.239h-2.8243c-.0766 0-.1478-.03802-.1806-.10863Zm-2.15653 3.4601L7.49043 14.886c-.04379.0705-.12589.1086-.20252.1086h-.71156c-.08757 0-.16967-.0489-.21346-.1249-.04379-.0761-.03831-.1739.01095-.2445l1.82266-2.6887c.04379-.0652.04926-.1413.01095-.2119-.03832-.0652-.104-.1086-.18063-.1086H5.24083C5.10947 11.616 5 11.5128 5 11.377v-.5867c0-.1303.104-.239.24083-.239h9.51837c.1313 0 .2408.1032.2408.239v.5867c0 .1304-.104.239-.2408.239h-2.7915c-.0821 0-.1478.038-.1806.1086-.0383.0706-.0329.1467.0109.2064l1.8282 2.6942c.0437.0706.0547.163.0109.2445-.0438.0814-.1259.1303-.2135.1303h-.7115c-.0821 0-.1533-.038-.1971-.1032l-2.1346-3.1505c-.0547-.0814-.1423-.1249-.2408-.1249h-.26822c-.09852 0-.1861.0489-.24083.1249l-.00548-.0108Z"
-                            clip-rule="evenodd"
-                          />
-                        </svg>
+                        <StxLogo className="inline w-5 h-5 ml-1.5" />
                       </span>
                     )}
                   </div>
@@ -254,8 +230,8 @@ export function Stacking() {
                 </div>
               </div>
 
-              <div className="mt-4 w-full p-6 bg-sd-gray-light rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="w-full p-6 mt-4 rounded-lg bg-sd-gray-light">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sd-gray">Projected yield</p>
                   <Tooltip anchorSelect="#apyInfo" place="top">
                     Learn more
@@ -307,7 +283,7 @@ export function Stacking() {
                     </svg>
                   </button>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-4">
+                <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sd-gray">Conversion rate</p>
                   <Tooltip anchorSelect="#ratioInfo" place="top">
                     Learn more
@@ -320,36 +296,8 @@ export function Stacking() {
                       }}
                       className="flex items-center text-base w-fit"
                     >
-                      1{' '}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="ml-1.5 mr-2 inline"
-                        width="20"
-                        height="20"
-                        fill="none"
-                      >
-                        <circle cx="10" cy="10" r="10" fill="#C8ECE0" />
-                        <path
-                          fill="#308D8A"
-                          d="m11.9841 11.8973 2.1674 3.3839h-1.6192l-2.54433-3.9758-2.54436 3.9758H5.83304l2.16742-3.3751H4.89069V10.625H15.0938v1.2723h-3.1097ZM15.1407 8.07765V9.375H4.89072V8.07765h3.06381l-2.15156-3.3589h1.62659l2.58184 4.052 2.5905-4.052h1.6266l-2.1516 3.3589h3.0638Z"
-                        />
-                      </svg>
-                      = {stxRatio}{' '}
-                      <svg
-                        className="ml-1.5 inline"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="none"
-                      >
-                        <circle cx="10" cy="10" r="10" fill="#514CF6" />
-                        <path
-                          fill="#fff"
-                          fill-rule="evenodd"
-                          d="M11.7816 8.2754c-.0383-.06519-.0328-.14666.0109-.21185l1.8282-2.68875c.0492-.07605.0547-.16839.0109-.24444-.0438-.08148-.1259-.12493-.2134-.12493h-.7116c-.0766 0-.1532.03802-.2025.10864l-2.1347 3.15046c-.0547.08148-.1423.12494-.2408.12494h-.26817c-.09852 0-.1861-.04889-.24083-.12494L7.4959 5.10864C7.45211 5.03802 7.37001 5 7.29338 5h-.71155c-.08758 0-.17515.04888-.21347.13036-.04378.08148-.03284.17382.01095.24444l1.82814 2.69419c.04379.05975.04926.14122.01095.20641-.03832.07061-.104.10863-.18063.10863H5.24083c-.13683 0-.24083.10864-.24083.239v.58664c0 .1358.10947.239.24083.239h9.51837c.1368 0 .2408-.10863.2408-.239v-.58664c0-.12493-.0931-.2227-.2135-.239h-2.8243c-.0766 0-.1478-.03802-.1806-.10863Zm-2.15653 3.4601L7.49043 14.886c-.04379.0705-.12589.1086-.20252.1086h-.71156c-.08757 0-.16967-.0489-.21346-.1249-.04379-.0761-.03831-.1739.01095-.2445l1.82266-2.6887c.04379-.0652.04926-.1413.01095-.2119-.03832-.0652-.104-.1086-.18063-.1086H5.24083C5.10947 11.616 5 11.5128 5 11.377v-.5867c0-.1303.104-.239.24083-.239h9.51837c.1313 0 .2408.1032.2408.239v.5867c0 .1304-.104.239-.2408.239h-2.7915c-.0821 0-.1478.038-.1806.1086-.0383.0706-.0329.1467.0109.2064l1.8282 2.6942c.0437.0706.0547.163.0109.2445-.0438.0814-.1259.1303-.2135.1303h-.7115c-.0821 0-.1533-.038-.1971-.1032l-2.1346-3.1505c-.0547-.0814-.1423-.1249-.2408-.1249h-.26822c-.09852 0-.1861.0489-.24083.1249l-.00548-.0108Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      1 <StStxLogo className="mx-1.5 inline w-5 h-5" />= {stxRatio}{' '}
+                      <StxLogo className="inline w-5 h-5 ml-1.5" />
                       <svg
                         width="14"
                         height="14"
@@ -392,8 +340,8 @@ export function Stacking() {
                 </div>
               </div>
 
-              <div className="mt-4 w-full p-6 bg-sd-gray-light rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="w-full p-6 mt-4 rounded-lg bg-sd-gray-light">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sd-gray">Yearly rewards</p>
                     <p className="text-sm text-sd-gray">STX per year</p>
@@ -406,29 +354,15 @@ export function Stacking() {
                         maximumFractionDigits: 2,
                       })}
                     </span>
-                    <svg
-                      className="inline"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="none"
-                    >
-                      <circle cx="10" cy="10" r="10" fill="#514CF6" />
-                      <path
-                        fill="#fff"
-                        fill-rule="evenodd"
-                        d="M11.7816 8.2754c-.0383-.06519-.0328-.14666.0109-.21185l1.8282-2.68875c.0492-.07605.0547-.16839.0109-.24444-.0438-.08148-.1259-.12493-.2134-.12493h-.7116c-.0766 0-.1532.03802-.2025.10864l-2.1347 3.15046c-.0547.08148-.1423.12494-.2408.12494h-.26817c-.09852 0-.1861-.04889-.24083-.12494L7.4959 5.10864C7.45211 5.03802 7.37001 5 7.29338 5h-.71155c-.08758 0-.17515.04888-.21347.13036-.04378.08148-.03284.17382.01095.24444l1.82814 2.69419c.04379.05975.04926.14122.01095.20641-.03832.07061-.104.10863-.18063.10863H5.24083c-.13683 0-.24083.10864-.24083.239v.58664c0 .1358.10947.239.24083.239h9.51837c.1368 0 .2408-.10863.2408-.239v-.58664c0-.12493-.0931-.2227-.2135-.239h-2.8243c-.0766 0-.1478-.03802-.1806-.10863Zm-2.15653 3.4601L7.49043 14.886c-.04379.0705-.12589.1086-.20252.1086h-.71156c-.08757 0-.16967-.0489-.21346-.1249-.04379-.0761-.03831-.1739.01095-.2445l1.82266-2.6887c.04379-.0652.04926-.1413.01095-.2119-.03832-.0652-.104-.1086-.18063-.1086H5.24083C5.10947 11.616 5 11.5128 5 11.377v-.5867c0-.1303.104-.239.24083-.239h9.51837c.1313 0 .2408.1032.2408.239v.5867c0 .1304-.104.239-.2408.239h-2.7915c-.0821 0-.1478.038-.1806.1086-.0383.0706-.0329.1467.0109.2064l1.8282 2.6942c.0437.0706.0547.163.0109.2445-.0438.0814-.1259.1303-.2135.1303h-.7115c-.0821 0-.1533-.038-.1971-.1032l-2.1346-3.1505c-.0547-.0814-.1423-.1249-.2408-.1249h-.26822c-.09852 0-.1861.0489-.24083.1249l-.00548-.0108Z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+                    <StxLogo className="inline w-5 h-5" />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col xl:flex-row items-center gap-2 mt-6">
+              <div className="flex flex-col items-center gap-2 mt-6 xl:flex-row">
                 <Link
                   href={`${referral ? `/stack?referral=${referral}` : '/stack'}`}
-                  className="flex items-center justify-center rounded-lg py-4 px-6 font-semibold border-2 border-dark-green-600 focus:outline-none text-lg xl:text-xl bg-dark-green-600 text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
+                  className="flex items-center justify-center w-full px-6 py-4 text-lg font-semibold text-white border-2 rounded-lg border-dark-green-600 focus:outline-none xl:text-xl bg-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50"
                 >
                   <span>{stStxBalance > 0 ? 'Stack more STX' : 'Start stacking STX'}</span>
                 </Link>

@@ -25,6 +25,8 @@ import { StacksMainnet } from '@stacks/network';
 import { makeContractCall } from '../common/contract-call';
 import { Stats } from './Stats';
 import { PoX } from './PoX';
+import StxLogo from './Logos/Stx';
+import StStxLogo from './Logos/StStx';
 
 export function Stack() {
   const stxAddress = useSTXAddress();
@@ -188,7 +190,7 @@ export function Stack() {
               <span className="flex-grow text-sd-gray-darker font-headings">Stack</span>
             </div>
             <div className="w-full mt-6">
-              <div className="w-full p-6 bg-sd-gray-light rounded-lg overflow-x-hidden font-medium">
+              <div className="w-full p-6 overflow-x-hidden font-medium rounded-lg bg-sd-gray-light">
                 <div className="flex items-start justify-between">
                   <div className="flex flex-col">
                     <span className="block text-sm text-sd-gray">Balance</span>
@@ -197,15 +199,7 @@ export function Stack() {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none">
-                        <circle cx="7" cy="7" r="7" fill="#514CF6" />
-                        <path
-                          fill="#fff"
-                          fill-rule="evenodd"
-                          d="M8.24712 5.79278c-.02681-.04563-.02296-.10266.00766-.14829l1.27971-1.88213c.03447-.05323.03832-.11787.00766-.1711-.03066-.05704-.08813-.08746-.14941-.08746h-.49809c-.05365 0-.10727.02662-.14178.07605L7.25861 5.78517c-.03829.05704-.09961.08746-.16856.08746H6.9023c-.06896 0-.13027-.03423-.16858-.08746L5.24713 3.57605C5.21648 3.52661 5.15901 3.5 5.10537 3.5h-.49809c-.0613 0-.1226.03422-.14943.09126-.03064.05703-.02298.12167.00767.1711l1.27969 1.88593c.03066.04183.03448.09886.00767.14449-.02682.04943-.0728.07604-.12644.07604H3.66858c-.09578 0-.16858.07605-.16858.1673v.41065c0 .09506.07663.1673.16858.1673h6.66282c.0958 0 .1686-.07604.1686-.1673v-.41065c0-.08745-.0651-.15589-.1494-.1673H8.37357c-.05365 0-.10346-.02661-.12645-.07604ZM6.73755 8.21484 5.2433 10.4202c-.03066.0494-.08813.076-.14177.076h-.49808c-.0613 0-.11877-.0342-.14943-.0874-.03065-.0533-.02681-.1217.00767-.1712l1.27586-1.88208c.03065-.04562.03448-.09887.00766-.14828-.02682-.04565-.07279-.07604-.12644-.07604H3.66858c-.09195 0-.16858-.07227-.16858-.16733v-.41063c0-.09125.0728-.1673.16858-.1673h6.66282c.092 0 .1686.07224.1686.1673v.41063c0 .09128-.0728.16733-.1686.16733H8.37739c-.05747 0-.10343.0266-.12642.07604-.02681.04941-.023.10266.00766.14447l1.27971 1.88589c.03062.0495.03829.1141.00763.1712-.03063.057-.0881.0912-.14942.0912h-.49808c-.05747 0-.10728-.0266-.13794-.0722L7.26628 8.22244c-.03829-.05704-.09961-.08746-.16856-.08746h-.18775c-.06897 0-.13027.03424-.16859.08746l-.00383-.0076Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      <StxLogo className="inline w-4 h-4" />
                     </div>
                   </div>
                   <div className="">
@@ -237,7 +231,7 @@ export function Stack() {
                 </div>
               </div>
 
-              <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium bg-sd-gray-light rounded-lg">
+              <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium rounded-lg bg-sd-gray-light">
                 <div className="grid grid-cols-1 sm:grid-flow-col">
                   <div className="flex items-center gap-1.5">
                     <p className="text-sd-gray">APY</p>
@@ -276,62 +270,20 @@ export function Stack() {
                   <div className="text-sd-gray">Conversion rate</div>
                   <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
                     <div className="flex items-center font-semibold">
-                      1{' '}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="ml-1.5 mr-2 inline"
-                        width="20"
-                        height="20"
-                        fill="none"
-                      >
-                        <circle cx="10" cy="10" r="10" fill="#C8ECE0" />
-                        <path
-                          fill="#308D8A"
-                          d="m11.9841 11.8973 2.1674 3.3839h-1.6192l-2.54433-3.9758-2.54436 3.9758H5.83304l2.16742-3.3751H4.89069V10.625H15.0938v1.2723h-3.1097ZM15.1407 8.07765V9.375H4.89072V8.07765h3.06381l-2.15156-3.3589h1.62659l2.58184 4.052 2.5905-4.052h1.6266l-2.1516 3.3589h3.0638Z"
-                        />
-                      </svg>
-                      = {stxRatio}{' '}
-                      <svg
-                        className="ml-1.5 inline"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="none"
-                      >
-                        <circle cx="10" cy="10" r="10" fill="#514CF6" />
-                        <path
-                          fill="#fff"
-                          fill-rule="evenodd"
-                          d="M11.7816 8.2754c-.0383-.06519-.0328-.14666.0109-.21185l1.8282-2.68875c.0492-.07605.0547-.16839.0109-.24444-.0438-.08148-.1259-.12493-.2134-.12493h-.7116c-.0766 0-.1532.03802-.2025.10864l-2.1347 3.15046c-.0547.08148-.1423.12494-.2408.12494h-.26817c-.09852 0-.1861-.04889-.24083-.12494L7.4959 5.10864C7.45211 5.03802 7.37001 5 7.29338 5h-.71155c-.08758 0-.17515.04888-.21347.13036-.04378.08148-.03284.17382.01095.24444l1.82814 2.69419c.04379.05975.04926.14122.01095.20641-.03832.07061-.104.10863-.18063.10863H5.24083c-.13683 0-.24083.10864-.24083.239v.58664c0 .1358.10947.239.24083.239h9.51837c.1368 0 .2408-.10863.2408-.239v-.58664c0-.12493-.0931-.2227-.2135-.239h-2.8243c-.0766 0-.1478-.03802-.1806-.10863Zm-2.15653 3.4601L7.49043 14.886c-.04379.0705-.12589.1086-.20252.1086h-.71156c-.08757 0-.16967-.0489-.21346-.1249-.04379-.0761-.03831-.1739.01095-.2445l1.82266-2.6887c.04379-.0652.04926-.1413.01095-.2119-.03832-.0652-.104-.1086-.18063-.1086H5.24083C5.10947 11.616 5 11.5128 5 11.377v-.5867c0-.1303.104-.239.24083-.239h9.51837c.1313 0 .2408.1032.2408.239v.5867c0 .1304-.104.239-.2408.239h-2.7915c-.0821 0-.1478.038-.1806.1086-.0383.0706-.0329.1467.0109.2064l1.8282 2.6942c.0437.0706.0547.163.0109.2445-.0438.0814-.1259.1303-.2135.1303h-.7115c-.0821 0-.1533-.038-.1971-.1032l-2.1346-3.1505c-.0547-.0814-.1423-.1249-.2408-.1249h-.26822c-.09852 0-.1861.0489-.24083.1249l-.00548-.0108Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      1 <StStxLogo className="mx-1.5 inline w-5 h-5" />= {stxRatio}{' '}
+                      <StxLogo className="ml-1.5 inline w-5 h-5" />
                     </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2">
                   <div className="text-sd-gray">You receive</div>
-                  <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
-                    <span>
-                      ~
-                      {stStxReceived.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="ml-1.5 inline"
-                        width="20"
-                        height="20"
-                        fill="none"
-                      >
-                        <circle cx="10" cy="10" r="10" fill="#C8ECE0" />
-                        <path
-                          fill="#308D8A"
-                          d="m11.9841 11.8973 2.1674 3.3839h-1.6192l-2.54433-3.9758-2.54436 3.9758H5.83304l2.16742-3.3751H4.89069V10.625H15.0938v1.2723h-3.1097ZM15.1407 8.07765V9.375H4.89072V8.07765h3.06381l-2.15156-3.3589h1.62659l2.58184 4.052 2.5905-4.052h1.6266l-2.1516 3.3589h3.0638Z"
-                        />
-                      </svg>
-                    </span>
+                  <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                    ~
+                    {stStxReceived.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    <StStxLogo className="ml-1.5 inline w-5 h-5" />
                   </div>
                 </div>
               </div>
