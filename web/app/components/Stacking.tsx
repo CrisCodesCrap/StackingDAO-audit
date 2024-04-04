@@ -433,17 +433,15 @@ export function Stacking() {
                   <span>{stStxBalance > 0 ? 'Stack more STX' : 'Start stacking STX'}</span>
                 </Link>
 
-                {stStxBalance > 0 ? (
-                  <Link
-                    href="/unstack"
-                    className={`flex items-center justify-center rounded-lg py-4 px-6 font-semibold focus:outline-none text-lg xl:text-xl text-dark-green-600 border-2 border-dark-green-600 bg-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full`}
-                    style={{
-                      pointerEvents: stStxBalance > 0 ? 'auto' : 'none',
-                    }}
-                  >
-                    Unstack stSTX
-                  </Link>
-                ) : null}
+                <Link
+                  href="/unstack"
+                  className={`flex items-center justify-center rounded-lg py-4 px-6 font-semibold focus:outline-none text-lg xl:text-xl text-dark-green-600 border-2 border-dark-green-600 bg-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full`}
+                  style={{
+                    pointerEvents: stStxBalance > 0 ? 'auto' : 'none',
+                  }}
+                >
+                  Unstack stSTX
+                </Link>
               </div>
             </div>
           </div>
