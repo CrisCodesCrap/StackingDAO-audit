@@ -25,7 +25,9 @@ function parseAllEventsForAddresses(allEvents) {
       // Deposit and mint stSTX
       if (event.contract_log.contract_id == coreContract && logJson.action.value == "deposit") {
         const stacker = logJson.data.value.stacker.value;
-        addresses.push(stacker);
+        if (!stacker.includes(".")) {
+          addresses.push(stacker);
+        }
       }
 
       // Transfer stSTX
@@ -75,7 +77,10 @@ function parseAllTransactionsForAddresses(allTransactions) {
 
   for (const transaction of allTransactions) {
     if (transaction.tx_type == "contract_call" && transaction.contract_call.function_name == "add-liquidity") {
-      addresses.push(transaction.sender_address);
+      const sender =  transaction.sender_address;
+      if (!sender.includes(".")) {
+        addresses.push(sender);
+      }
     }
   }
 
@@ -113,7 +118,7 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-4', {"addresses": addresses})
+  await utils.writeFile('points-addresses-7', {"addresses": addresses})
 
 
 
@@ -121,9 +126,9 @@ async function start() {
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals-4', referrers)
+  await utils.writeFile('points-referrals-7', referrers)
 
-  await utils.writeFile('points-last-block-addresses-4', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-7', { last_block: currentBlockHeight })
 };
 
 // start();

@@ -5,14 +5,15 @@ import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';
 import { Alert } from './Alert';
 import { stacksNetwork as network } from '../common/utils';
-import { useAppContext } from './AppContext'
+import { useAppContext } from './AppContext/AppContext';
 import { useSTXAddress } from '../common/use-stx-address';
 import {
-  uintCV, contractPrincipalCV,
+  uintCV,
+  contractPrincipalCV,
   FungibleConditionCode,
   createFungiblePostCondition,
   createAssetInfo,
-} from '@stacks/transactions'
+} from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
 
@@ -41,9 +42,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
     const value = event.target.value;
     if (value > sDaoBalance) {
       if (errors.length < 1) {
-        setErrors(
-          errors.concat([`You cannot stake more than ${sDaoBalance} sDAO`])
-        );
+        setErrors(errors.concat([`You cannot stake more than ${sDaoBalance} sDAO`]));
       }
       setIsStakeButtonDisabled(true);
     } else {
@@ -55,35 +54,34 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
 
   const stake = async () => {
     const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
-    console.log()
+    console.log();
     const postConditions = [
       createFungiblePostCondition(
         stxAddress!,
         FungibleConditionCode.LessEqual,
         amount.value,
-        createAssetInfo(
-          process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-          'sdao-token',
-          'sdao'
-        )
-      )
+        createAssetInfo(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'sdao-token', 'sdao')
+      ),
     ];
-    
-    await makeContractCall({
-      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      contractName: 'staking-v1',
-      functionName: 'stake',
-      functionArgs: [
-        contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'sdao-token'),
-        amount
-      ],
-      postConditions,
-      network: stacksNetwork,
-    }, async (error?, txId?) => {
-      setCurrentTxId(txId);
-      setCurrentTxStatus('pending');
-      setShowStakeModal(false);
-    });
+
+    await makeContractCall(
+      {
+        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        contractName: 'staking-v1',
+        functionName: 'stake',
+        functionArgs: [
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'sdao-token'),
+          amount,
+        ],
+        postConditions,
+        network: stacksNetwork,
+      },
+      async (error?, txId?) => {
+        setCurrentTxId(txId);
+        setCurrentTxStatus('pending');
+        setShowStakeModal(false);
+      }
+    );
   };
 
   return (

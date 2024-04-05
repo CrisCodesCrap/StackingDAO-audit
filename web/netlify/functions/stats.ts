@@ -1,4 +1,6 @@
-import { callReadOnlyFunction } from '@stacks/transactions';
+// @ts-nocheck
+
+import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { coreApiUrl, stacksNetwork } from "@/app/common/utils";
 import { Handler } from "@netlify/functions";
 
@@ -16,6 +18,21 @@ const fetchTVL = async () => {
 
   return totalSTX;
 }
+
+const fetchRatio = async () => {
+  const result = await callReadOnlyFunction({
+    contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
+    contractName: 'stacking-dao-core-v1',
+    functionName: 'get-stx-per-ststx',
+    functionArgs: [
+      contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1')
+    ],
+    senderAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS!,
+    network: stacksNetwork
+  });
+
+  return parseFloat(result.value?.value) / 1000000.0;
+};
 
 const fetchStxPrice = async () => {
   // Fetch STX price
@@ -42,10 +59,12 @@ export const handler: Handler = async (event, context) => {
     stxPrice,
     tvlInStx,
     pox,
+    ratio
   ] = await Promise.all([
     fetchStxPrice(),
     fetchTVL(),
     fetchPoX(),
+    fetchRatio()
   ]);
   const tvl = stxPrice * tvlInStx;
 
@@ -53,7 +72,9 @@ export const handler: Handler = async (event, context) => {
     pox_cycle: pox.current_cycle.id,
     pox_stx_locked: tvlInStx,
     pox_avg_apy: 6.35,
-    stackingdao_tvl: tvl 
+    stackingdao_tvl: tvl,
+    stx_price: stxPrice,
+    ratio: ratio
   }
 
   return {

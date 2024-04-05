@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
-import { useAppContext } from './AppContext'
+import { useAppContext } from './AppContext/AppContext';
 import { callReadOnlyFunction } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 
@@ -22,7 +22,7 @@ export function Stats() {
         functionName: 'get-total-stx',
         functionArgs: [],
         senderAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setTotalStx(Number(result?.value?.value) / 1000000);
@@ -35,7 +35,7 @@ export function Stats() {
         functionName: 'get-stx-stacking',
         functionArgs: [],
         senderAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setStackingStx(Number(result?.value?.value) / 1000000);
@@ -48,7 +48,7 @@ export function Stats() {
         functionName: 'get-stx-balance',
         functionArgs: [],
         senderAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setIdleStx(Number(result?.value?.value) / 1000000);
@@ -60,47 +60,47 @@ export function Stats() {
   }, []);
 
   return (
-    <div className="w-full mt-8">
-      <span className="text-tertiary-text font-medium">Stacking DAO stats</span>
-      <div className="bg-white border-2 rounded-xl w-full p-4">
-        <dl className="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4 mt-0 text-center">
-          <div
-            className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-0 bg-white px-4 py-3 sm:py-6 sm:px-6 xl:px-8"
-          >
-            <dt className="text-sm font-medium leading-6 text-gray-500">TVL</dt>
-            <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(totalStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
-            </dd>
-          </div>
+    <div>
+      <h2 className="text-2xl text-white font-headings">
+        Stacking DAO stats
+      </h2>
+      <dl className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
+        <div
+          className="flex flex-wrap p-4 rounded-lg bg-white/10"
+        >
+          <dt className="text-sm font-medium leading-6 text-white/70">TVL</dt>
+          <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
+            {Math.ceil(totalStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
+          </dd>
+        </div>
 
-          <div
-            className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-0 bg-white px-4 py-3 sm:py-6 sm:px-6 xl:px-8"
-          >
-            <dt className="text-sm font-medium leading-6 text-gray-500">TVL</dt>
-            <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              ${Math.ceil(totalStx * stxPrice).toLocaleString('en-US')}
-            </dd>
-          </div>
+        <div
+          className="flex flex-wrap p-4 rounded-lg bg-white/10"
+        >
+          <dt className="text-sm font-medium leading-6 text-white/70">TVL</dt>
+          <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
+            ${Math.ceil(totalStx * stxPrice).toLocaleString('en-US')}
+          </dd>
+        </div>
 
-          <div
-            className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-0 bg-white px-4 py-3 sm:py-6 sm:px-6 xl:px-8"
-          >
-            <dt className="text-sm font-medium leading-6 text-gray-500">Stacked</dt>
-            <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(stackingStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
-            </dd>
-          </div>
+        <div
+          className="flex flex-wrap p-4 rounded-lg bg-white/10"
+        >
+          <dt className="text-sm font-medium leading-6 text-white/70">Stacked</dt>
+          <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
+            {Math.ceil(stackingStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
+          </dd>
+        </div>
 
-          <div
-            className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-0 bg-white px-4 py-3 sm:py-6 sm:px-6 xl:px-8"
-          >
-            <dt className="text-sm font-medium leading-6 text-gray-500">Idle</dt>
-            <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-              {Math.ceil(idleStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
-            </dd>
-          </div>
-        </dl>
-      </div>
+        <div
+          className="flex flex-wrap p-4 rounded-lg bg-white/10"
+        >
+          <dt className="text-sm font-medium leading-6 text-white/70">Idle</dt>
+          <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
+            {Math.ceil(idleStx).toLocaleString('en-US')} <span className="text-xs">STX</span>
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 }

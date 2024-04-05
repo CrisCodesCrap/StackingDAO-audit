@@ -88,7 +88,7 @@ export const handler: Handler = async (event, context) => {
   const result = {
     "name": 'Stacking DAO',
     "totalUsers": totalUsers,
-    "totalBalanceUsd": tvl.toFixed(2),
+    "totalBalanceUsd": Number(tvl.toFixed(2)),
     "supportedAssets": [
       {
         "contractAddress": "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG",

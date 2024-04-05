@@ -1,25 +1,14 @@
 // @ts-nocheck
 
 import React, { Fragment, useRef, useState } from 'react';
-import { useAppContext } from './AppContext';
+import { useAppContext } from './AppContext/AppContext';
 import { Dialog, Transition } from '@headlessui/react';
-import { CheckCircleIcon } from '@heroicons/react/outline';
 import { getExplorerLink } from '../common/utils';
 
 export const TxStatus = () => {
-  const { currentTxStatus, currentTxId, setCurrentTxId } = useAppContext();
+  const { currentTxId, setCurrentTxId } = useAppContext();
   const explorerLink = getExplorerLink(currentTxId);
-  const cancelButtonRef = useRef(null)
-
-  const statusClass = () => {
-    if (currentTxStatus === 'success') {
-      return 'text-green-500';
-    } else if (currentTxStatus === 'pending') {
-      return 'text-gray-500';
-    }
-
-    return 'text-red-500';
-  };
+  const cancelButtonRef = useRef(null);
 
   const hidePopup = () => {
     setCurrentTxId('');
@@ -33,7 +22,12 @@ export const TxStatus = () => {
   return (
     <>
       <Transition.Root show={currentTxId != ''} as={Fragment}>
-        <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={hidePopup}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          initialFocus={cancelButtonRef}
+          onClose={hidePopup}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -43,11 +37,11 @@ export const TxStatus = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
           </Transition.Child>
 
-          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -57,38 +51,58 @@ export const TxStatus = () => {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <Dialog.Panel className="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:w-full sm:max-w-xl sm:p-12">
                   <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ststx">
-                    <CheckCircleIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                    <div className="mt-3 text-center sm:mt-5">
-                      <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                    <div className="text-center">
+                      <svg
+                        className="mx-auto"
+                        width="72"
+                        height="72"
+                        viewBox="0 0 72 72"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle cx="36" cy="36" r="36" fill="#1D3730" />
+                        <path
+                          d="M44 30L33 41L28 36"
+                          stroke="#7BF178"
+                          stroke-width="4"
+                          stroke-linecap="square"
+                        />
+                      </svg>
+
+                      <Dialog.Title
+                        as="h1"
+                        className="mt-8 mb-4 text-2xl font-headings leading-6 text-sd-gray-darker"
+                      >
                         Transaction broadcast
                       </Dialog.Title>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          This transaction takes at least 1 Stacks block to confirm. That&apos;s approximately around 10-30 minutes.
+                      <div className="mt-4">
+                        <p className="text-sd-gray text-md">
+                          This transaction takes at least 1 Stacks block to confirm. That&apos;s
+                          approximately around 10-30 minutes.
                         </p>
-                      </div>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          Please note that even after the transaction is mined, it might take a few minutes before this is propagated to the Stacks APIs and shown on this website.
+
+                        <p className="mt-2 text-sd-gray text-md">
+                          Please note that even after the transaction is mined, it might take a few
+                          minutes before this is propagated to the Stacks APIs and shown on this
+                          website.
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+
+                  <div className="mt-5 sm:mt-8 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                     <button
                       type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-ststx px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-ststx focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:col-start-2"
+                      className="inline-flex items-center justify-center w-full px-6 py-2 text-lg font-semibold text-white border-2 border-transparent rounded-lg focus:outline-none bg-dark-green-600 border-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 sm:col-start-2"
                       onClick={() => viewExplorer()}
                     >
                       View in explorer
                     </button>
                     <button
                       type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                      className="inline-flex items-center justify-center w-full px-6 py-2 text-lg font-semibold bg-white border-2 rounded-lg focus:outline-none text-dark-green-600 border-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 sm:col-start-1 sm:mt-0"
                       onClick={() => hidePopup()}
                       ref={cancelButtonRef}
                     >

@@ -1,18 +1,18 @@
 // @ts-nocheck
 
-'use client'
+'use client';
 
 import { Fragment, useEffect, useState } from 'react';
-import { Placeholder } from './Placeholder';
+import { PlaceholderBar } from './PlaceholderBar';
 import { StyledIcon } from './StyledIcon';
-import Link from 'next/link'
-import { Menu, Transition } from '@headlessui/react'
-import { useAppContext } from './AppContext'
+import Link from 'next/link';
+import { Menu, Transition } from '@headlessui/react';
+import { useAppContext } from './AppContext/AppContext';
 import {
   callReadOnlyFunction,
   standardPrincipalCV,
   makeContractSTXPostCondition,
-  FungibleConditionCode
+  FungibleConditionCode,
 } from '@stacks/transactions';
 import { stacksNetwork } from '../common/utils';
 import { StakeModal } from '../components/StakeModal';
@@ -43,17 +43,20 @@ export function Stake() {
       0n
     );
 
-    await makeContractCall({
-      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      contractName: 'staking-v1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [],
-      postConditions: [postCondition],
-      network: stacksNetwork,
-    }, async (error?, txId?) => {
-      setCurrentTxId(txId);
-      setCurrentTxStatus('pending');
-    });
+    await makeContractCall(
+      {
+        contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
+        contractName: 'staking-v1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [],
+        postConditions: [postCondition],
+        network: stacksNetwork,
+      },
+      async (error?, txId?) => {
+        setCurrentTxId(txId);
+        setCurrentTxStatus('pending');
+      }
+    );
   };
 
   useEffect(() => {
@@ -62,11 +65,9 @@ export function Stake() {
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         contractName: 'staking-v1',
         functionName: 'get-pending-rewards',
-        functionArgs: [
-          standardPrincipalCV(stxAddress)
-        ],
+        functionArgs: [standardPrincipalCV(stxAddress)],
         senderAddress: stxAddress,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setEarnedRewards(Number(result?.value?.value) / 1000000);
@@ -77,11 +78,9 @@ export function Stake() {
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
         contractName: 'staking-v1',
         functionName: 'get-stake-of',
-        functionArgs: [
-          standardPrincipalCV(stxAddress)
-        ],
+        functionArgs: [standardPrincipalCV(stxAddress)],
         senderAddress: stxAddress,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setStakedTokens(Number(result?.data?.amount?.value) / 1000000);
@@ -94,7 +93,7 @@ export function Stake() {
         functionName: 'get-total-staked',
         functionArgs: [],
         senderAddress: stxAddress,
-        network: stacksNetwork
+        network: stacksNetwork,
       });
 
       setTotalStakedTokens(Number(result?.value) / 1000000);
@@ -110,16 +109,20 @@ export function Stake() {
   return (
     <>
       <StakeModal showStakeModal={showStakeModal} setShowStakeModal={setShowStakeModal} apy={apr} />
-      <UnstakeModal showUnstakeModal={showUnstakeModal} setShowUnstakeModal={setShowUnstakeModal} stakedAmount={stakedTokens} />
+      <UnstakeModal
+        showUnstakeModal={showUnstakeModal}
+        setShowUnstakeModal={setShowUnstakeModal}
+        stakedAmount={stakedTokens}
+      />
 
       <section className="relative mt-8">
         <header className="pb-5 sm:flex sm:justify-between sm:items-end">
           <div>
-            <h3 className="text-lg leading-6 text-gray-900 font-headings">
-              sDAO Staking
-            </h3>
+            <h3 className="text-lg leading-6 text-gray-900 font-headings">sDAO Staking</h3>
             <p className="max-w-3xl mt-2 text-sm text-gray-500">
-              The staking pool is a <span className="font-semibold">revenue share</span> pool where you receive STX from the protocol. The STX tokens are earned through a commission of <span className="font-semibold">5%</span> of the yield from Proof of Transfer.
+              The staking pool is a <span className="font-semibold">revenue share</span> pool where
+              you receive STX from the protocol. The STX tokens are earned through a commission of{' '}
+              <span className="font-semibold">5%</span> of the yield from Proof of Transfer.
             </p>
           </div>
           <div className="flex items-center mt-2 sm:mt-0">
@@ -142,60 +145,48 @@ export function Stake() {
           <div className="px-4 py-5 space-y-6 sm:p-6">
             <div className="md:grid md:grid-flow-col gap-4 sm:grid-cols-[min-content,auto]">
               <div className="self-center w-14">
-                <img className="w-12 h-12 rounded-full" src="/sdao-logo.jpg" alt="StackingDAO logo" />
+                <img
+                  className="w-12 h-12 rounded-full"
+                  src="/sdao-logo.jpg"
+                  alt="StackingDAO logo"
+                />
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 md:mb-1">
-                  Your staked sDAO tokens
-                </p>
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">Your staked sDAO tokens</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold">
-                      {stakedTokens} sDAO
-                    </p>
+                    <p className="text-lg font-semibold">{stakedTokens} sDAO</p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 md:mb-1">
-                  Total Staked
-                </p>
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">Total Staked</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold">
-                      {totalStakedTokens} sDAO
-                    </p>
+                    <p className="text-lg font-semibold">{totalStakedTokens} sDAO</p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 md:mb-1">
-                  Earned STX
-                </p>
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">Earned STX</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
                   <div>
-                    <p className="text-lg font-semibold">
-                      {earnedRewards} STX
-                    </p>
+                    <p className="text-lg font-semibold">{earnedRewards} STX</p>
                   </div>
                 )}
               </div>
               <div className="mt-3 md:mt-0">
-                <p className="text-sm leading-6 text-gray-500 md:mb-1">
-                  Current APR
-                </p>
+                <p className="text-sm leading-6 text-gray-500 md:mb-1">Current APR</p>
                 {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
+                  <PlaceholderBar className="py-2" width={PlaceholderBar.width.HALF} />
                 ) : (
-                  <p className="text-ststx">
-                    {apr}%
-                  </p>
+                  <p className="text-ststx">{apr}%</p>
                 )}
               </div>
 
@@ -209,9 +200,7 @@ export function Stake() {
                           as="ChevronUpIcon"
                           size={4}
                           className={`${
-                            open
-                              ? ''
-                              : 'transform rotate-180 transition ease-in-out duration-300'
+                            open ? '' : 'transform rotate-180 transition ease-in-out duration-300'
                           } ml-2`}
                         />
                       </Menu.Button>
@@ -234,18 +223,13 @@ export function Stake() {
                               {({ active }) => (
                                 <button
                                   className={`${
-                                    active
-                                      ? 'button-ststx text-white'
-                                      : 'text-gray-900'
+                                    active ? 'button-ststx text-white' : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   disabled={!(sDaoBalance > 0)}
                                   onClick={() => setShowStakeModal(true)}
                                 >
                                   {!(sDaoBalance > 0) ? (
-                                    <a
-                                      href="#"
-                                      className="mr-2"
-                                    >
+                                    <a href="#" className="mr-2">
                                       <div className="flex items-center w-full">
                                         <StyledIcon
                                           as="ArrowCircleDownIcon"
@@ -254,7 +238,10 @@ export function Stake() {
                                         />
                                         Stake
                                       </div>
-                                      <span className="tooltip">You don&apos;t have any available sDAO to stake in your wallet.</span>
+                                      <span className="tooltip">
+                                        You don&apos;t have any available sDAO to stake in your
+                                        wallet.
+                                      </span>
                                     </a>
                                   ) : (
                                     <>
@@ -274,9 +261,7 @@ export function Stake() {
                               {({ active }) => (
                                 <button
                                   className={`${
-                                    active
-                                      ? 'button-ststx text-white'
-                                      : 'text-gray-900'
+                                    active ? 'button-ststx text-white' : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => setShowUnstakeModal(true)}
                                   disabled={stakedTokens === 0}
@@ -297,9 +282,7 @@ export function Stake() {
                               {({ active }) => (
                                 <button
                                   className={`${
-                                    active
-                                      ? 'bg-indigo-500 text-white'
-                                      : 'text-gray-900'
+                                    active ? 'bg-indigo-500 text-white' : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => claimRewards()}
                                   disabled={earnedRewards === 0}
@@ -328,4 +311,4 @@ export function Stake() {
       </section>
     </>
   );
-};
+}

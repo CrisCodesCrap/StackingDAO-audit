@@ -1,9 +1,9 @@
 // @ts-nocheck
 
 import { useConnect } from '@stacks/connect-react';
-import { useAppContext } from './AppContext';
-import { useEffect, useState } from 'react'
-import clsx from 'clsx'
+import { useAppContext } from './AppContext/AppContext';
+import { useEffect, useState } from 'react';
+import clsx from 'clsx';
 import { useSTXAddress } from '../common/use-stx-address';
 import { resolveProvider } from '../common/utils';
 import { ChooseWalletModal } from './ChooseWalletModal';
@@ -11,8 +11,8 @@ import { ChooseWalletModal } from './ChooseWalletModal';
 export const WalletConnectButton = ({ className, signOut }) => {
   className = clsx(
     className,
-    'w-32 justify-center inline-flex rounded-full px-4 py-1.5 text-sm font-semibold transition',
-    'bg-neutral-950 text-white hover:bg-neutral-800'
+    'w-36 justify-center inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition',
+    'bg-dark-green-600 text-white hover:bg-neutral-800'
   )
 
   const { setStxAddress, setOkxProvider } = useAppContext();
@@ -41,7 +41,7 @@ export const WalletConnectButton = ({ className, signOut }) => {
 
     const provider = resolveProvider();
 
-    if (providerString == "okx") {
+    if (providerString == 'okx') {
       const resp = await provider.connect();
       setStxAddress(resp['address']);
       setOkxProvider(provider);
@@ -55,7 +55,15 @@ export const WalletConnectButton = ({ className, signOut }) => {
       const label = stxAddress ? 'Sign out' : 'Connect';
       setButtonLabel(label);
     } else {
-      const truncatedAddress = stxAddress ? `${stxAddress.slice(0, 4)}...${stxAddress.slice(-4)}` : '';
+      const truncatedAddress = stxAddress ? (
+        <>
+          <svg className="inline-block w-2 h-2 text-fluor-green-500" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="4" cy="4" r="4" fill="currentColor"/>
+          </svg>
+          {`${stxAddress.slice(0, 4)}...${stxAddress.slice(-4)}`}
+        </>
+      ) : '';
+
       const label = stxAddress ? truncatedAddress : 'Connect';
       setButtonLabel(label);
     }
