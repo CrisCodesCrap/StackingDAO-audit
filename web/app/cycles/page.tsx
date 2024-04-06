@@ -106,7 +106,8 @@ export default function Cycles() {
     var startBlock = nextCycle.startBlock - 5;
     var allCyclesInfo = [];
 
-    for (let cycle = nextCycle.cycle; cycle >= 73; cycle--) {
+    const cycles = Array.from({length:(nextCycle.cycle-73+1)},(v,k)=>73+k).reverse();
+    for await (const cycle of cycles) {
       // Get cycle info
       const info = await fetchCycleInfo(cycle);
 
