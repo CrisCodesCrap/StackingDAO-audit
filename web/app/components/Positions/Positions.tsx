@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Tooltip } from 'react-tooltip';
 import StStxLogo from '../Logos/StStx';
 import StxLogo from '../Logos/Stx';
+import { PlaceholderBar } from '../PlaceholderBar';
 import { currency } from '@/app/common/utils';
 
 export function Positions() {
@@ -17,6 +18,64 @@ export function Positions() {
   const positions = usePositionsData(stxAddress);
 
   if (!stxAddress) return <></>;
+
+  {
+    /* Loading placeholder */
+  }
+  if (positions.isFetching) {
+    return (
+      <div className="w-full mt-16 mb-10">
+        <h3 className="text-lg font-medium md:mb-4 md:text-2xl font-headings">Active Positions</h3>
+        <div className="w-full mt-10 grid grid-cols-1 gap-8 lg:grid-cols-4">
+          {Array(3)
+            .fill(null)
+            .map((_, i) => (
+              <div
+                key={i}
+                tabIndex={0}
+                className="w-full p-6 bg-white rounded-xl"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-center">
+                      <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
+                        <PlaceholderBar className="inline-flex w-12 h-3" />
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-sd-gray-dark ml-1.5"></div>
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-sd-gray">
+                      <PlaceholderBar
+                        className="inline-flex w-20 h-2"
+                        color={PlaceholderBar.color.GRAY}
+                      />
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 py-2 mt-4 text-left">
+                  <div className="shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-sd-gray-dark ml-1.5"></div>
+                  </div>
+                  <div className="flex justify-between flex-grow">
+                    <div>
+                      <span className="text-lg font-semibold line-clamp-1 text-ellipsis">
+                        <PlaceholderBar className="inline-flex w-16 h-4" />
+                      </span>
+                      <span className="flex flex-wrap gap-1 -mt-1 text-sm line-clamp-1">
+                        <PlaceholderBar
+                          className="inline-flex w-24 h-2"
+                          color={PlaceholderBar.color.GRAY}
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full mt-16 mb-10">

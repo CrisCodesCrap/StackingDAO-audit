@@ -3,8 +3,8 @@ import { Container } from './Container';
 
 export function Footer() {
   return (
-    <Container as="footer" className="w-full mt-32">
-      <div className="flex flex-wrap items-center justify-between pt-4 mt-16 mb-12 gap-x-6 gap-y-4">
+    <Container as="footer" className="w-full mt-6 sm:mt-32">
+      <div className="flex flex-wrap items-center justify-between pt-4 mt-8 mb-12 sm:mt-16 gap-x-6 gap-y-4">
         <div className="mx-auto sm:gap-8 sm:flex sm:flex-wrap sm:items-center sm:ml-0">
           <p className="text-sm text-neutral-700">© Symmachia Inc. {new Date().getFullYear()}</p>
           <a
@@ -37,8 +37,8 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="flex flex-wrap items-center sm:flex-nowrap gap-x-8 gap-y-3 w-full sm:w-fit">
-          <p className="flex flex-col sm:flex-row w-full text-sm sm:flex-wrap text-neutral-700 gap-x-8 gap-y-3">
+        <div className="flex flex-wrap items-center w-full sm:flex-nowrap gap-x-8 gap-y-3 sm:w-fit">
+          <p className="flex flex-col w-full text-sm sm:flex-row sm:flex-wrap text-neutral-700 gap-x-8 gap-y-3">
             <a
               href="https://www.stackingdao.com/tos"
               className="flex items-center justify-center w-full sm:justify-start lg:w-fit"

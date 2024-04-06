@@ -161,7 +161,7 @@ export default function Defi() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 pl-0 pr-4 text-sm leading-6">
+                        <td className="hidden py-4 pl-0 pr-4 text-sm leading-6 sm:table-cell">
                           <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
                             <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
                               {item.date}

@@ -556,7 +556,11 @@ export default function Points() {
                       {topUsers.map(user => (
                         <tr
                           key={topUsers.indexOf(user) + Math.random()}
-                          className={user[0] == searchValue ? 'bg-dark-green-500/10' : 'bg-white'}
+                          className={
+                            user[0] == searchValue || user[0] == stxAddress
+                              ? 'bg-fluor-green-500/10'
+                              : 'bg-white'
+                          }
                         >
                           <td className="pl-6 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-10">
                             {allUsers.indexOf(user) == 0 ? (
@@ -582,7 +586,11 @@ export default function Points() {
                                     : 'flex text-gray-500 font-normal'
                                 }
                               >
-                                {user[0]}
+                                <span className="sm:hidden">{`${user[0].slice(
+                                  0,
+                                  4
+                                )}...${user[0].slice(-4)}`}</span>
+                                <span className="hidden sm:inline">{user[0]}</span>
                                 {user[0] == stxAddress ? <> (You)</> : null}
                                 <div className="pt-1 pl-2">
                                   <svg
