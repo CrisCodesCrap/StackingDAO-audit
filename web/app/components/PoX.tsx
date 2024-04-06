@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useAppContext } from './AppContext/AppContext';
 import { Tooltip } from 'react-tooltip';
+import { currency } from '../common/utils';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 
 export function PoX() {
@@ -40,9 +41,7 @@ export function PoX() {
         <div className="flex flex-wrap p-4 rounded-lg bg-white/10">
           <dt className="text-sm font-medium leading-6 text-white/70">Total STX Stacked</dt>
           <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
-            {(stackedStx / 1000000).toLocaleString('en-US', {
-              maximumFractionDigits: 0,
-            })}
+            {currency.rounded.format(stackedStx / 1000000)}
           </dd>
         </div>
 

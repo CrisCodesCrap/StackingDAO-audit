@@ -18,9 +18,8 @@ import {
   cvToJSON,
 } from '@stacks/transactions';
 import { Alert } from './Alert';
-import { useConnect } from '@stacks/connect-react';
 import { StacksMainnet } from '@stacks/network';
-import { stacksNetwork, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds, currency } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
 import { Stats } from './Stats';
 import { PoX } from './PoX';
@@ -191,10 +190,7 @@ export function Unstack() {
                 <div className="flex flex-col">
                   <span className="block text-sm text-sd-gray">Stacked balance</span>
                   <div className="flex text-base items-center gap-1.5">
-                    {stStxBalance.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}
+                    {currency.long.format(stStxBalance)}
                     <svg
                       width="16"
                       height="16"
@@ -372,7 +368,7 @@ export function Unstack() {
               <div className="grid grid-cols-1 sm:grid-cols-2">
                 <div className="text-sd-gray">You receive</div>
                 <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
-                  {stxReceived.toLocaleString('en-US')}
+                  {currency.default.format(stxReceived)}
                   <StxLogo className="inline w-5 h-5 ml-1.5" />
                 </div>
               </div>
@@ -444,7 +440,7 @@ export function Unstack() {
                   <div className="grid grid-cols-1 sm:grid-cols-2">
                     <div className="text-sd-gray">You receive</div>
                     <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
-                      ~{stxReceivedBitflow.toLocaleString('en-US')}
+                      ~{currency.default.format(stxReceivedBitflow)}
                       <StxLogo className="inline w-5 h-5 ml-1.5" />
                     </div>
                   </div>

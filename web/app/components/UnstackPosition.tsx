@@ -3,7 +3,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useConnect } from '@stacks/connect-react';
 import {
   uintCV,
   contractPrincipalCV,
@@ -16,11 +15,10 @@ import {
 } from '@stacks/transactions';
 import { useAppContext } from './AppContext/AppContext';
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds, currency } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
 
 import { Tooltip } from 'react-tooltip';
-import clsx from 'clsx';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
@@ -112,7 +110,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         <div className="flex flex-col">
           <div className="flex items-center justify-center">
             <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-              {stStxAmount.toLocaleString('en-US')}
+              {currency.default.format(stStxAmount)}
             </div>
             <svg
               className="inline ml-2"

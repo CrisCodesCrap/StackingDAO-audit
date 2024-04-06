@@ -17,6 +17,7 @@ import { PoX } from './PoX';
 import { Tooltip } from 'react-tooltip';
 import StxLogo from './Logos/Stx';
 import StStxLogo from './Logos/StStx';
+import { currency } from '../common/utils';
 
 export function Stacking() {
   const stxAddress = useSTXAddress();
@@ -188,10 +189,7 @@ export function Stacking() {
                       </div>
                     ) : (
                       <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
-                        {stStxBalance.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {currency.short.format(stStxBalance)}
                         <StStxLogo className="w-5 h-5 ml-1.5 inline" />
                       </span>
                     )}
@@ -209,10 +207,7 @@ export function Stacking() {
                       </div>
                     ) : (
                       <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
-                        {stxBalance.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {currency.short.format(stxBalance)}
                         <StxLogo className="inline w-5 h-5 ml-1.5" />
                       </span>
                     )}
@@ -348,11 +343,7 @@ export function Stacking() {
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">
                     <span className="text-2xl font-semibold">
-                      ~
-                      {yieldPerYear.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      ~{currency.short.format(yieldPerYear)}
                     </span>
                     <StxLogo className="inline w-5 h-5" />
                   </div>

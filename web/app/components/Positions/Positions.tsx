@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Tooltip } from 'react-tooltip';
 import StStxLogo from '../Logos/StStx';
 import StxLogo from '../Logos/Stx';
+import { currency } from '@/app/common/utils';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -40,10 +41,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.stStxBalance.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.stStxBalance)}
                     </div>
                     <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
@@ -172,10 +170,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.zestProvision.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.zestProvision)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -253,10 +248,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpStaked.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpStaked)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -322,10 +314,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpWallet.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpWallet)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -392,10 +381,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpStaked2.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpStaked2)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -461,10 +447,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpWallet2.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpWallet2)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -531,10 +514,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.velarBalance.lpStaked.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.velarBalance.lpStaked)}
                     </div>
                     <div className="relative flex-shrink-0 inline w-5 h-5 ml-2">
                       <Image
@@ -604,10 +584,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.velarBalance.lpWallet.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.velarBalance.lpWallet)}
                     </div>
                     <div className="relative flex-shrink-0 inline w-5 h-5 ml-2">
                       <Image
@@ -678,10 +655,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.arkadikoBalance.vault.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.arkadikoBalance.vault)}
                     </div>
                     <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
@@ -735,10 +709,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.stxBalance.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.stxBalance)}
                     </div>
                     <StxLogo className="inline w-5 h-5 ml-2" />
                   </div>
