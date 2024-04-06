@@ -45,7 +45,7 @@ export function Modal({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-zinc-600 dark:bg-opacity-80" />
+            <Dialog.Overlay className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -61,11 +61,11 @@ export function Modal({
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-zinc-800 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div className="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:w-full sm:max-w-xl sm:p-12">
               <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
                 <button
                   type="button"
-                  className="text-gray-400 bg-white rounded-md dark:bg-zinc-800 hover:text-gray-500 dark:hover:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   onClick={closeModal}
                 >
                   <span className="sr-only">Close</span>
@@ -81,29 +81,30 @@ export function Modal({
                 <div className="mt-3 sm:mt-5">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg leading-6 text-center text-gray-900 dark:text-zinc-100 font-headings"
+                    className="text-lg leading-6 text-center text-gray-900 font-headings"
                   >
                     {title}
                   </Dialog.Title>
                   <div className="mt-2">{children}</div>
                 </div>
               </div>
-              <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+
+              <div className="mt-5 sm:mt-8 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white button-ststx border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center w-full px-6 py-2 text-lg font-semibold text-white border-2 border-transparent rounded-lg focus:outline-none bg-dark-green-600 border-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 sm:col-start-2"
                   disabled={buttonDisabled}
                   onClick={buttonAction}
                   ref={actionButtonRef}
                 >
-                  {buttonText}
+                  View in explorer
                 </button>
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0 sm:col-start-1 sm:text-sm"
+                  className="inline-flex items-center justify-center w-full px-6 py-2 text-lg font-semibold bg-white border-2 rounded-lg focus:outline-none text-dark-green-600 border-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 sm:col-start-1 sm:mt-0"
                   onClick={closeModal}
                 >
-                  Cancel
+                  Close
                 </button>
               </div>
             </div>

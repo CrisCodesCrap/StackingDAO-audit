@@ -1,20 +1,15 @@
-import { Container } from '@/app/components/Container';
-import { Stacking } from '@/app/components/Stacking';
-import { Positions } from '@/app/components/Positions/Positions';
-import { PoX } from '@/app/components/PoX';
-import { Stats } from '@/app/components/Stats';
+import { Container } from './components/Container';
+import { Stacking } from './components/Stacking';
+import { Positions } from './components/Positions/Positions';
 
 export default async function Home() {
   return (
     <>
       <Container as="div" className="mt-12">
-        <div className="w-full min-h-full h-full flex flex-col items-center">
+        <div className="flex flex-col items-center w-full h-full min-h-full">
           <Stacking />
 
           <Positions />
-
-          <Stats />
-          <PoX />
         </div>
       </Container>
     </>

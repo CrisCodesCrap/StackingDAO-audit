@@ -18,10 +18,15 @@ import {
   cvToJSON,
 } from '@stacks/transactions';
 import { Alert } from './Alert';
-import { useConnect } from '@stacks/connect-react';
 import { StacksMainnet } from '@stacks/network';
-import { stacksNetwork, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds, currency } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
+import { Stats } from './Stats';
+import { PoX } from './PoX';
+import { Tooltip } from 'react-tooltip';
+import { PlaceholderBar } from './PlaceholderBar';
+import StxLogo from './Logos/Stx';
+import StStxLogo from './Logos/StStx';
 
 export function Unstack() {
   const stxAddress = useSTXAddress();
@@ -147,251 +152,332 @@ export function Unstack() {
   }, [stxAddress]);
 
   return (
-    <div className="pt-0 top-0 left-0 w-full md:relative md:min-h-full md:z-0 flex flex-col px-0 md:max-w-xl items-center mb-12">
-      <div className="py-3 px-0 sm:px-6 flex w-full font-medium text-2xl md:text-4xl md:px-0 gap-3.5 items-center justify-start">
-        <Link href="/">
-          <svg
-            stroke="currentColor"
-            fill="none"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-7 w-7 text-ststx"
-            height="1em"
-            width="1em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </Link>
-        <span className="flex-grow">Unstack</span>
-      </div>
-
-      <div className="p-0 sm:p-2 pt-0 w-full border-2 rounded-xl p-4">
-        <div className="bg-white rounded-xl w-full p-4 mb-2 hidden">
-          <div className="py-1 px-2 flex gap-4 justify-start items-center">
-            <img
-              alt="Checkmark illustration"
-              loading="lazy"
-              width="56"
-              height="56"
-              decoding="async"
-              data-nimg="1"
-              src="/orange-checkmark.svg"
-              style={{ color: 'transparent' }}
-            />
-            <div className="text-xl font-semibold">
-              Referral Code
-              <span className="text-sm font-normal block">
-                You clicked on the link using the promo code
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl w-full p-4 font-medium overflow-x-hidden">
-          <div className="flex gap-4 items-center">
-            <img
-              alt="Input asset icon"
-              loading="lazy"
-              width="48"
-              height="48"
-              decoding="async"
-              data-nimg="1"
-              className="rounded-full"
-              src="/sdao-logo.jpg"
-              style={{ color: 'transparent' }}
-            />
-            <div className="flex-grow text-xl">
-              stSTX
-              <span className="text-tertiary-text text-base block">
-                Balance:{' '}
-                {stStxBalance.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-                })}{' '}
-                stSTX
-              </span>
-            </div>
-          </div>
-          <div className="mt-10 mb-5 flex flex-col items-center relative max-w-full overflow-x-clip">
-            <div className="relative">
-              <div className="w-full text-center text-6xl" style={{ display: 'inline-block' }}>
-                <input
-                  autoFocus
-                  placeholder="0.0"
-                  min="0"
-                  className="!outline-none text-center"
-                  inputMode="numeric"
-                  type="text"
-                  value={amount}
-                  onChange={evt => updateAmount(evt)}
-                />
-              </div>
-              <span className="absolute top-0 right-0 translate-x-full text-tertiary-text text-xl">
-                stSTX
-              </span>
-            </div>
-            <span className="text-tertiary-text">~${amountInDollars.toLocaleString('en-US')}</span>
-            <button
-              type="button"
-              className="absolute right-0 top-1/2 -translate-y-3 bg-white rounded-full border border-additional-text py-2.5 px-1"
-              onClick={() => maxClicked()}
-            >
-              MAX
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-2 bg-slate-50 rounded-xl border-2 border-gray-100">
-          <span className="font-bold">Unstack from PoX</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            <div className="text-gray-600">Time to receive STX</div>
-            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-              <a className="group max-w-max relative flex block gap-1" href="#">
-                {Number(bitcoinBlocksLeft) <= 100 ? (
-                  <span>
-                    End of Cycle (~
-                    {formatSeconds(21000 + 10 * bitcoinBlocksLeft).toLocaleString('en-US')})
-                  </span>
-                ) : (
-                  <span>
-                    End of Cycle (~{formatSeconds(10 * bitcoinBlocksLeft).toLocaleString('en-US')})
-                  </span>
-                )}
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                  />
-                </svg>
-                <div className="[transform:perspective(50px)_translateZ(0)_rotateX(10deg)] group-hover:[transform:perspective(0px)_translateZ(0)_rotateX(0deg)] absolute bottom-0 mb-6 origin-bottom transform rounded text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
-                  <div className="flex max-w-xs flex-col items-center w-64">
-                    <div className="rounded bg-gray-900 p-2 text-xs text-center shadow-lg">
-                      The STX that&apos;s backing your stSTX is locked in Stacks consensus in 2 week
-                      cycles. STX can only be unstacked by Stacking DAO at the end of a Stacks
-                      Consensus cycle.
-                    </div>
-                    <div className="clip-bottom h-2 w-4 bg-gray-900"></div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            <div className="text-gray-600">Conversion rate</div>
-            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-              1 stSTX = {stxRatio} STX
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            <div className="text-gray-600">You receive</div>
-            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-              {stxReceived.toLocaleString('en-US')} STX
-            </div>
-          </div>
-
-          <Alert type={Alert.type.WARNING} className="rounded-full">
-            <p>
-              Unstacking STX will give you a withdrawal NFT that allows you to withdraw the STX
-              tokens after the current PoX yield cycle ends.
-            </p>
-            <p className="mt-2">
-              <a
-                className="font-bold"
-                href="https://docs.stackingdao.com/stackingdao/the-stacking-dao-app/withdrawing-stx"
-                target="_blank"
-              >
-                Learn more about withdrawals
-              </a>
-            </p>
-          </Alert>
-
-          <button
-            type="button"
-            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${
-              buttonDisabled ? 'bg-gray-400' : 'button-ststx'
-            } text-white active:bg-button-active hover:bg-button-hover w-full mt-3`}
-            disabled={buttonDisabled}
-            onClick={unstackStx}
-          >
-            {buttonText}
-          </button>
-        </div>
-
-        <div className="bg-white rounded-xl w-full p-4 flex flex-col gap-4 font-medium mt-4 bg-slate-50 rounded-xl border-2 border-gray-100">
-          <span className="font-bold">Sell stSTX on Bitflow</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            <div className="text-gray-600">Time to receive STX</div>
-            <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-              Instant
-            </div>
-          </div>
-
-          {isLoadingBitflowData ? (
-            <div role="status" className="flex text-center flex-col items-center mt-4">
+    <div className="grid grid-cols-1 gap-9 lg:grid-cols-2">
+      <div className="p-8 md:p-12 bg-white rounded-xl flex items-center justify-center shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A]">
+        <div className="flex flex-col w-full min-h-full md:max-w-xl">
+          <div className="flex items-center justify-start w-full gap-2 text-2xl md:text-2xl">
+            <Link href="/">
               <svg
-                aria-hidden="true"
-                className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-700"
-                viewBox="0 0 100 101"
+                lassName="text-dark-green-600"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
+                  d="M12 21L3 12L12 3"
+                  stroke="#1D3730"
+                  stroke-width="3"
+                  stroke-linecap="square"
+                  stroke-linejoin="bevel"
                 />
                 <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
+                  d="M21 12H6"
+                  stroke="#1D3730"
+                  stroke-width="3"
+                  stroke-linecap="square"
+                  stroke-linejoin="round"
                 />
               </svg>
-              <span className="sr-only">Loading...</span>
+            </Link>
+            <span className="flex-grow text-sd-gray-darker font-headings">Unstack</span>
+          </div>
+
+          <div className="w-full mt-6">
+            <div className="w-full p-6 overflow-x-hidden font-medium rounded-lg bg-sd-gray-light">
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col">
+                  <span className="block text-sm text-sd-gray">Stacked balance</span>
+                  <div className="flex text-base items-center gap-1.5">
+                    {currency.long.format(stStxBalance)}
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="8" cy="8" r="8" fill="#1E3731" />
+                      <path
+                        d="M9.5873 9.51785L11.3212 12.225H10.0259L7.99042 9.04428L5.95494 12.225H4.66648L6.40041 9.52489H3.9126V8.5H12.0751V9.51785H9.5873Z"
+                        fill="#7BF179"
+                      />
+                      <path
+                        d="M12.1126 6.46202V7.49279V7.4999H3.9126V6.46202H6.36365L4.6424 3.7749H5.94367L8.00916 7.0165L10.0816 3.7749H11.3828L9.66157 6.46202H12.1126Z"
+                        fill="#7BF179"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div className="">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-md text-fluor-green-500 bg-dark-green-600"
+                    onClick={() => maxClicked()}
+                  >
+                    Max
+                  </button>
+                </div>
+              </div>
+              <div className="relative flex flex-col items-center max-w-full mt-6 mb-5 overflow-x-clip">
+                <div className="relative">
+                  <div className="inline-block w-full text-5xl text-center">
+                    <input
+                      autoFocus
+                      placeholder="0.0"
+                      min="0"
+                      className="!outline-none text-center bg-sd-gray-light"
+                      inputMode="numeric"
+                      type="text"
+                      value={amount}
+                      onChange={evt => updateAmount(evt)}
+                    />
+                  </div>
+                </div>
+                <span className="text-sd-gray">~${amountInDollars.toLocaleString('en-US')}</span>
+              </div>
             </div>
-          ) : (
-            <>
+
+            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium rounded-lg bg-sd-gray-light">
+              <h4 className="font-base font semibold">Unstack from PoX</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2">
-                <div className="text-gray-600">Conversion rate</div>
-                <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-                  1 stSTX ={' '}
-                  {bitflowRatio.toLocaleString('en-US', {
-                    maximumFractionDigits: 6,
-                  })}{' '}
-                  STX
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sd-gray">Time to receive STX</p>
+                </div>
+                <div className="flex place-content-start sm:place-content-end">
+                  <p className="relative flex items-center gap-1 group max-w-max">
+                    {Number(bitcoinBlocksLeft) <= 100 ? (
+                      <span>
+                        End of cycle{' '}
+                        <svg
+                          className="inline"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_431_1934)">
+                            <path
+                              opacity="0.5"
+                              d="M6.99996 12.8334C10.2216 12.8334 12.8333 10.2217 12.8333 7.00008C12.8333 3.77842 10.2216 1.16675 6.99996 1.16675C3.7783 1.16675 1.16663 3.77842 1.16663 7.00008C1.16663 10.2217 3.7783 12.8334 6.99996 12.8334Z"
+                              stroke="#00060F"
+                              stroke-width="1.16667"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              opacity="0.5"
+                              d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
+                              stroke="#00060F"
+                              stroke-width="1.16667"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              opacity="0.5"
+                              d="M7 9.91675H7.00648"
+                              stroke="#00060F"
+                              stroke-width="1.16667"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_431_1934">
+                              <rect width="14" height="14" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        <span className="block text-sm text-sd-gray-darker/50">
+                          (~
+                          {formatSeconds(21000 + 10 * bitcoinBlocksLeft).toLocaleString('en-US')})
+                        </span>
+                      </span>
+                    ) : (
+                      <>
+                        <Tooltip anchorSelect="#endOfCycle" place="top" className="max-w-xs">
+                          The STX that is backing your stSTX is locked in Stacks consensus in 2-week
+                          cycles. STX can only be unstacked by Stacking DAO at the end of a Stacks
+                          Consensus cycle.
+                        </Tooltip>
+
+                        <span id="endOfCycle">
+                          End of cycle{' '}
+                          <svg
+                            className="inline"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g clip-path="url(#clip0_431_1934)">
+                              <path
+                                opacity="0.5"
+                                d="M6.99996 12.8334C10.2216 12.8334 12.8333 10.2217 12.8333 7.00008C12.8333 3.77842 10.2216 1.16675 6.99996 1.16675C3.7783 1.16675 1.16663 3.77842 1.16663 7.00008C1.16663 10.2217 3.7783 12.8334 6.99996 12.8334Z"
+                                stroke="#00060F"
+                                stroke-width="1.16667"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                opacity="0.5"
+                                d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
+                                stroke="#00060F"
+                                stroke-width="1.16667"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                opacity="0.5"
+                                d="M7 9.91675H7.00648"
+                                stroke="#00060F"
+                                stroke-width="1.16667"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_431_1934">
+                                <rect width="14" height="14" fill="white" />
+                              </clipPath>
+                            </defs>
+                          </svg>
+                          <span className="block text-sm text-sd-gray-darker/50">
+                            (~
+                            {formatSeconds(10 * bitcoinBlocksLeft).toLocaleString('en-US')})
+                          </span>
+                        </span>
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2">
-                <div className="text-gray-600">You receive</div>
-                <div className="flex place-content-start sm:place-content-end mt-0 sm:mt-0">
-                  ~{stxReceivedBitflow.toLocaleString('en-US')} STX
+                <div className="text-sd-gray">Conversion rate</div>
+                <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
+                  <div className="flex items-center font-semibold">
+                    1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                    <StxLogo className="inline ml-1.5 w-5 h-5" />
+                  </div>
                 </div>
               </div>
-            </>
-          )}
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                <div className="text-sd-gray">You receive</div>
+                <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                  {currency.default.format(stxReceived)}
+                  <StxLogo className="inline w-5 h-5 ml-1.5" />
+                </div>
+              </div>
 
-          <button
-            type="button"
-            className={`flex gap-2 items-center justify-center rounded-full px-6 font-bold focus:outline-none min-h-[48px] text-lg ${
-              buttonDisabled ? 'bg-gray-400' : 'button-ststx'
-            } text-white active:bg-button-active hover:bg-button-hover w-full mt-3`}
-            disabled={buttonDisabled}
-            onClick={sellStStx}
-          >
-            Sell
-          </button>
+              <Alert type={Alert.type.WARNING} className="rounded-full">
+                <p>
+                  Unstacking STX will give you a withdrawal NFT that allows you to withdraw the STX
+                  tokens after the current PoX yield cycle ends.
+                </p>
+                <p className="mt-2">
+                  <a
+                    className="font-bold"
+                    href="https://docs.stackingdao.com/stackingdao/the-stacking-dao-app/withdrawing-stx"
+                    target="_blank"
+                  >
+                    Learn more about withdrawals
+                  </a>
+                </p>
+              </Alert>
+
+              <button
+                type="button"
+                className="flex gap-2 items-center justify-center rounded-lg px-6 font-semibold focus:outline-none min-h-[48px] text-xl bg-dark-green-600 text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
+                disabled={buttonDisabled}
+                onClick={unstackStx}
+              >
+                {buttonText}
+              </button>
+            </div>
+
+            <div className="flex flex-col w-full gap-4 p-6 mt-4 font-medium rounded-lg bg-sd-gray-light">
+              <h4 className="font-base font semibold">Sell stSTX on Bitflow</h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                <div className="text-sd-gray">Time to receive STX</div>
+                <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
+                  Instant
+                </div>
+              </div>
+
+              {isLoadingBitflowData ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <PlaceholderBar className="inline-flex w-20 h-4" />
+                    <PlaceholderBar
+                      className="inline-flex w-20 h-4 sm:justify-self-end"
+                      color={PlaceholderBar.color.GRAY}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <PlaceholderBar className="inline-flex w-20 h-4" />
+                    <PlaceholderBar
+                      className="inline-flex w-20 h-4 sm:justify-self-end"
+                      color={PlaceholderBar.color.GRAY}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <div className="text-sd-gray">Conversion rate</div>
+                    <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
+                      <div className="flex items-center font-semibold">
+                        1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                        <StxLogo className="inline w-5 h-5 ml-1.5" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    <div className="text-sd-gray">You receive</div>
+                    <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                      ~{currency.default.format(stxReceivedBitflow)}
+                      <StxLogo className="inline w-5 h-5 ml-1.5" />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <button
+                type="button"
+                className="flex gap-2 items-center justify-center rounded-lg px-6 font-semibold focus:outline-none min-h-[48px] text-xl bg-dark-green-600 text-white active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50 w-full"
+                disabled={buttonDisabled}
+                onClick={sellStStx}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.5396 0H5.46035C2.44506 0 0 2.4448 0 5.4599V10.3775H5.6551C5.24179 9.82835 4.99661 9.14605 4.99661 8.40768C4.99661 6.5975 6.46918 5.12506 8.27955 5.12506C10.0898 5.12506 11.5624 6.5975 11.5624 8.40768C11.5624 8.77056 11.2682 9.06477 10.9053 9.06477C10.5424 9.06477 10.2482 8.77056 10.2482 8.40768C10.2482 7.32192 9.36403 6.43782 8.27808 6.43782C7.19226 6.43782 6.3081 7.32192 6.3081 8.40768C6.3081 9.4935 7.19226 10.3775 8.27808 10.3775H13.859C14.2219 10.3775 14.5162 10.6717 14.5162 11.0346C14.5162 11.3975 14.2219 11.6918 13.859 11.6918H0.123328C0.65152 14.1534 2.84019 16 5.46035 16H10.5396C13.5549 16 16 13.5551 16 10.5401V5.4599C16 2.4448 13.5549 0 10.5396 0ZM13.5451 8.72435C13.1822 8.72435 12.8879 8.43014 12.8879 8.06726C12.8879 5.53274 10.8255 3.47181 8.2921 3.47181C5.75878 3.47181 3.69632 5.53414 3.69632 8.06726C3.69632 8.43014 3.40205 8.72435 3.03917 8.72435C2.67622 8.72435 2.38202 8.43014 2.38202 8.06726C2.38202 4.80838 5.03302 2.15904 8.29075 2.15904C11.5499 2.15904 14.1994 4.80979 14.1994 8.06726C14.1994 8.43014 13.9052 8.72435 13.5423 8.72435H13.5451Z"
+                    fill="white"
+                  />
+                </svg>
+                Sell on Bitflow
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div className="p-8 md:p-12 bg-dark-green-600 rounded-xl shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A]">
+          <div className="flex flex-col">
+            <Stats />
+            <PoX />
+          </div>
         </div>
       </div>
     </div>

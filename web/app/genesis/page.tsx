@@ -124,7 +124,7 @@ export default function Genesis() {
               <div role="status" className="flex text-center flex-col items-center mt-8">
                 <svg
                   aria-hidden="true"
-                  className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-700"
+                  className="w-8 h-8 text-gray-200 animate-spin fill-green-700"
                   viewBox="0 0 100 101"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -147,10 +147,10 @@ export default function Genesis() {
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                       🏆🏆🏆
                     </h1>
-                    <h2 className="mt-6 text-lg font-semibold text-gray-600">
+                    <h2 className="mt-6 text-lg font-semibold text-sd-gray">
                       Congrats on claiming your NFT.
                     </h2>
-                    <p className="mt-1 text-lg font-semibold text-gray-600">
+                    <p className="mt-1 text-lg font-semibold text-sd-gray">
                       A secret multiplier will be applied to your points later.
                     </p>
                     <img src="/genesis-nft.png" className="flex flex-col items-center mt-8" />
@@ -160,7 +160,7 @@ export default function Genesis() {
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                       🎇🎇🎇
                     </h1>
-                    <h2 className="mt-6 text-xl font-semibold text-gray-600">
+                    <h2 className="mt-6 text-xl font-semibold text-sd-gray">
                       Congrats, you are eligible for the Genesis NFT claim.
                     </h2>
                     <button
@@ -175,7 +175,7 @@ export default function Genesis() {
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
                       :(
                     </h1>
-                    <h2 className="mt-6 text-xl font-semibold text-gray-600">
+                    <h2 className="mt-6 text-xl font-semibold text-sd-gray">
                       Sorry, you are not eligible for the Genesis NFT claim.
                     </h2>
                   </span>

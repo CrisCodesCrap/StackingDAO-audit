@@ -2,84 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+
+@font-face {
+  font-family: 'Aktiv Grotesk Ex';
+  src: url('../public/fonts/AktivGroteskEx-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.react-tooltip {
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  width: max-content;
 }
 
-.clip-bottom {
-  clip-path: polygon(100% 50%, 0 0, 100% 0, 50% 100%, 0 0)
-}
-
-.text-stacks {
-  color: rgb(85, 70, 255);
-}
-
-.bg-stacks {
-  background-color: rgb(85, 70, 255);
-}
-
-.button-ststx {
-  color: #fff;
-  background-color: #318d8b;
-}
-
-.text-ststx {
-  color: #318d8b;
-}
-
-.bg-light-ststx {
-  background-color: #c9ece1;
-}
-
-.bg-ststx {
-  --tw-bg-opacity: 1;
-  background-color: rgb(49 141 139/var(--tw-bg-opacity));
-}
-
-.button-stacks {
-  color: #fff;
-  cursor: pointer;
-  background-color: #7a40ee;
-  background-image: linear-gradient(135deg, #5546ff, rgba(122, 64, 238, 0));
-  border-radius: 0.75rem;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  transition: background-color .2s ease-in-out;
-}
-
-.text-tertiary-text {
-  --tw-text-opacity: 1;
-  color: rgb(133 150 161/var(--tw-text-opacity));
-}
-
-.text-warning-text {
-  --tw-text-opacity: 1;
-  color: rgb(85 70 255/var(--tw-text-opacity));
-}
-
-.text-primary {
-  --tw-text-opacity: 1;
-  color: rgb(85 70 255/var(--tw-text-opacity));
-}
-
-.bg-primary {
-  --tw-bg-opacity: 1;
-  background-color: rgb(85 70 255/var(--tw-bg-opacity));
-}
-
-.bg-primary\/10 {
-  background-color: rgba(85,70,255,.1);
+.react-tooltip__show {
+  opacity: 1 !important;
 }
