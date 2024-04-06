@@ -26,8 +26,12 @@ export default function Cycles() {
     try {
       const url = `https://api.mainnet.hiro.so/extended/v2/burn-blocks/${burnHeight}/blocks`;
       const response = await fetch(url, { credentials: 'omit' });
-      const data = await response.json();
-      return data.results[0].height;
+      if (response.ok) {
+        const data = await response.json();
+        return data.results[0].height;
+      } else {
+        return 0;
+      }
     } catch (error) {
       return 0;
     }
@@ -82,6 +86,13 @@ export default function Cycles() {
     const inflow = Number(result.data.inflow.value) / 1000000;
     const outflow = Number(result.data.outflow.value) / 1000000;
     return inflow - outflow;
+  }
+
+  function rewardCycleToBurnHeight(cycle: number) {
+    const firstBlockHeight = 666050;
+    const cycleLength = 2100;
+
+    return firstBlockHeight + (cycle * cycleLength);
   }
 
   async function fetchAll() {
