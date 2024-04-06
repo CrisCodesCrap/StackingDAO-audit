@@ -7,7 +7,6 @@ const utils = require('./utils.js');
 //
 
 const pointsContract = `${process.env.CONTRACT_ADDRESS}.block-info-v5`;
-const pointsHelperContract = `${process.env.CONTRACT_ADDRESS}.block-info-helper-v3`;
 
 //
 // Contract calls
@@ -28,7 +27,6 @@ async function userWalletAtBlock(address, blockHeight) {
     });
 
     const result = tx.cvToJSON(userInfo).value.value;
-    console.log(tx.cvToJSON(userInfo));
     return result / 1000000;
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
@@ -51,7 +49,6 @@ async function userBitflowAtBlock(address, blockHeight) {
       network: utils.resolveNetwork()
     });
 
-    console.log(tx.cvToJSON(userInfo));
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
@@ -64,8 +61,8 @@ async function userBitflowAtBlock(address, blockHeight) {
 async function userZestAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: pointsHelperContract.split(".")[0],
-      contractName: pointsHelperContract.split(".")[1],
+      contractAddress: process.env.CONTRACT_ADDRESS,
+      contractName: "block-info-v9",
       functionName: "get-user-zest",
       functionArgs: [
         tx.standardPrincipalCV(address),
@@ -75,7 +72,6 @@ async function userZestAtBlock(address, blockHeight) {
       network: utils.resolveNetwork()
     });
 
-    console.log(tx.cvToJSON(userInfo));
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
@@ -263,4 +259,3 @@ async function start() {
 // ---------------------------------------------------------
 
 exports.start = start;
-exports.userInfoAtBlock = userInfoAtBlock;
