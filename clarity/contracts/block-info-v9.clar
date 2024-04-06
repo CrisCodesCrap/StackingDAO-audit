@@ -11,7 +11,7 @@
 
 (define-read-only (get-user-zest-helper (account principal))
   (let (
-    (user-wallet (unwrap-panic (contract-call? 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.zststx-v1-0 get-principal-balance account)))
+    (user-wallet (unwrap-panic (contract-call? 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.zststx-v1-0 get-balance account)))
   )
     user-wallet
   )
