@@ -2,7 +2,7 @@
   (let (
     (block-hash (unwrap! (get-block-info? id-header-hash block) (err u666)))
   )
-    (if (< block u140388)
+    (if (< block u143345)
       (ok u0)
       (ok (at-block block-hash (get-user-zest-helper account)))
     )
