@@ -110,15 +110,19 @@ export default function Cycles() {
       // Get cycle info
       const info = await fetchCycleInfo(cycle);
 
-      // Get stacks block height from burn height
-      const stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
+      if (cycle != nextCycle.cycle) {
+        // Get stacks block height from burn height
+        const stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
 
-      // Get amount stacked at given stacks block
-      var stacked = 0;
-      if (stacksBlock != 0) {
-        stacked = await getTotalStacked(stacksBlock);
+        // Get amount stacked at given stacks block
+        let stacked = 0;
+        if (stacksBlock != 0) {
+          stacked = await getTotalStacked(stacksBlock);
+        }
+        info['stacked'] = stacked;
+      } else {
+        info['stacked'] = 0;
       }
-      info['stacked'] = stacked;
 
       allCyclesInfo.push(info);
       setCyclesInfo(allCyclesInfo);
