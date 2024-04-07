@@ -129,3 +129,12 @@
     (ok return-amount)
   )
 )
+
+(define-public (get-stx (requested-stx uint) (receiver principal))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (try! (as-contract (stx-transfer? requested-stx tx-sender receiver)))
+    (ok requested-stx)
+  )
+)
