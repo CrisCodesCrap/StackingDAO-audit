@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 
 interface ModalProps {
   open: boolean | undefined;
-  setOpen: (openState: boolean | undefined) => void;
+  setOpen: (openState: boolean) => void;
 }
 
 export function CommissionModal({ open, setOpen }: ModalProps) {
