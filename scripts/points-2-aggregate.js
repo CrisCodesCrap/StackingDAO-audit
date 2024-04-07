@@ -169,7 +169,7 @@ async function updateAllPoints(blockHeight) {
   //
   // 0. From flat addresses array to chuncked array
   //
-  const perChunk = 100;
+  const perChunk = 150;
   const addressesChunks = addresses.addresses.reduce((resultArray, item, index) => { 
     const chunkIndex = Math.floor(index / perChunk)
   
