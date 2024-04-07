@@ -140,7 +140,7 @@ export default function Points() {
     if (data['results']?.length > 0) {
       const ids = data['results'].map(el => el['value']['repr'].replace('u', ''));
       const types = await Promise.all(ids.map(id => fetchNftType(id)));
-      const maxType = Math.max(types);
+      const maxType = Math.max(...types);
       setNftType(maxType);
     }
   };
