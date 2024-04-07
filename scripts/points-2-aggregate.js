@@ -29,8 +29,8 @@ async function userWalletAtBlock(address, blockHeight) {
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
     return await userWalletAtBlock(address, blockHeight);
   }
 }
@@ -52,8 +52,8 @@ async function userBitflowAtBlock(address, blockHeight) {
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
     return await userBitflowAtBlock(address, blockHeight);
   }
 }
@@ -75,8 +75,8 @@ async function userZestAtBlock(address, blockHeight) {
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
     return await userZestAtBlock(address, blockHeight);
   }
 }
@@ -98,8 +98,8 @@ async function userArkadikoAtBlock(address, blockHeight) {
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
     return await userArkadikoAtBlock(address, blockHeight);
   }
 }
@@ -121,18 +121,26 @@ async function userVelarAtBlock(address, blockHeight) {
     const result = tx.cvToJSON(userInfo).value.value;
     return result / 1000000;
   } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 10 seconds..", error);
-    await new Promise(r => setTimeout(r, 10 * 1000));
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
     return await userVelarAtBlock(address, blockHeight);
   }
 }
 
 async function userInfoAtBlock(address, blockHeight) {
-  const wallet = await userWalletAtBlock(address, blockHeight);
-  const bitflow = await userBitflowAtBlock(address, blockHeight);
-  const zest = await userZestAtBlock(address, blockHeight);
-  const arkadiko = await userArkadikoAtBlock(address, blockHeight);
-  const velar = await userVelarAtBlock(address, blockHeight);
+  const [
+    wallet, 
+    bitflow,
+    zest,
+    arkadiko,
+    velar
+  ] = await Promise.all([
+    userWalletAtBlock(address, blockHeight), 
+    userBitflowAtBlock(address, blockHeight),
+    userZestAtBlock(address, blockHeight),
+    userArkadikoAtBlock(address, blockHeight),
+    userVelarAtBlock(address, blockHeight)
+  ]);
 
   return {
     ststx_balance: wallet,
@@ -146,9 +154,17 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses-8');
-  const referrals = await utils.readFile('points-referrals-8');
-  const aggregate = await utils.readFile('points-aggregate-8');
+  const [
+    addresses, 
+    referrals,
+    aggregate,
+  ] = await Promise.all([
+    utils.readFile('points-addresses-8'),
+    utils.readFile('points-referrals-8'),
+    utils.readFile('points-aggregate-8')
+  ]);
+
+  console.log("[3-aggregate] Got files from S3");
 
   //
   // 0. From flat addresses array to chuncked array
@@ -166,6 +182,7 @@ async function updateAllPoints(blockHeight) {
     return resultArray
   }, [])
 
+  console.log("[3-aggregate] Created chunks");
 
   //
   // 1. Update user points
