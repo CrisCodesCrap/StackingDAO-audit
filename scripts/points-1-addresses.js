@@ -117,7 +117,7 @@ async function start() {
   const swap1ContractTransactions = await utils.getAllTransactions(swap1Contract);
   const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
 
-  
+
   const allEvents = coreContractEvents.concat(tokenContractEvents).concat(arkadikoContractEvents);
   const addressesFromEvents = parseAllEventsForAddresses(allEvents);
 
@@ -127,7 +127,7 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-7', {"addresses": addresses})
+  await utils.writeFile('points-addresses-8', {"addresses": addresses})
 
 
 
@@ -135,9 +135,9 @@ async function start() {
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals-7', referrers)
+  await utils.writeFile('points-referrals-8', referrers)
 
-  await utils.writeFile('points-last-block-addresses-7', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-8', { last_block: currentBlockHeight })
 };
 
 // start();

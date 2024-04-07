@@ -146,9 +146,9 @@ async function userInfoAtBlock(address, blockHeight) {
 //
 
 async function updateAllPoints(blockHeight) {
-  const addresses = await utils.readFile('points-addresses-7');
-  const referrals = await utils.readFile('points-referrals-7');
-  const aggregate = await utils.readFile('points-aggregate-7');
+  const addresses = await utils.readFile('points-addresses-8');
+  const referrals = await utils.readFile('points-referrals-8');
+  const aggregate = await utils.readFile('points-aggregate-8');
 
   //
   // 0. From flat addresses array to chuncked array
@@ -235,7 +235,7 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-7');
+  const lastBlockHeight = await utils.readFile('points-last-block-8');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
@@ -247,8 +247,8 @@ async function start() {
     const aggregate = await updateAllPoints(nextBlockHeight);
     console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-    await utils.writeFile('points-aggregate-7', aggregate)
-    await utils.writeFile('points-last-block-7', { last_block: nextBlockHeight })
+    await utils.writeFile('points-aggregate-8', aggregate)
+    await utils.writeFile('points-last-block-8', { last_block: nextBlockHeight })
   }
 };
 
