@@ -106,7 +106,7 @@ export function Stack({ referral }: StackProps) {
             <StackingPartner
               name="Deposit with us"
               logo="/sdao.svg"
-              selected={stackingPartner === 'NA'}
+              selected={stackingPartner === 'bitflow'}
               onClick={() => setStackingPartner('stackingdao')}
               ratio={1 / parseFloat(stxRatio ?? '1')}
             />
