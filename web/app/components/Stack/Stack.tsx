@@ -83,7 +83,7 @@ export function Stack({ referral }: StackProps) {
                   <NumericFormat
                     autoFocus
                     placeholder="0.000"
-                    value={internalAmount}
+                    value={internalAmount ?? ''}
                     defaultValue=""
                     displayType="input"
                     className="bg-sd-gray-light text-center !outline-none"
@@ -102,22 +102,22 @@ export function Stack({ referral }: StackProps) {
             </div>
           </div>
 
-          <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
+          <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <StackingPartner
               name="Deposit with us"
               logo="/sdao.svg"
-              selected={stackingPartner === 'bitflow'}
+              selected={stackingPartner === 'stackingdao'}
               onClick={() => setStackingPartner('stackingdao')}
               ratio={1 / parseFloat(stxRatio ?? '1')}
             />
-            {/*<StackingPartner
+            <StackingPartner
               name="Swap with Bitflow"
               logo="/bitflow-logo.png"
               selected={stackingPartner === 'bitflow'}
               onClick={() => setStackingPartner('bitflow')}
               recommended={(bitflow?.ratio ?? 0) > 1 / parseFloat(stxRatio ?? '0')}
               ratio={bitflow.ratio}
-            />*/}
+            />
           </div>
 
           <div className="mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
@@ -132,13 +132,9 @@ export function Stack({ referral }: StackProps) {
               ) : (
                 <span className="flex flex-row gap-1">
                   ~
-                  {(stackingPartner === 'stackingdao'
-                    ? amount.ststx
-                    : bitflow.ststx
-                  ).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {currency.short.format(
+                    stackingPartner === 'stackingdao' ? amount.ststx : bitflow.ststx
+                  )}
                   <StSTXIcon width={20} height={20} />
                 </span>
               )}
@@ -158,19 +154,14 @@ export function Stack({ referral }: StackProps) {
             </div>
           </div>
 
-          <LinkButton
-            type={stackingPartner === 'bitflow' ? 'link' : 'button'}
-            href="https://app.bitflow.finance/trade"
+          <button
+            type="button"
+            className="active:bg-button-active hover:bg-button-hover mt-6 flex min-h-[56px] w-full items-center justify-center gap-2 rounded-lg bg-dark-green-600 px-6 text-xl font-semibold text-white focus:outline-none disabled:bg-opacity-50"
+            disabled={buttonState !== 'stack'}
+            onClick={stackStx}
           >
-            <button
-              type="button"
-              className="active:bg-button-active hover:bg-button-hover mt-6 flex min-h-[56px] w-full items-center justify-center gap-2 rounded-lg bg-dark-green-600 px-6 text-xl font-semibold text-white focus:outline-none disabled:bg-opacity-50"
-              disabled={buttonState !== 'stack'}
-              onClick={stackingPartner === 'stackingdao' ? stackStx : undefined}
-            >
-              {buttonState === 'insufficient' ? 'Insufficient Balance' : 'Confirm Stack'}
-            </button>
-          </LinkButton>
+            {buttonState === 'insufficient' ? 'Insufficient Balance' : 'Confirm Stack'}
+          </button>
         </div>
       </div>
 
@@ -178,21 +169,6 @@ export function Stack({ referral }: StackProps) {
     </div>
   );
 }
-
-// This is a hack until we fix button styling altogether
-
-interface LinkButtonProps extends LinkProps {
-  type: 'link' | 'button';
-}
-
-const LinkButton = ({ type, href, children, ...props }: PropsWithChildren<LinkButtonProps>) =>
-  type === 'button' ? (
-    children
-  ) : (
-    <Link {...props} href={href} target="_blank" referrerPolicy="no-referrer" passHref>
-      {children}
-    </Link>
-  );
 
 interface StackingPartnerProps {
   name: string;
