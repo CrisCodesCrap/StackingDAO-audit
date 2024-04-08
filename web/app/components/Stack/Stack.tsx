@@ -102,22 +102,22 @@ export function Stack({ referral }: StackProps) {
             </div>
           </div>
 
-          <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
             <StackingPartner
               name="Deposit with us"
               logo="/sdao.svg"
-              selected={stackingPartner === 'stackingdao'}
+              selected={stackingPartner === 'NA'}
               onClick={() => setStackingPartner('stackingdao')}
               ratio={1 / parseFloat(stxRatio ?? '1')}
             />
-            <StackingPartner
+            {/*<StackingPartner
               name="Swap with Bitflow"
               logo="/bitflow-logo.png"
               selected={stackingPartner === 'bitflow'}
               onClick={() => setStackingPartner('bitflow')}
               recommended={(bitflow?.ratio ?? 0) > 1 / parseFloat(stxRatio ?? '0')}
               ratio={bitflow.ratio}
-            />
+            />*/}
           </div>
 
           <div className="mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
