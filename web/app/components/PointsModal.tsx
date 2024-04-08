@@ -99,7 +99,7 @@ export function PointsModal({ open, setOpen }: ModalProps) {
                       points per stSTX per day. You can earn 2.5 points for stSTX/STX LPs. We are
                       only tracking DeFi platforms with an aggregate TVL that is greater than a
                       minimum threshold that ensures meaningful liquidity on the platform. As such
-                      we are currently tracking ALEX, Arkadiko and Bitflow
+                      we are currently tracking Arkadiko, Bitflow, Velar and Zest.
                     </p>
                     <p className="mt-2 text-sm text-sd-gray">
                       Please reach out to us if you believe we should add a protocol that is missing
