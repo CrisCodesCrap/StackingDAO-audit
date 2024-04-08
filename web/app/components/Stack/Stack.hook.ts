@@ -1,17 +1,16 @@
 import {
   ClarityValue,
+  FungibleConditionCode,
+  callReadOnlyFunction,
+  contractPrincipalCV,
+  createAssetInfo,
+  cvToValue,
+  makeContractFungiblePostCondition,
+  makeStandardSTXPostCondition,
   noneCV,
   someCV,
   standardPrincipalCV,
-  FungibleConditionCode,
-  contractPrincipalCV,
-  makeStandardSTXPostCondition,
   uintCV,
-  callReadOnlyFunction,
-  cvToValue,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  createAssetInfo,
 } from '@stacks/transactions';
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { useAppContext } from '../AppContext/AppContext';
@@ -20,9 +19,6 @@ import { ContractCallOptions, makeContractCall } from '@/app/common/contract-cal
 import { stacksNetwork } from '@/app/common/utils';
 import { StacksMainnet } from '@stacks/network';
 import { useDebounce } from '@uidotdev/usehooks';
-import { useRef } from 'react';
-import { Ref } from 'react';
-import { MutableRefObject } from 'react';
 
 type StackingPartner = 'stackingdao' | 'bitflow';
 
