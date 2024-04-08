@@ -131,7 +131,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               />
             </svg>
           </div>
-          <div className="text-sm font-medium whitespace-nowrap line-clamp-1 text-dark-green-600">
+          <div className="text-sm font-medium text-dark-green-600">
             {canWithdraw ? (
               <button
                 type="button"
@@ -142,7 +142,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               </button>
             ) : (
               <div className="relative flex flex-col items-center justify-center mx-1 text-gray-500 group max-w-max bg-gray hover:text-sd-gray">
-                <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-sd-gray">
+                <span className="text-sm font-medium text-sd-gray">
                   Withdrawal available in <br /> {withdrawalBlocksLeft} Bitcoin blocks
                 </span>
                 <Tooltip
