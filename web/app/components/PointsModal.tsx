@@ -48,20 +48,20 @@ export function PointsModal({ open, setOpen }: ModalProps) {
                       <path
                         d="M28.0003 24H44.0003L49.3337 32L36.0003 49.3333L22.667 32L28.0003 24Z"
                         stroke="#7BF178"
-                        stroke-width="3"
-                        stroke-linecap="square"
+                        strokeWidth="3"
+                        strokeLinecap="square"
                       />
                       <path
                         d="M34.667 25L30.667 32L36.0003 45.3333L41.3337 32L37.3337 25"
                         stroke="#7BF178"
-                        stroke-width="3"
-                        stroke-linecap="square"
+                        strokeWidth="3"
+                        strokeLinecap="square"
                       />
                       <path
                         d="M23.667 32H48.3337"
                         stroke="#7BF178"
-                        stroke-width="3"
-                        stroke-linecap="square"
+                        strokeWidth="3"
+                        strokeLinecap="square"
                       />
                     </svg>
 

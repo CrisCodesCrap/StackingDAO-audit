@@ -199,9 +199,9 @@ export default function Points() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
                         <g
                           stroke="#797C80"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          clip-path="url(#clip0_321_1078)"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          clipPath="url(#clip0_321_1078)"
                         >
                           <path d="M6 11c2.76142 0 5-2.23858 5-5S8.76142 1 6 1 1 3.23858 1 6s2.23858 5 5 5Z" />
                           <path d="M4.54504 4.50004c.11756-.33417.34958-.61595.65498-.79543.3054-.17949.66447-.2451 1.01361-.18521.34914.05988.66582.2414.89395.5124.22813.27101.35299.614.35246.96824 0 1-1.5 1.5-1.5 1.5M6 8.5h.00556" />
@@ -336,9 +336,9 @@ export default function Points() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
                       <g
                         stroke="#797C80"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        clip-path="url(#clip0_321_1078)"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        clipPath="url(#clip0_321_1078)"
                       >
                         <path d="M6 11c2.76142 0 5-2.23858 5-5S8.76142 1 6 1 1 3.23858 1 6s2.23858 5 5 5Z" />
                         <path d="M4.54504 4.50004c.11756-.33417.34958-.61595.65498-.79543.3054-.17949.66447-.2451 1.01361-.18521.34914.05988.66582.2414.89395.5124.22813.27101.35299.614.35246.96824 0 1-1.5 1.5-1.5 1.5M6 8.5h.00556" />
@@ -383,16 +383,16 @@ export default function Points() {
                   <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" fill="none">
                     <path
                       stroke="#fff"
-                      stroke-linecap="square"
-                      stroke-linejoin="bevel"
-                      stroke-width="2"
+                      strokeLinecap="square"
+                      strokeLinejoin="bevel"
+                      strokeWidth="2"
                       d="M15.5 6H8c-.82843 0-1.5.67157-1.5 1.5V15c0 .8284.67157 1.5 1.5 1.5h7.5c.8284 0 1.5-.6716 1.5-1.5V7.5c0-.82843-.6716-1.5-1.5-1.5Z"
                     />
                     <path
                       stroke="#fff"
-                      stroke-linecap="square"
-                      stroke-linejoin="bevel"
-                      stroke-width="2"
+                      strokeLinecap="square"
+                      strokeLinejoin="bevel"
+                      strokeWidth="2"
                       d="M3.5 12c-.825 0-1.5-.675-1.5-1.5V3c0-.825.675-1.5 1.5-1.5H11c.825 0 1.5.675 1.5 1.5"
                     />
                   </svg>
@@ -468,9 +468,9 @@ export default function Points() {
                   >
                     <path
                       stroke="#000"
-                      stroke-linecap="square"
-                      stroke-linejoin="round"
-                      stroke-width="2.5"
+                      strokeLinecap="square"
+                      strokeLinejoin="round"
+                      strokeWidth="2.5"
                       d="M3 9h12M9 3v12"
                     />
                   </svg>

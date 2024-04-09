@@ -168,16 +168,16 @@ export function Unstack() {
                 <path
                   d="M12 21L3 12L12 3"
                   stroke="#1D3730"
-                  stroke-width="3"
-                  stroke-linecap="square"
-                  stroke-linejoin="bevel"
+                  strokeWidth="3"
+                  strokeLinecap="square"
+                  strokeLinejoin="bevel"
                 />
                 <path
                   d="M21 12H6"
                   stroke="#1D3730"
-                  stroke-width="3"
-                  stroke-linecap="square"
-                  stroke-linejoin="round"
+                  strokeWidth="3"
+                  strokeLinecap="square"
+                  strokeLinejoin="round"
                 />
               </svg>
             </Link>
@@ -258,30 +258,30 @@ export function Unstack() {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <g clip-path="url(#clip0_431_1934)">
+                          <g clipPath="url(#clip0_431_1934)">
                             <path
                               opacity="0.5"
                               d="M6.99996 12.8334C10.2216 12.8334 12.8333 10.2217 12.8333 7.00008C12.8333 3.77842 10.2216 1.16675 6.99996 1.16675C3.7783 1.16675 1.16663 3.77842 1.16663 7.00008C1.16663 10.2217 3.7783 12.8334 6.99996 12.8334Z"
                               stroke="#00060F"
-                              stroke-width="1.16667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.16667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               opacity="0.5"
                               d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
                               stroke="#00060F"
-                              stroke-width="1.16667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.16667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               opacity="0.5"
                               d="M7 9.91675H7.00648"
                               stroke="#00060F"
-                              stroke-width="1.16667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.16667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                           </g>
                           <defs>
@@ -313,30 +313,30 @@ export function Unstack() {
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >
-                            <g clip-path="url(#clip0_431_1934)">
+                            <g clipPath="url(#clip0_431_1934)">
                               <path
                                 opacity="0.5"
                                 d="M6.99996 12.8334C10.2216 12.8334 12.8333 10.2217 12.8333 7.00008C12.8333 3.77842 10.2216 1.16675 6.99996 1.16675C3.7783 1.16675 1.16663 3.77842 1.16663 7.00008C1.16663 10.2217 3.7783 12.8334 6.99996 12.8334Z"
                                 stroke="#00060F"
-                                stroke-width="1.16667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.16667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                               <path
                                 opacity="0.5"
                                 d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
                                 stroke="#00060F"
-                                stroke-width="1.16667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.16667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                               <path
                                 opacity="0.5"
                                 d="M7 9.91675H7.00648"
                                 stroke="#00060F"
-                                stroke-width="1.16667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.16667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                             </g>
                             <defs>
