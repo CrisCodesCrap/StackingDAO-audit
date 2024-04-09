@@ -221,13 +221,13 @@ function StackingPartner({
     >
       <div className="flex flex-row items-center justify-between">
         <p className="mr-2 text-sm">{name}</p>
-        <Image
+        {/*<Image
           src={logo}
           alt=""
           className="h-6 w-6 rounded-full bg-dark-green-600"
           width={100}
           height={100}
-        />
+        />*/}
       </div>
       {recommended && (
         <Badge
