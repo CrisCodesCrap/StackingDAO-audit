@@ -9,16 +9,16 @@ const fs = require('fs');
 
 async function start() {
 
-  const backupFolder = "points-backup-2024-02-26"
+  const backupFolder = "points-backup-2024-04-10"
 
-  const fileNames = ['points-last-block-3', 'points-last-block-addresses-3', 'points-addresses-3', 'points-referrals-3', 'points-aggregate-3'];
+  const fileNames = ['points-last-block-8', 'points-last-block-addresses-8', 'points-addresses-8', 'points-referrals-8', 'points-aggregate-8'];
 
   for (const fileName of fileNames) {
 
     const data = fs.readFileSync("files/" + backupFolder + "/" + fileName + ".json");
     const json = JSON.parse(data);
 
-    const writeResult = await utils.writeFile(fileName.replace("-3", "-8"), json)
+    const writeResult = await utils.writeFile(fileName.replace("-8", "-8"), json)
     console.log("writeResult", writeResult);
   }
 };
