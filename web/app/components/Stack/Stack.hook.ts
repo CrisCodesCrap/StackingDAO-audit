@@ -216,7 +216,7 @@ export function useStackingActions(stxAddress?: string, referral?: string): Stac
             makeStandardSTXPostCondition(stxAddress, FungibleConditionCode.Equal, stxAmount),
             makeContractFungiblePostCondition(
               'SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M',
-              'stx-ststx-lp-token-v-1-2',
+              'stableswap-stx-ststx-v-1-2',
               FungibleConditionCode.GreaterEqual,
               stStxAmount,
               createAssetInfo(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, 'ststx-token', 'stSTX')
