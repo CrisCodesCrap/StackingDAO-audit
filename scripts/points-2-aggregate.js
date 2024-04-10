@@ -200,8 +200,7 @@ async function userBoostCycle81(address) {
   const endAmount = await userBoostInfoAtBlockHelper(address, blockHeightEndCycle81);
 
   if (endAmount >= startAmount) {
-    // One cycle is 14 days
-    return startAmount * 14 * 5;
+    return startAmount * 5;
   }
   return 0;
 }
