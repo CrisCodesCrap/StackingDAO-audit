@@ -12,6 +12,7 @@ async function start() {
   await utils.writeFile('points-last-block-8', { last_block: 132200 })
   await utils.writeFile('points-last-block-addresses-8', { last_block: 132200 })
   await utils.writeFile('points-aggregate-8', { })
+  await utils.writeFile('points-referrals-8', { })
 
   const lastBlock = await utils.readFile('points-last-block-8');
   console.log("Got last block:", lastBlock);
