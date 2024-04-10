@@ -1,7 +1,7 @@
 'use client';
 
-import Link, { LinkProps } from 'next/link';
-import { PropsWithChildren, useState } from 'react';
+import Link from 'next/link';
+import { useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 
 import { cn } from '@/app/common/class-names';

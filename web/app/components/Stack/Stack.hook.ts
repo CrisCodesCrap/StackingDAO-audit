@@ -20,6 +20,9 @@ import { stacksNetwork } from '@/app/common/utils';
 import { StacksMainnet } from '@stacks/network';
 import { useDebounce } from '@uidotdev/usehooks';
 
+// Slippage tolerance for swapping using bitflow.
+const SLIPPAGE_TOLERANCE = 0.04;
+
 type StackingPartner = 'stackingdao' | 'bitflow';
 
 type ButtonState = 'stack' | 'insufficient' | 'disabled';
@@ -173,7 +176,7 @@ export function useStackingActions(stxAddress?: string, referral?: string): Stac
     if (!stxAddress) return;
 
     const stxAmount = amount.stx * 1000000;
-    const stStxAmount = Math.floor(amount.ststx * 1000000);
+    const stStxAmount = Math.floor(amount.ststx * 1000000 * (1 - SLIPPAGE_TOLERANCE));
 
     let contract: ContractCallOptions;
     switch (stackingPartner) {
