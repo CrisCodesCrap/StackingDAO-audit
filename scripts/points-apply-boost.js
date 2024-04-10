@@ -35,29 +35,6 @@ async function userWalletAtBlock(address, blockHeight) {
   }
 }
 
-async function userBitflowAtBlock(address, blockHeight) {
-  try {
-    const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: pointsContract.split(".")[0],
-      contractName: pointsContract.split(".")[1],
-      functionName: "get-user-bitflow",
-      functionArgs: [
-        tx.standardPrincipalCV(address),
-        tx.uintCV(blockHeight),
-      ],
-      senderAddress: process.env.CONTRACT_ADDRESS,
-      network: utils.resolveNetwork()
-    });
-
-    const result = tx.cvToJSON(userInfo).value.value;
-    return result / 1000000;
-  } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
-    await new Promise(r => setTimeout(r, 2 * 1000));
-    return await userBitflowAtBlock(address, blockHeight);
-  }
-}
-
 async function userBitflowLpAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
@@ -151,28 +128,6 @@ async function userVelarAtBlock(address, blockHeight) {
   }
 }
 
-async function userInfoAtBlockHelper(address, blockHeight) {
-  const [
-    wallet, 
-    bitflow,
-    zest,
-    arkadiko,
-    velar
-  ] = await Promise.all([
-    userWalletAtBlock(address, blockHeight), 
-    userBitflowAtBlock(address, blockHeight),
-    userZestAtBlock(address, blockHeight),
-    userArkadikoAtBlock(address, blockHeight),
-    userVelarAtBlock(address, blockHeight)
-  ]);
-
-  return {
-    ststx_balance: wallet,
-    defi_balance: zest + arkadiko + velar,
-    lp_balance: bitflow
-  }
-}
-
 async function userBoostInfoAtBlockHelper(address, blockHeight) {
   const [
     wallet, 
@@ -206,31 +161,11 @@ async function userBoostCycle81(address) {
   return 0;
 }
 
-async function userInfoAtBlock(address, blockHeight) {
-  const userInfo = await userInfoAtBlockHelper(address, blockHeight);
-
-  if (blockHeight == 146024) {
-    const boost = await userBoostCycle81(address);
-
-    return {
-      ststx_balance: userInfo.ststx_balance + boost,
-      defi_balance: userInfo.defi_balance,
-      lp_balance: userInfo.lp_balance
-    }
-  }
-
-  return {
-    ststx_balance: userInfo.ststx_balance,
-    defi_balance: userInfo.defi_balance,
-    lp_balance: userInfo.lp_balance
-  }
-}
-
 //
 // Loop
 //
 
-async function updateAllPoints(blockHeight) {
+async function updateAllPoints() {
   const [
     addresses, 
     referrals,
@@ -267,13 +202,13 @@ async function updateAllPoints(blockHeight) {
   var counter = 0;
   for (const addressChunk of addressesChunks) {
 
-    const allPromise = await Promise.all(addressChunk.map(address => userInfoAtBlock(address, blockHeight)));
+    const allPromise = await Promise.all(addressChunk.map(address => userBoostCycle81(address)));
 
     for (const address of addressChunk) {
       const addressIndex = addressChunk.indexOf(address);
-      const userInfo = allPromise[addressIndex];
+      const boostPoints = allPromise[addressIndex];
 
-      const newPoints = userInfo.ststx_balance + userInfo.defi_balance * 1.5 + userInfo.lp_balance * 2.5;
+      console.log("-", address, "-", boostPoints);
 
       if (!aggregate[address]) {
         aggregate[address] = {
@@ -282,7 +217,7 @@ async function updateAllPoints(blockHeight) {
         }
       } else {
         aggregate[address] = {
-          user_points: aggregate[address].user_points + newPoints,
+          user_points: aggregate[address].user_points + boostPoints,
           referral_points: 0
         }
       }
@@ -328,27 +263,13 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-8');
-  const currentBlockHeight = await utils.getBlockHeight();
-  const nextBlockHeight = lastBlockHeight.last_block + 144;
+  console.log("[3-aggregate] Updating points with boost");
 
-  console.log("[3-aggregate] Next block:", nextBlockHeight, ", current block:", currentBlockHeight);
+  const aggregate = await updateAllPoints();
+  console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-  if (currentBlockHeight > nextBlockHeight) {
-    console.log("[3-aggregate] Updating points for block:", nextBlockHeight);
-
-    const aggregate = await updateAllPoints(nextBlockHeight);
-    console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
-
-    await utils.writeFile('points-aggregate-8', aggregate)
-    await utils.writeFile('points-last-block-8', { last_block: nextBlockHeight })
-  }
+  await utils.writeFile('points-aggregate-8', aggregate)
 };
 
-// start();
+start();
 
-// ---------------------------------------------------------
-// Exports
-// ---------------------------------------------------------
-
-exports.start = start;

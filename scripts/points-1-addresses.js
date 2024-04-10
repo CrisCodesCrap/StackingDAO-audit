@@ -10,6 +10,7 @@ const coreContract = `${process.env.CONTRACT_ADDRESS}.stacking-dao-core-v1`;
 const tokenContract = `${process.env.CONTRACT_ADDRESS}.ststx-token`;
 const swap1Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1`;
 const swap2Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2`;
+const arkadikoVaultsContract = `SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-vaults-data-v1-1`;
 
 //
 // Parse
@@ -35,6 +36,14 @@ function parseAllEventsForAddresses(allEvents) {
         const recipient = logJson.data.value.recipient.value;
         if (!recipient.includes(".")) {
           addresses.push(recipient);
+        }
+      }
+
+      // Arkadiko migration
+      if (event.contract_log.contract_id == arkadikoVaultsContract && logJson.action.value == "vaults-set") {
+        const stacker = logJson.owner.value;
+        if (!stacker.includes(".")) {
+          addresses.push(stacker);
         }
       }
 
@@ -103,13 +112,13 @@ async function start() {
 
   const coreContractEvents = await utils.getAllEvents(coreContract);
   const tokenContractEvents = await utils.getAllEvents(tokenContract);
+  const arkadikoContractEvents = await utils.getAllEvents(arkadikoVaultsContract);
 
   const swap1ContractTransactions = await utils.getAllTransactions(swap1Contract);
   const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
 
 
-
-  const allEvents = coreContractEvents.concat(tokenContractEvents);
+  const allEvents = coreContractEvents.concat(tokenContractEvents).concat(arkadikoContractEvents);
   const addressesFromEvents = parseAllEventsForAddresses(allEvents);
 
   const allTransactions = swap1ContractTransactions.concat(swap2ContractTransactions);
@@ -118,7 +127,7 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-7', {"addresses": addresses})
+  await utils.writeFile('points-addresses-8', {"addresses": addresses})
 
 
 
@@ -126,9 +135,9 @@ async function start() {
   const referrers = parseAllEventsForReferrers(coreContractEvents);
   console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
 
-  await utils.writeFile('points-referrals-7', referrers)
+  await utils.writeFile('points-referrals-8', referrers)
 
-  await utils.writeFile('points-last-block-addresses-7', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-8', { last_block: currentBlockHeight })
 };
 
 // start();
