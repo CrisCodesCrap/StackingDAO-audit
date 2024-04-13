@@ -21,12 +21,10 @@ import {
 import Image from 'next/image';
 import { Tooltip } from 'react-tooltip';
 import { currency } from '@/app/common/utils';
+import { useSearchParams } from 'next/navigation';
 
-interface StackProps {
-  referral?: string;
-}
-
-export function Stack({ referral }: StackProps) {
+export function Stack() {
+  const params = useSearchParams();
   const stxAddress = useSTXAddress();
 
   const [showApyInfo, setShowApyInfo] = useState<boolean>(false);
@@ -43,7 +41,7 @@ export function Stack({ referral }: StackProps) {
     setStackingPartner,
     buttonState,
     stackStx,
-  } = useStackingActions(stxAddress, referral);
+  } = useStackingActions(stxAddress, params.get('referral'));
 
   return (
     <div className="flex items-center justify-center rounded-xl bg-white p-8 shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A] md:p-12">

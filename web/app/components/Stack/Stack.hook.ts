@@ -38,7 +38,7 @@ const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number>
   return cvToValue(resultOut).value / 1000000;
 };
 
-export function useReferral(referral?: string): [() => ClarityValue] {
+export function useReferral(referral?: string | null): [() => ClarityValue] {
   useEffect(() => {
     if (referral) localStorage.setItem('stacking-referral', referral);
   }, [referral]);
@@ -140,7 +140,7 @@ interface StackingActions extends StackingInput {
   stackStx: VoidFunction;
 }
 
-export function useStackingActions(stxAddress?: string, referral?: string): StackingActions {
+export function useStackingActions(stxAddress?: string, referral?: string | null): StackingActions {
   const { stxBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const { amount, updateRequestedAmount, ...input } = useStackingInput();
   const [getReferral] = useReferral(referral);
