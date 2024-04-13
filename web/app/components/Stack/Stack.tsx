@@ -80,7 +80,7 @@ export function Stack() {
                 <div className="inline-block w-full text-center text-5xl">
                   <NumericFormat
                     autoFocus
-                    placeholder="0.000"
+                    placeholder="0.0"
                     value={internalAmount}
                     defaultValue=""
                     displayType="input"
@@ -90,8 +90,8 @@ export function Stack() {
                     allowNegative={false}
                     thousandSeparator={true}
                     thousandsGroupStyle="thousand"
-                    fixedDecimalScale
-                    decimalScale={3}
+                    // fixedDecimalScale
+                    decimalScale={6}
                     // isAllowed={value => onValidateAmount(value.floatValue)}
                   />
                 </div>
