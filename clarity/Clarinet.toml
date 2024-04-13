@@ -292,6 +292,11 @@ path = "contracts/version-2/stacking-pool-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.stacking-pool-signer-v1]
+path = "contracts/version-2/stacking-pool-signer-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.stacking-pool-payout-v1]
 path = "contracts/version-2/stacking-pool-payout-v1.clar"
 clarity_version = 2

@@ -86,7 +86,7 @@
     (try! (as-contract (contract-call? delegate request-stx-to-stack reserve amount)))
 
     (map-set last-locked-amount (contract-of delegate) (get locked (get-stx-account (contract-of delegate))))
-    ;; Need to subtract and not set to current amount, as rewards must still be calculated correctly
+    ;; Need to add and not set to current amount, as rewards must still be calculated correctly
     (map-set last-unlocked-amount (contract-of delegate) (+ (get-last-unlocked-amount (contract-of delegate)) amount))
 
     (print { action: "request-stx-to-stack", data: { delegate: (contract-of delegate), amount: amount, block-height: block-height } })

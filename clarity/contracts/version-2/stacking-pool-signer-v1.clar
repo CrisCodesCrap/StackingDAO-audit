@@ -1,35 +1,19 @@
-;; @contract Stacking Pool
+;; @contract Stacking Pool Signer
 ;; @version 1
-;;
-;; Stacking DAO stacking pool
-;; One of the pools that will be used by the StackingDAO protocol.
-;; Others can also delegate to this pool directly.
-
-;; Stacking delegation
-;;
-;; 1) User needs to set correct amount to delegate
-;;    `revoke-delegate-stx` and `delegate-stx` to (re)set amount to delegate
-;;
-;; 2) Pool must perform user delegation
-;;    `delegate-stack-stx` for first time user to start stacking
-;;    `delegate-stack-extend` once for next cycle
-;;    `delegate-stack-increase` if need to stack more
-;;
-;; 3) Pool must commit aggregation result
-;;    `stack-aggregation-commit-indexed` to commit to a reward cycle and get reward index, only done once per cycle
-;;    `stack-aggregation-increase` with index from previous commit to increase amount stacked
 ;;
 
 ;;-------------------------------------
 ;; Constants 
 ;;-------------------------------------
 
-(define-constant ERR_CAN_NOT_PREPARE u205001)
+(define-constant ERR_UNAUTHORISED u99501)
+(define-constant ERR_CAN_NOT_PREPARE u99502)
 
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
+(define-data-var pool-owner principal tx-sender)
 (define-data-var pox-reward-address { version: (buff 1), hashbytes: (buff 32) } { version: 0x04, hashbytes: 0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc })
 (define-data-var pox-signer-key (buff 33) 0x0390a5cac7c33fda49f70bc1b0866fa0ba7a9440d9de647fecb8132ceb76a94dfa)
 (define-data-var last-auth-id uint u0)
@@ -47,6 +31,10 @@
 ;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
+
+(define-read-only (get-pool-owner)
+  (var-get pool-owner)
+)
 
 (define-read-only (get-pox-reward-address)
   (var-get pox-reward-address)
@@ -80,6 +68,7 @@
   (let (
     (current-cycle (current-pox-reward-cycle))
     (start-block-next-cycle (reward-cycle-to-burn-height (+ current-cycle u1)))
+    ;; TODO: set full StackingDAO address
     (withdraw-offset (contract-call? .data-core-v1 get-cycle-withdraw-offset))
   )
     (> burn-block-height (- start-block-next-cycle withdraw-offset))
@@ -87,65 +76,19 @@
 )
 
 ;;-------------------------------------
-;; Public - StackingDAO Delegates
+;; Prepare
 ;;-------------------------------------
 
 (define-public (prepare-stacking-dao)
   (let (
+    ;; TODO: set full StackingDAO address
     (delegates (contract-call? .data-pools-v1 get-pool-delegates (as-contract tx-sender)))
   )
     (prepare-delegate-many delegates)
   )
 )
 
-;;-------------------------------------
-;; Public - Delegates
-;;-------------------------------------
-
-(define-public (delegate-stx (amount-ustx uint) (until-burn-ht (optional uint)))
-  (begin
-    (print { action: "delegate-stx", data: { tx-sender: tx-sender, amount-ustx: amount-ustx, block-height: block-height } })
-
-    (match (pox-delegate-stx amount-ustx (as-contract tx-sender) until-burn-ht)
-      result (ok result)
-      error (err (to-uint error))
-    )
-  )
-)
-
-(define-public (revoke-delegate-stx)
-  (begin
-    (print { action: "revoke-delegate-stx", data: { tx-sender: tx-sender, block-height: block-height } })
-
-    (match (pox-revoke-delegate-stx)
-      result (ok result)
-      error (err error)
-    )
-  )
-)
-
-(define-public (prepare-delegate (delegate principal))
-  (begin
-    (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
-
-    ;; 1. Delegate
-    (try! (delegation delegate))
-
-    ;; 2. Aggregate - ignore error ERR_STACKING_THRESHOLD_NOT_MET
-    (match (aggregation)
-      success true
-      error (begin
-        (asserts! (is-eq error u11) (err error))
-        true
-      )
-    )
-
-    (print { action: "prepare-delegate", data: { delegate: delegate, block-height: block-height } })
-    (ok true)
-  )
-)
-
-(define-public (prepare-delegate-many (delegates (list 50 principal)))
+(define-private (prepare-delegate-many (delegates (list 50 principal)))
   (let (
     ;; 1. Delegate
     (delegation-errors (filter is-error (map delegation delegates)))
@@ -267,7 +210,14 @@
 
 (define-public (delegate-stack-stx (stacker principal) (amount-ustx uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts!
+      (or
+        (is-eq contract-caller (var-get pool-owner))
+        (is-eq contract-caller (as-contract tx-sender))
+        (contract-call? .dao get-contract-active contract-caller)
+      )
+      (err ERR_UNAUTHORISED)
+    )
     (print { action: "delegate-stack-stx", data: { stacker: stacker, amount: amount-ustx, block-height: block-height } })
     
     (match (as-contract (pox-delegate-stack-stx stacker amount-ustx (get-pox-reward-address) burn-block-height))
@@ -279,7 +229,14 @@
 
 (define-public (delegate-stack-extend (stacker principal))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts!
+      (or
+        (is-eq contract-caller (var-get pool-owner))
+        (is-eq contract-caller (as-contract tx-sender))
+        (contract-call? .dao get-contract-active contract-caller)
+      )
+      (err ERR_UNAUTHORISED)
+    )
     (print { action: "delegate-stack-extend", data: { stacker: stacker, block-height: block-height } })
 
     (match (as-contract (pox-delegate-stack-extend stacker (get-pox-reward-address)))
@@ -291,7 +248,14 @@
 
 (define-public (delegate-stack-increase (stacker principal) (increase-by uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts!
+      (or
+        (is-eq contract-caller (var-get pool-owner))
+        (is-eq contract-caller (as-contract tx-sender))
+        (contract-call? .dao get-contract-active contract-caller)
+      )
+      (err ERR_UNAUTHORISED)
+    )
     (print { action: "delegate-stack-increase", data: { stacker: stacker, increase-by: increase-by, block-height: block-height } })
 
     (match (as-contract (pox-delegate-stack-increase stacker (get-pox-reward-address) increase-by))
@@ -303,7 +267,14 @@
 
 (define-public (stack-aggregation-commit-indexed (reward-cycle uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts!
+      (or
+        (is-eq contract-caller (var-get pool-owner))
+        (is-eq contract-caller (as-contract tx-sender))
+        (contract-call? .dao get-contract-active contract-caller)
+      )
+      (err ERR_UNAUTHORISED)
+    )
     (print { action: "stack-aggregation-commit-indexed", data: { reward-cycle: reward-cycle, block-height: block-height } })
 
     (var-set last-auth-id (+ (get-last-auth-id) u1))
@@ -316,7 +287,14 @@
 
 (define-public (stack-aggregation-increase (reward-cycle uint) (reward-cycle-index uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts!
+      (or
+        (is-eq contract-caller (var-get pool-owner))
+        (is-eq contract-caller (as-contract tx-sender))
+        (contract-call? .dao get-contract-active contract-caller)
+      )
+      (err ERR_UNAUTHORISED)
+    )
     (print { action: "stack-aggregation-increase", data: { reward-cycle: reward-cycle, reward-cycle-index: reward-cycle-index, block-height: block-height } })
 
     (match (as-contract (pox-stack-aggregation-increase (get-pox-reward-address) reward-cycle reward-cycle-index))
@@ -330,9 +308,18 @@
 ;; Admin
 ;;-------------------------------------
 
+(define-public (set-pool-owner (owner principal))
+  (begin
+    (asserts! (is-eq contract-caller (var-get pool-owner)) (err ERR_UNAUTHORISED))
+
+    (var-set pool-owner owner)
+    (ok true)
+  )
+)
+
 (define-public (set-pox-reward-address (new-address { version: (buff 1), hashbytes: (buff 32) }))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (is-eq contract-caller (var-get pool-owner)) (err ERR_UNAUTHORISED))
 
     (var-set pox-reward-address new-address)
     (ok true)
@@ -341,7 +328,7 @@
 
 (define-public (set-pox-signer-key (new-signer-key (buff 33)))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (is-eq contract-caller (var-get pool-owner)) (err ERR_UNAUTHORISED))
 
     (var-set pox-signer-key new-signer-key)
     (ok true)
@@ -350,7 +337,7 @@
 
 (define-public (set-cycle-to-signer-signature (cycle uint) (signature (buff 65)))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (is-eq contract-caller (var-get pool-owner)) (err ERR_UNAUTHORISED))
 
     (map-set cycle-to-signer-signature cycle signature)
     (ok true)

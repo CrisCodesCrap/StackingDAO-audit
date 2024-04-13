@@ -41,6 +41,9 @@
 ;;-------------------------------------
 
 (define-constant ERR_POOL_OWNER_SHARE u2011001)
+(define-constant ERR_MAX_COMMISSION u2011002)
+
+(define-constant MAX_COMMISSION u4000) ;; 40% in basis points
 
 ;;-------------------------------------
 ;; Commission
@@ -85,6 +88,7 @@
 (define-public (set-standard-commission (commission uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (<= commission MAX_COMMISSION) (err ERR_MAX_COMMISSION))
 
     (var-set standard-commission commission)
     (ok true)
@@ -94,6 +98,7 @@
 (define-public (set-pool-commission (pool principal) (commission uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (<= commission MAX_COMMISSION) (err ERR_MAX_COMMISSION))
 
     (map-set pool-commission pool commission)
     (ok true)

@@ -253,7 +253,7 @@
       ;; Just try to commit, it might fail because minimum not yet met
       (begin
         (print { action: "stack-aggregation-commit-indexed", reward-cycle: reward-cycle })
-        (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle (some (var-get pox-signer-signature)) (var-get pox-signer-key)))
+        (match (as-contract (contract-call? .pox-4-mock stack-aggregation-commit-indexed (var-get pool-pox-address) reward-cycle (some (var-get pox-signer-signature)) (var-get pox-signer-key) u999999999000000 u1))
           index 
             (begin
               (print { action: "stack-aggregation-commit-indexed - result", index: index })

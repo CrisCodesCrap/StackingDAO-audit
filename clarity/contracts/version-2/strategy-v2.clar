@@ -67,7 +67,7 @@
   )
     (if (is-eq delegate-amount u0)
       (try! (contract-call? .delegates-handler-v1 revoke delegate-contract .reserve-v1 .rewards-v1))
-      (try! (contract-call? .delegates-handler-v1 revoke-and-delegate delegate-contract .reserve-v1 .rewards-v1 (get amount delegate-info) delegate-to until-burn-ht))
+      (try! (contract-call? .delegates-handler-v1 revoke-and-delegate delegate-contract .reserve-v1 .rewards-v1 delegate-amount delegate-to until-burn-ht))
     )
 
     (print { action: "perform-pool-delegation-helper", data: { delegate-info: delegate-info, delegate-to: delegate-to, until-burn-ht: until-burn-ht, block-height: block-height } })

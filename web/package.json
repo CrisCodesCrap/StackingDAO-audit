@@ -7,7 +7,8 @@
     "build": "npx next build && npx next export",
     "start": "next start",
     "lint": "next lint",
-    "deploy-contracts": "ts-node scripts/deploy-contracts.ts -r tsconfig-paths/register -T --project ./tsconfig.json"
+    "deploy-contracts": "ts-node scripts/deploy-contracts.ts -r tsconfig-paths/register -T --project ./tsconfig.json",
+    "deploy-contracts-v2": "ts-node scripts/deploy-contracts-v2.ts -r tsconfig-paths/register -T --project ./tsconfig.json"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.16",

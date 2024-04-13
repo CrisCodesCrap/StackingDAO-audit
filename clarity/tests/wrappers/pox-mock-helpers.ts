@@ -82,23 +82,28 @@ class Pox4Mock {
     ], this.deployer.address);
   }
 
-  getSignerKeyMessageHash(rewardCycle: number, topic: string) {
+  getSignerKeyMessageHash(rewardCycle: number, topic: string, authId: number) {
     return this.chain.callReadOnlyFn("pox-4-mock", "get-signer-key-message-hash", [
       types.tuple({ 'version': '0x04', 'hashbytes': '0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc'}),
       types.uint(rewardCycle),
       types.ascii(topic),
       types.uint(1),
+      types.uint(999999999 * 1000000),
+      types.uint(authId),
     ], this.deployer.address);
   }
 
-  verifySignerKeySig(rewardCycle: number, topic: string, signerSig: string, signerKey: string) {
+  verifySignerKeySig(rewardCycle: number, topic: string, signerSig: string, signerKey: string, authId: number) {
     return this.chain.callReadOnlyFn("pox-4-mock", "verify-signer-key-sig", [
       types.tuple({ 'version': '0x04', 'hashbytes': '0x2fffa9a09bb7fa7dced44834d77ee81c49c5f0cc'}),
       types.uint(rewardCycle),
       types.ascii(topic),
       types.uint(1),
       types.some(types.buff(hexDecode(signerSig))),
-      types.buff(hexDecode(signerKey))
+      types.buff(hexDecode(signerKey)),
+      types.uint(999999999 * 1000000),
+      types.uint(999999999 * 1000000),
+      types.uint(authId),
     ], this.deployer.address);
   }
 

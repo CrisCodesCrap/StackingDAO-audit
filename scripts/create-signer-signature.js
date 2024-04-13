@@ -5,7 +5,7 @@ const secp256k1 = require('secp256k1')
 const privateKey = Buffer.from("753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a6", "hex");
 
 // Message to sign
-const message = Buffer.from("d8135c290b1ed4eb95242cc54a759bababf6771a26692f5e8a0897d17e71a6e5", "hex");
+const message = Buffer.from("59070b7e9b7bec902fb30e35203e67aa167d92d0e7bd7428b12e8d788e54cad2", "hex");
 
 // Get the public key in a compressed format
 const publicKey = secp256k1.publicKeyCreate(privateKey)

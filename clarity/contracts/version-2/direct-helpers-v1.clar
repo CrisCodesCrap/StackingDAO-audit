@@ -204,16 +204,12 @@
 (define-public (calculate-direct-stacking-info (reserve <reserve-trait>) (protocols (list 50 <protocol-trait>)) (user principal)) 
   (let (
     (direct-stacking-info (contract-call? .data-direct-stacking-v1 get-direct-stacking-user user))
-    (direct-stacking (if (is-some direct-stacking-info)
-      (get amount (unwrap-panic direct-stacking-info))
-      u0
-    ))
+    (direct-stacking (default-to u0 (get amount direct-stacking-info)))
 
     (ratio (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
     (direct-stacking-ststx (/ (* direct-stacking u1000000) ratio))
 
-    (user-list (list user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user))
-    
+    (user-list (list user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user))    
     (protocol-balances (map get-user-balance-in-protocol user-list protocols))
 
     (protocol-balance-errors (filter is-error protocol-balances))
@@ -225,8 +221,8 @@
     ))
 
     (let (
-      (protocol-balances-unrwapped (map do-unwrap-panic protocol-balances))
-      (protocol-ststx (fold + protocol-balances-unrwapped u0))
+      (protocol-balances-unwrapped (map do-unwrap-panic protocol-balances))
+      (protocol-ststx (fold + protocol-balances-unwrapped u0))
       (wallet-ststx (unwrap-panic (contract-call? .ststx-token get-balance user)))
     )
       (ok { direct-stacking-stx: direct-stacking, direct-stacking-ststx: direct-stacking-ststx, balance-ststx: (+ wallet-ststx protocol-ststx) })

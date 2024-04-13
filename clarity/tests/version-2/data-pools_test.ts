@@ -170,6 +170,21 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "data-pools: can not set commission above 40%",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let dataPools = new DataPools(chain, deployer);
+
+    let result = dataPools.setStandardCommission(deployer, 4001);
+    result.expectErr().expectUint(2011002);
+
+    result = dataPools.setPoolCommission(deployer, qualifiedName("stacking-pool-v1"), 4001);
+    result.expectErr().expectUint(2011002);
+  }
+});
+
 //-------------------------------------
 // Access 
 //-------------------------------------

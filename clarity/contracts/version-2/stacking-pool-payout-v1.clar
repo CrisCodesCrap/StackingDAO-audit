@@ -11,12 +11,14 @@
 (define-constant ERR_POOL_CYCLE_INDEX u2015002)
 (define-constant ERR_REWARD_SET u2015003)
 (define-constant ERR_TOTAL_STACKED u2015004)
+(define-constant ERR_STACKER_INFO u2015005)
 
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
 
 (define-data-var last-reward-id uint u0)
+(define-data-var stacking-pool principal .stacking-pool-v1)
 
 ;;-------------------------------------
 ;; Maps
@@ -32,12 +34,24 @@
   }
 )
 
+(define-map user-distributed 
+  {
+    user: principal,
+    rewards-id: uint
+  }
+  bool
+)
+
 ;;-------------------------------------
 ;; Getters
 ;;-------------------------------------
 
 (define-read-only (get-last-reward-id)
   (var-get last-reward-id)
+)
+
+(define-read-only (get-stacking-pool)
+  (var-get stacking-pool)
 )
 
 (define-read-only (get-rewards-info (rewards-id uint))
@@ -49,6 +63,13 @@
       total-stacked: u0
     }
     (map-get? rewards-info rewards-id)
+  )
+)
+
+(define-read-only (get-user-distributed (user principal) (rewards-id uint))
+  (default-to
+    false
+    (map-get? user-distributed { user: user, rewards-id: rewards-id })
   )
 )
 
@@ -69,8 +90,12 @@
   (let (
     (block (+ (reward-cycle-to-burn-height cycle) u1))
     (block-hash (unwrap! (get-block-info? id-header-hash block) (err ERR_BLOCK_INFO)))
+    (stacker-info (unwrap! (at-block block-hash (get-stacker-info user)) (err ERR_STACKER_INFO)))
   )
-    (ok (get locked (at-block block-hash (get-stx-account user))))
+    (if (and (is-some (get delegated-to stacker-info)) (is-eq (unwrap-panic (get delegated-to stacker-info)) (get-stacking-pool)))
+      (ok (get locked (at-block block-hash (get-stx-account user))))
+      (ok u0)
+    )
   )
 )
 
@@ -117,8 +142,14 @@
     (user-stacked (try! (get-user-stacked user (get cycle rewards))))
     (user-rewards (/ (* user-stacked (get amount rewards)) (get total-stacked rewards)))
   )
-    (try! (as-contract (stx-transfer? user-rewards tx-sender user)))
-    (ok user-rewards)
+    (if (get-user-distributed user reward-id)
+      (ok u0)
+      (begin
+        (try! (as-contract (stx-transfer? user-rewards tx-sender user)))
+        (map-set user-distributed { user: user, rewards-id: reward-id } true)
+        (ok user-rewards)
+      )
+    )
   )
 )
 
@@ -133,6 +164,15 @@
 ;;-------------------------------------
 ;; Admin
 ;;-------------------------------------
+
+(define-public (set-stacking-pool (pool principal))
+  (begin
+    (try! (contract-call? .dao check-is-protocol contract-caller))
+
+    (var-set stacking-pool pool)
+    (ok true)
+  )
+)
 
 (define-public (get-stx (requested-stx uint) (receiver principal))
   (begin
@@ -169,3 +209,11 @@
     (contract-call? .pox-4-mock get-reward-set-pox-address cycle-id reward-index)
   )
 )
+
+(define-read-only (get-stacker-info (delegate principal)) 
+  (if is-in-mainnet
+    ;; TODO: Update to pox-4
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-stacker-info delegate)
+    (contract-call? .pox-4-mock get-stacker-info delegate)
+  )
+)   

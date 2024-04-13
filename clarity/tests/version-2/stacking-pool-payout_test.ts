@@ -111,6 +111,82 @@ Clarinet.test({
   }
 });
 
+Clarinet.test({
+  name: "stacking-pool-payout: rewards are only distributed once per user",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+    let wallet_3 = accounts.get("wallet_3")!;
+
+    let stackingPool = new StackingPool(chain, deployer);
+    let stackingPoolPayout = new StackingPoolPayout(chain, deployer);
+    let pox = new Pox4Mock(chain, deployer);
+    await stackingPool.addSignatures(chain, deployer);
+
+    //
+    // Stack
+    //
+
+    let result = pox.allowContractCaller(wallet_1, qualifiedName("stacking-pool-v1"))
+    result.expectOk().expectBool(true);
+    result = stackingPool.delegateStx(wallet_1, 50000, 99);
+    result.expectOk().expectBool(true);
+
+    result = pox.allowContractCaller(wallet_2, qualifiedName("stacking-pool-v1"))
+    result.expectOk().expectBool(true);
+    result = stackingPool.delegateStx(wallet_2, 100000, 99);
+    result.expectOk().expectBool(true);
+
+    result = pox.allowContractCaller(wallet_3, qualifiedName("stacking-pool-v1"))
+    result.expectOk().expectBool(true);
+    result = stackingPool.delegateStx(wallet_3, 10000, 99);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlockUntil(19);
+
+    result = stackingPool.prepareDelegate(wallet_1, wallet_1.address);
+    result.expectOk().expectBool(true);
+    result = stackingPool.prepareDelegate(wallet_2, wallet_2.address);
+    result.expectOk().expectBool(true);
+    result = stackingPool.prepareDelegate(wallet_3, wallet_3.address);
+    result.expectOk().expectBool(true);
+
+    chain.mineEmptyBlockUntil(23);
+
+    //
+    // Deposit rewards
+    //
+
+    result = stackingPoolPayout.depositRewards(deployer, 200, 1);
+    result.expectOk().expectBool(true);
+
+    //
+    // Distribute rewards
+    //
+
+    // Wallet_1 has 31.25% of total stacked
+    // 31.25% of 200 STX rewards = 62.5
+    result = stackingPoolPayout.distributeRewards(deployer, [wallet_1.address], 0);
+    result.expectOk().expectUintWithDecimals(62.5);
+
+    let call = await stackingPoolPayout.getRewardsInfo(0);
+    call.result.expectTuple()["amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["amount-distributed"].expectUintWithDecimals(62.5);
+    call.result.expectTuple()["cycle"].expectUint(1);
+    call.result.expectTuple()["total-stacked"].expectUintWithDecimals(50000 + 100000 + 10000);
+
+    result = stackingPoolPayout.distributeRewards(deployer, [wallet_1.address], 0);
+    result.expectOk().expectUintWithDecimals(0);
+
+    call = await stackingPoolPayout.getRewardsInfo(0);
+    call.result.expectTuple()["amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["amount-distributed"].expectUintWithDecimals(62.5);
+    call.result.expectTuple()["cycle"].expectUint(1);
+    call.result.expectTuple()["total-stacked"].expectUintWithDecimals(50000 + 100000 + 10000);
+  }
+});
+
 //-------------------------------------
 // Admin 
 //-------------------------------------
