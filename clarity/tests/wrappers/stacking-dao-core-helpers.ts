@@ -160,6 +160,8 @@ class Core {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "deposit", [
         types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("commission-v2")),
+        types.principal(qualifiedName("staking-v1")),
         types.principal(qualifiedName("direct-helpers-v1")),
         types.uint(amount * 1000000),
         referrer == undefined ? types.none() : types.some(types.principal(referrer)),
@@ -196,6 +198,8 @@ class Core {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "withdraw", [
         types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("commission-v2")),
+        types.principal(qualifiedName("staking-v1")),
         types.uint(nftId),
       ], caller.address)
     ]);
@@ -206,6 +210,24 @@ class Core {
     let block = this.chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "set-shutdown-deposits", [
         types.bool(shutdown),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setStackFee(caller: Account, fee: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "set-stack-fee", [
+        types.uint(fee),
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  setUnstackFee(caller: Account, fee: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("stacking-dao-core-v2", "set-unstack-fee", [
+        types.uint(fee),
       ], caller.address)
     ]);
     return block.receipts[0].result;

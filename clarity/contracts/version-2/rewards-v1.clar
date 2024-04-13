@@ -105,7 +105,7 @@
     (asserts! (> burn-block-height (var-get rewards-unlock)) (err ERR_CAN_NOT_PROCESS_YET))
 
     (if (> (var-get total-commission) u0)
-      (try! (contract-call? commission-contract add-commission staking-contract (var-get total-commission)))
+      (try! (as-contract (contract-call? commission-contract add-commission staking-contract (var-get total-commission))))
       u0
     )
 

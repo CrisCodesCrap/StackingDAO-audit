@@ -1,7 +1,7 @@
 import { Account, Chain, Clarinet, Tx, types } from "https://deno.land/x/clarinet/index.ts";
 import { qualifiedName, REWARD_CYCLE_LENGTH, PREPARE_PHASE_LENGTH } from '../wrappers/tests-utils.ts';
 
-import { Core} from '../wrappers/stacking-dao-core-helpers.ts';
+import { Core, CoreV1 } from '../wrappers/stacking-dao-core-helpers.ts';
 import { DataCore } from '../wrappers/data-core-helpers.ts';
 import { DataDirectStacking } from '../wrappers/data-direct-stacking-helpers.ts';
 import { Reserve } from '../wrappers/reserve-helpers.ts';
@@ -139,6 +139,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let core = new Core(chain, deployer);
+    let coreV1 = new CoreV1(chain, deployer);
     let dataCore = new DataCore(chain, deployer);
 
     let result = await core.deposit(wallet_1, 1000, undefined, undefined);
@@ -270,6 +271,54 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "core: stack/unstack fee",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let core = new Core(chain, deployer);
+    let coreV1 = new CoreV1(chain, deployer);
+    let dataCore = new DataCore(chain, deployer);
+
+    let result = await core.setStackFee(deployer, 500);
+    result.expectOk().expectBool(true);
+
+    result = await core.setUnstackFee(deployer, 500);
+    result.expectOk().expectBool(true);
+
+    // 1000 minus 5% fee
+    result = await core.deposit(wallet_1, 1000, undefined, undefined);
+    result.expectOk().expectUintWithDecimals(950);
+
+    let call = coreV1.getStxBalance(qualifiedName("commission-v2"));
+    call.result.expectUintWithDecimals(50);
+
+    chain.mineEmptyBlockUntil(19);
+
+    call = await core.getWithdrawUnlockBurnHeight();
+    call.result.expectOk().expectUint(21 * 2);
+
+    result = await core.initWithdraw(wallet_1, 200);
+    result.expectOk().expectUint(0);
+
+    call = await dataCore.getWithdrawalsByNft(0);
+    call.result.expectTuple()["ststx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["stx-amount"].expectUintWithDecimals(200);
+    call.result.expectTuple()["unlock-burn-height"].expectUint(42);
+
+    chain.mineEmptyBlockUntil(21 * 2 + 2);
+
+    result = await core.withdraw(wallet_1, 0);
+    result.expectOk().expectUintWithDecimals(200);
+
+    // 200 * 5% = 10
+    // Already had 50 from deposit
+    call = coreV1.getStxBalance(qualifiedName("commission-v2"));
+    call.result.expectUintWithDecimals(50 + 10);
+  },
+});
+
 //-------------------------------------
 // Migrate 
 //-------------------------------------
@@ -369,6 +418,8 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "deposit", [
         types.principal(qualifiedName("fake-reserve")),
+        types.principal(qualifiedName("commission-v2")),
+        types.principal(qualifiedName("staking-v1")),
         types.principal(qualifiedName("direct-helpers-v1")),
         types.uint(100 * 1000000),
         types.none(),
@@ -380,6 +431,8 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "deposit", [
         types.principal(qualifiedName("reserve-v1")),
+        types.principal(qualifiedName("commission-v2")),
+        types.principal(qualifiedName("staking-v1")),
         types.principal(qualifiedName("fake-direct-helpers")),
         types.uint(100 * 1000000),
         types.none(),
@@ -445,7 +498,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "core: can not call cancel-withdraw with wrong trait params",
+  name: "core: can not call withdraw with wrong trait params",
   async fn(chain: Chain, accounts: Map<string, Account>) {
   
     let deployer = accounts.get("deployer")!;
@@ -453,6 +506,8 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("stacking-dao-core-v2", "withdraw", [
         types.principal(qualifiedName("fake-reserve")),
+        types.principal(qualifiedName("commission-v2")),
+        types.principal(qualifiedName("staking-v1")),
         types.uint(0),
       ], deployer.address)
     ]);
