@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { stacksNetwork } from './common/utils';
 import { AppContextProvider } from './components/AppContext/AppContext';
 import { TxStatus } from './components/TxStatus';
-
+import Head from "next/head";
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
@@ -69,10 +69,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <html lang="en" className="h-full text-base antialiased bg-neutral-100">
-      <head>
+      <Head>
         <link rel="shortcut icon" href="favicon.png" />
         <link rel="icon" href="favicon.ico" />
-      </head>
+      </Head>
       <body className={`${inter.className} relative flex min-h-full flex-col`}>
         <Connect authOptions={authOptions}>
           {isClient && (

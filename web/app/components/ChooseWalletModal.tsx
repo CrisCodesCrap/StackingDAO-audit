@@ -24,7 +24,7 @@ export function ChooseWalletModal({ open, closeModal, onProviderChosen }: Props)
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={closeModal}>
+      <Dialog as="div" className="relative z-40" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -48,13 +48,13 @@ export function ChooseWalletModal({ open, closeModal, onProviderChosen }: Props)
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:w-full sm:max-w-lg sm:p-12">
+              <Dialog.Panel className="relative w-full px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white shadow-xl rounded-2xl sm:my-8 sm:w-full sm:max-w-lg sm:p-12">
                 <div>
                   <div>
                     <div className="flex items-center justify-between">
                       <Dialog.Title
                         as="h1"
-                        className="text-2xl font-headings leading-6 text-sd-gray-darker"
+                        className="text-lg leading-6 sm:text-2xl font-headings text-sd-gray-darker"
                       >
                         Choose wallet
                       </Dialog.Title>

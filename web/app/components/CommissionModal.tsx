@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 
 interface ModalProps {
   open: boolean | undefined;
-  setOpen: (openState: boolean | undefined) => void;
+  setOpen: (openState: boolean) => void;
 }
 
 export function CommissionModal({ open, setOpen }: ModalProps) {
@@ -45,24 +45,24 @@ export function CommissionModal({ open, setOpen }: ModalProps) {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <circle cx="36" cy="36" r="36" fill="#1D3730" />
-                      <g clip-path="url(#clip0_542_3238)">
+                      <g clipPath="url(#clip0_542_3238)">
                         <path
                           d="M44 28L28 44"
                           stroke="#7BF178"
-                          stroke-width="4"
-                          stroke-linecap="square"
+                          strokeWidth="4"
+                          strokeLinecap="square"
                         />
                         <path
                           d="M29.5 33C31.433 33 33 31.433 33 29.5C33 27.567 31.433 26 29.5 26C27.567 26 26 27.567 26 29.5C26 31.433 27.567 33 29.5 33Z"
                           stroke="#7BF178"
-                          stroke-width="3"
-                          stroke-linecap="square"
+                          strokeWidth="3"
+                          strokeLinecap="square"
                         />
                         <path
                           d="M42.5 46C44.433 46 46 44.433 46 42.5C46 40.567 44.433 39 42.5 39C40.567 39 39 40.567 39 42.5C39 44.433 40.567 46 42.5 46Z"
                           stroke="#7BF178"
-                          stroke-width="3"
-                          stroke-linecap="square"
+                          strokeWidth="3"
+                          strokeLinecap="square"
                         />
                       </g>
                       <defs>

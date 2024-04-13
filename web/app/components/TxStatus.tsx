@@ -66,8 +66,8 @@ export const TxStatus = () => {
                         <path
                           d="M44 30L33 41L28 36"
                           stroke="#7BF178"
-                          stroke-width="4"
-                          stroke-linecap="square"
+                          strokeWidth="4"
+                          strokeLinecap="square"
                         />
                       </svg>
 

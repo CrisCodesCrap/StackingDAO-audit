@@ -1,16 +1,21 @@
 import Link, { LinkProps } from 'next/link';
 import clsx from 'clsx';
-import { HTMLAttributeAnchorTarget } from 'react';
+import { HTMLAttributeAnchorTarget, PropsWithChildren } from 'react';
 
 interface ButtonProps {
-  invert: boolean | undefined;
-  href: string;
+  invert?: boolean;
+  href?: string;
   target?: HTMLAttributeAnchorTarget;
-  className: string;
-  children: any;
+  className?: string;
 }
 
-export function Button({ invert, href, className, children, ...props }: ButtonProps) {
+export function Button({
+  invert,
+  href,
+  className,
+  children,
+  ...props
+}: PropsWithChildren<ButtonProps>) {
   className = clsx(
     className,
     'flex gap-2 items-center justify-center rounded-lg px-4 pt-1 pb-1.5 font-semibold focus:outline-none text-base border-2 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50',

@@ -1,9 +1,8 @@
 // @ts-nocheck
 
-import React, { useContext, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';
-import { stacksNetwork as network } from '../common/utils';
 import { Alert } from './Alert';
 import { useAppContext } from './AppContext/AppContext';
 import {
@@ -14,7 +13,7 @@ import {
   createAssetInfo,
 } from '@stacks/transactions';
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, currency } from '../common/utils';
 
 export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
   const stxAddress = useSTXAddress();
@@ -95,16 +94,11 @@ export const UnstakeModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmou
       ) : null}
 
       <p className="mt-3 text-sm text-center text-gray-500">
-        You are currently staking{' '}
-        {stakedAmount.toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 6,
-        })}{' '}
-        sDAO
+        You are currently staking {currency.long.format(stakedAmount)} sDAO
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={stakedAmount.toLocaleString('en-US')}
+          balance={currency.default.format(stakedAmount)}
           token="sDAO"
           inputName="unstakesDAO"
           inputId="unstakeAmount"

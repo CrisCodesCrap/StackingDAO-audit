@@ -126,14 +126,25 @@ async function getAllEvents(contract) {
   var allEvents = [];
 
   var offset = 0;
-  var events = await getEvents(contract, offset);
-  allEvents = allEvents.concat(events);
+  var shouldRun = true;
 
-  while (events.length > 0) {
-    offset += 50;
-    events = await getEvents(contract, offset);
-    allEvents = allEvents.concat(events);
+  while (shouldRun) {
+
+    var promises = [];
+    for (let i = 0; i < 200; i++) {
+      promises.push(getEvents(contract, offset))
+      offset += 50;
+    }
+
+    const eventsArray = await Promise.all(promises);
+    for (const events of eventsArray) {
+      allEvents = allEvents.concat(events);
+      if (events.length == 0) {
+        shouldRun = false;
+      }
+    }
   }
+
   return allEvents;
 }
 
@@ -154,14 +165,25 @@ async function getAllTransactions(contract) {
   var allTransactions = [];
 
   var offset = 0;
-  var transactions = await getTransactions(contract, offset);
-  allTransactions = allTransactions.concat(transactions);
+  var shouldRun = true;
 
-  while (transactions.length > 0) {
-    offset += 50;
-    transactions = await getTransactions(contract, offset);
-    allTransactions = allTransactions.concat(transactions);
+  while (shouldRun) {
+
+    var promises = [];
+    for (let i = 0; i < 200; i++) {
+      promises.push(getTransactions(contract, offset))
+      offset += 50;
+    }
+
+    const txsArray = await Promise.all(promises);
+    for (const transactions of txsArray) {
+      allTransactions = allTransactions.concat(transactions);
+      if (transactions.length == 0) {
+        shouldRun = false;
+      }
+    }
   }
+
   return allTransactions;
 }
 

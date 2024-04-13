@@ -108,7 +108,21 @@ path = "contracts/block-info-v5.clar"
 clarity_version = 2
 epoch = 2.4
 
-<<<<<<< HEAD
+[contracts.block-info-v6]
+path = "contracts/block-info-v6.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v8]
+path = "contracts/block-info-v8.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.block-info-v10]
+path = "contracts/block-info-v10.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.commission-trait]
 path = "contracts/helpers/commission-trait.clar"
 clarity_version = 2
@@ -401,19 +415,6 @@ path = "contracts/version-3/staking-v1.clar"
 clarity_version = 2
 epoch = 2.4
 
-
-=======
-[contracts.block-info-v6]
-path = "contracts/block-info-v6.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.block-info-v8]
-path = "contracts/block-info-v8.clar"
-clarity_version = 2
-epoch = 2.4
-
->>>>>>> master
 # ------------------------------
 # Tests
 # ------------------------------

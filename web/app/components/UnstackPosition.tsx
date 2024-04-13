@@ -3,7 +3,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useConnect } from '@stacks/connect-react';
 import {
   uintCV,
   contractPrincipalCV,
@@ -16,11 +15,10 @@ import {
 } from '@stacks/transactions';
 import { useAppContext } from './AppContext/AppContext';
 import { useSTXAddress } from '../common/use-stx-address';
-import { stacksNetwork, formatSeconds } from '../common/utils';
+import { stacksNetwork, formatSeconds, currency } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
 
 import { Tooltip } from 'react-tooltip';
-import clsx from 'clsx';
 
 export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCycleId }) {
   const stxAddress = useSTXAddress();
@@ -112,7 +110,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
         <div className="flex flex-col">
           <div className="flex items-center justify-center">
             <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-              {stStxAmount.toLocaleString('en-US')}
+              {currency.default.format(stStxAmount)}
             </div>
             <svg
               className="inline ml-2"
@@ -133,7 +131,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               />
             </svg>
           </div>
-          <div className="text-sm font-medium whitespace-nowrap line-clamp-1 text-dark-green-600">
+          <div className="text-sm font-medium text-dark-green-600">
             {canWithdraw ? (
               <button
                 type="button"
@@ -144,7 +142,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
               </button>
             ) : (
               <div className="relative flex flex-col items-center justify-center mx-1 text-gray-500 group max-w-max bg-gray hover:text-sd-gray">
-                <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-sd-gray">
+                <span className="text-sm font-medium text-sd-gray">
                   Withdrawal available in <br /> {withdrawalBlocksLeft} Bitcoin blocks
                 </span>
                 <Tooltip

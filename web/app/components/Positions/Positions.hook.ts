@@ -13,6 +13,7 @@ import { useAppContext } from '../AppContext/AppContext';
 import { stacksNetwork, coreApiUrl } from '../../common/utils';
 
 interface PositionsData {
+  isFetching: boolean;
   stStxBalance: number;
   stxBalance: number;
   stackingApy: number;
@@ -315,6 +316,8 @@ const fetchArkadikoBalance = async (stxAddress: string): Promise<ArkadikoBalance
 export function usePositionsData(stxAddress?: string): PositionsData {
   const { stStxBalance, stxBalance, stackingApy } = useAppContext();
 
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+
   const [currentCycleId, setCurrentCycleId] = useState<number>(3);
 
   const [genesisNfts, setGenesisNfts] = useState<IGenesisNFTData[]>([]);
@@ -339,6 +342,8 @@ export function usePositionsData(stxAddress?: string): PositionsData {
 
   useEffect(() => {
     async function fetchData(stxAddress: string) {
+      setIsFetching(true);
+
       await Promise.all([
         getPoxCycle(stxAddress).then(setCurrentCycleId),
         fetchNftBalance(stxAddress).then(setUnstackNfts),
@@ -348,12 +353,15 @@ export function usePositionsData(stxAddress?: string): PositionsData {
         fetchVelarBalance(stxAddress).then(setVelarBalance),
         fetchArkadikoBalance(stxAddress).then(setArkadikoBalance),
       ]).catch(console.error);
+
+      setIsFetching(false);
     }
 
     if (stxAddress) fetchData(stxAddress);
   }, [stxAddress]);
 
   const data: PositionsData = {
+    isFetching,
     stStxBalance,
     stxBalance,
     stackingApy,

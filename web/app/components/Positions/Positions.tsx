@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { Tooltip } from 'react-tooltip';
 import StStxLogo from '../Logos/StStx';
 import StxLogo from '../Logos/Stx';
+import { PlaceholderBar } from '../PlaceholderBar';
+import { currency } from '@/app/common/utils';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -16,6 +18,64 @@ export function Positions() {
   const positions = usePositionsData(stxAddress);
 
   if (!stxAddress) return <></>;
+
+  {
+    /* Loading placeholder */
+  }
+  if (positions.isFetching) {
+    return (
+      <div className="w-full mt-16 mb-10">
+        <h3 className="text-lg font-medium md:mb-4 md:text-2xl font-headings">Active Positions</h3>
+        <div className="w-full mt-10 grid grid-cols-1 gap-8 lg:grid-cols-4">
+          {Array(3)
+            .fill(null)
+            .map((_, i) => (
+              <div
+                key={i}
+                tabIndex={0}
+                className="w-full p-6 bg-white rounded-xl"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-center">
+                      <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
+                        <PlaceholderBar className="inline-flex w-12 h-3" />
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-sd-gray-dark ml-1.5"></div>
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-sd-gray">
+                      <PlaceholderBar
+                        className="inline-flex w-20 h-2"
+                        color={PlaceholderBar.color.GRAY}
+                      />
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 py-2 mt-4 text-left">
+                  <div className="shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-sd-gray-dark ml-1.5"></div>
+                  </div>
+                  <div className="flex justify-between flex-grow">
+                    <div>
+                      <span className="text-lg font-semibold line-clamp-1 text-ellipsis">
+                        <PlaceholderBar className="inline-flex w-16 h-4" />
+                      </span>
+                      <span className="flex flex-wrap gap-1 -mt-1 text-sm line-clamp-1">
+                        <PlaceholderBar
+                          className="inline-flex w-24 h-2"
+                          color={PlaceholderBar.color.GRAY}
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full mt-16 mb-10">
@@ -40,10 +100,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.stStxBalance.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.stStxBalance)}
                     </div>
                     <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
@@ -172,10 +229,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.zestProvision.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.zestProvision)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -191,7 +245,7 @@ export function Positions() {
                         r="9.375"
                         fill="#1E3731"
                         stroke="#FF8A17"
-                        stroke-width="1.25"
+                        strokeWidth="1.25"
                       />
                       <path
                         d="M12.4841 11.8973L14.6515 15.2812H13.0323L10.488 11.3054L7.94361 15.2812H6.33304L8.50046 11.9061H5.39069V10.625H15.5938V11.8973H12.4841Z"
@@ -253,10 +307,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpStaked.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpStaked)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -322,10 +373,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpWallet.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpWallet)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -392,10 +440,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpStaked2.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpStaked2)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -461,10 +506,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.bitflowBalance.lpWallet2.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.bitflowBalance.lpWallet2)}
                     </div>
                     <svg
                       className="inline ml-2"
@@ -531,10 +573,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.velarBalance.lpStaked.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.velarBalance.lpStaked)}
                     </div>
                     <div className="relative flex-shrink-0 inline w-5 h-5 ml-2">
                       <Image
@@ -604,10 +643,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.velarBalance.lpWallet.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.velarBalance.lpWallet)}
                     </div>
                     <div className="relative flex-shrink-0 inline w-5 h-5 ml-2">
                       <Image
@@ -678,10 +714,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.arkadikoBalance.vault.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.arkadikoBalance.vault)}
                     </div>
                     <StStxLogo className="inline w-5 h-5 ml-2" />
                   </div>
@@ -735,10 +768,7 @@ export function Positions() {
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center">
                     <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
-                      {positions.stxBalance.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {currency.short.format(positions.stxBalance)}
                     </div>
                     <StxLogo className="inline w-5 h-5 ml-2" />
                   </div>

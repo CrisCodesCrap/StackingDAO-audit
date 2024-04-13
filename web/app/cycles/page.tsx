@@ -26,8 +26,12 @@ export default function Cycles() {
     try {
       const url = `https://api.mainnet.hiro.so/extended/v2/burn-blocks/${burnHeight}/blocks`;
       const response = await fetch(url, { credentials: 'omit' });
-      const data = await response.json();
-      return data.results[0].height;
+      if (response.ok) {
+        const data = await response.json();
+        return data.results[0].height;
+      } else {
+        return 0;
+      }
     } catch (error) {
       return 0;
     }
@@ -84,6 +88,13 @@ export default function Cycles() {
     return inflow - outflow;
   }
 
+  function rewardCycleToBurnHeight(cycle: number) {
+    const firstBlockHeight = 666050;
+    const cycleLength = 2100;
+
+    return firstBlockHeight + (cycle * cycleLength);
+  }
+
   async function fetchAll() {
     const inflow = await getInflow();
     setInflow(inflow);
@@ -95,19 +106,24 @@ export default function Cycles() {
     var startBlock = nextCycle.startBlock - 5;
     var allCyclesInfo = [];
 
-    for (let cycle = nextCycle.cycle; cycle >= 73; cycle--) {
+    const cycles = Array.from({length:(nextCycle.cycle-73+1)},(v,k)=>73+k).reverse();
+    for await (const cycle of cycles) {
       // Get cycle info
       const info = await fetchCycleInfo(cycle);
 
-      // Get stacks block height from burn height
-      const stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
+      if (cycle != nextCycle.cycle) {
+        // Get stacks block height from burn height
+        const stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
 
-      // Get amount stacked at given stacks block
-      var stacked = 0;
-      if (stacksBlock != 0) {
-        stacked = await getTotalStacked(stacksBlock);
+        // Get amount stacked at given stacks block
+        let stacked = 0;
+        if (stacksBlock != 0) {
+          stacked = await getTotalStacked(stacksBlock);
+        }
+        info['stacked'] = stacked;
+      } else {
+        info['stacked'] = 0;
       }
-      info['stacked'] = stacked;
 
       allCyclesInfo.push(info);
       setCyclesInfo(allCyclesInfo);

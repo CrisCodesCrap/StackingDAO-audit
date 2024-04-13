@@ -9,3 +9,4 @@ scripts/wallet-arweave.json
 # Local Netlify folder
 .netlify
 web/pnpm-lock.yaml
+/.idea

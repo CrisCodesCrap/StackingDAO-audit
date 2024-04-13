@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useAppContext } from './AppContext/AppContext';
 import { Tooltip } from 'react-tooltip';
+import { currency } from '../common/utils';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 
 export function PoX() {
@@ -40,9 +41,7 @@ export function PoX() {
         <div className="flex flex-wrap p-4 rounded-lg bg-white/10">
           <dt className="text-sm font-medium leading-6 text-white/70">Total STX Stacked</dt>
           <dd className="flex-none w-full text-xl font-medium leading-6 text-white">
-            {(stackedStx / 1000000).toLocaleString('en-US', {
-              maximumFractionDigits: 0,
-            })}
+            {currency.rounded.format(stackedStx / 1000000)}
           </dd>
         </div>
 
@@ -66,10 +65,10 @@ export function PoX() {
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
                 <g
                   stroke="#ffffff"
-                  stroke-opacity={35}
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  clip-path="url(#clip0_321_1078)"
+                  strokeOpacity={35}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  clipPath="url(#clip0_321_1078)"
                 >
                   <path d="M6 11c2.76142 0 5-2.23858 5-5S8.76142 1 6 1 1 3.23858 1 6s2.23858 5 5 5Z" />
                   <path d="M4.54504 4.50004c.11756-.33417.34958-.61595.65498-.79543.3054-.17949.66447-.2451 1.01361-.18521.34914.05988.66582.2414.89395.5124.22813.27101.35299.614.35246.96824 0 1-1.5 1.5-1.5 1.5M6 8.5h.00556" />

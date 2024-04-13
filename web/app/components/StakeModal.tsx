@@ -4,7 +4,6 @@ import React, { useContext, useState, useRef } from 'react';
 import { Modal } from './Modal';
 import { InputAmount } from './InputAmount';
 import { Alert } from './Alert';
-import { stacksNetwork as network } from '../common/utils';
 import { useAppContext } from './AppContext/AppContext';
 import { useSTXAddress } from '../common/use-stx-address';
 import {
@@ -14,7 +13,7 @@ import {
   createFungiblePostCondition,
   createAssetInfo,
 } from '@stacks/transactions';
-import { stacksNetwork } from '../common/utils';
+import { stacksNetwork, currency } from '../common/utils';
 import { makeContractCall } from '../common/contract-call';
 
 interface Props {
@@ -108,10 +107,7 @@ export const StakeModal: React.FC<Props> = ({ showStakeModal, setShowStakeModal,
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={sDaoBalance.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}
+          balance={currency.long.format(sDaoBalance)}
           token="sDAO"
           inputName="stakesDAO"
           inputId="stakeAmount"

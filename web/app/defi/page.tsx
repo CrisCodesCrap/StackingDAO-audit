@@ -68,7 +68,7 @@ const activityItems = [
   {
     user: {
       name: 'Zest Protocol',
-      imageUrl: 'zest.svg',
+      imageUrl: '/zest.svg',
     },
     commit: 'Use stSTX as collateral to borrow aeUSDC',
     status: 'Launched',
@@ -132,23 +132,23 @@ export default function Defi() {
                                 <path
                                   d="M11.25 2.25H15.75V6.75"
                                   stroke="#1C3830"
-                                  stroke-width="1.5"
-                                  stroke-linecap="square"
-                                  stroke-linejoin="bevel"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="square"
+                                  strokeLinejoin="bevel"
                                 />
                                 <path
                                   d="M7.5 10.5L14.5 3.5"
                                   stroke="#1C3830"
-                                  stroke-width="1.5"
-                                  stroke-linecap="square"
-                                  stroke-linejoin="bevel"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="square"
+                                  strokeLinejoin="bevel"
                                 />
                                 <path
                                   d="M13.5 9.75V14.25C13.5 14.6478 13.342 15.0294 13.0607 15.3107C12.7794 15.592 12.3978 15.75 12 15.75H3.75C3.35218 15.75 2.97064 15.592 2.68934 15.3107C2.40804 15.0294 2.25 14.6478 2.25 14.25V6C2.25 5.60218 2.40804 5.22064 2.68934 4.93934C2.97064 4.65804 3.35218 4.5 3.75 4.5H8.25"
                                   stroke="#1C3830"
-                                  stroke-width="1.5"
-                                  stroke-linecap="square"
-                                  stroke-linejoin="bevel"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="square"
+                                  strokeLinejoin="bevel"
                                 />
                               </svg>
                             </div>
@@ -161,7 +161,7 @@ export default function Defi() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 pl-0 pr-4 text-sm leading-6">
+                        <td className="hidden py-4 pl-0 pr-4 text-sm leading-6 sm:table-cell">
                           <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
                             <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
                               {item.date}

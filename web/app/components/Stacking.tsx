@@ -17,6 +17,7 @@ import { PoX } from './PoX';
 import { Tooltip } from 'react-tooltip';
 import StxLogo from './Logos/Stx';
 import StStxLogo from './Logos/StStx';
+import { currency } from '../common/utils';
 
 export function Stacking() {
   const stxAddress = useSTXAddress();
@@ -113,23 +114,23 @@ export function Stacking() {
                       <path
                         d="M10 15.3334H8.66671C7.78265 15.3334 6.93481 14.9822 6.30968 14.3571C5.68456 13.732 5.33337 12.8841 5.33337 12.0001C5.33337 11.116 5.68456 10.2682 6.30968 9.64306C6.93481 9.01794 7.78265 8.66675 8.66671 8.66675H10"
                         stroke="#7BF178"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M14 8.66675H15.3333C16.2174 8.66675 17.0652 9.01794 17.6904 9.64306C18.3155 10.2682 18.6667 11.116 18.6667 12.0001C18.6667 12.8841 18.3155 13.732 17.6904 14.3571C17.0652 14.9822 16.2174 15.3334 15.3333 15.3334H14"
                         stroke="#7BF178"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M9.33337 12H14.6667"
                         stroke="#7BF178"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     <span className="font-semibold">Referral link</span>
@@ -141,27 +142,27 @@ export function Stacking() {
                       xmlns="http://www.w3.org/2000/svg"
                       className="inline ml-1.5"
                     >
-                      <g clip-path="url(#clip0_452_1675)">
+                      <g clipPath="url(#clip0_452_1675)">
                         <path
                           d="M7.99992 14.6668C11.6818 14.6668 14.6666 11.6821 14.6666 8.00016C14.6666 4.31826 11.6818 1.3335 7.99992 1.3335C4.31802 1.3335 1.33325 4.31826 1.33325 8.00016C1.33325 11.6821 4.31802 14.6668 7.99992 14.6668Z"
                           stroke="#797C80"
-                          stroke-width="1.42857"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.42857"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M6.05994 5.99989C6.21667 5.55434 6.52604 5.17863 6.93324 4.93931C7.34044 4.7 7.8192 4.61252 8.28472 4.69237C8.75024 4.77222 9.17248 5.01424 9.47665 5.37558C9.78083 5.73691 9.94731 6.19424 9.9466 6.66656C9.9466 7.99989 7.9466 8.66656 7.9466 8.66656"
                           stroke="#797C80"
-                          stroke-width="1.42857"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.42857"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M8 11.3335H8.00648"
                           stroke="#797C80"
-                          stroke-width="1.42857"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.42857"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </g>
                       <defs>
@@ -188,10 +189,7 @@ export function Stacking() {
                       </div>
                     ) : (
                       <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
-                        {stStxBalance.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {currency.short.format(stStxBalance)}
                         <StStxLogo className="w-5 h-5 ml-1.5 inline" />
                       </span>
                     )}
@@ -209,10 +207,7 @@ export function Stacking() {
                       </div>
                     ) : (
                       <span className="inline-flex items-center text-base font-semibold sm:text-2xl">
-                        {stxBalance.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {currency.short.format(stxBalance)}
                         <StxLogo className="inline w-5 h-5 ml-1.5" />
                       </span>
                     )}
@@ -252,27 +247,27 @@ export function Stacking() {
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <g clip-path="url(#clip0_512_1702)">
+                      <g clipPath="url(#clip0_512_1702)">
                         <path
                           d="M6.99996 12.8332C10.2216 12.8332 12.8333 10.2215 12.8333 6.99984C12.8333 3.77818 10.2216 1.1665 6.99996 1.1665C3.7783 1.1665 1.16663 3.77818 1.16663 6.99984C1.16663 10.2215 3.7783 12.8332 6.99996 12.8332Z"
                           stroke="#797C80"
-                          stroke-width="1.16667"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.16667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
                           stroke="#797C80"
-                          stroke-width="1.16667"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.16667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M7 9.9165H7.00648"
                           stroke="#797C80"
-                          stroke-width="1.16667"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.16667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </g>
                       <defs>
@@ -306,27 +301,27 @@ export function Stacking() {
                         xmlns="http://www.w3.org/2000/svg"
                         className="ml-1"
                       >
-                        <g clip-path="url(#clip0_512_1702)">
+                        <g clipPath="url(#clip0_512_1702)">
                           <path
                             d="M6.99996 12.8332C10.2216 12.8332 12.8333 10.2215 12.8333 6.99984C12.8333 3.77818 10.2216 1.1665 6.99996 1.1665C3.7783 1.1665 1.16663 3.77818 1.16663 6.99984C1.16663 10.2215 3.7783 12.8332 6.99996 12.8332Z"
                             stroke="#797C80"
-                            stroke-width="1.16667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.16667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M5.30249 5.24984C5.43963 4.85998 5.71033 4.53124 6.06663 4.32184C6.42293 4.11244 6.84185 4.03589 7.24918 4.10576C7.65651 4.17563 8.02597 4.3874 8.29212 4.70357C8.55827 5.01974 8.70394 5.4199 8.70332 5.83318C8.70332 6.99984 6.95332 7.58318 6.95332 7.58318"
                             stroke="#797C80"
-                            stroke-width="1.16667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.16667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M7 9.9165H7.00648"
                             stroke="#797C80"
-                            stroke-width="1.16667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.16667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </g>
                         <defs>
@@ -348,11 +343,7 @@ export function Stacking() {
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">
                     <span className="text-2xl font-semibold">
-                      ~
-                      {yieldPerYear.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      ~{currency.short.format(yieldPerYear)}
                     </span>
                     <StxLogo className="inline w-5 h-5" />
                   </div>
