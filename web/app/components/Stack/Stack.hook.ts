@@ -145,7 +145,7 @@ export function useStackingInput(): StackingInput {
   };
 }
 
-export function useStackingActions(stxAddress?: string, referral?: string): StackingActions {
+export function useStackingActions(stxAddress?: string, referral?: string | null): StackingActions {
   const { stxBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const { amount, updateRequestedAmount, ...input } = useStackingInput();
   const [getReferral] = useReferral(referral);
