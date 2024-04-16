@@ -56,7 +56,7 @@ const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number>
   return cvToValue(resultOut).value / 1000000;
 };
 
-export function useReferral(referral?: string): [() => ClarityValue] {
+export function useReferral(referral?: string | null): [() => ClarityValue] {
   useEffect(() => {
     if (referral) localStorage.setItem('stacking-referral', referral);
   }, [referral]);

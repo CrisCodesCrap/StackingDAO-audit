@@ -48,14 +48,14 @@ export function RatioModal({ open, setOpen }: ModalProps) {
                       <path
                         d="M47.9998 30.6666L37.9998 40.6666L31.3332 34L22.6665 42.6666"
                         stroke="#7BF178"
-                        stroke-width="4"
-                        stroke-linecap="square"
+                        strokeWidth="4"
+                        strokeLinecap="square"
                       />
                       <path
                         d="M41.3335 29.3334H49.3335V37.3334"
                         stroke="#7BF178"
-                        stroke-width="4"
-                        stroke-linecap="square"
+                        strokeWidth="4"
+                        strokeLinecap="square"
                       />
                     </svg>
 
