@@ -179,12 +179,16 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
       {
         stxAddress,
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS!,
-        contractName: 'stacking-dao-core-v1',
+        contractName: 'stacking-dao-core-v2',
         functionName: 'deposit',
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'commission-v2'),
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'staking-v0'),
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'direct-helpers-v1'),
           uintCV(stxAmount),
           getReferral(),
+          noneCV()
         ],
         postConditions,
         network: stacksNetwork,
