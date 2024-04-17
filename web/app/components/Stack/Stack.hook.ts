@@ -219,7 +219,7 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
               'stableswap-stx-ststx-v-1-2',
               FungibleConditionCode.GreaterEqual,
               stStxAmount,
-              createAssetInfo(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, 'ststx-token', 'stSTX')
+              createAssetInfo(process.env.NEXT_PUBLIC_STSTX_ADDRESS!, 'ststx-token', 'ststx')
             ),
           ],
           network: stacksNetwork,
