@@ -40,7 +40,7 @@ export function Footer() {
         <div className="flex flex-wrap items-center w-full sm:flex-nowrap gap-x-8 gap-y-3 sm:w-fit">
           <p className="flex flex-col w-full text-sm sm:flex-row sm:flex-wrap text-neutral-700 gap-x-8 gap-y-3">
             <a
-              href="https://www.stackingdao.com/tos"
+              href="https://www.stackingdao.com/terms-of-service"
               className="flex items-center justify-center w-full sm:justify-start lg:w-fit"
             >
               Terms of Service
