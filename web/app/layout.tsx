@@ -3,17 +3,15 @@
 'use client';
 
 import './globals.css';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { RootLayout } from './components/RootLayout';
 import React, { useEffect, useState } from 'react';
-import { stacksNetwork } from './common/utils';
 import { AppContextProvider } from './components/AppContext/AppContext';
 import { TxStatus } from './components/TxStatus';
-import Head from "next/head";
 import { Connect } from '@stacks/connect-react';
 import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
+import Head from 'next/head';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -70,8 +68,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full text-base antialiased bg-neutral-100">
       <Head>
-        <link rel="shortcut icon" href="favicon.png" />
-        <link rel="icon" href="favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?version=2.1" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?version=2.1" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?version=2.1" />
+        <link rel="manifest" href="/site.webmanifest?version=2.1" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg?version=2.1" color="#5bbad5" />
+        <link rel="shortcut icon" href="/favicon.ico?version=2.1" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <body className={`${inter.className} relative flex min-h-full flex-col`}>
         <Connect authOptions={authOptions}>
