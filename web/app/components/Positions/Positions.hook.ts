@@ -59,7 +59,7 @@ interface IGenesisNFTData {
 const getPoxCycle = async (stxAddress: string): Promise<number> => {
   const result = await callReadOnlyFunction({
     contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-    contractName: 'stacking-dao-core-v1',
+    contractName: 'rewards-v1',
     functionName: 'get-pox-cycle',
     functionArgs: [],
     senderAddress: stxAddress,

@@ -40,7 +40,7 @@ export default function Cycles() {
   async function fetchCycleInfo(cycle: number) {
     const result = await callReadOnlyFunction({
       contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-      contractName: 'stacking-dao-core-v1',
+      contractName: 'stacking-dao-core-v2',
       functionName: 'get-cycle-info',
       functionArgs: [uintCV(cycle)],
       senderAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,

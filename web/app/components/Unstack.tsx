@@ -30,6 +30,7 @@ import StStxLogo from './Logos/StStx';
 
 export function Unstack() {
   const stxAddress = useSTXAddress();
+  const env = process.env.NEXT_PUBLIC_NETWORK_ENV;
 
   const {
     stStxBalance,
@@ -104,10 +105,11 @@ export function Unstack() {
       {
         stxAddress: stxAddress,
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        contractName: 'stacking-dao-core-v1',
+        contractName: 'stacking-dao-core-v2',
         functionName: 'init-withdraw',
         functionArgs: [
           contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'reserve-v1'),
+          contractPrincipalCV(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'direct-helpers-v1'),
           uintCV(stStxAmount),
         ],
         postConditionMode: 0x01,
@@ -148,6 +150,8 @@ export function Unstack() {
   };
 
   useEffect(() => {
+    if (env === 'testnet') return;
+
     if (stxAddress) bitflowRate();
   }, [stxAddress]);
 

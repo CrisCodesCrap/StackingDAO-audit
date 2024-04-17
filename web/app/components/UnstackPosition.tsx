@@ -58,7 +58,7 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       // stSTX transfer from core
       makeContractFungiblePostCondition(
         process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        'stacking-dao-core-v1',
+        'stacking-dao-core-v2',
         FungibleConditionCode.GreaterEqual,
         parseInt(stStxAmount * 1000000, 10),
         createAssetInfo(process.env.NEXT_PUBLIC_STSTX_ADDRESS, 'ststx-token', 'ststx')
@@ -81,10 +81,12 @@ export function UnstackPosition({ id, cycleId, stStxAmount, stxAmount, currentCy
       {
         stxAddress: stxAddress,
         contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS,
-        contractName: 'stacking-dao-core-v1',
+        contractName: 'stacking-dao-core-v2',
         functionName: 'withdraw',
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'commission-v2'),
+          contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'staking-v0'),
           uintCV(id),
         ],
         postConditions: postConditions,

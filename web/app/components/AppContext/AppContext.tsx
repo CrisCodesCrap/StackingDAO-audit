@@ -104,7 +104,7 @@ const fetchBalances = async (stxAddress: string): Promise<IBalances> => {
 const fetchRatio = async (stxAddress: string): Promise<number> => {
   const result = await callReadOnlyFunction({
     contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-    contractName: 'stacking-dao-core-v1',
+    contractName: 'data-core-v1',
     functionName: 'get-stx-per-ststx',
     functionArgs: [contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1')],
     senderAddress: stxAddress,
