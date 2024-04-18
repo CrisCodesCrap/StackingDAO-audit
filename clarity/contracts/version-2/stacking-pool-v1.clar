@@ -76,6 +76,7 @@
   (is-err response)
 )
 
+;; TODO - why do we need this check?
 (define-read-only (can-prepare)
   (let (
     (current-cycle (current-pox-reward-cycle))
