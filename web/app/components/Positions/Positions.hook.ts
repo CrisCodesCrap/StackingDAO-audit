@@ -96,7 +96,7 @@ const fetchNftType = async (stxAddress: string, id: IntegerType): Promise<number
 const fetchNft = async (stxAddress: string, id: IntegerType): Promise<IUnstackNFTData> => {
   const result = await callReadOnlyFunction({
     contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-    contractName: 'stacking-dao-core-v1',
+    contractName: 'data-core-v1',
     functionName: 'get-withdrawals-by-nft',
     functionArgs: [uintCV(id)],
     senderAddress: stxAddress,
