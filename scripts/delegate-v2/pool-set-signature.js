@@ -12,15 +12,14 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.uintCV(560),
+    tx.uintCV(561),
     tx.bufferCV(
       Buffer.from(
-        '1e07c6bae9b14ff69021b62a1b73fb4b636666e145f91f9af67414bd5ab0b4d165acdbb682efc94de64750fe1fe84bd73903445e01de78979c2a4da61283491e00',
+        '4f9c8ed19acc818bbf11d2c064185b8c3f20fa42b4d5a899cd58669df37ca4332fa8970fde222eccf6006ea7d2ec304895b605d1ae515380f19c45531cd73ac501',
         "hex"
       )
     )
   ],
-  nonce: new BN(43, 10),
   fee: new BN(100000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
