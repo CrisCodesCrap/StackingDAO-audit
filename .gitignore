@@ -10,3 +10,4 @@ scripts/wallet-arweave.json
 .netlify
 web/pnpm-lock.yaml
 /.idea
+services/.env.local
