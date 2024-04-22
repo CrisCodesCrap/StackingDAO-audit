@@ -20,7 +20,8 @@ const txOptions = {
       )
     )
   ],
-  fee: new BN(100000, 10),
+  fee: new BN(100001, 10),
+  nonce: new BN(45, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network: network,
@@ -29,6 +30,7 @@ const txOptions = {
 
 async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
+  console.log(transaction, network);
   const broadcast_id = await tx.broadcastTransaction(transaction, network);
   console.log(broadcast_id);
 };
