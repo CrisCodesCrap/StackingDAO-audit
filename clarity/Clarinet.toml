@@ -49,6 +49,12 @@ contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.univ2-core"
 [[project.requirements]]
 contract_id = "SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.farming-ststx-aeusdc-core"
 
+[[project.requirements]]
+contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.token-ststx-earn-v1"
+
+[[project.requirements]]
+contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.vault-ststx-earn-v1"
+
 # ------------------------------
 # Protocol
 # ------------------------------
@@ -242,6 +248,12 @@ epoch = 2.4
 path = "contracts/block-info-v10.clar"
 clarity_version = 2
 epoch = 2.4
+
+[contracts.block-info-v11]
+path = "contracts/block-info-v11.clar"
+clarity_version = 2
+epoch = 2.4
+
 
 # ------------------------------
 # Tests

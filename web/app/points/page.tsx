@@ -68,7 +68,7 @@ export default function Points() {
 
   async function fetchBlockInfo() {
     const lastBlockResponse = await fetch(
-      'https://stackingdao-points.s3.amazonaws.com/points-last-block-8.json'
+      'https://stackingdao-points.s3.amazonaws.com/points-last-block-10.json'
     );
     const lastBlock = (await lastBlockResponse.json()).last_block;
 
@@ -81,7 +81,7 @@ export default function Points() {
   }
 
   async function fetchPointsInfo() {
-    const url = 'https://stackingdao-points.s3.amazonaws.com/points-aggregate-8.json';
+    const url = 'https://stackingdao-points.s3.amazonaws.com/points-aggregate-10.json';
     const response = await fetch(url);
     const data = await response.json();
 

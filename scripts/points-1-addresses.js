@@ -56,6 +56,7 @@ function parseAllEventsForAddresses(allEvents) {
 
 function parseAllEventsForReferrers(allEvents) {
   var referrers = {};
+  var referrers2 = {};
 
   for (const event of allEvents) {
     if (event.event_type == "smart_contract_log") {
@@ -65,20 +66,34 @@ function parseAllEventsForReferrers(allEvents) {
       if (event.contract_log.contract_id == coreContract && logJson.action.value == "deposit") {
         const stacker = logJson.data.value.stacker.value;
         const referrer = logJson.data.value.referrer.value;
+        const blockHeight = logJson.data.value['block-height'].value;
 
         if (referrer) {
           const referrerValue = referrer.value;
-          if (!referrers[referrerValue]) {
-            referrers[referrerValue] = [stacker];
+
+          if (blockHeight > 999999999) {
+
+            if (!referrers[referrerValue]) {
+              if (!referrers2[referrerValue]) {
+                referrers2[referrerValue] = [stacker];
+              } else {
+                referrers2[referrerValue] = [...new Set(referrers2[referrerValue].concat([stacker]))];
+              }
+            }
+
           } else {
-            referrers[referrerValue] = [...new Set(referrers[referrerValue].concat([stacker]))];
+            if (!referrers[referrerValue]) {
+              referrers[referrerValue] = [stacker];
+            } else {
+              referrers[referrerValue] = [...new Set(referrers[referrerValue].concat([stacker]))];
+            }
           }
         }
       }
     }
   }
 
-  return referrers;
+  return { referrers: referrers, referrers2: referrers2 };
 }
 
 function parseAllTransactionsForAddresses(allTransactions) {
@@ -127,17 +142,19 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-8', {"addresses": addresses})
+  await utils.writeFile('points-addresses-10', {"addresses": addresses})
 
 
 
   // Referrals
   const referrers = parseAllEventsForReferrers(coreContractEvents);
-  console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
+  console.log("[2-referrals] Got referrers:", Object.keys(referrers.referrers).length);
+  console.log("[2-referrals] Got referrers 2:", Object.keys(referrers.referrers2).length);
 
-  await utils.writeFile('points-referrals-8', referrers)
+  await utils.writeFile('points-referrals-10', referrers.referrers)
+  await utils.writeFile('points-referrals-2-10', referrers.referrers2)
 
-  await utils.writeFile('points-last-block-addresses-8', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-10', { last_block: currentBlockHeight })
 };
 
 // start();
