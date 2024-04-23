@@ -1,6 +1,0 @@
-# Ignore everything
-*
-
-# Except the google cloud services
-!package.json
-!index.js
