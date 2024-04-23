@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // TS_NODE_COMPILER_OPTIONS='{"module":"commonjs","target":"es2019"}' ts-node deploy-contracts.ts
 import { readFile as readFileFn } from 'fs';
 import { promisify } from 'util';

@@ -1,8 +1,6 @@
-// @ts-nocheck
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Container } from '../components/Container';
 import { useSTXAddress } from '../common/use-stx-address';
@@ -12,6 +10,8 @@ import { stacksNetwork, coreApiUrl } from '../common/utils';
 import { WalletConnectButton } from '../components/WalletConnectButton';
 import { PlaceholderBar } from '../components/PlaceholderBar';
 import { Tooltip } from 'react-tooltip';
+import { getLeaderboard } from '@/actions/points';
+import { Leaderboard, LeaderboardRank } from '@/db/models';
 
 export default function Points() {
   const stxAddress = useSTXAddress();
@@ -19,13 +19,12 @@ export default function Points() {
   const [isLoading, setIsLoading] = useState(true);
   const [buttonText, setButtonText] = useState('Copy your referral link');
   const [showPointsInfo, setShowPointsInfo] = useState(false);
-  const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
-  const [userRank, setUserRank] = useState(0);
+  const [pointsInfo, setPointsInfo] = useState<LeaderboardRank>();
   const [totalPoints, setTotalPoints] = useState(0);
   const [nftType, setNftType] = useState(-1);
   const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
-  const [topUsers, setTopUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<Leaderboard>([]);
+  const [topUsers, setTopUsers] = useState<Leaderboard>([]);
   const [searchValue, setSearchValue] = useState('');
 
   const copyLink = async () => {
@@ -33,9 +32,9 @@ export default function Points() {
     setButtonText('Link copied!');
   };
 
-  const addUserToFrontOfList = (searchValue: string, allUsers: any[], list: any[]) => {
+  const addUserToFrontOfList = (searchValue: string, allUsers: Leaderboard, list: Leaderboard) => {
     if (stxAddress) {
-      const currentUser = allUsers.filter(user => user[0] == stxAddress);
+      const currentUser = allUsers.filter(user => user.wallet == stxAddress);
       const currentIndex = list.indexOf(currentUser[0]);
 
       if (stxAddress != searchValue && (currentIndex > 2 || currentIndex < 0)) {
@@ -50,7 +49,7 @@ export default function Points() {
     if (value == '') {
       setTopUsers(addUserToFrontOfList(value, allUsers, allUsers.slice(0, 100)));
     } else {
-      const user = allUsers.filter(user => user[0] == value);
+      const user = allUsers.filter(user => user.wallet == value);
       const index = allUsers.indexOf(user[0]);
       setTopUsers(
         addUserToFrontOfList(value, allUsers, allUsers.slice(Math.max(0, index - 3), index + 97))
@@ -59,7 +58,7 @@ export default function Points() {
   };
 
   const searchValueChanged = (event: { target: { value: SetStateAction<string> } }) => {
-    searchValueChangedHelper(event.target.value);
+    searchValueChangedHelper(event.target.value as any);
   };
 
   const clearUser = async () => {
@@ -81,39 +80,26 @@ export default function Points() {
   }
 
   async function fetchPointsInfo() {
-    const url = 'https://stackingdao-points.s3.amazonaws.com/points-aggregate-8.json';
-    const response = await fetch(url);
-    const data = await response.json();
+    const data = await getLeaderboard();
 
     const sumWithInitial = Object.values(data).reduce(
       (accumulator, currentValue) =>
-        accumulator + currentValue['user_points'] + currentValue['referral_points'],
+        accumulator +
+        Number.parseInt(currentValue.dailyPoints) +
+        Number.parseInt(currentValue.referralPoints) +
+        Number.parseInt(currentValue.bonusPoints),
       0
     );
     setTotalPoints(sumWithInitial);
 
     // Sort the data for the leaderboard
-    var items = Object.keys(data).map(function (key) {
-      return [key, data[key]];
-    });
-    items.sort(function (first, second) {
-      return (
-        second[1].user_points +
-        second[1].referral_points -
-        (first[1].user_points + first[1].referral_points)
-      );
-    });
-    setAllUsers(items);
-    setTopUsers(items.slice(0, 100));
+    setAllUsers(data);
+    setTopUsers(data.slice(0, 100));
 
     if (!stxAddress) return;
-    const userData = data[stxAddress];
-    setPointsInfo(userData || { user_points: 0, referral_points: 0 });
-
-    const currentUser = items.filter(user => user[0] == stxAddress);
-    const currentIndex = items.indexOf(currentUser[0]);
-    setUserRank(currentIndex + 1);
-    setTopUsers(addUserToFrontOfList(searchValue, items, items.slice(0, 100)));
+    const userData = data.find(value => value.wallet === stxAddress);
+    setPointsInfo(userData);
+    setTopUsers(addUserToFrontOfList(searchValue, data, data.slice(0, 100)));
   }
 
   const fetchNftType = async (id: string) => {
@@ -219,12 +205,13 @@ export default function Points() {
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
                       <div className="flex items-center">
-                        {(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(
-                          'en-US',
-                          {
-                            maximumFractionDigits: 0,
-                          }
-                        )}
+                        {(
+                          Number.parseInt(pointsInfo?.dailyPoints ?? '0') +
+                          Number.parseInt(pointsInfo?.referralPoints ?? '0') +
+                          Number.parseInt(pointsInfo?.bonusPoints ?? '0')
+                        ).toLocaleString('en-US', {
+                          maximumFractionDigits: 0,
+                        })}
 
                         {nftType >= 0 ? (
                           <>
@@ -274,7 +261,10 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      pointsInfo.user_points.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                      Number.parseInt(pointsInfo?.dailyPoints ?? '0').toLocaleString('en-US') +
+                      ' + ' +
+                      Number.parseInt(pointsInfo?.bonusPoints ?? '0').toLocaleString('en-US') +
+                      ' bonus'
                     )}
                   </dd>
                 </div>
@@ -286,7 +276,7 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      pointsInfo.referral_points.toLocaleString('en-US', {
+                      Number.parseInt(pointsInfo?.referralPoints ?? '0').toLocaleString('en-US', {
                         maximumFractionDigits: 0,
                       })
                     )}
@@ -301,10 +291,12 @@ export default function Points() {
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
                       <>
-                        {userRank == -1 ? (
+                        {!pointsInfo?.rank ? (
                           <>N/A</>
                         ) : (
-                          <>#{userRank.toLocaleString('en-US', { maximumFractionDigits: 0 })}</>
+                          <>
+                            #{pointsInfo.rank.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </>
                         )}
                       </>
                     )}
@@ -557,7 +549,7 @@ export default function Points() {
                         <tr
                           key={topUsers.indexOf(user) + Math.random()}
                           className={
-                            user[0] == searchValue || user[0] == stxAddress
+                            user.wallet == searchValue || user.wallet == stxAddress
                               ? 'bg-fluor-green-500/10'
                               : 'bg-white'
                           }
@@ -575,23 +567,23 @@ export default function Points() {
                           </td>
                           <td className="px-3 py-4 text-sm whitespace-nowrap">
                             <Link
-                              href={`https://explorer.hiro.so/address/${user[0]}?chain=mainnet`}
+                              href={`https://explorer.hiro.so/address/${user.wallet}?chain=mainnet`}
                               rel="noopener noreferrer"
                               target="_blank"
                             >
                               <div
                                 className={
-                                  user[0] == stxAddress
+                                  user.wallet == stxAddress
                                     ? 'flex text-dark-green-500 font-medium'
                                     : 'flex text-gray-500 font-normal'
                                 }
                               >
-                                <span className="sm:hidden">{`${user[0].slice(
+                                <span className="sm:hidden">{`${user.wallet.slice(
                                   0,
                                   4
-                                )}...${user[0].slice(-4)}`}</span>
-                                <span className="hidden sm:inline">{user[0]}</span>
-                                {user[0] == stxAddress ? <> (You)</> : null}
+                                )}...${user.wallet.slice(-4)}`}</span>
+                                <span className="hidden sm:inline">{user.wallet}</span>
+                                {user.wallet == stxAddress ? <> (You)</> : null}
                                 <div className="pt-1 pl-2">
                                   <svg
                                     className="w-3 h-3 text-gray-400"
@@ -608,20 +600,23 @@ export default function Points() {
                             </Link>
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {user[1].user_points.toLocaleString('en-US', {
+                            {(
+                              Number.parseInt(user.dailyPoints) + Number.parseInt(user.bonusPoints)
+                            ).toLocaleString('en-US', {
                               maximumFractionDigits: 0,
                             })}
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {user[1].referral_points.toLocaleString('en-US', {
+                            {Number.parseInt(user.referralPoints).toLocaleString('en-US', {
                               maximumFractionDigits: 0,
                             })}
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {(user[1].user_points + user[1].referral_points).toLocaleString(
-                              'en-US',
-                              { maximumFractionDigits: 0 }
-                            )}
+                            {(
+                              Number.parseInt(user.dailyPoints) +
+                              Number.parseInt(user.referralPoints) +
+                              Number.parseInt(user.bonusPoints)
+                            ).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                           </td>
                         </tr>
                       ))}

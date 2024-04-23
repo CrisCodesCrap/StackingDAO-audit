@@ -78,7 +78,10 @@ export const leaderboard = pgTable("leaderboard", {
     bonusPoints: numeric("points_bonus", { precision: 128, scale: 0 })
         .notNull()
         .default("0"),
-});
+},    (table) => ({
+        walletIdx: index("wallet_idx").on(table.wallet).asc(),
+    }),
+);
 
 export const walletRelations = relations(wallets, ({ many, one }) => ({
     points: many(pointsEarned),

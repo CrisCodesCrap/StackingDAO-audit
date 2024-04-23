@@ -2,7 +2,7 @@ import { cn } from '@/app/common/class-names';
 import { HTMLAttributes } from 'react';
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  text: string;
+  text: React.ReactNode;
   prefixIcon?: React.ReactElement;
   suffixIcon?: React.ReactElement;
 }

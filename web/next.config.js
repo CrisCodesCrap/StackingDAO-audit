@@ -13,16 +13,13 @@ const nextConfig = {
   //   };
   // },
   experimental: {
-    newNextLinkBehavior: true,
+    scrollRestoration: true,
   },
   images: {
     unoptimized: true,
     domains: ['http://localhost:3001'],
   },
   reactStrictMode: true,
-  experimental: {
-    scrollRestoration: true,
-  },
 };
 
 module.exports = nextConfig;

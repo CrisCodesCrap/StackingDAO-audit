@@ -118,7 +118,25 @@ export function Stack() {
             />*/}
           </div>
 
-          <div className="mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
+          <div className="relative mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
+            <Badge
+              id="points-boost"
+              text={
+                <>
+                  Eligible for <span className="font-bold">20x</span> Points Multiplier
+                </>
+              }
+              className="absolute -top-3 right-2 max-w-fit"
+              suffixIcon={
+                <>
+                  <InformationCircleIcon width={12} height={12} />
+                  <Tooltip anchorSelect="#points-boost" place="top">
+                    Any amount you stack with us in the next two weeks - before Cycle 84 - will have
+                    a 20x points multiplier applied!
+                  </Tooltip>
+                </>
+              }
+            />
             <div className="flex flex-row justify-center gap-1">
               <span className="text-gray-600">
                 {stackingPartner === 'stackingdao'
@@ -133,6 +151,23 @@ export function Stack() {
                   {(stackingPartner === 'stackingdao'
                     ? amount.ststx
                     : bitflow.ststx
+                  ).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  <StSTXIcon width={20} height={20} />
+                </span>
+              )}
+            </div>
+            <div className="flex flex-row justify-center gap-1">
+              <span className="text-gray-600">You receive a 20x point boost:</span>
+              {Number.isNaN(amount.stx) ? (
+                <span> - </span>
+              ) : (
+                <span className="flex flex-row gap-1">
+                  ~
+                  {(
+                    (stackingPartner === 'stackingdao' ? amount.ststx : bitflow.ststx) * 20
                   ).toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,

@@ -17,6 +17,8 @@ import { makeContractCall } from '@/app/common/contract-call';
 import { stacksNetwork } from '@/app/common/utils';
 import { StacksMainnet } from '@stacks/network';
 import { useDebounce } from '@uidotdev/usehooks';
+import { LeaderboardRank, Wallet } from '@/db/models';
+import { getLeaderboardRanking } from '@/actions/points';
 
 const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number> => {
   const resultOut = await callReadOnlyFunction({
