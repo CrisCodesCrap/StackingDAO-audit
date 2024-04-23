@@ -1,12 +1,14 @@
 import { Block, TransactionEventSmartContractLog } from '@stacks/stacks-blockchain-api-types';
 import { cvToValue, hexToCV } from '@stacks/transactions';
-import { getTransactionsByBlockHash } from '@/backend/lib/stacks/transactions';
-import { getContractEventsForBlock, ParsedEvent } from '@/backend/lib/stacks/contracts';
-import { upsertWallets } from '@/backend/lib/db';
-import { getAddressesStSTXBalance } from '@/backend/lib/stacks/accounts';
-import { contracts } from '@/backend/lib/stacks/constants';
-import * as sns from '@/backend/lib/sns';
+import { getTransactionsByBlockHash } from '@/lib/stacks/transactions';
+import { getContractEventsForBlock, ParsedEvent } from '@/lib/stacks/contracts';
+import { upsertWallets } from '@/lib/db';
+import { getAddressesStSTXBalance } from '@/lib/stacks/accounts';
+import { contracts } from '@/lib/stacks/constants';
+import * as sns from '@/lib/sns';
 import type { SNSEvent } from 'aws-lambda';
+import { userInfoAtBlock } from '../lib/stacks/user_info';
+import { WalletUpdate } from '@/db/models';
 
 const TOPIC_ARN = process.env.SNS_TOPIC!;
 
@@ -25,7 +27,16 @@ export async function track(block: Block): Promise<void> {
   // if (addresses.length == 0) continue;
 
   // 3. Get each address' stSTX balance and update our list.
-  const wallets = await getAddressesStSTXBalance(block.hash, addresses);
+
+  const wallets: WalletUpdate[] = [];
+  for (const wallet of wallets) {
+    const balances = await userInfoAtBlock(wallet.address, block.height);
+
+    wallets.push({
+      address: wallet.address,
+      currentBalance: (balances.total * 1_000_000).toString(),
+    });
+  }
 
   console.log(`stSTX balances found: ${wallets.length}/${addresses.length}`);
   // if (wallets.length == 0) continue;
@@ -33,7 +44,7 @@ export async function track(block: Block): Promise<void> {
   // 4. Write new wallets to db.
   const recordsWritten = await upsertWallets(wallets);
 
-  console.log(`Updated or created ${recordsWritten} wallets`);
+  console.log(`Updated or created ${recordsWritten}/${addresses.length} wallets`);
 
   // 5. Update anyone that wants to know about the wallets being updated.
   // const response = await sns.publish(

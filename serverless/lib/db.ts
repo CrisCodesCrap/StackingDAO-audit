@@ -7,11 +7,13 @@ import {
   NewLeaderboard,
   Leaderboard,
   LeaderboardRank,
-} from '@/db/models';
-import { leaderboard, pointsEarned, wallets } from '@/db/schema';
-import { db } from '@/db/drizzle';
+} from '@web/db/models';
+import { leaderboard, pointsEarned, wallets } from '@web/db/schema';
+import { db } from '@web/db/drizzle';
 
 export async function upsertWallets(new_wallets: WalletUpdate[]): Promise<number> {
+  if (!new_wallets.length) return 0;
+
   const result = await db
     .insert(wallets)
     .values(new_wallets)

@@ -1,4 +1,4 @@
-import * as db from '@/backend/lib/db';
+import * as db from '@/lib/db';
 import type { SNSEvent } from 'aws-lambda';
 
 // export async function calculate(event: SNSEvent, _: Context): Promise<void> {

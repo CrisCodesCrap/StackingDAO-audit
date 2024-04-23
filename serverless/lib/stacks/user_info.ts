@@ -99,6 +99,7 @@ export async function userInfoAtBlock(address: string, blockHeight: number) {
   //   const hermetica = await userBalance(pointsContract.queries.hermetica, address, blockHeight);
 
   return {
+    total: wallet + zest + arkadiko + velar + hermetica + bitflow,
     ststx_balance: wallet,
     defi_balance: zest + arkadiko + velar + hermetica,
     lp_balance: bitflow,
