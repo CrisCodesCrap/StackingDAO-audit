@@ -1,0 +1,230 @@
+{
+  "id": "0cc1af5d-15ca-44d2-8c25-3ff5aeb82c87",
+  "prevId": "045a0d50-8e24-4efc-849e-1173215ffd86",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "leaderboard": {
+      "name": "leaderboard",
+      "schema": "",
+      "columns": {
+        "rank": {
+          "name": "rank",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_daily": {
+          "name": "points_daily",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "points_referral": {
+          "name": "points_referral",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "points_bonus": {
+          "name": "points_bonus",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        }
+      },
+      "indexes": {
+        "wallet_idx": {
+          "name": "wallet_idx",
+          "columns": [
+            "wallet"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "leaderboard_wallet_wallets_address_fk": {
+          "name": "leaderboard_wallet_wallets_address_fk",
+          "tableFrom": "leaderboard",
+          "tableTo": "wallets",
+          "columnsFrom": [
+            "wallet"
+          ],
+          "columnsTo": [
+            "address"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "points_earned": {
+      "name": "points_earned",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "source": {
+          "name": "source",
+          "type": "points_source",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "multiplier": {
+          "name": "multiplier",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "block_hash": {
+          "name": "block_hash",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "wallet_source_idx": {
+          "name": "wallet_source_idx",
+          "columns": [
+            "wallet"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "points_earned_wallet_wallets_address_fk": {
+          "name": "points_earned_wallet_wallets_address_fk",
+          "tableFrom": "points_earned",
+          "tableTo": "wallets",
+          "columnsFrom": [
+            "wallet"
+          ],
+          "columnsTo": [
+            "address"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "points_earned_wallet_block_hash_source_unique": {
+          "name": "points_earned_wallet_block_hash_source_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "wallet",
+            "block_hash",
+            "source"
+          ]
+        }
+      }
+    },
+    "wallets": {
+      "name": "wallets",
+      "schema": "",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "varchar(64)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_seen_at_block": {
+          "name": "first_seen_at_block",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "snapshot_balance": {
+          "name": "snapshot_balance",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "ststx_balance": {
+          "name": "ststx_balance",
+          "type": "numeric(128, 0)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "created_at_idx": {
+          "name": "created_at_idx",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {
+    "points_source": {
+      "name": "points_source",
+      "values": {
+        "migration": "migration",
+        "referral": "referral",
+        "ststx": "ststx",
+        "bitflow": "bitflow",
+        "zest": "zest",
+        "arkadiko": "arkadiko",
+        "velar": "velar"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

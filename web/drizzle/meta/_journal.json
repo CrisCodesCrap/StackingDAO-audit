@@ -8,6 +8,13 @@
       "when": 1713633440279,
       "tag": "0000_regular_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1713875967456,
+      "tag": "0001_swift_proteus",
+      "breakpoints": true
     }
   ]
 }

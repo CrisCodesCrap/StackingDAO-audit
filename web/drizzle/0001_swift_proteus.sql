@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "wallet_idx" ON "leaderboard" ("wallet");--> statement-breakpoint
+ALTER TABLE "points_earned" ADD CONSTRAINT "points_earned_wallet_block_hash_source_unique" UNIQUE("wallet","block_hash","source");
