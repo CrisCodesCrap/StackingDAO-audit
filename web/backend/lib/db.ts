@@ -33,13 +33,13 @@ export async function insertNewWallets(new_wallets: WalletUpdate[]): Promise<num
   // return result.numberOfRecordsUpdated ?? 0;
 }
 
-export async function snapshotWallets(
+export async function snapshotWallet(
   block_hash: string,
-  new_wallets: WalletUpdate[]
+  new_wallet: WalletUpdate
 ): Promise<number> {
   const result = await db
     .insert(wallets)
-    .values(new_wallets)
+    .values(new_wallet)
     .onConflictDoUpdate({
       target: wallets.address,
       set: {
@@ -52,8 +52,11 @@ export async function snapshotWallets(
   // return result.numberOfRecordsUpdated ?? 0;
 }
 
-export async function nextWalletsPage(): Promise<Wallet[]> {
-  return await db.select().from(wallets);
+export async function nextWalletsPage(limit?: number): Promise<Wallet[]> {
+  const query = db.select().from(wallets);
+
+  if (limit) return await query.limit(limit);
+  return await query;
 }
 
 export async function readWalletWithBoosterPoints(
@@ -138,6 +141,34 @@ export async function getTopDailyPointHolders(): Promise<Leaderboard> {
 
 export async function addPointRecords(records: NewPointsRecord[]): Promise<number> {
   const result = await db.insert(pointsEarned).values(records).onConflictDoNothing();
+
+  return result.rowCount;
+  // return result.numberOfRecordsUpdated ?? 0;
+}
+
+export async function resetMigration(): Promise<number> {
+  const result = await db
+    .delete(pointsEarned)
+    .where(inArray(pointsEarned.source, ['migration', 'referral']));
+
+  return result.rowCount;
+}
+
+export async function migratePointRecords(records: NewPointsRecord[]): Promise<number> {
+  for (const record of records) {
+    if (!['migration', 'referral'].includes(record.source))
+      throw new Error('tried to migrate a non-migration record');
+  }
+
+  const result = await db
+    .insert(pointsEarned)
+    .values(records)
+    .onConflictDoUpdate({
+      target: [pointsEarned.wallet, pointsEarned.block, pointsEarned.source],
+      set: {
+        amount: sql.raw(`excluded.${pointsEarned.amount.name}`),
+      },
+    });
 
   return result.rowCount;
   // return result.numberOfRecordsUpdated ?? 0;
