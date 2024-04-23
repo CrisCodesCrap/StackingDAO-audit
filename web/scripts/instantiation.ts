@@ -1,44 +1,32 @@
 import { WalletSnapshot } from '@/db/models';
-import { nextWalletsPage, snapshotWallet } from '@/backend/lib/db';
-import { userInfoAtBlock } from '@/backend/lib/stacks/user_info';
-import { BlocksApi } from '@stacks/blockchain-api-client';
+import { nextWalletsPage, snapshotWallets } from '@/backend/lib/db';
+import { getAddressesStSTXBalance } from '@/backend/lib/stacks/accounts';
 
-// const sleep = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
-
-const blocks = new BlocksApi();
+const sleep = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
 /*
 This script is meant to be used to get the snapshot stSTX balance
 for every address we have in our database and save it to our
 database to use for calculations later on.
 */
-async function snapshot(block_height: number) {
-  const block = await blocks.getBlock({ heightOrHash: block_height });
-  console.log('snapshotting known wallets stSTX balance at block', block.hash);
-
+async function snapshot(block_hash: string) {
+  console.log('snapshotting known wallets stSTX balance at block', block_hash);
+  // const pageSize = 50; // Set the page size for each query
   const wallets = await nextWalletsPage();
 
   console.log(`found ${wallets.length} wallets`);
 
   let total = 0;
   for (const wallet of wallets) {
-    const balances = await userInfoAtBlock(wallet.address, block_height);
-    const total_balance = Math.round(
-      (balances.ststx_balance + balances.defi_balance + balances.lp_balance) * 1_000_000
-    );
+    const balances = await getAddressesStSTXBalance(block_hash, [wallet.address]);
 
-    console.log(
-      `Updating account ${wallet.address} with balance ${total_balance} (ststx: ${balances.ststx_balance}, defi: ${balances.defi_balance}, lp: ${balances.lp_balance})`
-    );
-
-    const snapshot: WalletSnapshot = {
-      address: wallet.address,
-      currentBalance: total_balance.toString(),
-      snapshotBalance: total_balance.toString(),
-    };
+    const snapshot = balances.map<WalletSnapshot>(value => ({
+      ...value,
+      snapshotBalance: value.currentBalance,
+    }));
 
     // 4. Write new wallets to db.
-    const recordsWritten = await snapshotWallet(block.hash, snapshot);
+    const recordsWritten = await snapshotWallets(block_hash, snapshot);
     total += recordsWritten;
 
     if (total % wallets.length == 0)
@@ -46,5 +34,4 @@ async function snapshot(block_height: number) {
   }
 }
 
-// snapshot('0x813e5b09c962905439fb21b5969e826b7a0f744f70ee80b2d7a8a00341d95f8c');
-snapshot(147290);
+snapshot('0x813e5b09c962905439fb21b5969e826b7a0f744f70ee80b2d7a8a00341d95f8c');

@@ -12,6 +12,9 @@ export async function migrate(url: string): Promise<void> {
   const aggregateFile = await fetch(url + '/points-aggregate-10.json');
   const aggregate = (await aggregateFile.json()) as AggregateFile;
 
+  // const referralsFile = await fetch(url + '/points-referrals-8.json');
+  // const referrals = (await referralsFile.json()) as TODO;
+
   const lastBlockFile = await fetch(url + '/points-last-block-10.json');
   const lastBlock = (await lastBlockFile.json()).last_block as string;
   const block = await blocks.getBlock({ heightOrHash: lastBlock });
@@ -40,7 +43,7 @@ export async function migrate(url: string): Promise<void> {
   );
 
   for (const records of pointsChunks) {
-    const pointsCreated = await db.migratePointRecords(records);
+    const pointsCreated = await db.addPointRecords(records);
 
     console.log(`Added ${pointsCreated} "migration" records`);
   }
@@ -59,17 +62,17 @@ export async function migrate(url: string): Promise<void> {
   );
 
   for (const records of referralsChunks) {
-    const referralsCreated = await db.migratePointRecords(records);
+    const referralsCreated = await db.addPointRecords(records);
 
     console.log(`Added ${referralsCreated} "referral" records`);
   }
 }
 
-migrate(url);
+// migrate(url);
 
-async function reset() {
-  const result = await db.resetMigration();
-  console.log(result);
+async function main() {
+  const result = await db.getTopDailyPointHolders();
+  console.log(JSON.stringify(result.slice(0, 10), null, 2));
 }
 
-// reset();
+main();
