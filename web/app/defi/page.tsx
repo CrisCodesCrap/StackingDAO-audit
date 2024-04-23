@@ -47,6 +47,22 @@ const activityItems = [
   },
   {
     user: {
+      name: 'Hermetica',
+      imageUrl: '/hermetica.svg',
+    },
+    commit: 'Use stSTX as collateral to mint stSTXearn',
+    status: 'Launched',
+    link: 'https://www.hermetica.fi/',
+    actions: [
+      {
+        primary: true,
+        name: 'Add stSTX',
+        url: 'https://app.hermetica.fi/earn'
+      }
+    ]
+  },
+  {
+    user: {
       name: 'Velar',
       imageUrl: '/velar.png',
     },
@@ -80,7 +96,7 @@ const activityItems = [
         url: 'https://app.zestprotocol.com/',
       },
     ],
-  },
+  }
 ];
 
 function classNames(...classes) {
@@ -154,7 +170,7 @@ export default function Defi() {
                             </div>
                           </Link>
                         </td>
-                        <td className="hidden py-4 pl-0 pr-4 sm:table-cell">
+                        <td className="hidden py-4 pl-0 pr-4 sm:table-cell flex-grow">
                           <div className="flex gap-x-3">
                             <div className="text-sm font-normal leading-6 text-sd-gray-darker">
                               {item.commit}
@@ -162,14 +178,14 @@ export default function Defi() {
                           </div>
                         </td>
                         <td className="hidden py-4 pl-0 pr-4 text-sm leading-6 sm:table-cell">
-                          <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
+                          <div className="flex items-center gap-x-2 sm:justify-start">
                             <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
                               {item.date}
                             </time>
                             <div
                               className={classNames(
                                 statuses[item.status],
-                                'flex-none rounded-full p-1'
+                                'flex-none rounded-full p-1 md:ml-4'
                               )}
                             >
                               <div className="h-1.5 w-1.5 rounded-full bg-current" />
