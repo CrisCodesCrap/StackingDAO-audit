@@ -146,16 +146,15 @@ async function userBoostInfoAtBlockHelper(address, blockHeight) {
   return wallet + zest + arkadiko + velar + bitflow;
 }
 
-// 5x boost for cycle 81
-async function userBoostCycle81(address) {
-  const blockHeightStartCycle81 = 143630;
-  const blockHeightEndCycle81 = blockHeightStartCycle81 + 2100;
+async function userBoost(address) {
+  const blockHeightStart = 146760;
+  const blockHeightEnd = blockHeightStart + 576;
 
-  const startAmount = await userBoostInfoAtBlockHelper(address, blockHeightStartCycle81);
-  const endAmount = await userBoostInfoAtBlockHelper(address, blockHeightEndCycle81);
+  const startAmount = await userBoostInfoAtBlockHelper(address, blockHeightStart);
+  const endAmount = await userBoostInfoAtBlockHelper(address, blockHeightEnd);
 
   if (endAmount >= startAmount) {
-    return startAmount * 5;
+    return (endAmount - startAmount) * 20;
   }
   return 0;
 }
@@ -170,9 +169,9 @@ async function updateAllPoints() {
     referrals,
     aggregate,
   ] = await Promise.all([
-    utils.readFile('points-addresses-8'),
-    utils.readFile('points-referrals-8'),
-    utils.readFile('points-aggregate-8')
+    utils.readFile('points-addresses-10'),
+    utils.readFile('points-referrals-10'),
+    utils.readFile('points-aggregate-10')
   ]);
 
   console.log("[3-aggregate] Got files from S3");
@@ -201,7 +200,7 @@ async function updateAllPoints() {
   var counter = 0;
   for (const addressChunk of addressesChunks) {
 
-    const allPromise = await Promise.all(addressChunk.map(address => userBoostCycle81(address)));
+    const allPromise = await Promise.all(addressChunk.map(address => userBoost(address)));
 
     for (const address of addressChunk) {
       const addressIndex = addressChunk.indexOf(address);
@@ -267,7 +266,7 @@ async function start() {
   const aggregate = await updateAllPoints();
   console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-  await utils.writeFile('points-aggregate-8', aggregate)
+  await utils.writeFile('points-aggregate-10', aggregate)
 };
 
 start();

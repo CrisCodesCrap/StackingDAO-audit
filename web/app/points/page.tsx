@@ -67,7 +67,7 @@ export default function Points() {
 
   async function fetchBlockInfo() {
     const lastBlockResponse = await fetch(
-      'https://stackingdao-points.s3.amazonaws.com/points-last-block-8.json'
+      'https://stackingdao-points.s3.amazonaws.com/points-last-block-10.json'
     );
     const lastBlock = (await lastBlockResponse.json()).last_block;
 

@@ -35,11 +35,11 @@ async function userWalletAtBlock(address, blockHeight) {
   }
 }
 
-async function userBitflowAtBlock(address, blockHeight) {
+async function userBitflowLpAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: pointsContract.split(".")[0],
-      contractName: pointsContract.split(".")[1],
+      contractAddress: process.env.CONTRACT_ADDRESS,
+      contractName: "block-info-v10",
       functionName: "get-user-bitflow",
       functionArgs: [
         tx.standardPrincipalCV(address),
@@ -54,9 +54,10 @@ async function userBitflowAtBlock(address, blockHeight) {
   } catch (error) {
     console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
     await new Promise(r => setTimeout(r, 2 * 1000));
-    return await userBitflowAtBlock(address, blockHeight);
+    return await userBitflowLpAtBlock(address, blockHeight);
   }
 }
+
 
 async function userZestAtBlock(address, blockHeight) {
   try {
@@ -127,67 +128,50 @@ async function userVelarAtBlock(address, blockHeight) {
   }
 }
 
-async function userHermeticaAtBlock(address, blockHeight) {
-  try {
-    const userInfo = await tx.callReadOnlyFunction({
-      contractAddress: process.env.CONTRACT_ADDRESS,
-      contractName: "block-info-v11",
-      functionName: "get-user-hermetica",
-      functionArgs: [
-        tx.standardPrincipalCV(address),
-        tx.uintCV(blockHeight),
-      ],
-      senderAddress: process.env.CONTRACT_ADDRESS,
-      network: utils.resolveNetwork()
-    });
-
-    const result = tx.cvToJSON(userInfo).value.value;
-    return result / 1000000;
-  } catch (error) {
-    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
-    await new Promise(r => setTimeout(r, 2 * 1000));
-    return await userHermeticaAtBlock(address, blockHeight);
-  }
-}
-
-async function userInfoAtBlock(address, blockHeight) {
+async function userBoostInfoAtBlockHelper(address, blockHeight) {
   const [
     wallet, 
     bitflow,
     zest,
     arkadiko,
-    velar,
-    hermetica
+    velar
   ] = await Promise.all([
     userWalletAtBlock(address, blockHeight), 
-    userBitflowAtBlock(address, blockHeight),
+    userBitflowLpAtBlock(address, blockHeight),
     userZestAtBlock(address, blockHeight),
     userArkadikoAtBlock(address, blockHeight),
-    userVelarAtBlock(address, blockHeight),
-    userHermeticaAtBlock(address, blockHeight)
+    userVelarAtBlock(address, blockHeight)
   ]);
 
-  return {
-    ststx_balance: wallet,
-    defi_balance: zest + arkadiko + velar + hermetica,
-    lp_balance: bitflow
+  return wallet + zest + arkadiko + velar + bitflow;
+}
+
+// 5x boost for cycle 81
+async function userBoostCycle81(address) {
+  const blockHeightStartCycle81 = 143630;
+  const blockHeightEndCycle81 = blockHeightStartCycle81 + 2100;
+
+  const startAmount = await userBoostInfoAtBlockHelper(address, blockHeightStartCycle81);
+  const endAmount = await userBoostInfoAtBlockHelper(address, blockHeightEndCycle81);
+
+  if (endAmount >= startAmount) {
+    return startAmount * 5;
   }
+  return 0;
 }
 
 //
 // Loop
 //
 
-async function updateAllPoints(blockHeight) {
+async function updateAllPoints() {
   const [
     addresses, 
     referrals,
-    referrals2,
     aggregate,
   ] = await Promise.all([
     utils.readFile('points-addresses-10'),
     utils.readFile('points-referrals-10'),
-    utils.readFile('points-referrals-2-10'),
     utils.readFile('points-aggregate-10')
   ]);
 
@@ -217,13 +201,13 @@ async function updateAllPoints(blockHeight) {
   var counter = 0;
   for (const addressChunk of addressesChunks) {
 
-    const allPromise = await Promise.all(addressChunk.map(address => userInfoAtBlock(address, blockHeight)));
+    const allPromise = await Promise.all(addressChunk.map(address => userBoostCycle81(address)));
 
     for (const address of addressChunk) {
       const addressIndex = addressChunk.indexOf(address);
-      const userInfo = allPromise[addressIndex];
+      const boostPoints = allPromise[addressIndex];
 
-      const newPoints = userInfo.ststx_balance + userInfo.defi_balance * 1.5 + userInfo.lp_balance * 2.5;
+      console.log("-", address, "-", boostPoints);
 
       if (!aggregate[address]) {
         aggregate[address] = {
@@ -232,7 +216,7 @@ async function updateAllPoints(blockHeight) {
         }
       } else {
         aggregate[address] = {
-          user_points: aggregate[address].user_points + newPoints,
+          user_points: aggregate[address].user_points + boostPoints,
           referral_points: 0
         }
       }
@@ -242,26 +226,18 @@ async function updateAllPoints(blockHeight) {
     counter++;
   }
 
+
   //
   // 2. Update referral points
   //
-
-  // Reset referral_points first
   for (const referrer of Object.keys(referrals)) {
+
+    // Reset referral_points first
     aggregate[referrer] = {
       user_points: aggregate[referrer] ? aggregate[referrer].user_points : 0,
       referral_points: 0
     }
-  }
-  for (const referrer of Object.keys(referrals2)) {
-    aggregate[referrer] = {
-      user_points: aggregate[referrer] ? aggregate[referrer].user_points : 0,
-      referral_points: 0
-    }
-  }
 
-
-  for (const referrer of Object.keys(referrals)) {
     for (const user of referrals[referrer]) {
       if (aggregate[user]) {
         const userPoints = aggregate[user].user_points;
@@ -278,23 +254,6 @@ async function updateAllPoints(blockHeight) {
     }
   }
 
-  for (const referrer of Object.keys(referrals2)) {
-    for (const user of referrals2[referrer]) {
-      if (aggregate[user]) {
-        const userPoints = aggregate[user].user_points;
-
-        if (!aggregate[referrer]) {
-          aggregate[referrer] = {
-            user_points: 0,
-            referral_points: userPoints * 0.2
-          }
-        } else {
-          aggregate[referrer].referral_points = aggregate[referrer].referral_points + userPoints * 0.2;
-        }
-      }
-    }
-  }
-
   return aggregate;
 }
 
@@ -303,27 +262,13 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-10');
-  const currentBlockHeight = await utils.getBlockHeight();
-  const nextBlockHeight = lastBlockHeight.last_block + 144;
+  console.log("[3-aggregate] Updating points with boost");
 
-  console.log("[3-aggregate] Next block:", nextBlockHeight, ", current block:", currentBlockHeight);
+  const aggregate = await updateAllPoints();
+  console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-  if (currentBlockHeight > nextBlockHeight) {
-    console.log("[3-aggregate] Updating points for block:", nextBlockHeight);
-
-    const aggregate = await updateAllPoints(nextBlockHeight);
-    console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
-
-    await utils.writeFile('points-aggregate-10', aggregate)
-    await utils.writeFile('points-last-block-10', { last_block: nextBlockHeight })
-  }
+  await utils.writeFile('points-aggregate-10', aggregate)
 };
 
-// start();
+start();
 
-// ---------------------------------------------------------
-// Exports
-// ---------------------------------------------------------
-
-exports.start = start;
