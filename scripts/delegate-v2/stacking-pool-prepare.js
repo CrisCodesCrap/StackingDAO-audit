@@ -13,7 +13,6 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [],
   fee: new BN(100000, 10),
-  nonce: new BN(46, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
