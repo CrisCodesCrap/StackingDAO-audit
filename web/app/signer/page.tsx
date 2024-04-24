@@ -80,7 +80,6 @@ export default function Points() {
           bufferCV(Buffer.from(sigData.publicKey, "hex")),
           bufferCV(Buffer.from(sigData.signature, "hex")),
         ],
-        postConditionMode: 0x01,
         network: stacksNetwork,
       },
       async (error?, txId?) => {
