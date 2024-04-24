@@ -1,9 +1,9 @@
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'dao';
-const FUNCTION_NAME = 'set-contract-active';
+const CONTRACT_NAME = 'stacking-pool-signer-restake-v1';
+const FUNCTION_NAME = 'set-pool-owner';
 const tx = require('@stacks/transactions');
-const utils = require('./utils');
+const utils = require('../utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
@@ -12,19 +12,19 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
-    tx.trueCV()
+    tx.standardPrincipalCV('SPVH2V0XQ7WGHPNZ5NNNMWFXXFSZEYEJ2ECG7NM8')
   ],
   fee: new BN(100000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
-  network
+  network: network,
+  clarityVersion: tx.ClarityVersion.Clarity2
 };
 
 async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
-  const result = await tx.broadcastTransaction(transaction, network);
-  console.log(result);
+  const broadcast_id = await tx.broadcastTransaction(transaction, network);
+  console.log(broadcast_id);
 };
 
 transact();

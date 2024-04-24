@@ -17,6 +17,22 @@ const txOptions = {
       tx.tupleCV({
         'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-1'),
         'amount': tx.uintCV(1200000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-2'),
+        'amount': tx.uintCV(1200000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-3'),
+        'amount': tx.uintCV(1200000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-4'),
+        'amount': tx.uintCV(960000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
+        'amount': tx.uintCV(360000 * 1000000)
       })
     ])
   ],
