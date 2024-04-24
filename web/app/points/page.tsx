@@ -186,6 +186,16 @@ export default function Points() {
 
             {stxAddress ? (
               <dl className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
+                <div className="flex flex-wrap col-span-2">
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
+                    <span className="sr-only">Booster points</span>
+                  </dt>
+                  <dd className="flex-none w-full text-base font-medium text-sd-gray-darker">
+                    <p className="glitch-text pt-2.5 pb-2 px-3 font-headings bg-dark-green-800 text-fluor-green-500 rounded-md">
+                      Booster points coming soon
+                    </p>
+                  </dd>
+                </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
                   <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Points
