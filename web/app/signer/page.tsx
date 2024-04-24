@@ -25,7 +25,7 @@ export default function Points() {
   const [isLoading, setIsLoading] = useState(true);
   const [cycleSignerInfo, setCycleSignerInfo] = useState<any[]>([]);
 
-  const generateSignature = async (cycle: number) => {
+  const generateSignature = async (cycle: number, topic: string) => {
     // Get PoX reward address from contract
     const callResultAddress = await callReadOnlyFunction({
       contractAddress: pool!.split(".")[0],
@@ -42,7 +42,7 @@ export default function Points() {
 
     // Create signature message
     const signatureMessageInfo = {
-      topic: "agg-commit",
+      topic: topic,
       period: 1,
       network: stacksNetwork,
       rewardCycle: cycle,
@@ -91,7 +91,7 @@ export default function Points() {
   }
 
   const fetchCycleSignerInfo = async (cycle: number) => {
-    const callResult = await callReadOnlyFunction({
+    const callResultCommit = await callReadOnlyFunction({
       contractAddress: pool!.split(".")[0],
       contractName: pool!.split(".")[1],
       functionName: 'get-cycle-signer-info',
@@ -102,8 +102,22 @@ export default function Points() {
       senderAddress: stxAddress!,
       network: stacksNetwork,
     });
+    const callResultIncrease = await callReadOnlyFunction({
+      contractAddress: pool!.split(".")[0],
+      contractName: pool!.split(".")[1],
+      functionName: 'get-cycle-signer-info',
+      functionArgs: [
+        uintCV(cycle),
+        stringAsciiCV("agg-increase")
+      ],
+      senderAddress: stxAddress!,
+      network: stacksNetwork,
+    });
 
-    return cvToJSON(callResult).value;
+    return {
+      "agg-commit": cvToJSON(callResultCommit).value,
+      "agg-increase": cvToJSON(callResultIncrease).value
+    }
   };
 
   const fetchSignerInfoData = async (stackingCycle: number, numberOfCycles: number) => {
@@ -114,19 +128,28 @@ export default function Points() {
 
     const signerInfoResults: any[] = await Promise.all(signerInfoPromises);
 
+    console.log(signerInfoResults);
     var signerInfoData: any[] = []
     for (let cycle = stackingCycle+1; cycle < stackingCycle+numberOfCycles+1; cycle++) {
       const index = cycle - stackingCycle - 1;
 
-      let signature = undefined;
+      let signatureCommit;
+      let signatureIncrease;
       if (signerInfoResults[index]) {
-        const fullSig = signerInfoResults[index].value['signer-sig'].value;
-        signature = fullSig.slice(0, 10) + "..." + fullSig.slice(-10)
+        if (signerInfoResults[index]['agg-commit']) {
+          const fullSigCommit = signerInfoResults[index]['agg-commit'].value['signer-sig'].value;
+          signatureCommit = fullSigCommit.slice(0, 10) + "..." + fullSigCommit.slice(-10)
+        }
+        if (signerInfoResults[index]['agg-increase']) {
+          const fullSigIncrease = signerInfoResults[index]['agg-increase'].value['signer-sig'].value;
+          signatureIncrease = fullSigIncrease.slice(0, 10) + "..." + fullSigIncrease.slice(-10)
+        }
       }
 
       signerInfoData.push({
         cycle: cycle,
-        signature: signature
+        signatureCommit: signatureCommit,
+        signatureIncrease: signatureIncrease
       })
     }
     return signerInfoData;
@@ -185,13 +208,19 @@ export default function Points() {
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
                           >
-                            Signature
+                            Agg Commit Signature
                           </th>
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
                           >
-                            Action
+                            Agg Increase Signature
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
+                          >
+                            Actions
                           </th>
                         </tr>
                       </thead>
@@ -203,15 +232,26 @@ export default function Points() {
                                 {cycleSigner.cycle}
                               </td>
                               <td className="px-3 py-4 text-sm whitespace-nowrap">
-                                {cycleSigner.signature ?? "No signature"}
+                                {cycleSigner.signatureCommit ?? "No Commit Signature"}
                               </td>
                               <td className="px-3 py-4 text-sm whitespace-nowrap">
+                                {cycleSigner.signatureIncrease ?? "No Increase Signature"}
+                              </td>
+                              <td className="px-3 py-4 text-sm whitespace-nowrap flex-col">
                                 <button
                                   type="button"
-                                  className="flex items-center justify-center px-3 py-1 font-semibold text-white rounded-lg focus:outline-none bg-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50"
-                                  onClick={() => generateSignature(cycleSigner.cycle)}
+                                  className="px-3 py-1 font-semibold text-white rounded-lg focus:outline-none bg-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50"
+                                  onClick={() => generateSignature(cycleSigner.cycle, 'agg-commit')}
                                 >
-                                  Save Signature
+                                  Save Commit Signature
+                                </button>
+
+                                <button
+                                  type="button"
+                                  className="ml-3 px-3 py-1 font-semibold text-white rounded-lg focus:outline-none bg-dark-green-600 active:bg-button-active hover:bg-button-hover disabled:bg-opacity-50"
+                                  onClick={() => generateSignature(cycleSigner.cycle, 'agg-increase')}
+                                >
+                                  Save Increase Signature
                                 </button>
                               </td>
                             </tr>
