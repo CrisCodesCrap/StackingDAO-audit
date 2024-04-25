@@ -1,16 +1,11 @@
 import { Block, TransactionEventSmartContractLog } from '@stacks/stacks-blockchain-api-types';
 import { cvToValue, hexToCV } from '@stacks/transactions';
-import { getTransactionsByBlockHash } from '@/lib/stacks/transactions';
-import { getContractEventsForBlock, ParsedEvent } from '@/lib/stacks/contracts';
-import { upsertWallets } from '@/lib/db';
-import { getAddressesStSTXBalance } from '@/lib/stacks/accounts';
-import { contracts } from '@/lib/stacks/constants';
-import * as sns from '@/lib/sns';
-import type { SNSEvent } from 'aws-lambda';
+import { getTransactionsByBlockHash } from '../lib/stacks/transactions';
+import { getContractEventsForBlock, ParsedEvent } from '../lib/stacks/contracts';
+import { upsertWallets } from '../lib/db';
+import { contracts } from '../lib/stacks/constants';
 import { userInfoAtBlock } from '../lib/stacks/user_info';
-import { WalletUpdate } from '@/db/models';
-
-const TOPIC_ARN = process.env.SNS_TOPIC!;
+import { WalletUpdate } from '@web/db/models';
 
 // export async function track(event: SNSEvent, _: Context): Promise<void> {
 export async function track(block: Block): Promise<void> {

@@ -1,8 +1,9 @@
 {
   "name": "web",
   "version": "0.1.0",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "start": "npx ts-node --transpile-only index.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.1",

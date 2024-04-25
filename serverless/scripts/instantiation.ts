@@ -1,6 +1,6 @@
-import { WalletSnapshot } from '@/db/models';
-import { nextWalletsPage, snapshotWallet } from '@/backend/lib/db';
-import { userInfoAtBlock } from '@/backend/lib/stacks/user_info';
+import { WalletSnapshot } from '@web/db/models';
+import { nextWalletsPage, snapshotWallet } from '../lib/db';
+import { userInfoAtBlock } from '../lib/stacks/user_info';
 import { BlocksApi } from '@stacks/blockchain-api-client';
 
 // const sleep = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
@@ -34,7 +34,7 @@ async function snapshot(block_height: number) {
     const snapshot: WalletSnapshot = {
       address: wallet.address,
       currentBalance: total_balance.toString(),
-      snapshotBalance: total_balance.toString(),
+      snapshotBalance: total_balance.toString(), // Comment this out if we need to update all balances without creating a snapshot
     };
 
     // 4. Write new wallets to db.

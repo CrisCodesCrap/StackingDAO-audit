@@ -27,6 +27,6 @@ app.get('/health', (_: Request, res: Response) => {
   res.send(connection?.webSocket.OPEN ? 'ok' : 'disconnected');
 });
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
