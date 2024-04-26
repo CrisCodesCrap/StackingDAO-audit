@@ -3,6 +3,8 @@ import { Block } from '@stacks/stacks-blockchain-api-types';
 
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { updateLeaderboard } from './functions/leaderboard';
+import { updateWallets } from './functions/wallet-tracker';
 
 dotenv.config();
 
@@ -16,15 +18,16 @@ connectWebSocketClient('wss://api.mainnet.hiro.so/').then(async conn => {
   await connection.subscribeBlocks(async (block: Block) => {
     console.log('Received block ', block.height);
 
-    // await track(block);
-    // await calculate(block.hash);
+    // await updateWallets(block); // await track(block);
+    // await updateLeaderboard(block.hash); // await calculate(block.hash);
   });
 
   console.log('listening for confirmed blocks...');
 });
 
 app.get('/health', (_: Request, res: Response) => {
-  res.send(connection?.webSocket.OPEN ? 'ok' : 'disconnected');
+  if (connection?.webSocket.OPEN) res.send('ok');
+  else res.status(500).send('disconnected');
 });
 
 app.listen(port, () => {

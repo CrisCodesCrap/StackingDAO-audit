@@ -1,6 +1,6 @@
 import tx, { cvToHex, hexToCV } from '@stacks/transactions';
 import { StacksMainnet } from '@stacks/network';
-import { coreApiUrl } from '@/app/common/utils';
+import { coreApiUrl } from '@web/app/common/utils';
 import { SmartContractsApi, TransactionsApi } from '@stacks/blockchain-api-client';
 //
 // Constants
@@ -91,17 +91,15 @@ export async function userInfoAtBlock(address: string, blockHeight: number) {
     userBalance(pointsContract.queries.hermetica, address, blockHeight),
   ]);
 
-  //   const wallet = await userBalance(pointsContract.queries.userWallet, address, blockHeight);
-  //   const bitflow = await userBalance(pointsContract.queries.bitflow, address, blockHeight);
-  //   const zest = await userBalance(pointsContract.queries.zest, address, blockHeight);
-  //   const arkadiko = await userBalance(pointsContract.queries.arkadiko, address, blockHeight);
-  //   const velar = await userBalance(pointsContract.queries.velar, address, blockHeight);
-  //   const hermetica = await userBalance(pointsContract.queries.hermetica, address, blockHeight);
-
   return {
     total: wallet + zest + arkadiko + velar + hermetica + bitflow,
     ststx_balance: wallet,
     defi_balance: zest + arkadiko + velar + hermetica,
     lp_balance: bitflow,
+    bitflow: bitflow * 1_000_000,
+    zest: zest * 1_000_000,
+    arkadiko: arkadiko * 1_000_000,
+    velar: velar * 1_000_000,
+    hermetica: hermetica * 1_000_000,
   };
 }

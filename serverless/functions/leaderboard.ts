@@ -1,8 +1,7 @@
-import * as db from '@/lib/db';
-import type { SNSEvent } from 'aws-lambda';
+import * as db from '../lib/db';
 
 // export async function calculate(event: SNSEvent, _: Context): Promise<void> {
-export async function calculate(block_hash: string): Promise<void> {
+export async function updateLeaderboard(block_hash: string): Promise<void> {
   // for (const record of event.Records) {
   // 1. Parse addresses we received.
   // const block_hash = JSON.parse(record.Sns.Message) as string;
