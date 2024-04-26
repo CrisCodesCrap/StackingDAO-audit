@@ -1,6 +1,6 @@
 require('dotenv').config({path: '../.env'});
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'stacking-pool-signer-restake-v1';
+const CONTRACT_NAME = 'stacking-pool-signer-despread-v1';
 const FUNCTION_NAME = 'set-pool-owner';
 const tx = require('@stacks/transactions');
 const utils = require('../utils');
@@ -12,7 +12,7 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.standardPrincipalCV('SPVH2V0XQ7WGHPNZ5NNNMWFXXFSZEYEJ2ECG7NM8')
+    tx.standardPrincipalCV('SPKTP50NFJVXCFRZ8ZHY7MGF3Z3AAM9RZBNKPM6A')
   ],
   fee: new BN(100000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,

@@ -1,6 +1,6 @@
 require('dotenv').config({path: '../.env'});
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'stacking-pool-v1';
+const CONTRACT_NAME = 'stacking-pool-signer-alum-labs-v1';
 const FUNCTION_NAME = 'prepare-stacking-dao';
 const tx = require('@stacks/transactions');
 const utils = require('../utils');

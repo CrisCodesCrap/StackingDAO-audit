@@ -12,10 +12,11 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-luganodes-1-1'),
     tx.trueCV()
   ],
   fee: new BN(100000, 10),
+  nonce: new BN(227, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network

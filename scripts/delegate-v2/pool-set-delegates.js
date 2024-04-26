@@ -12,16 +12,17 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-v1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-kiln-v1'),
     tx.listCV([
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-2'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-3'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-4'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-kiln-1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-kiln-1-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-kiln-1-3'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-kiln-1-4'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-kiln-1-5'),
     ])
   ],
   fee: new BN(100000, 10),
+  nonce: new BN(196, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network: network,
