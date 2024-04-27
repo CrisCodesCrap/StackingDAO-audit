@@ -12,10 +12,10 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-alum-labs-v1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-restake-v1'),
     tx.listCV([
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-alum-labs-1-1'),
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-restake-1-1'),
         'amount': tx.uintCV(1200000 * 1000000)
       }),
     ])

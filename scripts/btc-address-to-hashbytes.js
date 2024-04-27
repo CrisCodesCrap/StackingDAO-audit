@@ -41,12 +41,13 @@ const encoded = Uint8Array.from(address.match(/.{1,2}/g).map((byte) => parseInt(
 const converted = stacking.poxAddressToBtcAddress(4, encoded, 'mainnet');
 console.log(converted);
 
-console.log(tx.AddressVersion.MainnetSingleSig, tx.AddressHashMode.SerializeP2PKH);
-console.log(
+const addrBytes =
   tx.addressFromPublicKeys(
     tx.AddressVersion.MainnetSingleSig, tx.AddressHashMode.SerializeP2PKH, 1,
     [{
-      new Uint8Array(['0x0244869db071d334ff8e5cd94956ae7b60a4abd41f83f3c9d66ab314718151d94d'])
+      data: new Uint8Array(['0x0244869db071d334ff8e5cd94956ae7b60a4abd41f83f3c9d66ab314718151d94d']),
+      type: 6
     }]
-  )
-);
+  );
+
+console.log(tx.addressToString(addrBytes))
