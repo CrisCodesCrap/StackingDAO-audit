@@ -17,6 +17,7 @@ import { makeContractCall } from '@/app/common/contract-call';
 import { stacksNetwork } from '@/app/common/utils';
 import { StacksMainnet } from '@stacks/network';
 import { useDebounce } from '@uidotdev/usehooks';
+import { useReferral } from '@/app/common/hooks';
 
 const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number> => {
   const resultOut = await callReadOnlyFunction({
@@ -37,24 +38,6 @@ const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number>
 
   return cvToValue(resultOut).value / 1000000;
 };
-
-export function useReferral(referral?: string | null): [() => ClarityValue] {
-  useEffect(() => {
-    if (referral) localStorage.setItem('stacking-referral', referral);
-  }, [referral]);
-
-  return [
-    () => {
-      let referralParam: ClarityValue = noneCV();
-      const referralString = referral || localStorage.getItem('stacking-referral');
-      if (!!referralString) {
-        referralParam = someCV(standardPrincipalCV(referralString));
-      }
-
-      return referralParam;
-    },
-  ];
-}
 
 interface StackingInput {
   amount: StackingDaoAmount;
@@ -132,6 +115,7 @@ type StackingPartner = 'stackingdao' | 'bitflow';
 type ButtonState = 'stack' | 'insufficient' | 'disabled';
 
 interface StackingActions extends StackingInput {
+  referral?: string | null;
   stackingPartner: StackingPartner;
   buttonState: ButtonState;
   setStackingPartner: Dispatch<SetStateAction<StackingPartner>>;
@@ -140,14 +124,15 @@ interface StackingActions extends StackingInput {
   stackStx: VoidFunction;
 }
 
-export function useStackingActions(stxAddress?: string, referral?: string | null): StackingActions {
+export function useStackingActions(stxAddress?: string): StackingActions {
   const { stxBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
   const { amount, updateRequestedAmount, ...input } = useStackingInput();
-  const [getReferral] = useReferral(referral);
 
   const [buttonState, setButtonState] = useState<ButtonState>('disabled');
 
   const [stackingPartner, setStackingPartner] = useState<StackingPartner>('stackingdao');
+
+  const referral = useReferral();
 
   useEffect(() => {
     let state: ButtonState = 'disabled';
@@ -175,6 +160,8 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
       makeStandardSTXPostCondition(stxAddress, FungibleConditionCode.LessEqual, stxAmount),
     ];
 
+    const referralCV = !referral ? noneCV() : someCV(standardPrincipalCV(referral));
+
     await makeContractCall(
       {
         stxAddress,
@@ -184,7 +171,7 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
           uintCV(stxAmount),
-          getReferral(),
+          referralCV,
         ],
         postConditions,
         network: stacksNetwork,
@@ -199,6 +186,7 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
 
   return {
     ...input,
+    referral,
     amount,
     updateRequestedAmount,
     onMaxClicked,
