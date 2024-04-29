@@ -40,6 +40,7 @@ export function Stack() {
     setStackingPartner,
     buttonState,
     stackStx,
+    gasFeeTolerance,
   } = useStackingActions(stxAddress);
 
   return (
@@ -200,7 +201,7 @@ export function Stack() {
             />*/}
           </div>
 
-          <div className="mt-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
+          <div className="my-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
             <div className="flex flex-row justify-center gap-1">
               <span className="text-gray-600">
                 {stackingPartner === 'stackingdao'
@@ -238,13 +239,23 @@ export function Stack() {
             </div>
           </div>
 
+          {buttonState === 'insufficient' && (
+            <div className="flex items-center justify-center mt-4 mb-2 py-2 px-4 w-full rounded-lg bg-red-400 text-left md:text-center font-medium text-sm text-white">
+              <span>⚠️</span>
+              <p className="ml-2">
+                Please make sure to leave enough STX (currently{' '}
+                {currency.long.format(gasFeeTolerance)} STX) for transaction gas
+              </p>
+            </div>
+          )}
+
           <LinkButton
             type={stackingPartner === 'bitflow' ? 'link' : 'button'}
             href="https://app.bitflow.finance/trade"
           >
             <button
               type="button"
-              className="active:bg-button-active hover:bg-button-hover mt-6 flex min-h-[56px] w-full items-center justify-center gap-2 rounded-lg bg-dark-green-600 px-6 text-xl font-semibold text-white focus:outline-none disabled:bg-opacity-50"
+              className="active:bg-button-active hover:bg-button-hover flex min-h-[56px] w-full items-center justify-center gap-2 rounded-lg bg-dark-green-600 px-6 text-xl font-semibold text-white focus:outline-none disabled:bg-opacity-50"
               disabled={buttonState !== 'stack'}
               onClick={stackingPartner === 'stackingdao' ? stackStx : undefined}
             >

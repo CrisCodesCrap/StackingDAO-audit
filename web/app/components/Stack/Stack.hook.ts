@@ -115,6 +115,7 @@ type StackingPartner = 'stackingdao' | 'bitflow';
 type ButtonState = 'stack' | 'insufficient' | 'disabled';
 
 interface StackingActions extends StackingInput {
+  gasFeeTolerance: number;
   referral?: string | null;
   stackingPartner: StackingPartner;
   buttonState: ButtonState;
@@ -125,31 +126,37 @@ interface StackingActions extends StackingInput {
 }
 
 export function useStackingActions(stxAddress?: string): StackingActions {
-  const { stxBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+  const { stxBalance, setCurrentTxId, setCurrentTxStatus, mempoolFees } = useAppContext();
   const { amount, updateRequestedAmount, ...input } = useStackingInput();
 
   const [buttonState, setButtonState] = useState<ButtonState>('disabled');
 
   const [stackingPartner, setStackingPartner] = useState<StackingPartner>('stackingdao');
+  const [gasFeeTolerance, setGasFeeTolerance] = useState<number>(2.0);
+
+  useEffect(
+    () => setGasFeeTolerance(mempoolFees ? mempoolFees.all.high_priority / 1_000_000 : 2.0),
+    [mempoolFees?.all.high_priority]
+  );
 
   const referral = useReferral();
 
   useEffect(() => {
     let state: ButtonState = 'disabled';
 
-    const maxBalance = stxBalance - 2;
-    if (amount.stx > maxBalance) state = 'insufficient';
-    else if (!amount.stx || !stxAddress) state = 'disabled';
+    const maxAmount = Math.max(0, stxBalance - gasFeeTolerance);
+    if (!amount.stx || !stxAddress) state = 'disabled';
+    else if (amount.stx > maxAmount) state = 'insufficient';
     else state = 'stack';
 
     setButtonState(state);
-  }, [amount, stxAddress, stxBalance]);
+  }, [amount, stxAddress, stxBalance, gasFeeTolerance]);
 
-  const onMaxClicked = () => updateRequestedAmount(stxBalance - 2);
+  const onMaxClicked = () => updateRequestedAmount(Math.max(0, stxBalance - gasFeeTolerance));
 
   const onValidateAmount = useCallback(
-    (value: number | undefined) => (value ? value < stxBalance - 2 : true),
-    [stxBalance]
+    (value: number | undefined) => (value ? value < stxBalance - gasFeeTolerance : true),
+    [stxBalance, gasFeeTolerance]
   );
 
   const stackStx = async () => {
@@ -195,5 +202,6 @@ export function useStackingActions(stxAddress?: string): StackingActions {
     buttonState,
     stackStx,
     onValidateAmount,
+    gasFeeTolerance,
   };
 }
