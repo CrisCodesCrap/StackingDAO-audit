@@ -19,7 +19,7 @@ export default function Points() {
   const [isLoading, setIsLoading] = useState(true);
   const [buttonText, setButtonText] = useState('Copy your referral link');
   const [showPointsInfo, setShowPointsInfo] = useState(false);
-  const [pointsInfo, setPointsInfo] = useState({ user_points: 0, referral_points: 0 });
+  const [pointsInfo, setPointsInfo] = useState({ user_points: 0, boost_points: 0, referral_points: 0 });
   const [userRank, setUserRank] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [nftType, setNftType] = useState(-1);
@@ -27,6 +27,8 @@ export default function Points() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [topUsers, setTopUsers] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState('');
+  const [boostPoints, setBoostPoints] = useState(0);
+
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
@@ -80,14 +82,37 @@ export default function Points() {
     console.log('lastBlock:', lastBlock, 'blockTime:', blockTime), setLastUpdateBlock(blockTime);
   }
 
+  async function fetchBoostPoints() {
+    const url = 'https://stackingdao-points.s3.amazonaws.com/points-aggregate-11.json';
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const userInfo = data[stxAddress];
+    console.log("userInfo", userInfo);
+    console.log("test", userInfo.boost_points_2 ?? 0);
+
+    setBoostPoints((userInfo.boost_points_2 ?? 0) + (userInfo.boost_points_3 ?? 0))
+  }
+
   async function fetchPointsInfo() {
     const url = 'https://stackingdao-points.s3.amazonaws.com/points-aggregate-10.json';
     const response = await fetch(url);
     const data = await response.json();
 
+    for (const key of Object.keys(data)) {
+      data[key] = {
+        "user_points": data[key].user_points,
+        "referral_points": data[key].referral_points,
+        "boost_points_1": data[key].boost_points_1 ?? 0,
+        "boost_points_2": data[key].boost_points_2 ?? 0,
+        "boost_points_3": data[key].boost_points_3 ?? 0,
+        "new_points": data[key].new_points
+      }
+    }
+
     const sumWithInitial = Object.values(data).reduce(
       (accumulator, currentValue) =>
-        accumulator + currentValue['user_points'] + currentValue['referral_points'],
+        accumulator + currentValue['user_points'] + currentValue['referral_points'] + currentValue['boost_points_1'] + currentValue['boost_points_2'] + currentValue['boost_points_3'],
       0
     );
     setTotalPoints(sumWithInitial);
@@ -98,9 +123,8 @@ export default function Points() {
     });
     items.sort(function (first, second) {
       return (
-        second[1].user_points +
-        second[1].referral_points -
-        (first[1].user_points + first[1].referral_points)
+        (second[1].user_points + second[1].referral_points + second[1].boost_points_1 + second[1].boost_points_2 + second[1].boost_points_3) -
+        (first[1].user_points + first[1].referral_points + first[1].boost_points_1 + first[1].boost_points_2 + first[1].boost_points_3)
       );
     });
     setAllUsers(items);
@@ -108,7 +132,7 @@ export default function Points() {
 
     if (!stxAddress) return;
     const userData = data[stxAddress];
-    setPointsInfo(userData || { user_points: 0, referral_points: 0 });
+    setPointsInfo(userData || { user_points: 0, boost_points_1: 0, boost_points_2: 0, boost_points_3: 0, referral_points: 0 });
 
     const currentUser = items.filter(user => user[0] == stxAddress);
     const currentIndex = items.indexOf(currentUser[0]);
@@ -150,6 +174,7 @@ export default function Points() {
 
     if (stxAddress) {
       await fetchNftBalance();
+      await fetchBoostPoints();
     }
 
     await Promise.all([fetchPointsInfo(), fetchBlockInfo()]);
@@ -186,16 +211,6 @@ export default function Points() {
 
             {stxAddress ? (
               <dl className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-2">
-                <div className="flex flex-wrap col-span-2">
-                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
-                    <span className="sr-only">Booster points</span>
-                  </dt>
-                  <dd className="flex-none w-full text-base font-medium text-sd-gray-darker">
-                    <p className="glitch-text pt-2.5 pb-2 px-3 font-headings bg-dark-green-800 text-fluor-green-500 rounded-md">
-                      Booster points coming soon
-                    </p>
-                  </dd>
-                </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
                   <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
                     Your Points
@@ -204,7 +219,7 @@ export default function Points() {
                       id="yourPoints"
                     >
                       <Tooltip anchorSelect="#yourPoints" place="top">
-                        The sum of Your Stacking Points and Your Referral Points
+                        The sum of Your Stacking Points, Boost Points and Referral Points
                       </Tooltip>
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
                         <g
@@ -229,7 +244,7 @@ export default function Points() {
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
                       <div className="flex items-center">
-                        {(pointsInfo.user_points + pointsInfo.referral_points).toLocaleString(
+                        {(pointsInfo.user_points + pointsInfo.referral_points + boostPoints).toLocaleString(
                           'en-US',
                           {
                             maximumFractionDigits: 0,
@@ -284,7 +299,23 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      pointsInfo.user_points.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                      <>
+                        <div>{pointsInfo.user_points.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
+
+                        {boostPoints > 0 ? (
+                          <>
+                            <span className="text-gray-500 text-bottom px-1">+</span>
+                            <Tooltip anchorSelect="#boost" place="top">
+                              Extra point boosts!
+                            </Tooltip>
+                            <span id="boost">
+                              {/* {(pointsInfo.boost_points_1 + pointsInfo.boost_points_2 + pointsInfo.boost_points_3).toLocaleString('en-US', { maximumFractionDigits: 0 })} */}
+                              {boostPoints.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                              <span className='pl-2'>🚀</span>
+                            </span>
+                          </>
+                        ): null}
+                      </>
                     )}
                   </dd>
                 </div>
@@ -554,6 +585,16 @@ export default function Points() {
                         >
                           Referral Points
                         </th>
+                        
+                        {/* 
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
+                        >
+                          Boosts Points
+                        </th> 
+                        */}
+                        
                         <th
                           scope="col"
                           className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
@@ -627,8 +668,15 @@ export default function Points() {
                               maximumFractionDigits: 0,
                             })}
                           </td>
+                          {/* 
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {(user[1].user_points + user[1].referral_points).toLocaleString(
+                            {(user[1].boost_points_1 + user[1].boost_points_2 + user[1].boost_points_3).toLocaleString('en-US', {
+                              maximumFractionDigits: 0,
+                            })}
+                          </td>
+                          */}
+                          <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            {(user[1].user_points + user[1].referral_points + user[1].boost_points_1 + user[1].boost_points_2 + user[1].boost_points_3).toLocaleString(
                               'en-US',
                               { maximumFractionDigits: 0 }
                             )}

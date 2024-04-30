@@ -56,7 +56,6 @@ function parseAllEventsForAddresses(allEvents) {
 
 function parseAllEventsForReferrers(allEvents) {
   var referrers = {};
-  var referrers2 = {};
 
   for (const event of allEvents) {
     if (event.event_type == "smart_contract_log") {
@@ -71,21 +70,12 @@ function parseAllEventsForReferrers(allEvents) {
         if (referrer) {
           const referrerValue = referrer.value;
 
-          if (blockHeight > 999999999) {
-
-            if (!referrers[referrerValue]) {
-              if (!referrers2[referrerValue]) {
-                referrers2[referrerValue] = [stacker];
-              } else {
-                referrers2[referrerValue] = [...new Set(referrers2[referrerValue].concat([stacker]))];
-              }
-            }
-
+          if (!referrers[referrerValue]) {
+            referrers[referrerValue] = [{ stacker: stacker, blockHeight: blockHeight }];
           } else {
-            if (!referrers[referrerValue]) {
-              referrers[referrerValue] = [stacker];
-            } else {
-              referrers[referrerValue] = [...new Set(referrers[referrerValue].concat([stacker]))];
+            const existingStackers = referrers[referrerValue].filter(elem => elem.stacker == stacker);
+            if (existingStackers.length == 0) {
+              referrers[referrerValue] = referrers[referrerValue].concat([{ stacker: stacker, blockHeight: blockHeight }]);
             }
           }
         }
@@ -93,7 +83,7 @@ function parseAllEventsForReferrers(allEvents) {
     }
   }
 
-  return { referrers: referrers, referrers2: referrers2 };
+  return referrers;
 }
 
 function parseAllTransactionsForAddresses(allTransactions) {
@@ -142,19 +132,16 @@ async function start() {
   const addresses = [...new Set(addressesFromEvents.concat(addressesFromTransactions))]
   console.log("[1-addresses] Got addresses:", addresses.length);
 
-  await utils.writeFile('points-addresses-10', {"addresses": addresses})
+  await utils.writeFile('points-addresses-11', {"addresses": addresses})
 
 
 
   // Referrals
   const referrers = parseAllEventsForReferrers(coreContractEvents);
-  console.log("[2-referrals] Got referrers:", Object.keys(referrers.referrers).length);
-  console.log("[2-referrals] Got referrers 2:", Object.keys(referrers.referrers2).length);
+  console.log("[2-referrals] Got referrers:", Object.keys(referrers).length);
+  await utils.writeFile('points-referrals-11', referrers)
 
-  await utils.writeFile('points-referrals-10', referrers.referrers)
-  await utils.writeFile('points-referrals-2-10', referrers.referrers2)
-
-  await utils.writeFile('points-last-block-addresses-10', { last_block: currentBlockHeight })
+  await utils.writeFile('points-last-block-addresses-11', { last_block: currentBlockHeight })
 };
 
 // start();
