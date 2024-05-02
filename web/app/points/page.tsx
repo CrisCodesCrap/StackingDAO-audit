@@ -1,24 +1,24 @@
 // @ts-nocheck
-'use client';
+"use client";
 
-import { SetStateAction, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Container } from '../components/Container';
-import { useSTXAddress } from '../common/use-stx-address';
-import { PointsModal } from '../components/PointsModal';
-import { callReadOnlyFunction, uintCV } from '@stacks/transactions';
-import { stacksNetwork, coreApiUrl } from '../common/utils';
-import { WalletConnectButton } from '../components/WalletConnectButton';
-import { PlaceholderBar } from '../components/PlaceholderBar';
-import { Tooltip } from 'react-tooltip';
-import { getLeaderboard } from '../../../packages/database/src/points';
-import { Leaderboard, LeaderboardRank } from "@repo/database";
+import { SetStateAction, useEffect, useState } from "react";
+import Link from "next/link";
+import { Container } from "../components/Container";
+import { useSTXAddress } from "../common/use-stx-address";
+import { PointsModal } from "../components/PointsModal";
+import { callReadOnlyFunction, uintCV } from "@stacks/transactions";
+import { stacksNetwork, coreApiUrl } from "../common/utils";
+import { WalletConnectButton } from "../components/WalletConnectButton";
+import { PlaceholderBar } from "../components/PlaceholderBar";
+import { Tooltip } from "react-tooltip";
+import { getLeaderboard } from "@repo/database/src/actions";
+import { Leaderboard, LeaderboardRank } from "@repo/database/src/models";
 
 export default function Points() {
   const stxAddress = useSTXAddress();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [buttonText, setButtonText] = useState('Copy your referral link');
+  const [buttonText, setButtonText] = useState("Copy your referral link");
   const [showPointsInfo, setShowPointsInfo] = useState(false);
   const [pointsInfo, setPointsInfo] = useState<LeaderboardRank>();
   const [totalPoints, setTotalPoints] = useState(0);
@@ -26,16 +26,16 @@ export default function Points() {
   const [lastUpdateBlock, setLastUpdateBlock] = useState(0);
   const [allUsers, setAllUsers] = useState<Leaderboard>([]);
   const [topUsers, setTopUsers] = useState<Leaderboard>([]);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(`https://app.stackingdao.com/stack?referral=${stxAddress}`);
-    setButtonText('Link copied!');
+    setButtonText("Link copied!");
   };
 
   const addUserToFrontOfList = (searchValue: string, allUsers: Leaderboard, list: Leaderboard) => {
     if (stxAddress) {
-      const currentUser = allUsers.filter(user => user.wallet == stxAddress);
+      const currentUser = allUsers.filter((user) => user.wallet == stxAddress);
       const currentIndex = list.indexOf(currentUser[0]);
 
       if (stxAddress != searchValue && (currentIndex > 2 || currentIndex < 0)) {
@@ -47,14 +47,12 @@ export default function Points() {
 
   const searchValueChangedHelper = async (value: string) => {
     setSearchValue(value);
-    if (value == '') {
+    if (value == "") {
       setTopUsers(addUserToFrontOfList(value, allUsers, allUsers.slice(0, 100)));
     } else {
-      const user = allUsers.filter(user => user.wallet == value);
+      const user = allUsers.filter((user) => user.wallet == value);
       const index = allUsers.indexOf(user[0]);
-      setTopUsers(
-        addUserToFrontOfList(value, allUsers, allUsers.slice(Math.max(0, index - 3), index + 97))
-      );
+      setTopUsers(addUserToFrontOfList(value, allUsers, allUsers.slice(Math.max(0, index - 3), index + 97)));
     }
   };
 
@@ -63,21 +61,19 @@ export default function Points() {
   };
 
   const clearUser = async () => {
-    searchValueChangedHelper('');
+    searchValueChangedHelper("");
   };
 
   async function fetchBlockInfo() {
-    const lastBlockResponse = await fetch(
-      'https://stackingdao-points.s3.amazonaws.com/points-last-block-10.json'
-    );
+    const lastBlockResponse = await fetch("https://stackingdao-points.s3.amazonaws.com/points-last-block-10.json");
     const lastBlock = (await lastBlockResponse.json()).last_block;
 
     const blockHeightResponse = await fetch(`${coreApiUrl}/extended/v2/blocks/${lastBlock}`, {
       json: true,
     });
-    const blockTime = (await blockHeightResponse.json())['burn_block_time_iso'];
+    const blockTime = (await blockHeightResponse.json())["burn_block_time_iso"];
 
-    console.log('lastBlock:', lastBlock, 'blockTime:', blockTime), setLastUpdateBlock(blockTime);
+    console.log("lastBlock:", lastBlock, "blockTime:", blockTime), setLastUpdateBlock(blockTime);
   }
 
   async function fetchPointsInfo() {
@@ -98,16 +94,17 @@ export default function Points() {
     setTopUsers(data.slice(0, 100));
 
     if (!stxAddress) return;
-    const userData = data.find(value => value.wallet === stxAddress);
+    const userData = data.find((value) => value.wallet === stxAddress);
     setPointsInfo(userData);
     setTopUsers(addUserToFrontOfList(searchValue, data, data.slice(0, 100)));
   }
 
   const fetchNftType = async (id: string) => {
+    if (!stxAddress) return;
     const result = await callReadOnlyFunction({
-      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || '',
-      contractName: 'stacking-dao-genesis-nft',
-      functionName: 'get-genesis-type',
+      contractAddress: process.env.NEXT_PUBLIC_STSTX_ADDRESS || "",
+      contractName: "stacking-dao-genesis-nft",
+      functionName: "get-genesis-type",
       functionArgs: [uintCV(id)],
       senderAddress: stxAddress,
       network: stacksNetwork,
@@ -119,14 +116,13 @@ export default function Points() {
   const fetchNftBalance = async () => {
     const identifier = `${process.env.NEXT_PUBLIC_STSTX_ADDRESS}.stacking-dao-genesis-nft::stacking-dao-genesis`;
     const url =
-      coreApiUrl +
-      `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
-    const response = await fetch(url, { credentials: 'omit' });
+      coreApiUrl + `/extended/v1/tokens/nft/holdings?principal=${stxAddress}&asset_identifiers[]=${identifier}`;
+    const response = await fetch(url, { credentials: "omit" });
     const data = await response.json();
 
-    if (data['results']?.length > 0) {
-      const ids = data['results'].map(el => el['value']['repr'].replace('u', ''));
-      const types = await Promise.all(ids.map(id => fetchNftType(id)));
+    if (data["results"]?.length > 0) {
+      const ids = data["results"].map((el) => el["value"]["repr"].replace("u", ""));
+      const types = await Promise.all(ids.map((id) => fetchNftType(id)));
       const maxType = Math.max(...types);
       setNftType(maxType);
     }
@@ -156,16 +152,14 @@ export default function Points() {
             <h1 className="text-2xl font-headings">StackingDAO Points</h1>
             <div className="mt-6">
               <p className="text-sm text-sd-gray">
-                We reserve the right to update point calculations at any time. Points are updated
-                every 2 days. Last updated on{' '}
+                We reserve the right to update point calculations at any time. Points are updated every 2 days. Last
+                updated on{" "}
                 {isLoading ? (
                   <PlaceholderBar className="inline-flex w-10" />
                 ) : (
                   <>
-                    <span className="font-semibold">
-                      {new Date(lastUpdateBlock).toLocaleString('en-US')}
-                    </span>{' '}
-                    ({Intl.DateTimeFormat().resolvedOptions().timeZone}).
+                    <span className="font-semibold">{new Date(lastUpdateBlock).toLocaleString("en-US")}</span> (
+                    {Intl.DateTimeFormat().resolvedOptions().timeZone}).
                   </>
                 )}
               </p>
@@ -207,10 +201,10 @@ export default function Points() {
                     ) : (
                       <div className="flex items-center">
                         {(
-                          Number.parseInt(pointsInfo?.dailyPoints ?? '0') +
-                          Number.parseInt(pointsInfo?.referralPoints ?? '0') +
-                          Number.parseInt(pointsInfo?.bonusPoints ?? '0')
-                        ).toLocaleString('en-US', {
+                          Number.parseInt(pointsInfo?.dailyPoints ?? "0") +
+                          Number.parseInt(pointsInfo?.referralPoints ?? "0") +
+                          Number.parseInt(pointsInfo?.bonusPoints ?? "0")
+                        ).toLocaleString("en-US", {
                           maximumFractionDigits: 0,
                         })}
 
@@ -223,29 +217,21 @@ export default function Points() {
                                   <>LFG! You&apos;re holding a Stacking DAO OG Genesis NFT.</>
                                 ) : nftType == 2 ? (
                                   <>
-                                    Wow, you&apos;re lucky! You&apos;re holding a 1 of 100 Stacking
-                                    DAO Gold Genesis NFT.
+                                    Wow, you&apos;re lucky! You&apos;re holding a 1 of 100 Stacking DAO Gold Genesis
+                                    NFT.
                                   </>
                                 ) : nftType == 3 ? (
                                   <>
-                                    OMG. You&apos;re the special one! You&apos;re holding a 1 of 1 a
-                                    Stacking DAO Diamond Genesis NFT.
+                                    OMG. You&apos;re the special one! You&apos;re holding a 1 of 1 a Stacking DAO
+                                    Diamond Genesis NFT.
                                   </>
                                 ) : (
                                   <>LFG! You&apos;re holding a Stacking DAO Genesis NFT.</>
-                                )}{' '}
+                                )}{" "}
                                 A secret multiplier will be applied on your points later!
                               </Tooltip>
                               <div id="multiplier">
-                                {nftType == 1 ? (
-                                  <>😎</>
-                                ) : nftType == 2 ? (
-                                  <>✨</>
-                                ) : nftType == 3 ? (
-                                  <>💎</>
-                                ) : (
-                                  <>🚀</>
-                                )}
+                                {nftType == 1 ? <>😎</> : nftType == 2 ? <>✨</> : nftType == 3 ? <>💎</> : <>🚀</>}
                               </div>
                             </span>
                           </>
@@ -262,10 +248,10 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      Number.parseInt(pointsInfo?.dailyPoints ?? '0').toLocaleString('en-US') +
-                      ' + ' +
-                      Number.parseInt(pointsInfo?.bonusPoints ?? '0').toLocaleString('en-US') +
-                      ' bonus'
+                      Number.parseInt(pointsInfo?.dailyPoints ?? "0").toLocaleString("en-US") +
+                      " + " +
+                      Number.parseInt(pointsInfo?.bonusPoints ?? "0").toLocaleString("en-US") +
+                      " bonus"
                     )}
                   </dd>
                 </div>
@@ -277,16 +263,14 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      Number.parseInt(pointsInfo?.referralPoints ?? '0').toLocaleString('en-US', {
+                      Number.parseInt(pointsInfo?.referralPoints ?? "0").toLocaleString("en-US", {
                         maximumFractionDigits: 0,
                       })
                     )}
                   </dd>
                 </div>
                 <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
-                    Your Rank
-                  </dt>
+                  <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">Your Rank</dt>
                   <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
@@ -295,9 +279,7 @@ export default function Points() {
                         {!pointsInfo?.rank ? (
                           <>N/A</>
                         ) : (
-                          <>
-                            #{pointsInfo.rank.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                          </>
+                          <>#{pointsInfo.rank.toLocaleString("en-US", { maximumFractionDigits: 0 })}</>
                         )}
                       </>
                     )}
@@ -327,12 +309,7 @@ export default function Points() {
                       Total Points accumulated in the protocol so far
                     </Tooltip>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
-                      <g
-                        stroke="#797C80"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        clipPath="url(#clip0_321_1078)"
-                      >
+                      <g stroke="#797C80" strokeLinecap="round" strokeLinejoin="round" clipPath="url(#clip0_321_1078)">
                         <path d="M6 11c2.76142 0 5-2.23858 5-5S8.76142 1 6 1 1 3.23858 1 6s2.23858 5 5 5Z" />
                         <path d="M4.54504 4.50004c.11756-.33417.34958-.61595.65498-.79543.3054-.17949.66447-.2451 1.01361-.18521.34914.05988.66582.2414.89395.5124.22813.27101.35299.614.35246.96824 0 1-1.5 1.5-1.5 1.5M6 8.5h.00556" />
                       </g>
@@ -348,19 +325,17 @@ export default function Points() {
                   {isLoading ? (
                     <PlaceholderBar className="inline-flex w-20 h-4" />
                   ) : (
-                    totalPoints.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                    totalPoints.toLocaleString("en-US", { maximumFractionDigits: 0 })
                   )}
                 </dd>
               </div>
               <div className="flex flex-wrap p-4 rounded-lg bg-sd-gray-light">
-                <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">
-                  Total users
-                </dt>
+                <dt className="flex items-center gap-1 text-sm font-medium leading-6 text-sd-gray">Total users</dt>
                 <dd className="flex-none w-full text-2xl font-medium text-sd-gray-darker">
                   {isLoading ? (
                     <PlaceholderBar className="inline-flex w-20 h-4" />
                   ) : (
-                    allUsers.length.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                    allUsers.length.toLocaleString("en-US", { maximumFractionDigits: 0 })
                   )}
                 </dd>
               </div>
@@ -400,13 +375,13 @@ export default function Points() {
             <h2 className="text-2xl text-white font-headings">How do points work?</h2>
 
             <p className="mt-6 text-white/70">
-              StackingDAO Points are designed to quantify and reward your contributions to the
-              ever-growing StackingDAO ecosystem.
+              StackingDAO Points are designed to quantify and reward your contributions to the ever-growing StackingDAO
+              ecosystem.
             </p>
             <p className="mt-4 text-white/70">
-              You can earn points through holding stSTX, participating in DeFi activities or making
-              referrals, and more. The math is simple, transparent, and designed to benefit everyone
-              from long-term holders to active DeFi users.
+              You can earn points through holding stSTX, participating in DeFi activities or making referrals, and more.
+              The math is simple, transparent, and designed to benefit everyone from long-term holders to active DeFi
+              users.
             </p>
 
             <h2 className="mt-8 text-2xl text-white font-headings">How to earn points?</h2>
@@ -417,33 +392,25 @@ export default function Points() {
                   <div className="bg-fluor-green-500/[0.15] flex items-center justify-center w-6 h-6 text-fluor-green-500 text-sm rounded-full font-semibold shrink-0">
                     1
                   </div>
-                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">
-                    Holding stSTX
-                  </div>
+                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">Holding stSTX</div>
                 </li>
                 <li className="flex items-center mt-8 gap-x-4">
                   <div className="bg-fluor-green-500/[0.15] flex items-center justify-center w-6 h-6 text-fluor-green-500 text-sm rounded-full font-semibold shrink-0">
                     2
                   </div>
-                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">
-                    DeFi activities stSTX
-                  </div>
+                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">DeFi activities stSTX</div>
                 </li>
                 <li className="flex items-center mt-8 gap-x-4">
                   <div className="bg-fluor-green-500/[0.15] flex items-center justify-center w-6 h-6 text-fluor-green-500 text-sm rounded-full font-semibold shrink-0">
                     3
                   </div>
-                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">
-                    Referrals
-                  </div>
+                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">Referrals</div>
                 </li>
                 <li className="flex items-center mt-8 gap-x-4">
                   <div className="bg-fluor-green-500/[0.15] flex items-center justify-center w-6 h-6 text-fluor-green-500 text-sm rounded-full font-semibold shrink-0">
                     4
                   </div>
-                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">
-                    OG and Genesis NFTs
-                  </div>
+                  <div className="flex-none w-full text-sm font-medium leading-6 text-white">OG and Genesis NFTs</div>
                 </li>
               </ol>
               <button
@@ -468,9 +435,7 @@ export default function Points() {
                     />
                   </svg>
                 </div>
-                <p className="mt-6 text-xl font-semibold text-white">
-                  Learn more about earning points
-                </p>
+                <p className="mt-6 text-xl font-semibold text-white">Learn more about earning points</p>
               </button>
             </dl>
           </div>
@@ -482,8 +447,7 @@ export default function Points() {
           <div className="p-8 pb-0 md:p-12 md:pb-0">
             <div className="w-full mb-3 text-2xl font-headings">Leaderboard</div>
             <p className="text-sm text-gray-500">
-              A list of users sorted by points earned. Enter an address below to view its
-              information.
+              A list of users sorted by points earned. Enter an address below to view its information.
             </p>
 
             <div className="relative flex mt-6">
@@ -494,7 +458,7 @@ export default function Points() {
                 autoComplete="family-name"
                 placeholder="SP...."
                 value={searchValue}
-                onChange={evt => searchValueChanged(evt)}
+                onChange={(evt) => searchValueChanged(evt)}
                 className="block w-full py-3 pl-3 text-gray-900 border-0 rounded-md ring-1 ring-inset ring-sd-gray-light placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
               />
               <button
@@ -519,40 +483,28 @@ export default function Points() {
                         >
                           Rank
                         </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
-                        >
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           User
                         </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
-                        >
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           Stacking Points
                         </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
-                        >
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           Referral Points
                         </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
-                        >
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           Total Points
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {topUsers.map(user => (
+                      {topUsers.map((user) => (
                         <tr
                           key={topUsers.indexOf(user) + Math.random()}
                           className={
                             user.wallet == searchValue || user.wallet == stxAddress
-                              ? 'bg-fluor-green-500/10'
-                              : 'bg-white'
+                              ? "bg-fluor-green-500/10"
+                              : "bg-white"
                           }
                         >
                           <td className="pl-6 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-10">
@@ -575,8 +527,8 @@ export default function Points() {
                               <div
                                 className={
                                   user.wallet == stxAddress
-                                    ? 'flex text-dark-green-500 font-medium'
-                                    : 'flex text-gray-500 font-normal'
+                                    ? "flex text-dark-green-500 font-medium"
+                                    : "flex text-gray-500 font-normal"
                                 }
                               >
                                 <span className="sm:hidden">{`${user.wallet.slice(
@@ -601,14 +553,15 @@ export default function Points() {
                             </Link>
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {(
-                              Number.parseInt(user.dailyPoints) + Number.parseInt(user.bonusPoints)
-                            ).toLocaleString('en-US', {
-                              maximumFractionDigits: 0,
-                            })}
+                            {(Number.parseInt(user.dailyPoints) + Number.parseInt(user.bonusPoints)).toLocaleString(
+                              "en-US",
+                              {
+                                maximumFractionDigits: 0,
+                              }
+                            )}
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {Number.parseInt(user.referralPoints).toLocaleString('en-US', {
+                            {Number.parseInt(user.referralPoints).toLocaleString("en-US", {
                               maximumFractionDigits: 0,
                             })}
                           </td>
@@ -617,7 +570,7 @@ export default function Points() {
                               Number.parseInt(user.dailyPoints) +
                               Number.parseInt(user.referralPoints) +
                               Number.parseInt(user.bonusPoints)
-                            ).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            ).toLocaleString("en-US", { maximumFractionDigits: 0 })}
                           </td>
                         </tr>
                       ))}
