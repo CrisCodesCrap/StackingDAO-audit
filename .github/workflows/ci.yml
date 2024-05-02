@@ -17,9 +17,7 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-          dir: "web"
       - name: Build production bundle
         uses: borales/actions-yarn@v4
         with:
-          cmd: build
-          dir: "web"
+          cmd: workspace web build
