@@ -1,0 +1,19 @@
+{../../backend/stacks-listener/dist../../backend/stacks-listener/node_modules../../backend/stacks-listener/dist
+  "compilerOptions": {
+    "composite": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "skipLibCheck": true
+  },
+  "lib": ["es2015"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../../packages/database"
+    }
+  ]
+}

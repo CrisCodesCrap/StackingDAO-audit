@@ -11,8 +11,8 @@ import { stacksNetwork, coreApiUrl } from '../common/utils';
 import { WalletConnectButton } from '../components/WalletConnectButton';
 import { PlaceholderBar } from '../components/PlaceholderBar';
 import { Tooltip } from 'react-tooltip';
-import { getLeaderboard } from '@/actions/points';
-import { Leaderboard, LeaderboardRank } from '@/db/models';
+import { getLeaderboard } from '../../../packages/database/src/points';
+import { Leaderboard, LeaderboardRank } from "@repo/database";
 
 export default function Points() {
   const stxAddress = useSTXAddress();

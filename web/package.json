@@ -4,12 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx next build && npx next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint && eslint '*.ts' --quiet --fix",
-    "deploy-contracts": "ts-node scripts/deploy-contracts.ts -r tsconfig-paths/register -T --project ./tsconfig.json",
-    "db:generate": "drizzle-kit generate:pg",
-    "db:push": "drizzle-kit push:pg"
+    "deploy-contracts": "ts-node scripts/deploy-contracts.ts -r tsconfig-paths/register -T --project ./tsconfig.json"
   },
   "dependencies": {
     "@aws-sdk/client-rds-data": "^3.556.0",
@@ -49,9 +47,9 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "3.3.3",
     "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "tweetnacl-util": "^0.15.1",
+    "@repo/database": "0.1.0"
   },
-  "prettier": "@stacks/prettier-config",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.137",
     "@types/node": "^20.12.7",

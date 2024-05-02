@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+        "skipLibCheck": true
+    },
+  "exclude": ["node_modules", "packages/**/tests/**", "backend/**/dist/**", "packages/**/dist/**", "scripts/**", "web/**/*.js"],
+  "references": [
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./apps/functions"
+    },
+        {
+      "path": "./apps/stacks-listener"
+    },
+    {
+      "path": "./web"
+    }
+  ]
+}
