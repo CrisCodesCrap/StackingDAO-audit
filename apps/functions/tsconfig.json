@@ -1,4 +1,4 @@
-{../../backend/functions/dist../../backend/functions/node_modules
+{
   "compilerOptions": {
     "composite": true,
     "module": "commonjs",

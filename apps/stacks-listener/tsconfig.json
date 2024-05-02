@@ -1,4 +1,4 @@
-{../../backend/stacks-listener/dist../../backend/stacks-listener/node_modules../../backend/stacks-listener/dist
+{
   "compilerOptions": {
     "composite": true,
     "module": "commonjs",

@@ -11,3 +11,8 @@ scripts/wallet-arweave.json
 web/pnpm-lock.yaml
 /.idea
 services/.env.local
+
+# cdk
+.cdk.staging
+cdk.out
+*.tsbuildinfo

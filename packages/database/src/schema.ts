@@ -2,6 +2,7 @@ import {
   pgEnum,
   pgTable,
   serial,
+  integer,
   timestamp,
   real,
   numeric,
@@ -45,7 +46,7 @@ export const pointsSourceEnum = pgEnum('points_source', [
   'zest',
   'arkadiko',
   'velar',
-  'hermetica'
+  'hermetica',
 ]);
 
 export const pointsEarned = pgTable(

@@ -1,6 +1,6 @@
-"use server";
+'use server';
 
-import { sql, eq, inArray, asc, sum, avg } from 'drizzle-orm';
+import { sql, eq, inArray, asc, sum, avg, desc } from 'drizzle-orm';
 import {
   NewPointsRecord,
   WalletUpdate,
@@ -70,7 +70,7 @@ export async function snapshotWallet(
   // return result.numberOfRecordsUpdated ?? 0;
 }
 
-export async function nextWalletsPage(limit?: number): Promise<Wallet[]> {
+export async function getAllWallets(limit?: number): Promise<Wallet[]> {
   const query = db.select().from(wallets);
 
   if (limit) return await query.limit(limit);

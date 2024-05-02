@@ -1,7 +1,7 @@
-import { WalletSnapshot } from '@repo/database/src/models';
-import { nextWalletsPage, snapshotWallet } from '@repo/database/src/actions';
-import { userInfoAtBlock } from '@repo/stacks/src/user_info';
-import { BlocksApi } from '@stacks/blockchain-api-client';
+import { WalletSnapshot } from "@repo/database/src/models";
+import { getAllWallets, snapshotWallet } from "@repo/database/src/actions";
+import { userInfoAtBlock } from "@repo/stacks/src/user_info";
+import { BlocksApi } from "@stacks/blockchain-api-client";
 
 // const sleep = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
 
@@ -14,9 +14,9 @@ database to use for calculations later on.
 */
 async function snapshot(block_height: number) {
   const block = await blocks.getBlock({ heightOrHash: block_height });
-  console.log('snapshotting known wallets stSTX balance at block', block.hash);
+  console.log("snapshotting known wallets stSTX balance at block", block.hash);
 
-  const wallets = await nextWalletsPage();
+  const wallets = await getAllWallets();
 
   console.log(`found ${wallets.length} wallets`);
 
@@ -41,8 +41,7 @@ async function snapshot(block_height: number) {
     const recordsWritten = await snapshotWallet(block.hash, snapshot);
     total += recordsWritten;
 
-    if (total % wallets.length == 0)
-      console.log(`======== progress: ${total}/${wallets.length} ========`);
+    if (total % wallets.length == 0) console.log(`======== progress: ${total}/${wallets.length} ========`);
   }
 }
 
