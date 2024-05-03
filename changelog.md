@@ -9,3 +9,4 @@
 ## 03-05-2024
 
 - Show Hermetica balance under Active Positions
+- Analytics on Signers v1
