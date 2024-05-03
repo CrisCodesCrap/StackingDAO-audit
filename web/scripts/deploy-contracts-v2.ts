@@ -41,6 +41,12 @@ const contracts: Contract[] = [
   { name: 'stacking-delegate-luganodes-1-4', file: 'version-2/stacking-delegate-1' },
   { name: 'stacking-delegate-luganodes-1-5', file: 'version-2/stacking-delegate-1' },
 
+  { name: 'stacking-delegate-despread-1-1', file: 'version-2/stacking-delegate-1' },
+  { name: 'stacking-delegate-despread-1-2', file: 'version-2/stacking-delegate-1' },
+  { name: 'stacking-delegate-despread-1-3', file: 'version-2/stacking-delegate-1' },
+  { name: 'stacking-delegate-despread-1-4', file: 'version-2/stacking-delegate-1' },
+  { name: 'stacking-delegate-despread-1-5', file: 'version-2/stacking-delegate-1' },
+
   { name: 'stacking-pool-signer-chorus-one-v1', file: 'version-2/stacking-pool-signer-v1' },
   { name: 'stacking-pool-signer-luganodes-v1', file: 'version-2/stacking-pool-signer-v1' },
   { name: 'stacking-pool-signer-kiln-v1', file: 'version-2/stacking-pool-signer-v1' },

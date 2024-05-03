@@ -12,12 +12,28 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-restake-v1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-despread-v1'),
     tx.listCV([
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-restake-1-1'),
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-1'),
+        'amount': tx.uintCV(2400000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-2'),
         'amount': tx.uintCV(1200000 * 1000000)
       }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-3'),
+        'amount': tx.uintCV(1200000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-4'),
+        'amount': tx.uintCV(600000 * 1000000)
+      }),
+      tx.tupleCV({
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-5'),
+        'amount': tx.uintCV(600000 * 1000000)
+      })
     ])
   ],
   fee: new BN(100000, 10),
