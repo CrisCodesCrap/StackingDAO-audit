@@ -17,6 +17,7 @@ import { makeContractCall } from '@/app/common/contract-call';
 import { stacksNetwork } from '@/app/common/utils';
 import { StacksMainnet } from '@stacks/network';
 import { useDebounce } from '@uidotdev/usehooks';
+import { useReferral } from '@/app/common/hooks';
 
 const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number> => {
   const resultOut = await callReadOnlyFunction({
@@ -37,24 +38,6 @@ const bitflowOut = async (stxAddress: string, amountIn: number): Promise<number>
 
   return cvToValue(resultOut).value / 1000000;
 };
-
-export function useReferral(referral?: string | null): [() => ClarityValue] {
-  useEffect(() => {
-    if (referral) localStorage.setItem('stacking-referral', referral);
-  }, [referral]);
-
-  return [
-    () => {
-      let referralParam: ClarityValue = noneCV();
-      const referralString = referral || localStorage.getItem('stacking-referral');
-      if (!!referralString) {
-        referralParam = someCV(standardPrincipalCV(referralString));
-      }
-
-      return referralParam;
-    },
-  ];
-}
 
 interface StackingInput {
   amount: StackingDaoAmount;
@@ -132,6 +115,8 @@ type StackingPartner = 'stackingdao' | 'bitflow';
 type ButtonState = 'stack' | 'insufficient' | 'disabled';
 
 interface StackingActions extends StackingInput {
+  gasFeeTolerance: number;
+  referral?: string | null;
   stackingPartner: StackingPartner;
   buttonState: ButtonState;
   setStackingPartner: Dispatch<SetStateAction<StackingPartner>>;
@@ -140,31 +125,38 @@ interface StackingActions extends StackingInput {
   stackStx: VoidFunction;
 }
 
-export function useStackingActions(stxAddress?: string, referral?: string | null): StackingActions {
-  const { stxBalance, setCurrentTxId, setCurrentTxStatus } = useAppContext();
+export function useStackingActions(stxAddress?: string): StackingActions {
+  const { stxBalance, setCurrentTxId, setCurrentTxStatus, mempoolFees } = useAppContext();
   const { amount, updateRequestedAmount, ...input } = useStackingInput();
-  const [getReferral] = useReferral(referral);
 
   const [buttonState, setButtonState] = useState<ButtonState>('disabled');
 
   const [stackingPartner, setStackingPartner] = useState<StackingPartner>('stackingdao');
+  const [gasFeeTolerance, setGasFeeTolerance] = useState<number>(2.0);
+
+  useEffect(
+    () => setGasFeeTolerance(mempoolFees ? mempoolFees.all.high_priority / 1_000_000 : 2.0),
+    [mempoolFees?.all.high_priority]
+  );
+
+  const referral = useReferral();
 
   useEffect(() => {
     let state: ButtonState = 'disabled';
 
-    const maxBalance = stxBalance - 2;
-    if (amount.stx > maxBalance) state = 'insufficient';
-    else if (!amount.stx || !stxAddress) state = 'disabled';
+    const maxAmount = Math.max(0, stxBalance - gasFeeTolerance);
+    if (!amount.stx || !stxAddress) state = 'disabled';
+    else if (amount.stx > maxAmount) state = 'insufficient';
     else state = 'stack';
 
     setButtonState(state);
-  }, [amount, stxAddress, stxBalance]);
+  }, [amount, stxAddress, stxBalance, gasFeeTolerance]);
 
-  const onMaxClicked = () => updateRequestedAmount(stxBalance - 2);
+  const onMaxClicked = () => updateRequestedAmount(Math.max(0, stxBalance - gasFeeTolerance));
 
   const onValidateAmount = useCallback(
-    (value: number | undefined) => (value ? value < stxBalance - 2 : true),
-    [stxBalance]
+    (value: number | undefined) => (value ? value < stxBalance - gasFeeTolerance : true),
+    [stxBalance, gasFeeTolerance]
   );
 
   const stackStx = async () => {
@@ -175,6 +167,8 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
       makeStandardSTXPostCondition(stxAddress, FungibleConditionCode.LessEqual, stxAmount),
     ];
 
+    const referralCV = !referral ? noneCV() : someCV(standardPrincipalCV(referral));
+
     await makeContractCall(
       {
         stxAddress,
@@ -184,7 +178,7 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
         functionArgs: [
           contractPrincipalCV(`${process.env.NEXT_PUBLIC_STSTX_ADDRESS}`, 'reserve-v1'),
           uintCV(stxAmount),
-          getReferral(),
+          referralCV,
         ],
         postConditions,
         network: stacksNetwork,
@@ -199,6 +193,7 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
 
   return {
     ...input,
+    referral,
     amount,
     updateRequestedAmount,
     onMaxClicked,
@@ -207,5 +202,6 @@ export function useStackingActions(stxAddress?: string, referral?: string | null
     buttonState,
     stackStx,
     onValidateAmount,
+    gasFeeTolerance,
   };
 }
