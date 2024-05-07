@@ -12,31 +12,31 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-signer-despread-v1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-pool-v1'),
     tx.listCV([
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-1'),
-        'amount': tx.uintCV(2400000 * 1000000)
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-1'),
+        'amount': tx.uintCV(3000000 * 1000000)
       }),
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-2'),
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-2'),
         'amount': tx.uintCV(1200000 * 1000000)
       }),
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-3'),
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-3'),
         'amount': tx.uintCV(1200000 * 1000000)
       }),
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-4'),
-        'amount': tx.uintCV(600000 * 1000000)
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-4'),
+        'amount': tx.uintCV(960000 * 1000000)
       }),
       tx.tupleCV({
-        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-despread-1-5'),
-        'amount': tx.uintCV(600000 * 1000000)
+        'delegate': tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
+        'amount': tx.uintCV(960000 * 1000000)
       })
     ])
   ],
-  fee: new BN(100000, 10),
+  fee: new BN(100001, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network: network,

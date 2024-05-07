@@ -1,6 +1,6 @@
 require('dotenv').config({path: '../.env'});
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'stacking-pool-signer-alum-labs-v1';
+const CONTRACT_NAME = 'stacking-pool-v1';
 const FUNCTION_NAME = 'prepare-stacking-dao';
 const tx = require('@stacks/transactions');
 const utils = require('../utils');
@@ -13,6 +13,7 @@ const txOptions = {
   functionName: FUNCTION_NAME,
   functionArgs: [],
   fee: new BN(100000, 10),
+  nonce: new BN(305, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
