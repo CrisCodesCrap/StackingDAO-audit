@@ -16,7 +16,7 @@ const activityItems = [
     },
     commit: 'Use stSTX as collateral to mint USDA',
     status: 'Launched',
-    link: 'https://arkadiko.finance/',
+    link: 'https://app.arkadiko.finance/',
     actions: [
       {
         primary: true,
@@ -32,7 +32,7 @@ const activityItems = [
     },
     commit: 'stSTX/STX trading pool',
     status: 'Launched',
-    link: 'https://www.bitflow.finance/',
+    link: 'https://app.bitflow.finance/',
     actions: [
       {
         name: 'Swap',
@@ -52,7 +52,7 @@ const activityItems = [
     },
     commit: 'Use stSTX as collateral to mint stSTXearn',
     status: 'Launched',
-    link: 'https://www.hermetica.fi/',
+    link: 'https://app.hermetica.fi/',
     actions: [
       {
         primary: true,
@@ -86,9 +86,9 @@ const activityItems = [
       name: 'Zest Protocol',
       imageUrl: '/zest.svg',
     },
-    commit: 'Use stSTX as collateral to borrow aeUSDC',
+    commit: 'Supply stSTX to use as collateral & earn yield',
     status: 'Launched',
-    link: 'https://www.zestprotocol.com/',
+    link: 'https://app.zestprotocol.com/',
     actions: [
       {
         primary: true,
