@@ -1,4 +1,4 @@
-import { ScheduledEvent, Context } from "aws-lambda";
+import type { ScheduledEvent, Context } from "aws-lambda";
 import { BlocksApi, InfoApi, NakamotoBlock } from "@stacks/blockchain-api-client";
 import { userInfoAtBlock } from "@repo/stacks/src/user_info";
 import { NewPointsRecord } from "@repo/database/src/models";

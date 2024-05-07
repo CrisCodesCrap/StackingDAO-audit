@@ -8,7 +8,7 @@ WORKDIR /home/node/app
 
 COPY --chown=node . .
 # Building the production-ready application code
-RUN yarn install --production && yarn workspace stacks-listener build
+RUN yarn install && yarn workspace stacks-listener build
 
 FROM node:20.12-alpine
 

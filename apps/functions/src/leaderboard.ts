@@ -1,4 +1,4 @@
-import { SNSEvent, Context } from "aws-lambda";
+import type { SNSEvent, Context } from "aws-lambda";
 import * as db from "@repo/database/src/actions";
 
 export async function updateLeaderboard(event: SNSEvent, _: Context): Promise<void> {

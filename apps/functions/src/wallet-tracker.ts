@@ -1,11 +1,11 @@
-import { SQSEvent, Context } from "aws-lambda";
+import type { SQSEvent, Context } from "aws-lambda";
 import { Block } from "@stacks/stacks-blockchain-api-types";
 import { upsertWallets } from "@repo/database/src/actions";
 import { userInfoAtBlock } from "@repo/stacks/src/user_info";
 import { WalletUpdate } from "@repo/database/src/models";
 import { processBlockEvents, processBlockTransactions } from "@repo/stacks/src/blocks";
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
-import { BlocksApi } from "@stacks/blockchain-api-client";
+import { BlocksApi, NakamotoBlock } from "@stacks/blockchain-api-client";
 
 const REPLAY_COUNT = 10;
 const updatesTopic = process.env.OUTGOING_SNS_TOPIC;
@@ -16,25 +16,24 @@ export async function updateWallets(event: SQSEvent, _: Context): Promise<void> 
   for (const record of event.Records) {
     const latest_block = (await JSON.parse(record.body)) as Block;
 
-    // TODO: reduce replay count by difference with last processed block (stored in db)
-    // TODO: read from db instead of from event
-    // TODO: write blocks to db after we process them or when we receive them instead of sending to SQS topic
-
+    const block_list = [];
     for (let block_height = latest_block.height - REPLAY_COUNT; block_height < latest_block.height; block_height++) {
       try {
         const block = await blocks.getBlockByHeight({ height: block_height });
-        await updateWalletsForBlock(block);
+        block_list.push(block);
       } catch (e) {
-        console.log("failed for block", block_height);
+        console.log("failed to get block", block_height);
         continue;
       }
     }
 
-    await updateWalletsForBlock(latest_block);
+    for (const block of [...block_list, latest_block]) {
+      await updateWalletsForBlock(block);
+    }
   }
 }
 
-export async function updateWalletsForBlock(block: Block): Promise<void> {
+export async function updateWalletsForBlock(block: NakamotoBlock): Promise<void> {
   // 1. Find all wallets that might contain or have contained stSTX.
   const result = await Promise.all([processBlockEvents(block), processBlockTransactions(block)]);
 

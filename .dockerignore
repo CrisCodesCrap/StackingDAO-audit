@@ -4,6 +4,7 @@ docker-compose*
 .dockerignore
 .git
 .gitignore
+.github
 README.md
 LICENSE
 .vscode
@@ -13,3 +14,12 @@ helm-charts
 .editorconfig
 .idea
 coverage*
+.DS_Store
+
+# StackingDAO specific folders
+cdk*
+clarity
+web
+scripts
+.npmignore
+Audit*

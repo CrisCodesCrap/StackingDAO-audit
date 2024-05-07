@@ -5,12 +5,12 @@ import { contracts } from './constants';
 import { ParsedEvent, getContractEventsForBlock } from './contracts';
 import { getTransactionsByBlockHash } from './transactions';
 
-export async function processBlockEvents(block: Block): Promise<string[]> {
+export async function processBlockEvents(block: NakamotoBlock): Promise<string[]> {
   // Get latest events for the contracts we care about.
   const results = await Promise.all([
-    getContractEventsForBlock(contracts.core, block.txs.length),
-    getContractEventsForBlock(contracts.token, block.txs.length),
-    getContractEventsForBlock(contracts.arkadiko, block.txs.length),
+    getContractEventsForBlock(contracts.core, block.tx_count),
+    getContractEventsForBlock(contracts.token, block.tx_count),
+    getContractEventsForBlock(contracts.arkadiko, block.tx_count),
   ]);
 
   // Flatten results and filter only relevant events.
@@ -51,7 +51,7 @@ export async function processBlockEvents(block: Block): Promise<string[]> {
   return addresses.filter(address => !address.includes('.'));
 }
 
-export async function processBlockTransactions(block: Block): Promise<string[]> {
+export async function processBlockTransactions(block: NakamotoBlock): Promise<string[]> {
   // Get more details about all the transactions in the current block.
   const txs = await getTransactionsByBlockHash(block.hash);
 
