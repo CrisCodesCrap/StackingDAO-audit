@@ -30,7 +30,7 @@ const activityItems = [
       name: 'Bitflow AMM',
       imageUrl: '/bitflow-logo.png',
     },
-    commit: 'stSTX/STX trading pool',
+    commit: 'Swap stSTX for other assets, supply to the stSTX-STX pair',
     status: 'Launched',
     link: 'https://app.bitflow.finance/',
     actions: [
