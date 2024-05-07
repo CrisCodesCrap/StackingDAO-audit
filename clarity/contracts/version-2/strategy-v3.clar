@@ -183,6 +183,7 @@
     (asserts! (not (has-executed-pool pool)) (err ERR_HAS_EXECUTED))
 
     (asserts! (is-eq (len compare-errors) u0) (err ERR_WRONG_DELEGATE_TRAIT))
+    (asserts! (is-eq (len delegates) (len saved-delegates)) (err ERR_WRONG_DELEGATE_TRAIT))
     (asserts! (is-eq helper-error none) (unwrap-panic helper-error))
 
     (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-executed-pool: (get-pox-cycle) }))
