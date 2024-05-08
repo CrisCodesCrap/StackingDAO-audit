@@ -88,13 +88,6 @@ export default function Cycles() {
     return inflow - outflow;
   }
 
-  function rewardCycleToBurnHeight(cycle: number) {
-    const firstBlockHeight = 666050;
-    const cycleLength = 2100;
-
-    return firstBlockHeight + (cycle * cycleLength);
-  }
-
   async function fetchAll() {
     const inflow = await getInflow();
     setInflow(inflow);
@@ -107,7 +100,7 @@ export default function Cycles() {
     var allCyclesInfo = [];
 
     const cycles = Array.from({length:(nextCycle.cycle-73+1)},(v,k)=>73+k).reverse();
-    for await (const cycle of cycles) {
+    for (const cycle of cycles) {
       // Get cycle info
       const info = await fetchCycleInfo(cycle);
 
@@ -126,10 +119,11 @@ export default function Cycles() {
       }
 
       allCyclesInfo.push(info);
-      setCyclesInfo(allCyclesInfo);
 
       startBlock -= 2100;
     }
+
+    setCyclesInfo(allCyclesInfo);
   }
 
   useEffect(() => {

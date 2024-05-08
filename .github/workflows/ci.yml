@@ -23,3 +23,14 @@ jobs:
         with:
           cmd: build
           dir: "web"
+  tests:
+    name: Clarinet Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Execute test suite"
+        uses: docker://hirosystems/clarinet:1.8.0
+        with:
+          entrypoint: "bash"
+          args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test"

@@ -417,9 +417,6 @@ Clarinet.test({
     result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-v1"), 42);
     result.expectOk().expectBool(true);
 
-
-    chain.mineEmptyBlockUntil(10);
-
     result = stackingPool.prepareDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"));
     result.expectErr().expectUint(205001);
 

@@ -101,13 +101,13 @@ Clarinet.test({
     call = await reserve.getTotalStx();
     call.result.expectOk().expectUintWithDecimals(1000);
 
-    call = await reserve.getStxStackingAtBlock(6);
+    call = await reserve.getStxStackingAtBlock(7);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = await reserve.getStxStackingAtBlock(7);
+    call = await reserve.getStxStackingAtBlock(8);
     call.result.expectOk().expectUintWithDecimals(200);
 
-    call = await reserve.getStxStackingAtBlock(8);
+    call = await reserve.getStxStackingAtBlock(9);
     call.result.expectOk().expectUintWithDecimals(100);
   }
 });
