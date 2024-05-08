@@ -15,7 +15,8 @@
     {
         locked: uint,
         unlock-height: uint,
-        unlocked: uint
+        unlocked: uint,
+        delegated: bool
     }
 )
 
@@ -25,12 +26,18 @@
             {
                 locked: u0,
                 unlock-height: u0,
-                unlocked: (stx-get-balance account)
+                unlocked: (stx-get-balance account),
+                delegated: false
             }
             (map-get? stx-account-map { account: account })
         ))
     )
-        (merge info { unlocked: (stx-get-balance account) })
+        ;; Mock for delegations does not actually transfer STX
+        ;; Direct stacking mock does transfer STX
+        (if (get delegated info)
+            (merge info { unlocked: (- (stx-get-balance account) (get locked info)) })
+            (merge info { unlocked: (stx-get-balance account) })
+        )
     )
 )
 
@@ -973,6 +980,13 @@
           lock-period: lock-period,
           delegated-to: (some tx-sender) })
 
+        ;; MOCK - 
+        (map-set stx-account-map { account: stacker } (merge (stx-account-mock tx-sender) { 
+            locked: amount-ustx, 
+            unlock-height: unlock-burn-height,
+            delegated: true
+        }))
+
       ;; return the lock-up information, so the node can actually carry out the lock.
       (ok { stacker: stacker,
             lock-amount: amount-ustx,
@@ -1205,7 +1219,7 @@
                     (stacker principal)
                     (pox-addr { version: (buff 1), hashbytes: (buff 32) })
                     (increase-by uint))
-    (let ((stacker-info (stx-account stacker))
+    (let ((stacker-info (stx-account-mock stacker))
           (existing-lock (get locked stacker-info))
           (available-stx (get unlocked stacker-info))
           (unlock-height (get unlock-height stacker-info)))
@@ -1281,6 +1295,11 @@
 
       ;; stacking-state is unchanged, so no need to update
 
+        ;; MOCK - Update locked
+        (map-set stx-account-map { account: tx-sender } (merge (stx-account-mock tx-sender) {
+            locked: new-total-locked
+        }))
+
       ;; return the lock-up information, so the node can actually carry out the lock.
       (ok { stacker: stacker, total-locked: new-total-locked}))))
 
@@ -1293,7 +1312,7 @@
                     (stacker principal)
                     (pox-addr { version: (buff 1), hashbytes: (buff 32) })
                     (extend-count uint))
-    (let ((stacker-info (stx-account stacker))
+    (let ((stacker-info (stx-account-mock stacker))
           ;; to extend, there must already be an entry in the stacking-state
           (stacker-state (unwrap! (get-stacker-info stacker) (err ERR_STACK_EXTEND_NOT_LOCKED)))
           (amount-ustx (get locked stacker-info))
@@ -1375,6 +1394,11 @@
           lock-period: lock-period,
           delegated-to: (some tx-sender) })
 
+        ;; MOCK - Update unlock
+        (map-set stx-account-map { account: tx-sender } (merge (stx-account-mock tx-sender) {
+            unlock-height: new-unlock-ht,
+        }))
+        
       ;; return the lock-up information, so the node can actually carry out the lock.
       (ok { stacker: stacker,
             unlock-burn-height: new-unlock-ht }))))

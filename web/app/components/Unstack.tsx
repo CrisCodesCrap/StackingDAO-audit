@@ -432,7 +432,7 @@ export function Unstack() {
                     <div className="text-sd-gray">Conversion rate</div>
                     <div className="flex mt-0 place-content-start sm:place-content-end sm:mt-0">
                       <div className="flex items-center font-semibold">
-                        1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {stxRatio}{' '}
+                        1 <StStxLogo className="inline mx-1.5 w-5 h-5" />= {bitflowRatio}{' '}
                         <StxLogo className="inline w-5 h-5 ml-1.5" />
                       </div>
                     </div>

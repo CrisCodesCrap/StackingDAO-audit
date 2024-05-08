@@ -16,7 +16,7 @@ const activityItems = [
     },
     commit: 'Use stSTX as collateral to mint USDA',
     status: 'Launched',
-    link: 'https://arkadiko.finance/',
+    link: 'https://app.arkadiko.finance/',
     actions: [
       {
         primary: true,
@@ -30,9 +30,9 @@ const activityItems = [
       name: 'Bitflow AMM',
       imageUrl: '/bitflow-logo.png',
     },
-    commit: 'stSTX/STX trading pool',
+    commit: 'Swap stSTX for other assets, supply to the stSTX-STX pair',
     status: 'Launched',
-    link: 'https://www.bitflow.finance/',
+    link: 'https://app.bitflow.finance/',
     actions: [
       {
         name: 'Swap',
@@ -44,6 +44,22 @@ const activityItems = [
         url: 'https://app.bitflow.finance/pool?tradingPair=stx-ststx',
       },
     ],
+  },
+  {
+    user: {
+      name: 'Hermetica',
+      imageUrl: '/hermetica.svg',
+    },
+    commit: 'Use stSTX as collateral to mint stSTXearn',
+    status: 'Launched',
+    link: 'https://app.hermetica.fi/',
+    actions: [
+      {
+        primary: true,
+        name: 'Add stSTX',
+        url: 'https://app.hermetica.fi/earn'
+      }
+    ]
   },
   {
     user: {
@@ -70,9 +86,9 @@ const activityItems = [
       name: 'Zest Protocol',
       imageUrl: '/zest.svg',
     },
-    commit: 'Use stSTX as collateral to borrow aeUSDC',
+    commit: 'Supply stSTX to use as collateral & earn yield',
     status: 'Launched',
-    link: 'https://www.zestprotocol.com/',
+    link: 'https://app.zestprotocol.com/',
     actions: [
       {
         primary: true,
@@ -80,7 +96,7 @@ const activityItems = [
         url: 'https://app.zestprotocol.com/',
       },
     ],
-  },
+  }
 ];
 
 function classNames(...classes) {
@@ -154,7 +170,7 @@ export default function Defi() {
                             </div>
                           </Link>
                         </td>
-                        <td className="hidden py-4 pl-0 pr-4 sm:table-cell">
+                        <td className="hidden py-4 pl-0 pr-4 sm:table-cell flex-grow">
                           <div className="flex gap-x-3">
                             <div className="text-sm font-normal leading-6 text-sd-gray-darker">
                               {item.commit}
@@ -162,14 +178,14 @@ export default function Defi() {
                           </div>
                         </td>
                         <td className="hidden py-4 pl-0 pr-4 text-sm leading-6 sm:table-cell">
-                          <div className="flex items-center md:justify-end gap-x-2 sm:justify-start">
+                          <div className="flex items-center gap-x-2 sm:justify-start">
                             <time className="text-gray-400 sm:hidden" dateTime={item.dateTime}>
                               {item.date}
                             </time>
                             <div
                               className={classNames(
                                 statuses[item.status],
-                                'flex-none rounded-full p-1'
+                                'flex-none rounded-full p-1 md:ml-4'
                               )}
                             >
                               <div className="h-1.5 w-1.5 rounded-full bg-current" />

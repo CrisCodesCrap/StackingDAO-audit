@@ -76,27 +76,75 @@ export default function Points() {
     console.log("lastBlock:", lastBlock, "blockTime:", blockTime), setLastUpdateBlock(blockTime);
   }
 
+  async function fetchBoostPoints() {
+    const url = "https://stackingdao-points.s3.amazonaws.com/points-aggregate-11.json";
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const userInfo = data[stxAddress];
+    console.log("userInfo", userInfo);
+    console.log("test", userInfo.boost_points_2 ?? 0);
+
+    setBoostPoints((userInfo.boost_points_2 ?? 0) + (userInfo.boost_points_3 ?? 0));
+  }
+
   async function fetchPointsInfo() {
     const data = await getLeaderboard();
+
+    for (const key of Object.keys(data)) {
+      data[key] = {
+        user_points: data[key].user_points,
+        referral_points: data[key].referral_points,
+        boost_points_1: data[key].boost_points_1 ?? 0,
+        boost_points_2: data[key].boost_points_2 ?? 0,
+        boost_points_3: data[key].boost_points_3 ?? 0,
+        new_points: data[key].new_points,
+      };
+    }
 
     const sumWithInitial = Object.values(data).reduce(
       (accumulator, currentValue) =>
         accumulator +
-        Number.parseInt(currentValue.dailyPoints) +
-        Number.parseInt(currentValue.referralPoints) +
-        Number.parseInt(currentValue.bonusPoints),
+        currentValue["user_points"] +
+        currentValue["referral_points"] +
+        currentValue["boost_points_1"] +
+        currentValue["boost_points_2"] +
+        currentValue["boost_points_3"],
       0
     );
     setTotalPoints(sumWithInitial);
 
     // Sort the data for the leaderboard
-    setAllUsers(data);
-    setTopUsers(data.slice(0, 100));
+    var items = Object.keys(data).map(function (key) {
+      return [key, data[key]];
+    });
+    items.sort(function (first, second) {
+      return (
+        second[1].user_points +
+        second[1].referral_points +
+        second[1].boost_points_1 +
+        second[1].boost_points_2 +
+        second[1].boost_points_3 -
+        (first[1].user_points +
+          first[1].referral_points +
+          first[1].boost_points_1 +
+          first[1].boost_points_2 +
+          first[1].boost_points_3)
+      );
+    });
+    setAllUsers(items);
+    setTopUsers(items.slice(0, 100));
 
     if (!stxAddress) return;
-    const userData = data.find((value) => value.wallet === stxAddress);
-    setPointsInfo(userData);
-    setTopUsers(addUserToFrontOfList(searchValue, data, data.slice(0, 100)));
+    const userData = data[stxAddress];
+    setPointsInfo(
+      userData || { user_points: 0, boost_points_1: 0, boost_points_2: 0, boost_points_3: 0, referral_points: 0 }
+    );
+
+    const currentUser = items.filter((user) => user[0] == stxAddress);
+    const currentIndex = items.indexOf(currentUser[0]);
+    setUserRank(currentIndex + 1);
+    setTopUsers(addUserToFrontOfList(searchValue, items, items.slice(0, 100)));
   }
 
   const fetchNftType = async (id: string) => {
@@ -133,6 +181,7 @@ export default function Points() {
 
     if (stxAddress) {
       await fetchNftBalance();
+      await fetchBoostPoints();
     }
 
     await Promise.all([fetchPointsInfo(), fetchBlockInfo()]);
@@ -175,7 +224,7 @@ export default function Points() {
                       id="yourPoints"
                     >
                       <Tooltip anchorSelect="#yourPoints" place="top">
-                        The sum of Your Stacking Points and Your Referral Points
+                        The sum of Your Stacking Points, Boost Points and Referral Points
                       </Tooltip>
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none">
                         <g
@@ -200,11 +249,7 @@ export default function Points() {
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
                       <div className="flex items-center">
-                        {(
-                          Number.parseInt(pointsInfo?.dailyPoints ?? "0") +
-                          Number.parseInt(pointsInfo?.referralPoints ?? "0") +
-                          Number.parseInt(pointsInfo?.bonusPoints ?? "0")
-                        ).toLocaleString("en-US", {
+                        {(pointsInfo.user_points + pointsInfo.referral_points + boostPoints).toLocaleString("en-US", {
                           maximumFractionDigits: 0,
                         })}
 
@@ -248,10 +293,23 @@ export default function Points() {
                     {isLoading ? (
                       <PlaceholderBar className="inline-flex w-20 h-4" />
                     ) : (
-                      Number.parseInt(pointsInfo?.dailyPoints ?? "0").toLocaleString("en-US") +
-                      " + " +
-                      Number.parseInt(pointsInfo?.bonusPoints ?? "0").toLocaleString("en-US") +
-                      " bonus"
+                      <>
+                        <div>{pointsInfo.user_points.toLocaleString("en-US", { maximumFractionDigits: 0 })}</div>
+
+                        {boostPoints > 0 ? (
+                          <>
+                            <span className="text-gray-500 text-bottom px-1">+</span>
+                            <Tooltip anchorSelect="#boost" place="top">
+                              Extra point boosts!
+                            </Tooltip>
+                            <span id="boost">
+                              {/* {(pointsInfo.boost_points_1 + pointsInfo.boost_points_2 + pointsInfo.boost_points_3).toLocaleString('en-US', { maximumFractionDigits: 0 })} */}
+                              {boostPoints.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                              <span className="pl-2">🚀</span>
+                            </span>
+                          </>
+                        ) : null}
+                      </>
                     )}
                   </dd>
                 </div>
@@ -492,6 +550,16 @@ export default function Points() {
                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           Referral Points
                         </th>
+
+                        {/* 
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray"
+                        >
+                          Boosts Points
+                        </th> 
+                        */}
+
                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-sd-gray">
                           Total Points
                         </th>
@@ -538,27 +606,36 @@ export default function Points() {
                                 <span className="hidden sm:inline">{user.wallet}</span>
                                 {user.wallet == stxAddress ? <> (You)</> : null}
                                 <div className="pt-1 pl-2">
-                                  <svg
-                                    className="w-3 h-3 text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor"
-                                    viewBox="0 0 18 18"
-                                  >
-                                    <path d="M17 0h-5.768a1 1 0 1 0 0 2h3.354L8.4 8.182A1.003 1.003 0 1 0 9.818 9.6L16 3.414v3.354a1 1 0 0 0 2 0V1a1 1 0 0 0-1-1Z" />
-                                    <path d="m14.258 7.985-3.025 3.025A3 3 0 1 1 6.99 6.768l3.026-3.026A3.01 3.01 0 0 1 8.411 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V9.589a3.011 3.011 0 0 1-1.742-1.604Z" />
-                                  </svg>
+                                  <ExternalLinkIcon className="w-3 h-3 opacity-80" />
                                 </div>
                               </div>
                             </Link>
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {(Number.parseInt(user.dailyPoints) + Number.parseInt(user.bonusPoints)).toLocaleString(
-                              "en-US",
-                              {
-                                maximumFractionDigits: 0,
-                              }
-                            )}
+                            {user[1].user_points.toLocaleString("en-US", {
+                              maximumFractionDigits: 0,
+                            })}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            {user[1].referral_points.toLocaleString("en-US", {
+                              maximumFractionDigits: 0,
+                            })}
+                          </td>
+                          {/* 
+                          <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            {(user[1].boost_points_1 + user[1].boost_points_2 + user[1].boost_points_3).toLocaleString('en-US', {
+                              maximumFractionDigits: 0,
+                            })}
+                          </td>
+                          */}
+                          <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            {(
+                              user[1].user_points +
+                              user[1].referral_points +
+                              user[1].boost_points_1 +
+                              user[1].boost_points_2 +
+                              user[1].boost_points_3
+                            ).toLocaleString("en-US", { maximumFractionDigits: 0 })}
                           </td>
                           <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                             {Number.parseInt(user.referralPoints).toLocaleString("en-US", {

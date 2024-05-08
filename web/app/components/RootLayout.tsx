@@ -11,7 +11,6 @@ import { WalletConnectButton } from './WalletConnectButton';
 import { Container } from './Container';
 import { Footer } from './Footer';
 import { GridPattern } from './GridPattern';
-import { Banner } from './Banner';
 
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 import StxLogo from './Logos/Stx';
@@ -112,6 +111,25 @@ function Header({ panelId, invert = false, expanded, onToggle, toggleRef, signOu
               ) : null}
               <div className="text-base">DeFi</div>
             </Link>
+
+            <Link
+              className={`flex h-fit pb-2 gap-2 items-center font-semibold ${
+                pathname === '/analytics' ? 'text-dark-green-600' : 'text-gray-500'
+              }`}
+              href="/analytics"
+            >
+              {pathname === '/analytics' ? (
+                <svg
+                  className="w-2 h-2 text-fluor-green-500"
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="4" cy="4" r="4" fill="currentColor" />
+                </svg>
+              ) : null}
+              <div className="text-base">Analytics</div>
+            </Link>
           </Popover.Group>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <WalletConnectButton signOut={signOut} />
@@ -204,6 +222,25 @@ function Header({ panelId, invert = false, expanded, onToggle, toggleRef, signOu
                     ) : null}
                     <div className="text-base">DeFi</div>
                   </Link>
+
+                  <Link
+                    className={`flex h-fit pb-2 gap-2 items-center font-semibold ${
+                      pathname === '/analytics' ? 'text-dark-green-600' : 'text-gray-500'
+                    }`}
+                    href="/analytics"
+                  >
+                    {pathname === '/analytics' ? (
+                      <svg
+                        className="w-2 h-2 text-fluor-green-500"
+                        viewBox="0 0 8 8"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle cx="4" cy="4" r="4" fill="currentColor" />
+                      </svg>
+                    ) : null}
+                    <div className="text-base">Analytics</div>
+                  </Link>
                 </div>
                 <div className="py-6">
                   <WalletConnectButton signOut={signOut} />
@@ -241,10 +278,9 @@ function RootLayoutInner({ signOut, children }) {
 
   return (
     <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : undefined}>
-      <Banner />
       <header>
         <div
-          className="absolute left-0 right-0 z-10 pt-24 top-2"
+          className="absolute left-0 right-0 z-10 pt-10 top-2"
           aria-hidden={expanded ? 'true' : undefined}
           inert={expanded ? '' : undefined}
         >

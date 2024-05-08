@@ -11,6 +11,8 @@ import StStxLogo from '../Logos/StStx';
 import StxLogo from '../Logos/Stx';
 import { PlaceholderBar } from '../PlaceholderBar';
 import { currency } from '@/app/common/utils';
+import HermeticaIcon from '@/app/components/icons/HermeticaIcon';
+import Hermetica from '@/app/components/icons/Hermetica';
 
 export function Positions() {
   const stxAddress = useSTXAddress();
@@ -216,6 +218,47 @@ export function Positions() {
               </div>
             </div>
           ))}
+
+          {/* Hermetica stSTXEarn */}
+          {positions.hermeticaBalance > 0 && (
+            <div
+              key={`hermeticaBalance`}
+              tabIndex={0}
+              className="w-full p-6 bg-white rounded-xl"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+            >
+              <div className="flex items-center justify-center p-6 text-center rounded-lg bg-sd-gray-light">
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-center">
+                    <div className="text-xl font-semibold whitespace-nowrap line-clamp-1">
+                      {currency.short.format(positions.hermeticaBalance)}
+                    </div>
+                    <div className="inline ml-2">
+                      <HermeticaIcon />
+                    </div>
+                  </div>
+                  <span className="text-sm font-medium whitespace-nowrap line-clamp-1 text-dark-green-600">
+                    stSTX yield + yield on Hermetica
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 py-2 mt-4 text-left">
+                <div className="shrink-0">
+                  <Hermetica />
+                </div>
+                <div className="flex justify-between flex-grow">
+                  <div>
+                    <span className="text-lg font-semibold line-clamp-1 text-ellipsis">
+                      Hermetica
+                    </span>
+                    <span className="flex flex-wrap gap-1 -mt-1 text-sm line-clamp-1">
+                      stSTX as collateral to mint stSTXearn
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Zest lending stSTX */}
           {positions.zestProvision > 0 && (
