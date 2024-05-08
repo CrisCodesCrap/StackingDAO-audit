@@ -1,4 +1,4 @@
-import { wallets, pointsEarned, leaderboard } from './schema';
+import { wallets, pointsEarned, leaderboard, referrals } from './schema';
 
 export type Wallet = typeof wallets.$inferSelect;
 export type WalletWithPoints = typeof wallets.$inferSelect & { points: string };
@@ -13,3 +13,6 @@ export type PointSource = Pick<PointsRecord, 'source'>;
 export type LeaderboardRank = typeof leaderboard.$inferSelect;
 export type Leaderboard = LeaderboardRank[];
 export type NewLeaderboard = (typeof leaderboard.$inferInsert)[];
+
+export type Referral = typeof referrals.$inferSelect;
+export type NewReferral = typeof referrals.$inferInsert;

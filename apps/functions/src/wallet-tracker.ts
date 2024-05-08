@@ -1,11 +1,14 @@
 import type { SQSEvent, Context } from "aws-lambda";
-import { Block } from "@stacks/stacks-blockchain-api-types";
-import { upsertWallets } from "@repo/database/src/actions";
+import { Block, TransactionEventSmartContractLog } from "@stacks/stacks-blockchain-api-types";
+import { insertReferral, upsertWallets } from "@repo/database/src/actions";
 import { userInfoAtBlock } from "@repo/stacks/src/user_info";
 import { WalletUpdate } from "@repo/database/src/models";
-import { processBlockEvents, processBlockTransactions } from "@repo/stacks/src/blocks";
+import { processBlockEvents, processBlockReferrals, processBlockTransactions } from "@repo/stacks/src/blocks";
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 import { BlocksApi, NakamotoBlock } from "@stacks/blockchain-api-client";
+import { ParsedEvent, getContractEventsForBlock } from "@repo/stacks/src/contracts";
+import { contracts } from "@repo/stacks/src/constants";
+import { cvToValue, hexToCV } from "@stacks/transactions";
 
 const REPLAY_COUNT = 10;
 const updatesTopic = process.env.OUTGOING_SNS_TOPIC;
@@ -28,14 +31,34 @@ export async function updateWallets(event: SQSEvent, _: Context): Promise<void> 
     }
 
     for (const block of [...block_list, latest_block]) {
-      await updateWalletsForBlock(block);
+      // Get latest events for the contracts we care about.
+      const results = await Promise.all([
+        getContractEventsForBlock(contracts.core, block.tx_count),
+        getContractEventsForBlock(contracts.token, block.tx_count),
+        getContractEventsForBlock(contracts.arkadiko, block.tx_count),
+      ]);
+
+      // Flatten results and filter only relevant events.
+      const rawEvents = results
+        .flat()
+        .filter((e) => e.event_type === "smart_contract_log") as TransactionEventSmartContractLog[];
+
+      const events = rawEvents
+        .map((event) => ({
+          contract_id: event.contract_log.contract_id,
+          action: cvToValue(hexToCV(event.contract_log.value.hex)),
+        }))
+        .filter((value) => !!value.action) as ParsedEvent[];
+
+      await updateWalletsForBlock(block, events);
+      await updateReferrals(block, events);
     }
   }
 }
 
-export async function updateWalletsForBlock(block: NakamotoBlock): Promise<void> {
+export async function updateWalletsForBlock(block: NakamotoBlock, events: ParsedEvent[]): Promise<void> {
   // 1. Find all wallets that might contain or have contained stSTX.
-  const result = await Promise.all([processBlockEvents(block), processBlockTransactions(block)]);
+  const result = await Promise.all([processBlockEvents(events), processBlockTransactions(block)]);
 
   const addresses = [...new Set(result.flat())];
 
@@ -71,4 +94,14 @@ export async function updateWalletsForBlock(block: NakamotoBlock): Promise<void>
   );
 
   console.log(`Published message ${response.MessageId} to topic.`);
+}
+
+export async function updateReferrals(block: NakamotoBlock, events: ParsedEvent[]): Promise<void> {
+  console.log(`Processing block referrals for ${block}`);
+
+  const referrals = processBlockReferrals(events);
+
+  const recordsWritten = await insertReferral(referrals);
+
+  console.log(`Updated or created ${recordsWritten}/${referrals.length} wallets`);
 }

@@ -9,8 +9,10 @@ import {
   NewLeaderboard,
   Leaderboard,
   LeaderboardRank,
+  Referral,
+  NewReferral,
 } from './models';
-import { leaderboard, pointsEarned, wallets } from './schema';
+import { leaderboard, pointsEarned, referrals, wallets } from './schema';
 import { db } from './drizzle';
 
 export async function getLeaderboard(): Promise<Leaderboard> {
@@ -91,6 +93,19 @@ export async function readWalletWithBoosterPoints(
     })
     .from(wallets)
     .where(inArray(wallets.address, addresses));
+}
+
+export async function getReferralsForAddress(address: string): Promise<Referral[]> {
+  return await db.select().from(referrals).where(eq(referrals.stacker, address));
+}
+
+export async function insertReferral(newReferrals: NewReferral[]): Promise<number> {
+  const result = await db
+    .insert(referrals)
+    .values(newReferrals)
+    .onConflictDoNothing({ target: [referrals.referrer, referrals.stacker] });
+
+  return result.rowCount;
 }
 
 export async function updateLeaderboard(records: NewLeaderboard): Promise<number> {

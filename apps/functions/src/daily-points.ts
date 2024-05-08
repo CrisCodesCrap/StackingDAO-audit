@@ -72,6 +72,17 @@ export async function recordPointsAtBlock(day_block: NakamotoBlock): Promise<voi
           block: day_block.hash,
           multiplier: 1.5,
         });
+
+      const referrals = await db.getReferralsForAddress(address);
+
+      for (const referral of referrals) {
+        points.push({
+          wallet: referral.referrer,
+          source: "referral",
+          amount: (balances.total * 0.1).toString(),
+          block: day_block.hash,
+        });
+      }
     }
 
     console.log(`appending ${points.length} point records to db`);

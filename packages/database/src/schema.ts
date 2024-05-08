@@ -68,6 +68,23 @@ export const pointsEarned = pgTable(
   })
 );
 
+export const referrals = pgTable(
+  'referrals',
+  {
+    id: serial('id').primaryKey(),
+    referrer: varchar('address')
+      .references(() => wallets.address)
+      .notNull(),
+    stacker: varchar('stacker')
+      .references(() => wallets.address)
+      .notNull(),
+    blockHeight: integer('block_height').notNull(),
+  },
+  table => ({
+    uniqueReferrerToStacker: unique().on(table.referrer, table.stacker),
+  })
+);
+
 export const leaderboard = pgTable(
   'leaderboard',
   {

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es5",
+    "target": "ESNext",
     "module": "commonjs",
     "outDir": "./dist",
     "strict": true,
@@ -9,9 +9,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": [
-      "dist/**",
-      "tests/**",
-      "node_modules"
-  ]
+  "exclude": ["dist/**", "tests/**", "node_modules"]
 }

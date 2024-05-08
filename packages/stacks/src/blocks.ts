@@ -1,30 +1,12 @@
 import { Block, NakamotoBlock } from '@stacks/blockchain-api-client';
 import { TransactionEventSmartContractLog } from '@stacks/stacks-blockchain-api-types';
-import { cvToValue, hexToCV } from '@stacks/transactions';
 import { contracts } from './constants';
 import { ParsedEvent, getContractEventsForBlock } from './contracts';
 import { getTransactionsByBlockHash } from './transactions';
+import { cvToValue, hexToCV } from '@stacks/transactions';
+import { Referral } from '@repo/database/src/models';
 
-export async function processBlockEvents(block: NakamotoBlock): Promise<string[]> {
-  // Get latest events for the contracts we care about.
-  const results = await Promise.all([
-    getContractEventsForBlock(contracts.core, block.tx_count),
-    getContractEventsForBlock(contracts.token, block.tx_count),
-    getContractEventsForBlock(contracts.arkadiko, block.tx_count),
-  ]);
-
-  // Flatten results and filter only relevant events.
-  const rawEvents = results
-    .flat()
-    .filter(e => e.event_type === 'smart_contract_log') as TransactionEventSmartContractLog[];
-
-  const events = rawEvents
-    .map(event => ({
-      contract_id: event.contract_log.contract_id,
-      action: cvToValue(hexToCV(event.contract_log.value.hex)),
-    }))
-    .filter(value => !!value.action) as ParsedEvent[];
-
+export async function processBlockEvents(events: ParsedEvent[]): Promise<string[]> {
   // Find all the addresses that might hold stSTX as a result of this block.
   const addresses: string[] = [];
 
@@ -68,4 +50,35 @@ export async function processBlockTransactions(block: NakamotoBlock): Promise<st
     .filter(address => !address.includes('.'));
 
   return addresses;
+}
+
+// TODO: this function
+export function processBlockReferrals(events: ParsedEvent[]): Referral[] {
+  // for (const event of events) {
+  //   const logJson = cvToValue(hexToCV(event.contract_log.value.hex));
+
+  //   // Deposit and mint stSTX
+  //   if (event.contract_log.contract_id == coreContract && logJson.action.value == 'deposit') {
+  //     const stacker = logJson.data.value.stacker.value;
+  //     const referrer = logJson.data.value.referrer.value;
+  //     const blockHeight = logJson.data.value['block-height'].value;
+
+  //     if (referrer) {
+  //       const referrerValue = referrer.value;
+
+  //       if (!referrers[referrerValue]) {
+  //         referrers[referrerValue] = [{ stacker: stacker, blockHeight: blockHeight }];
+  //       } else {
+  //         const existingStackers = referrers[referrerValue].filter(elem => elem.stacker == stacker);
+  //         if (existingStackers.length == 0) {
+  //           referrers[referrerValue] = referrers[referrerValue].concat([
+  //             { stacker: stacker, blockHeight: blockHeight },
+  //           ]);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  return [];
 }
