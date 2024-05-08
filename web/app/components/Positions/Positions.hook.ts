@@ -24,6 +24,7 @@ interface PositionsData {
   bitflowBalance: BitflowBalance;
   velarBalance: VelarBalance;
   arkadikoBalance: ArkadikoBalance;
+  hermeticaBalance: number;
 }
 
 interface BitflowBalance {
@@ -313,6 +314,35 @@ const fetchArkadikoBalance = async (stxAddress: string): Promise<ArkadikoBalance
   };
 };
 
+const fetchHermeticaBalance = async (stxAddress: string): Promise<number> => {
+  let resultHermetica;
+  // let resultRatio;
+  try {
+    resultHermetica = await callReadOnlyFunction({
+      contractAddress: 'SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6',
+      contractName: 'token-ststx-earn-v1',
+      functionName: 'get-balance',
+      functionArgs: [standardPrincipalCV(stxAddress)],
+      senderAddress: stxAddress,
+      network: stacksNetwork,
+    });
+    // resultRatio = await callReadOnlyFunction({
+    //   contractAddress: 'SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6',
+    //   contractName: 'vault-ststx-earn-v1',
+    //   functionName: 'get-underlying-per-token',
+    //   functionArgs: [],
+    //   senderAddress: stxAddress,
+    //   network: stacksNetwork,
+    // });
+  } catch (e) {
+    // any exception
+    return 0;
+  }
+  const hermeticaAmount = (cvToValue(resultHermetica).value ?? 0) / 1000000;
+
+  return hermeticaAmount;
+};
+
 export function usePositionsData(stxAddress?: string): PositionsData {
   const { stStxBalance, stxBalance, stackingApy } = useAppContext();
 
@@ -340,6 +370,8 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     vault: 0,
   });
 
+  const [hermeticaBalance, setHermeticaBalance] = useState<number>(0);
+
   useEffect(() => {
     async function fetchData(stxAddress: string) {
       setIsFetching(true);
@@ -352,6 +384,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
         fetchZestLendingProvision(stxAddress).then(setZestProvision),
         fetchVelarBalance(stxAddress).then(setVelarBalance),
         fetchArkadikoBalance(stxAddress).then(setArkadikoBalance),
+        fetchHermeticaBalance(stxAddress).then(setHermeticaBalance),
       ]).catch(console.error);
 
       setIsFetching(false);
@@ -372,6 +405,7 @@ export function usePositionsData(stxAddress?: string): PositionsData {
     zestProvision,
     velarBalance,
     arkadikoBalance,
+    hermeticaBalance,
   };
 
   return data;

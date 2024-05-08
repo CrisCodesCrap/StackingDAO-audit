@@ -8,8 +8,9 @@ import {
   useState,
 } from 'react';
 import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
-import { coreApiUrl, getRPCClient, stacksNetwork } from '@/app/common/utils';
+import { coreApiUrl, getMempoolAPIClient, getRPCClient, stacksNetwork } from '@/app/common/utils';
 import { UserData } from '@stacks/auth';
+import { MempoolFeePriorities } from '@stacks/blockchain-api-client';
 
 const STATIC_APY = 6.35;
 const DENOMINATOR = 1000000;
@@ -30,6 +31,7 @@ interface AppContextProps {
   cycleDaysLeft?: string;
   nextRewardCycleBlocks?: number;
   bitcoinBlocksLeft?: string;
+  mempoolFees?: MempoolFeePriorities;
 
   currentTxStatus?: string;
   setCurrentTxStatus: Dispatch<SetStateAction<string>>;
@@ -178,6 +180,12 @@ const fetchStackingApy = async (): Promise<number> => {
   return STATIC_APY;
 };
 
+const fetchMempoolsFees = async (): Promise<MempoolFeePriorities> => {
+  const client = getMempoolAPIClient();
+
+  return await client.getMempoolFeePriorities();
+};
+
 function useAppContextData(userData: any): AppContextProps {
   const [stxAddress, setStxAddress] = useState('');
   const [okxProvider, setOkxProvider] = useState({});
@@ -197,6 +205,8 @@ function useAppContextData(userData: any): AppContextProps {
     cycleDaysLeft: 0,
   });
 
+  const [mempoolFees, setMempoolFees] = useState<MempoolFeePriorities>();
+
   useEffect(() => {
     if (!userData) return;
 
@@ -215,6 +225,7 @@ function useAppContextData(userData: any): AppContextProps {
       await Promise.all([
         fetchStackingCycle().then(setStackingCycle),
         fetchStxPrice().then(setStxPrice),
+        fetchMempoolsFees().then(setMempoolFees),
         ...(!stxAddress
           ? []
           : [
@@ -243,6 +254,7 @@ function useAppContextData(userData: any): AppContextProps {
     stackedStx: `${stackingCycle.stackedStx}`,
     cycleDaysLeft: `${stackingCycle.cycleDaysLeft}`,
     bitcoinBlocksLeft: `${stackingCycle.btcBlocksLeft}`,
+    mempoolFees: mempoolFees,
     nextRewardCycleBlocks: stackingCycle.nextRewardCycleBlocks,
     currentTxId: currentTxId,
     currentTxStatus: currentTxStatus,

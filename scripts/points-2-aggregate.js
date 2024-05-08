@@ -81,7 +81,6 @@ async function userBitflowLpAtBlock(address, blockHeight) {
   }
 }
 
-
 async function userZestAtBlock(address, blockHeight) {
   try {
     const userInfo = await tx.callReadOnlyFunction({
@@ -151,78 +150,71 @@ async function userVelarAtBlock(address, blockHeight) {
   }
 }
 
-async function userInfoAtBlockHelper(address, blockHeight) {
+async function userHermeticaAtBlock(address, blockHeight) {
+  try {
+    const userInfo = await tx.callReadOnlyFunction({
+      contractAddress: process.env.CONTRACT_ADDRESS,
+      contractName: "block-info-v11",
+      functionName: "get-user-hermetica",
+      functionArgs: [
+        tx.standardPrincipalCV(address),
+        tx.uintCV(blockHeight),
+      ],
+      senderAddress: process.env.CONTRACT_ADDRESS,
+      network: utils.resolveNetwork()
+    });
+
+    const result = tx.cvToJSON(userInfo).value.value;
+    return result / 1000000;
+  } catch (error) {
+    console.log("[3-aggregate] Fetch failed, retry in 2 seconds..", error);
+    await new Promise(r => setTimeout(r, 2 * 1000));
+    return await userHermeticaAtBlock(address, blockHeight);
+  }
+}
+
+async function userInfoAtBlock(address, blockHeight) {
   const [
     wallet, 
     bitflow,
     zest,
     arkadiko,
-    velar
+    velar,
+    hermetica
   ] = await Promise.all([
     userWalletAtBlock(address, blockHeight), 
     userBitflowAtBlock(address, blockHeight),
     userZestAtBlock(address, blockHeight),
     userArkadikoAtBlock(address, blockHeight),
-    userVelarAtBlock(address, blockHeight)
+    userVelarAtBlock(address, blockHeight),
+    userHermeticaAtBlock(address, blockHeight)
   ]);
 
   return {
     ststx_balance: wallet,
-    defi_balance: zest + arkadiko + velar,
+    defi_balance: zest + arkadiko + velar + hermetica,
     lp_balance: bitflow
   }
 }
 
-async function userBoostInfoAtBlockHelper(address, blockHeight) {
+async function userInfoAtBlockForBoost(address, blockHeight) {
   const [
     wallet, 
     bitflow,
     zest,
     arkadiko,
-    velar
+    velar,
+    hermetica
   ] = await Promise.all([
     userWalletAtBlock(address, blockHeight), 
     userBitflowLpAtBlock(address, blockHeight),
     userZestAtBlock(address, blockHeight),
     userArkadikoAtBlock(address, blockHeight),
-    userVelarAtBlock(address, blockHeight)
+    userVelarAtBlock(address, blockHeight),
+    userHermeticaAtBlock(address, blockHeight)
   ]);
 
-  return wallet + zest + arkadiko + velar + bitflow;
-}
-
-// 5x boost for cycle 81
-async function userBoostCycle81(address) {
-  const blockHeightStartCycle81 = 143630;
-  const blockHeightEndCycle81 = blockHeightStartCycle81 + 2100;
-
-  const startAmount = await userBoostInfoAtBlockHelper(address, blockHeightStartCycle81);
-  const endAmount = await userBoostInfoAtBlockHelper(address, blockHeightEndCycle81);
-
-  if (endAmount >= startAmount) {
-    return startAmount * 5;
-  }
-  return 0;
-}
-
-async function userInfoAtBlock(address, blockHeight) {
-  const userInfo = await userInfoAtBlockHelper(address, blockHeight);
-
-  if (blockHeight == 146024) {
-    const boost = await userBoostCycle81(address);
-
-    return {
-      ststx_balance: userInfo.ststx_balance + boost,
-      defi_balance: userInfo.defi_balance,
-      lp_balance: userInfo.lp_balance
-    }
-  }
-
-  return {
-    ststx_balance: userInfo.ststx_balance,
-    defi_balance: userInfo.defi_balance,
-    lp_balance: userInfo.lp_balance
-  }
+  return wallet + zest + arkadiko + velar + hermetica + bitflow/2;
 }
 
 //
@@ -235,17 +227,22 @@ async function updateAllPoints(blockHeight) {
     referrals,
     aggregate,
   ] = await Promise.all([
-    utils.readFile('points-addresses-8'),
-    utils.readFile('points-referrals-8'),
-    utils.readFile('points-aggregate-8')
+    utils.readFile('points-addresses-11'),
+    utils.readFile('points-referrals-11'),
+    utils.readFile('points-aggregate-11')
   ]);
 
   console.log("[3-aggregate] Got files from S3");
 
+  // Cycle 81 - 5x boost
+  const shouldApplyBoost1 = (blockHeight >= 143630 && blockHeight <= 143630+2100);
+  // Nakamoto - 20x boost
+  const shouldApplyBoost2 = (blockHeight >= 147290 && blockHeight <= 147290+2100);
+
   //
   // 0. From flat addresses array to chuncked array
   //
-  const perChunk = 100;
+  const perChunk = 50;
   const addressesChunks = addresses.addresses.reduce((resultArray, item, index) => { 
     const chunkIndex = Math.floor(index / perChunk)
   
@@ -268,21 +265,64 @@ async function updateAllPoints(blockHeight) {
 
     const allPromise = await Promise.all(addressChunk.map(address => userInfoAtBlock(address, blockHeight)));
 
+    let allBoostStartPromise = undefined;
+    let allBoostEndPromise = undefined;
+    if (shouldApplyBoost1) {
+      allBoostStartPromise = await Promise.all(addressChunk.map(address => userInfoAtBlockForBoost(address, 143630)));
+      allBoostEndPromise = await Promise.all(addressChunk.map(address => userInfoAtBlockForBoost(address, blockHeight)));
+    } else if (shouldApplyBoost2) {
+      allBoostStartPromise = await Promise.all(addressChunk.map(address => userInfoAtBlockForBoost(address, 147290)));
+      allBoostEndPromise = await Promise.all(addressChunk.map(address => userInfoAtBlockForBoost(address, blockHeight)));
+    }
+
     for (const address of addressChunk) {
       const addressIndex = addressChunk.indexOf(address);
       const userInfo = allPromise[addressIndex];
 
       const newPoints = userInfo.ststx_balance + userInfo.defi_balance * 1.5 + userInfo.lp_balance * 2.5;
 
+      // Boosts
+      var boostPoints1 = aggregate[address] ? aggregate[address].boost_points_1 : 0;
+      if (shouldApplyBoost1) {
+        const startAmount = allBoostStartPromise[addressIndex];
+        const endAmount = allBoostEndPromise[addressIndex];
+
+        if (endAmount > startAmount) {
+          boostPoints1 = (endAmount - startAmount) * 5;
+        } else {
+          boostPoints1 = 0;
+        }
+      } 
+
+      var boostPoints2 = aggregate[address] ? aggregate[address].boost_points_2 : 0;
+      if (shouldApplyBoost2) {
+        const startAmount = allBoostStartPromise[addressIndex];
+        const endAmount = allBoostEndPromise[addressIndex];
+
+        if (endAmount > startAmount) {
+          boostPoints2 = (endAmount - startAmount) * 20;
+        } else {
+          boostPoints2 = 0;
+        }
+      }
+      
       if (!aggregate[address]) {
         aggregate[address] = {
           user_points: newPoints,
-          referral_points: 0
+          referral_points: 0,
+          boost_points_1: boostPoints1, // 5x
+          boost_points_2: boostPoints2, // Nakamoto 20x
+          boost_points_3: 0,            // Nakamoto referral 2x
+          new_points: newPoints
         }
       } else {
         aggregate[address] = {
           user_points: aggregate[address].user_points + newPoints,
-          referral_points: 0
+          referral_points: aggregate[address].referral_points,
+          boost_points_1: boostPoints1,
+          boost_points_2: boostPoints2,
+          boost_points_3: aggregate[address].boost_points_3,
+          new_points: newPoints
         }
       }
     }
@@ -291,30 +331,45 @@ async function updateAllPoints(blockHeight) {
     counter++;
   }
 
-
   //
   // 2. Update referral points
   //
-  for (const referrer of Object.keys(referrals)) {
 
-    // Reset referral_points first
-    aggregate[referrer] = {
-      user_points: aggregate[referrer] ? aggregate[referrer].user_points : 0,
-      referral_points: 0
+  for (const address of Object.keys(referrals)) {
+
+    var newReferralPoints = 0;
+    var newBoostPoints = 0;
+
+    for (const referralInfo of referrals[address]) {
+      const referredUser = referralInfo.stacker;
+      const blockHeight = referralInfo.blockHeight;
+
+      const referredUserNewPoints = aggregate[referredUser].new_points;
+      newReferralPoints += referredUserNewPoints * 0.1;
+
+      const applyBoost = shouldApplyBoost2 && (blockHeight >= 147290 && blockHeight <= 147290+2100);
+      if (applyBoost) {
+        newBoostPoints += referredUserNewPoints * 0.1;
+      }
     }
 
-    for (const user of referrals[referrer]) {
-      if (aggregate[user]) {
-        const userPoints = aggregate[user].user_points;
-
-        if (!aggregate[referrer]) {
-          aggregate[referrer] = {
-            user_points: 0,
-            referral_points: userPoints * 0.1
-          }
-        } else {
-          aggregate[referrer].referral_points = aggregate[referrer].referral_points + userPoints * 0.1;
-        }
+    if (!aggregate[address]) {
+      aggregate[address] = {
+        user_points: 0,
+        boost_points_1: 0,
+        boost_points_2: 0,
+        boost_points_3: newBoostPoints,
+        referral_points: newReferralPoints,
+        new_points: 0
+      }
+    } else {
+      aggregate[address] = {
+        user_points: aggregate[address].user_points,
+        referral_points: aggregate[address].referral_points + newReferralPoints,
+        boost_points_1: aggregate[address].boost_points_1,
+        boost_points_2: aggregate[address].boost_points_2,
+        boost_points_3: aggregate[address].boost_points_3 + newBoostPoints,
+        new_points: aggregate[address].new_points
       }
     }
   }
@@ -327,7 +382,7 @@ async function updateAllPoints(blockHeight) {
 //
 
 async function start() {
-  const lastBlockHeight = await utils.readFile('points-last-block-8');
+  const lastBlockHeight = await utils.readFile('points-last-block-11');
   const currentBlockHeight = await utils.getBlockHeight();
   const nextBlockHeight = lastBlockHeight.last_block + 144;
 
@@ -339,8 +394,8 @@ async function start() {
     const aggregate = await updateAllPoints(nextBlockHeight);
     console.log("[3-aggregate] Got users:", Object.keys(aggregate).length);
 
-    await utils.writeFile('points-aggregate-8', aggregate)
-    await utils.writeFile('points-last-block-8', { last_block: nextBlockHeight })
+    await utils.writeFile('points-aggregate-11', aggregate)
+    await utils.writeFile('points-last-block-11', { last_block: nextBlockHeight })
   }
 };
 

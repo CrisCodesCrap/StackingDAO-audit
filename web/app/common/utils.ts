@@ -2,13 +2,13 @@
 
 import { RPCClient } from '@stacks/rpc-client';
 import { StacksMainnet, StacksTestnet } from '@stacks/network';
+import { MempoolApi } from '@stacks/blockchain-api-client';
 require('dotenv').config();
 
 const env = process.env.NEXT_PUBLIC_NETWORK_ENV || 'mainnet';
 
-export let coreApiUrl = 'https://api.hiro.so';
-// export let coreApiUrl =
-// 'https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff';
+// export let coreApiUrl = 'https://api.hiro.so';
+export let coreApiUrl = "https://small-solemn-frost.stacks-mainnet.discover.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff"
 
 if (env.includes('mocknet')) {
   coreApiUrl = `http://localhost:${process.env.LOCAL_STACKS_API_PORT || 3999}`;
@@ -25,6 +25,10 @@ export function getExplorerLink(txId: string) {
     : `https://explorer.hiro.so/txid/${txId}?chain=mainnet`;
   return url;
 }
+
+export const getMempoolAPIClient = () => {
+  return new MempoolApi();
+};
 
 export const getRPCClient = () => {
   return new RPCClient(coreApiUrl);

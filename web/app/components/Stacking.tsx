@@ -7,7 +7,6 @@ import { useAppContext } from './AppContext/AppContext';
 import { ApyModal } from './ApyModal';
 import { RatioModal } from './RatioModal';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useConnect } from '@stacks/connect-react';
 import { useSTXAddress } from '../common/use-stx-address';
 import { ChooseWalletModal } from './ChooseWalletModal';
@@ -18,6 +17,7 @@ import { Tooltip } from 'react-tooltip';
 import StxLogo from './Logos/Stx';
 import StStxLogo from './Logos/StStx';
 import { currency } from '../common/utils';
+import { useReferral } from '../common/hooks';
 
 export function Stacking() {
   const stxAddress = useSTXAddress();
@@ -25,8 +25,6 @@ export function Stacking() {
 
   const { stStxBalance, stxBalance, stxRatio, stackingApy, setStxAddress, setOkxProvider } =
     useAppContext();
-  const searchParams = useSearchParams();
-  const referral = searchParams.get('referral');
 
   const [isLoading, setIsLoading] = useState(true);
   const [yieldPerYear, setYieldPerYear] = useState(0);
@@ -34,6 +32,7 @@ export function Stacking() {
   const [showRatioInfo, setShowRatioInfo] = useState(false);
   const [stStxWidth, setStStxWidth] = useState(0);
   const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
+  const referral = useReferral();
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
@@ -76,10 +75,6 @@ export function Stacking() {
     }
   }, [stxAddress, stxBalance, stStxBalance]);
 
-  useEffect(() => {
-    if (referral) localStorage.setItem('stacking-referral', referral);
-  }, [referral]);
-
   return (
     <>
       <ChooseWalletModal
@@ -97,7 +92,7 @@ export function Stacking() {
             <div className="flex flex-col w-full min-h-full md:max-w-xl">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-headings">Stacking STX</h1>
-                {referral ? (
+                {referral && (
                   <div className="relative flex items-center" id="referralAddress">
                     <Tooltip anchorSelect="#referralAddress" place="top">
                       You are using {referral} as referral address
@@ -172,7 +167,7 @@ export function Stacking() {
                       </defs>
                     </svg>
                   </div>
-                ) : null}
+                )}
               </div>
               <div className="w-full p-6 mt-4 rounded-lg bg-sd-gray-light">
                 <div className="flex flex-col font-medium sm:flex-row sm:justify-between">

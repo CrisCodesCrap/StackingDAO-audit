@@ -12,10 +12,10 @@ const txOptions = {
   contractName: CONTRACT_NAME,
   functionName: FUNCTION_NAME,
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-dao-genesis-nft-minter'),
-    tx.falseCV()
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'stacking-delegate-1-5'),
+    tx.trueCV()
   ],
-  fee: new BN(500000, 10),
+  fee: new BN(100000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
@@ -23,8 +23,8 @@ const txOptions = {
 
 async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = await tx.broadcastTransaction(transaction, network);
+  console.log(result);
 };
 
 transact();

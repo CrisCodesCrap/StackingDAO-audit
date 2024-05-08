@@ -15,10 +15,10 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'commission-v1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'staking-v0'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'reserve-v1'),
-    tx.uintCV(17100000000),
-    tx.uintCV(81)
+    tx.uintCV(106010 * 1000000),
+    tx.uintCV(83)
   ],
-  fee: new BN(1000000, 10),
+  fee: new BN(100000, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
@@ -26,8 +26,8 @@ const txOptions = {
 
 async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = await tx.broadcastTransaction(transaction, network);
+  console.log(result);
 };
 
 transact();

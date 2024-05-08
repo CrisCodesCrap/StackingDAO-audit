@@ -16,7 +16,7 @@ export function ChooseWalletModal({ open, closeModal, onProviderChosen }: Props)
   useEffect(() => {
     if (
       window.XverseProviders?.StacksProvider ||
-      (window.StacksProvider && !window.StacksProvider.isHiroWallet)
+      (window.StacksProvider && !window.StacksProvider.isLeather)
     ) {
       setXVerseInstalled(true);
     }
