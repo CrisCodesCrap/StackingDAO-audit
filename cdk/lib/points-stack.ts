@@ -78,6 +78,7 @@ export class PointsStack extends cdk.Stack {
       environment: {
         DATABASE_URL: process.env.DATABASE_URL!,
         OUTGOING_SNS_TOPIC: wallet_updates_topic.topicArn,
+        CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS!,
       },
     });
 
@@ -98,8 +99,10 @@ export class PointsStack extends cdk.Stack {
       lambdaRootDir: ".",
       handlerFilePath: "apps/functions/src/daily-points.ts",
       handler: "updateDailyPoints",
+      timeout: cdk.Duration.minutes(15),
       environment: {
         DATABASE_URL: process.env.DATABASE_URL!,
+        CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS!,
       },
     });
 

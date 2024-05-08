@@ -12,6 +12,8 @@ export interface LambdaProps {
   handler?: string;
   /** custom environment variables */
   environment?: Record<string, string>;
+  /** The maximum time the function should run */
+  timeout?: Duration;
 }
 
 export class TypeScriptLambda extends Construct {
@@ -24,7 +26,7 @@ export class TypeScriptLambda extends Construct {
     this.lambda = new lambda.NodejsFunction(this, "lambda", {
       entry: this.getHandlerModulePath(props.lambdaRootDir, props.handlerFilePath),
       handler: props.handler,
-      timeout: Duration.minutes(10),
+      timeout: props.timeout || Duration.minutes(10),
       depsLockFilePath: `${props.lambdaRootDir}/yarn.lock`,
       runtime: Runtime.NODEJS_20_X,
       environment: props.environment,
