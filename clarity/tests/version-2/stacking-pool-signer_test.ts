@@ -353,8 +353,11 @@ Clarinet.test({
     result = dataPools.setPoolDelegates(deployer, qualifiedName("stacking-pool-signer-v1"), [qualifiedName("stacking-delegate-1-1")])
     result.expectOk().expectBool(true);
 
+    // Go to next cycle
+    chain.mineEmptyBlockUntil(22);
+
     //
-    //
+    // Prepare
     //
     let stackingDelegate = new StackingDelegate(chain, deployer);
     let stackingPool = new StackingPoolSigner(chain, deployer);
@@ -368,13 +371,13 @@ Clarinet.test({
     result = stackingDelegate.requestStxToStack(deployer, "stacking-delegate-1-1", 500000);
     result.expectOk().expectUintWithDecimals(500000);
 
-    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-signer-v1"), 42);
+    result = stackingDelegate.delegateStx(deployer, "stacking-delegate-1-1", 200000, qualifiedName("stacking-pool-signer-v1"), 63);
     result.expectOk().expectBool(true);
 
     result = stackingPool.prepare(wallet_1)
     result.expectErr().expectUint(99502);
 
-    chain.mineEmptyBlockUntil(15);
+    chain.mineEmptyBlockUntil(41);
 
     result = stackingPool.prepare(wallet_1)
     result.expectOk().expectBool(true);
