@@ -154,3 +154,20 @@ Clarinet.test({
     result.expectErr().expectUint(20003);
   }
 });
+
+//-------------------------------------
+// Errors 
+//-------------------------------------
+
+Clarinet.test({
+  name: "data-direct-stacking: direct stacking dependence max is 100%",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let dataDirectStacking = new DataDirectStacking(chain, deployer);
+
+    let result = await dataDirectStacking.setDirectStackingDependence(deployer, 10000 + 1);
+    result.expectErr().expectUint(243001);
+
+  }
+});

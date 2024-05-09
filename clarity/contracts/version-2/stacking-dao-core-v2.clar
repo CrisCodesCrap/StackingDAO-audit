@@ -18,6 +18,7 @@
 (define-constant ERR_WITHDRAW_NFT_DOES_NOT_EXIST u204004)
 (define-constant ERR_GET_OWNER u204005)
 (define-constant ERR_WITHDRAW_CANCEL u204006)
+(define-constant ERR_WRONG_BPS u204007)
 
 (define-constant DENOMINATOR_6 u1000000)
 (define-constant DENOMINATOR_BPS u10000)
@@ -253,7 +254,8 @@
 (define-public (set-stack-fee (fee uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    
+    (asserts! (<= fee DENOMINATOR_BPS) (err ERR_WRONG_BPS))
+
     (var-set stack-fee fee)
     (ok true)
   )
@@ -262,7 +264,8 @@
 (define-public (set-unstack-fee (fee uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
-    
+    (asserts! (<= fee DENOMINATOR_BPS) (err ERR_WRONG_BPS))
+
     (var-set unstack-fee fee)
     (ok true)
   )

@@ -6,6 +6,14 @@
 ;; the direct stacking amount can be decrased.
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant ERR_DEPENDENCE_TOO_HIGH u243001)
+
+(define-constant DENOMINATOR_BPS u10000)
+
+;;-------------------------------------
 ;; Init 
 ;;-------------------------------------
 
@@ -64,6 +72,8 @@
 (define-public (set-direct-stacking-dependence (dependence uint))
   (begin
     (try! (contract-call? .dao check-is-protocol contract-caller))
+    (asserts! (<= dependence DENOMINATOR_BPS) (err ERR_DEPENDENCE_TOO_HIGH))
+
 
     (var-set direct-stacking-dependence dependence)
     (ok true)
