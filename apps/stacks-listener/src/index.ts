@@ -28,8 +28,8 @@ async function sendBlock(block: Block) {
     const response = await sqs.send(
       new SendMessageCommand({
         QueueUrl: queue,
-        DelaySeconds: 10,
         MessageDeduplicationId: block.hash,
+        MessageGroupId: "stacks-listener",
         MessageAttributes: {
           Publisher: {
             DataType: "String",

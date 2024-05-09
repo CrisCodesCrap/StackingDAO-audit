@@ -17,8 +17,8 @@ export async function migrate(starting_block_height: number): Promise<void> {
     const response = await sqs.send(
       new SendMessageCommand({
         QueueUrl: queue,
-        DelaySeconds: 10,
         MessageDeduplicationId: block.hash,
+        MessageGroupId: "migration.v2",
         MessageAttributes: {
           Publisher: {
             DataType: "String",
@@ -33,4 +33,4 @@ export async function migrate(starting_block_height: number): Promise<void> {
   }
 }
 
-// migrate(149409);
+migrate(149416);

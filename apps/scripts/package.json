@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {
-    "start:migration": "npx ts-node --transpile-only migration.ts",
-    "start:instantiation": "npx ts-node --transpile-only instantiation.ts"
+    "start:migration:v1": "npx ts-node --transpile-only migration.v1.ts",
+    "start:migration:v2": "npx ts-node --transpile-only migration.v2.ts"
   },
   "dependencies": {
+    "@repo/database": "0.1.0",
+    "@repo/stacks": "0.1.0",
     "@stacks/blockchain-api-client": "^7.9.1",
     "@stacks/stacks-blockchain-api-types": "^7.10.0",
     "dotenv": "^16.3.1",
     "esbuild": "^0.20.2",
-    "express": "^4.19.2",
-    "@repo/database": "0.1.0",
-    "@repo/stacks": "0.1.0"
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
