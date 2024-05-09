@@ -14,6 +14,7 @@
 (define-constant ERR_MIN_STAKING_BASISPOINTS u29001)
 
 (define-constant MIN_STAKING_BASISPOINTS u7000) ;; 70% in basis points
+(define-constant DENOMINATOR_BPS u10000)
 
 ;;-------------------------------------
 ;; Variables 
@@ -53,7 +54,7 @@
 ;; Commission is split between stakers and protocol
 (define-public (add-commission (staking-contract <staking-trait>) (stx-amount uint))
   (let (
-    (amount-for-staking (/ (* stx-amount (get-staking-basispoints)) u10000))
+    (amount-for-staking (/ (* stx-amount (get-staking-basispoints)) DENOMINATOR_BPS))
     (amount-to-keep (- stx-amount amount-for-staking))
   )
     (try! (contract-call? .dao check-is-protocol (contract-of staking-contract)))

@@ -15,6 +15,8 @@
 
 (define-constant ERR_UNKNOWN_PROTOCOL u202001)
 
+(define-constant DENOMINATOR_6 u1000000)
+
 ;;-------------------------------------
 ;; Direct Stacking Helpers  
 ;;-------------------------------------
@@ -207,7 +209,7 @@
     (direct-stacking (default-to u0 (get amount direct-stacking-info)))
 
     (ratio (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
-    (direct-stacking-ststx (/ (* direct-stacking u1000000) ratio))
+    (direct-stacking-ststx (/ (* direct-stacking DENOMINATOR_6) ratio))
 
     (user-list (list user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user user))    
     (protocol-balances (map get-user-balance-in-protocol user-list protocols))

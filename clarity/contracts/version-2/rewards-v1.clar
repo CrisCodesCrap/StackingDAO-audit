@@ -22,6 +22,8 @@
 
 (define-constant ERR_CAN_NOT_PROCESS_YET u203001)
 
+(define-constant DENOMINATOR_BPS u10000)
+
 ;;-------------------------------------
 ;; Variables 
 ;;-------------------------------------
@@ -70,11 +72,11 @@
 ) 
   (let (
     (commission (contract-call? .data-pools-v1 get-pool-commission pool))
-    (commission-amount (/ (* stx-amount commission) u10000))
+    (commission-amount (/ (* stx-amount commission) DENOMINATOR_BPS))
     (rewards-left (- stx-amount commission-amount))
 
     (pool-owner-commission (contract-call? .data-pools-v1 get-pool-owner-commission pool))
-    (pool-owner-amount (/ (* commission-amount (get share pool-owner-commission)) u10000))
+    (pool-owner-amount (/ (* commission-amount (get share pool-owner-commission)) DENOMINATOR_BPS))
     (protocol-amount (- commission-amount pool-owner-amount))
   )
     (var-set total-commission (+ (var-get total-commission) protocol-amount))

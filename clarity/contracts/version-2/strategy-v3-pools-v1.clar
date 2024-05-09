@@ -9,6 +9,12 @@
 ;; according to the direct stacking ratios.
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant DENOMINATOR_BPS u10000)
+
+;;-------------------------------------
 ;; Core
 ;;-------------------------------------
 
@@ -82,7 +88,7 @@
     (direct-stacking (contract-call? .data-direct-stacking-v1 get-direct-stacking-pool-amount pool))
     (direct-stacking-share (if (is-eq new-total-direct-stacking u0)
       u0
-      (/ (* direct-stacking u10000) new-total-direct-stacking)
+      (/ (* direct-stacking DENOMINATOR_BPS) new-total-direct-stacking)
     ))
     (pool-share (contract-call? .data-pools-v1 get-pool-share pool))
     
@@ -90,13 +96,13 @@
       u0
       (contract-call? .data-direct-stacking-v1 get-direct-stacking-dependence)
     )) 
-    (direct-dependence-rest (- u10000 direct-dependence))
+    (direct-dependence-rest (- DENOMINATOR_BPS direct-dependence))
 
-    (total-normal-stacking (/ (* new-total-normal-stacking direct-dependence-rest) u10000))
+    (total-normal-stacking (/ (* new-total-normal-stacking direct-dependence-rest) DENOMINATOR_BPS))
     (total-normal-direct-stacking (/ (* new-total-normal-stacking direct-dependence) u10000))
 
-    (normal-stacking (/ (* total-normal-stacking pool-share) u10000))
-    (normal-direct-stacking (/ (* total-normal-direct-stacking direct-stacking-share) u10000))
+    (normal-stacking (/ (* total-normal-stacking pool-share) DENOMINATOR_BPS))
+    (normal-direct-stacking (/ (* total-normal-direct-stacking direct-stacking-share) DENOMINATOR_BPS))
   )
     (+ direct-stacking normal-stacking normal-direct-stacking)
   )

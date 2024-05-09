@@ -7,6 +7,12 @@
 (use-trait reserve-trait .reserve-trait-v1.reserve-trait)
 
 ;;-------------------------------------
+;; Constants
+;;-------------------------------------
+
+(define-constant DENOMINATOR_6 u1000000)
+
+;;-------------------------------------
 ;; STX per stSTX  
 ;;-------------------------------------
 
@@ -24,8 +30,8 @@
     (ststx-supply (unwrap-panic (contract-call? .ststx-token get-total-supply)))
   )
     (if (is-eq ststx-supply u0)
-      u1000000
-      (/ (* stx-amount u1000000) ststx-supply)
+      DENOMINATOR_6
+      (/ (* stx-amount DENOMINATOR_6) ststx-supply)
     )
   )
 )

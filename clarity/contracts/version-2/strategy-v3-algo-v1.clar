@@ -4,6 +4,15 @@
 ;; Contains 2 algorithms: reach-target & lowest-combination.
 
 ;;-------------------------------------
+;; Constants 
+;;-------------------------------------
+
+(define-constant DENOMINATOR u10000000000000)
+(define-constant MAX_VALUE u99999999999999)
+(define-constant LIST_INDICES_30 (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
+(define-constant LIST_INDICES_OFFSET_30 (list u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30))
+
+;;-------------------------------------
 ;; Reach target
 ;;-------------------------------------
 ;; Try to reach target for each element, while taking into account locked.
@@ -49,19 +58,19 @@
   ;; There will be rounding errors when calculating targets to reach
   ;; We must make sure the total end result is never above the total target when there is inflow
   ;; Numbers are rounded down automatically. We want to round up here, so we add 1.
-  (+ (/ (* target-change u10000000000000) new-total-target) u1)
+  (+ (/ (* target-change DENOMINATOR) new-total-target) u1)
 )
 
 (define-read-only (calculate-target-deviation-percentage (deviation uint) (total-deviation uint))
   (if (is-eq total-deviation u0)
     u0
-    (/ (* deviation u10000000000000) total-deviation)
+    (/ (* deviation DENOMINATOR) total-deviation)
   )
 )
 
 (define-read-only (calculate-inflow-new-stacking (locked uint) (deviation-percentage uint) (total-change uint))
   (let (
-    (actual-change (/ (* total-change deviation-percentage) u10000000000000))
+    (actual-change (/ (* total-change deviation-percentage) DENOMINATOR))
   )
     (+ locked actual-change)
   )
@@ -69,7 +78,7 @@
 
 (define-read-only (calculate-outflow-new-stacking (locked uint) (deviation-percentage uint) (total-change uint))
   (let (
-    (actual-change (/ (* total-change deviation-percentage) u10000000000000))
+    (actual-change (/ (* total-change deviation-percentage) DENOMINATOR))
   )
     (- locked actual-change)
   )
@@ -99,8 +108,7 @@
       )
     ))
 
-    (indices (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
-    (indices-sliced (unwrap-panic (slice? indices u0 (len locked))))
+    (indices-sliced (unwrap-panic (slice? LIST_INDICES_30 u0 (len locked))))
   )
     (map map-index-locked indices-sliced (list-30-list (get indices best-combination)) locked)
   )
@@ -124,15 +132,15 @@
   )
     (if (> locked-sliced-total outflow)
       (- locked-sliced-total outflow)
-      u99999999999999
+      MAX_VALUE
     )
   )
 )
 
 (define-read-only (calculate-lowest-combination-one (outflow uint) (locked (list 30 uint)))
   (let (
-    (indices-start (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
-    (indices-end (list u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30))
+    (indices-start LIST_INDICES_30)
+    (indices-end LIST_INDICES_OFFSET_30)
 
     (indices-start-sliced (unwrap-panic (slice? indices-start u0 (len locked))))
     (indices-end-sliced (unwrap-panic (slice? indices-end u0 (len locked))))
@@ -141,7 +149,7 @@
     (totals (map calculate-overunlocked (list-30-uint outflow) indices-start-sliced indices-end-sliced (list-30-list locked)))
 
     ;; Min of total overunlocked
-    (min-total (fold get-min-of totals u99999999999999))
+    (min-total (fold get-min-of totals MAX_VALUE))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
     (if (is-eq outflow u0)
@@ -160,10 +168,8 @@
 (define-read-only (calculate-lowest-combination-many-start (outflow uint) (locked (list 30 uint)))
   (let (
     (indices-start (list-30-uint u0))
-    (indices-end (list u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30))
+    (indices-end LIST_INDICES_OFFSET_30)
     
-    (indices (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
-
     (indices-start-sliced (unwrap-panic (slice? indices-start u0 (len locked))))
     (indices-end-sliced (unwrap-panic (slice? indices-end u0 (len locked))))
 
@@ -171,7 +177,7 @@
     (totals (map calculate-overunlocked (list-30-uint outflow) indices-start-sliced indices-end-sliced (list-30-list locked)))
 
     ;; Min of total overunlocked
-    (min-total (fold get-min-of totals u99999999999999))
+    (min-total (fold get-min-of totals MAX_VALUE))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
     (if (is-eq outflow u0)
@@ -180,7 +186,7 @@
         overunlocked: u0
       }
       {
-        indices: (unwrap-panic (slice? indices u0 (+ min-total-index u1))),
+        indices: (unwrap-panic (slice? LIST_INDICES_30 u0 (+ min-total-index u1))),
         overunlocked: min-total
       }
     )
@@ -189,7 +195,7 @@
 
 (define-read-only (calculate-lowest-combination-many-end (outflow uint) (locked (list 30 uint)))
   (let (
-    (indices-start (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29))
+    (indices-start LIST_INDICES_30)
     (indices-end (list-30-uint (len locked)))
     
     (indices-start-sliced (unwrap-panic (slice? indices-start u0 (len locked))))
@@ -199,7 +205,7 @@
     (totals (map calculate-overunlocked (list-30-uint outflow) indices-start-sliced indices-end-sliced (list-30-list locked)))
 
     ;; Min of total overunlocked
-    (min-total (fold get-min-of totals u99999999999999))
+    (min-total (fold get-min-of totals MAX_VALUE))
     (min-total-index (unwrap-panic (index-of? totals min-total)))
   )
     (if (is-eq outflow u0)

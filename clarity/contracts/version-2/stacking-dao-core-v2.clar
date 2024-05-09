@@ -19,6 +19,9 @@
 (define-constant ERR_GET_OWNER u204005)
 (define-constant ERR_WITHDRAW_CANCEL u204006)
 
+(define-constant DENOMINATOR_6 u1000000)
+(define-constant DENOMINATOR_BPS u10000)
+
 ;;-------------------------------------
 ;; Variables
 ;;-------------------------------------
@@ -74,11 +77,11 @@
   (pool (optional principal))
 )
   (let (
-    (stx-fee-amount (/ (* (get-stack-fee) stx-amount) u10000))
+    (stx-fee-amount (/ (* (get-stack-fee) stx-amount) DENOMINATOR_BPS))
     (stx-user-amount (- stx-amount stx-fee-amount))
 
     (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
-    (ststx-amount (/ (* stx-user-amount u1000000) stx-ststx))
+    (ststx-amount (/ (* stx-user-amount DENOMINATOR_6) stx-ststx))
   )
     (try! (contract-call? .dao check-is-enabled))
     (try! (contract-call? .dao check-is-protocol (contract-of reserve)))
@@ -120,7 +123,7 @@
     (unlock-burn-height (unwrap-panic (get-withdraw-unlock-burn-height)))
 
     (stx-ststx (try! (contract-call? .data-core-v1 get-stx-per-ststx reserve)))
-    (stx-amount (/ (* ststx-amount stx-ststx) u1000000))
+    (stx-amount (/ (* ststx-amount stx-ststx) DENOMINATOR_6))
 
     (nft-id (unwrap-panic (contract-call? .ststx-withdraw-nft get-last-token-id)))
   )
