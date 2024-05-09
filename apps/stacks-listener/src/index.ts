@@ -10,7 +10,7 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 const queue = process.env.QUEUE_URL;
-const sqs = new SQSClient();
+const sqs = new SQSClient({ region: "ap-southeast-1" });
 
 let connection: StacksApiWebSocketClient | undefined;
 

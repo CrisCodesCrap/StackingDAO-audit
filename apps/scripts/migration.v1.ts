@@ -6,6 +6,7 @@ type AggregateFile = Record<string, { user_points: number; referral_points: numb
 
 const url = "https://stackingdao-points.s3.amazonaws.com";
 const blocks = new BlocksApi();
+const chunkSize = 50;
 
 export async function migrate(url: string): Promise<void> {
   // 1. Fetch the latest points aggregate and other info.
@@ -33,46 +34,54 @@ export async function migrate(url: string): Promise<void> {
   const points = Object.entries(aggregate).map<NewPointsRecord>(([address, totals]) => ({
     wallet: address,
     source: "migration",
-    amount: Math.ceil(totals.user_points).toString(),
+    amount: Math.ceil(totals.user_points),
     block: block.hash,
   }));
 
-  const pointsSize = Math.ceil(points.length / 50);
-  const pointsChunks = Array.from({ length: 50 }, (v, i) => points.slice(i * pointsSize, i * pointsSize + pointsSize));
+  let totalPointsWritten = 0;
+  for (let i = 0; i < points.length; i += chunkSize) {
+    const chunk = points.slice(i, i + chunkSize);
 
-  for (const records of pointsChunks) {
-    const pointsCreated = await db.migratePointRecords(records);
+    for (const record of chunk) {
+      const pointsCreated = await db.addPointRecords({
+        wallet: record.wallet,
+        source: "migration",
+        amount: Math.ceil(record.amount),
+        block: record.block,
+        multiplier: 1,
+      });
 
-    console.log(`Added ${pointsCreated} "migration" records`);
+      totalPointsWritten += pointsCreated;
+    }
+    console.log(`Added ${totalPointsWritten}/${points.length} "migration" records`);
   }
 
   // 4. Add a "referrals" record to db with their current referral totals.
   const referrals = Object.entries(aggregate).map<NewPointsRecord>(([address, totals]) => ({
     wallet: address,
     source: "referral",
-    amount: Math.ceil(totals.referral_points).toString(),
+    amount: Math.ceil(totals.referral_points),
     block: block.hash,
   }));
 
-  const referralsSize = Math.ceil(points.length / 50);
-  const referralsChunks = Array.from({ length: 50 }, (v, i) =>
-    referrals.slice(i * referralsSize, i * referralsSize + referralsSize)
-  );
+  let totalReferralsWritten = 0;
+  for (let i = 0; i < referrals.length; i += chunkSize) {
+    const chunk = referrals.slice(i, i + chunkSize);
 
-  for (const records of referralsChunks) {
-    const referralsCreated = await db.migratePointRecords(records);
+    for (const record of chunk) {
+      const referralsCreated = await db.addPointRecords({
+        wallet: record.wallet,
+        source: "referral",
+        amount: Math.ceil(record.amount),
+        block: record.block,
+        multiplier: 1,
+      });
 
-    console.log(`Added ${referralsCreated} "referral" records`);
+      totalReferralsWritten += referralsCreated;
+    }
+
+    console.log(`Added ${totalReferralsWritten}/${referrals.length} "migration" records`);
   }
 }
 
 // migrate(url);
-
-async function reset() {
-  const result = await db.resetMigration();
-  console.log(result);
-}
-
-// reset();
-
-blocks.getBlock({ heightOrHash: 149167 }).then((block) => console.log(JSON.stringify(block)));
