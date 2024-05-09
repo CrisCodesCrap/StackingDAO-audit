@@ -17,10 +17,9 @@ export async function recalculateLeaderboard(block_hash: string): Promise<void> 
   // 2. Write new leaderboard to db.
   console.log("writing new leaderboard to db");
 
-  const size = Math.ceil(newLeaderboard.length / 50);
-  const chunks = Array.from({ length: 50 }, (v, i) => newLeaderboard.slice(i * size, i * size + size));
-
-  for (const chunk of chunks) {
+  const chunkSize = 50;
+  for (let i = 0; i < newLeaderboard.length; i += chunkSize) {
+    const chunk = newLeaderboard.slice(i, i + chunkSize);
     const recordsWritten = await db.updateLeaderboard(chunk);
 
     console.log(`Updated leaderboard with ${recordsWritten} new rows`);

@@ -2,11 +2,10 @@ import * as tx from '@stacks/transactions';
 import { StacksMainnet } from '@stacks/network';
 import { coreApiUrl } from './constants';
 import { Balances } from '@repo/database/src/models';
+
 //
 // Constants
 //
-
-// const client = new SmartContractsApi();
 
 const network = new StacksMainnet({ url: coreApiUrl() });
 const pointsContract = {
@@ -49,16 +48,6 @@ async function userBalance(
   blockHeight: number
 ): Promise<number> {
   try {
-    // const userInfo = await client.callReadOnlyFunction({
-    //   contractAddress: pointsContract.address,
-    //   contractName: contract.contract,
-    //   functionName: contract.function,
-    //   readOnlyFunctionArgs: {
-    //     sender: pointsContract.address,
-    //     arguments: [cvToHex(tx.standardPrincipalCV(address)), cvToHex(tx.uintCV(blockHeight))],
-    //   },
-    // });
-
     const userInfo = await tx.callReadOnlyFunction({
       contractAddress: pointsContract.address,
       contractName: contract.contract,
@@ -68,13 +57,9 @@ async function userBalance(
       network: network,
     });
 
-    // if (!userInfo.okay || !userInfo.result) throw new Error(userInfo.cause);
-
-    // const result = tx.cvToJSON(hexToCV(userInfo.result)).value.value;
     const result = tx.cvToJSON(userInfo).value.value;
-    return result / 1000000;
+    return result;
   } catch (error) {
-    // TODO: this can result in a deadlock, implement a proper retry mechanism.
     console.log('[3-aggregate] Fetch failed, retry in 2 seconds..', error);
     await new Promise(r => setTimeout(r, 2 * 1000));
     return await userBalance(contract, address, blockHeight);
@@ -88,35 +73,26 @@ interface Totals {
 }
 
 export async function userInfoAtBlock(
-  address: string,
+  wallet: string,
   blockHeight: number
 ): Promise<[Balances, Totals]> {
-  const [wallet, bitflow, zest, arkadiko, velar, hermetica] = await Promise.all([
-    userBalance(pointsContract.queries.userWallet, address, blockHeight),
-    userBalance(pointsContract.queries.bitflow, address, blockHeight),
-    userBalance(pointsContract.queries.zest, address, blockHeight),
-    userBalance(pointsContract.queries.arkadiko, address, blockHeight),
-    userBalance(pointsContract.queries.velar, address, blockHeight),
-    userBalance(pointsContract.queries.hermetica, address, blockHeight),
+  const [ststx, bitflow, zest, arkadiko, velar, hermetica] = await Promise.all([
+    userBalance(pointsContract.queries.userWallet, wallet, blockHeight),
+    userBalance(pointsContract.queries.bitflow, wallet, blockHeight),
+    userBalance(pointsContract.queries.zest, wallet, blockHeight),
+    userBalance(pointsContract.queries.arkadiko, wallet, blockHeight),
+    userBalance(pointsContract.queries.velar, wallet, blockHeight),
+    userBalance(pointsContract.queries.hermetica, wallet, blockHeight),
   ]);
 
   return [
     // Individual balances
-    {
-      blockHeight,
-      wallet: address,
-      ststx: wallet * 1_000_000,
-      bitflow: bitflow * 1_000_000,
-      zest: zest * 1_000_000,
-      arkadiko: arkadiko * 1_000_000,
-      velar: velar * 1_000_000,
-      hermetica: hermetica * 1_000_000,
-    },
+    { blockHeight, wallet, ststx, bitflow, zest, arkadiko, velar, hermetica },
     // Totals
     {
       lp_balance: bitflow,
       defi_balance: zest + arkadiko + velar + hermetica,
-      total: wallet + zest + arkadiko + velar + hermetica + bitflow,
+      total: ststx + zest + arkadiko + velar + hermetica + bitflow,
     },
   ];
 }

@@ -15,7 +15,7 @@ import { relations } from 'drizzle-orm';
 
 const currency = customType<{ data: number }>({
   dataType() {
-    return 'numeric(16, 0)';
+    return 'numeric(16, 6)';
   },
   fromDriver(value) {
     return Number(value);
@@ -84,6 +84,7 @@ export const pointsEarned = pgTable(
   table => ({
     sourceIdx: index('wallet_source_idx').on(table.wallet).asc(),
     perBlockIdx: unique().on(table.wallet, table.block, table.source),
+    perCampaignIdx: unique().on(table.wallet, table.source, table.campaign),
   })
 );
 

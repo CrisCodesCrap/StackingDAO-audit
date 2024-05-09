@@ -1,0 +1,1 @@
+ALTER TABLE "points_earned" ADD CONSTRAINT "points_earned_wallet_source_boost_unique" UNIQUE("wallet","source","boost");

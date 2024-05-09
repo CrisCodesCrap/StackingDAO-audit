@@ -42,6 +42,7 @@ async function sendBlock(block: Block) {
 
     console.log(`Published message ${response.MessageId} to queue.`);
   } catch (e) {
+    console.error(e);
     console.error("failed to put block on queue: ", block.hash);
   }
 }

@@ -23,6 +23,9 @@ export async function getPreviousBlocks(
     try {
       const block = await blocks.getBlock({ heightOrHash: block_height });
 
+      // Get details about all the transactions in the current block.
+      const txs = await getTransactionsByBlockHash(block.hash);
+
       // Get latest events for the contracts we care about.
       const results = await Promise.all([
         getContractEventsForBlock(contracts.core, block.tx_count),
@@ -43,14 +46,10 @@ export async function getPreviousBlocks(
         .filter(value => !!value.action) as ParsedEvent[];
 
       // Find all wallets that might contain or have contained stSTX.
-      const result = await Promise.all([
-        processBlockEvents(events),
-        processBlockTransactions(block),
-      ]);
+      const allAddresses = [...processBlockEvents(events), ...processBlockTransactions(txs)];
+      const addresses = [...new Set(allAddresses)];
 
-      const addresses = [...new Set(result.flat())];
-
-      console.log('addresses found: ', addresses.length);
+      console.log(`found ${addresses.length} unique addresses`);
 
       block_list.push({ block, events, addresses });
     } catch (e) {
@@ -63,30 +62,12 @@ export async function getPreviousBlocks(
 }
 
 export async function getTransactionsByBlockHash(hash: string): Promise<Transaction[]> {
-  let allRecords: Transaction[] = [];
-  let offset = 0;
-  let nextPageExists = true;
+  const data = await transactions.getTransactionsByBlock({ heightOrHash: hash });
 
-  try {
-    while (nextPageExists) {
-      const data = await transactions.getTransactionsByBlockHash({
-        blockHash: hash,
-        limit: 200,
-        offset,
-      });
-
-      allRecords = allRecords.concat(data.results as Transaction[]);
-      offset += data.results.length;
-      nextPageExists = offset < data.total;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  return allRecords;
+  return data.results as Transaction[];
 }
 
-export async function processBlockEvents(events: ParsedEvent[]): Promise<string[]> {
+export function processBlockEvents(events: ParsedEvent[]): string[] {
   // Find all the addresses that might hold stSTX as a result of this block.
   const addresses: string[] = [];
 
@@ -113,10 +94,7 @@ export async function processBlockEvents(events: ParsedEvent[]): Promise<string[
   return addresses.filter(address => !address.includes('.'));
 }
 
-export async function processBlockTransactions(block: NakamotoBlock): Promise<string[]> {
-  // Get more details about all the transactions in the current block.
-  const txs = await getTransactionsByBlockHash(block.hash);
-
+export function processBlockTransactions(txs: Transaction[]): string[] {
   const addresses = txs
     // Filter only contract calls relating to swapping stSTX and get the sender_address.
     .filter(

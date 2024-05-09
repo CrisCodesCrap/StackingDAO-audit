@@ -14,7 +14,7 @@ export async function getLeaderboard(): Promise<Leaderboard> {
 export async function getLeaderboardRanking(wallet: string): Promise<LeaderboardRank | undefined> {
   const result = await db.select().from(leaderboard).where(eq(leaderboard.wallet, wallet)).limit(1);
 
-  if (!!result.length) return result[0];
+  if (result.length > 0) return result[0];
 
   return undefined;
 }

@@ -43,6 +43,8 @@ export async function getLatestBalance(address: string): Promise<Balances | unde
     .orderBy(desc(balances.blockHeight))
     .limit(1);
 
+  console.log(result);
+
   if (!result.length) return undefined;
 
   return result[0];

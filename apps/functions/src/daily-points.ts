@@ -36,6 +36,7 @@ export async function calculatePointsAtBlock(day_block: NakamotoBlock): Promise<
 
     for (const wallet of chunk) {
       const balances = await db.getLatestBalance(wallet.address);
+      if (!balances) continue;
 
       for (const source of pointsSourceEnum.enumValues) {
         if (source === "migration" || source === "boost" || source === "referral") continue;
@@ -61,6 +62,8 @@ export async function calculatePointsAtBlock(day_block: NakamotoBlock): Promise<
 
       const referrals = await db.getReferralsForAddress(wallet.address);
       const ranking = await db.getLeaderboardRanking(wallet.address);
+      if (!ranking) continue;
+
       const totalPoints = ranking.dailyPoints + ranking.bonusPoints + ranking.referralPoints;
       const campaignMultiplier = getActiveCampaigns(day_block.height, "daily", ["referral"]).reduce(
         (pre, curr) => pre * curr.multiplier,

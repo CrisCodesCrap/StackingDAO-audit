@@ -1,3 +1,5 @@
+// require("dotenv").config();
+
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 
 import * as db from "@repo/database/src/actions";
@@ -9,10 +11,34 @@ import { getActiveCampaigns } from "./campaigns";
 import type { SQSEvent, Context } from "aws-lambda";
 import type { NakamotoBlock } from "@stacks/blockchain-api-client";
 import type { ParsedEvent } from "@repo/stacks/src/contracts";
+// import { rawBlockSQSEvent } from "./test";
 
-const REPLAY_COUNT = 10;
+const REPLAY_COUNT = 0;
 const updatesTopic = process.env.OUTGOING_SNS_TOPIC;
 const sns = new SNSClient();
+
+// updateWallets(rawBlockSQSEvent, {
+//   callbackWaitsForEmptyEventLoop: false,
+//   functionName: "",
+//   functionVersion: "",
+//   invokedFunctionArn: "",
+//   memoryLimitInMB: "",
+//   awsRequestId: "",
+//   logGroupName: "",
+//   logStreamName: "",
+//   getRemainingTimeInMillis: function (): number {
+//     throw new Error("Function not implemented.");
+//   },
+//   done: function (error?: Error, result?: any): void {
+//     throw new Error("Function not implemented.");
+//   },
+//   fail: function (error: string | Error): void {
+//     throw new Error("Function not implemented.");
+//   },
+//   succeed: function (messageOrObject: any): void {
+//     throw new Error("Function not implemented.");
+//   },
+// });
 
 export async function updateWallets(event: SQSEvent, _: Context): Promise<void> {
   for (const record of event.Records) {
@@ -51,6 +77,7 @@ export async function updateWalletsForBlock(block: NakamotoBlock, addresses: str
     totalUpdated.snapshots += snapshotsUpdated;
 
     for (const campaign of campaigns) {
+      // TODO: the total should take into account the snapshot
       const pointsUpdated = await db.upsertCampaignPoints({
         wallet: address,
         source: "boost",

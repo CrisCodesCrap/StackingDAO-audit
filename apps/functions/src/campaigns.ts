@@ -39,7 +39,7 @@ export const campaigns: Campaign[] = [
     enabled: true,
     type: "one-time-boost",
     start_block: 143630,
-    end_block: 147290 + 147290 + 2100,
+    end_block: 147290 + 147290 + 2100, // 149390
     source: "*",
     multiplier: 20,
   },
