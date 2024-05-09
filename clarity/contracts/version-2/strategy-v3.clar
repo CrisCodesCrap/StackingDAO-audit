@@ -109,25 +109,27 @@
 
 (define-public (prepare-pools)
   (let (
+    (pox-cycle (get-pox-cycle))
+    (pox-cycle-list (list-30-uint pox-cycle))
     (stacking-per-pool (contract-call? .strategy-v3-pools-v1 calculate-stacking-per-pool))
   )
     (try! (contract-call? .dao check-is-enabled))
     (asserts! (can-prepare) (err ERR_CAN_NOT_PREPARE))
     (asserts! (not (has-prepared-pools)) (err ERR_HAS_ALREADY_PREPARED))
 
-    (map map-pool-stacking-amount stacking-per-pool)
+    (map map-pool-stacking-amount pox-cycle-list stacking-per-pool)
 
-    (var-set cycle-prepared-pools (get-pox-cycle))
+    (var-set cycle-prepared-pools pox-cycle)
 
-    (print { action: "prepare-pools", cycle-prepared-pools: (get-pox-cycle), block-height: block-height })
+    (print { action: "prepare-pools", cycle-prepared-pools: pox-cycle, block-height: block-height })
     (ok true)
   )
 )
 
-(define-private (map-pool-stacking-amount (info { pool: principal, stacking-amount: uint }))
+(define-private (map-pool-stacking-amount (pox-cycle uint) (info { pool: principal, stacking-amount: uint }))
   (begin
     (print { action: "map-pool-stacking-amount", pool: (get pool info), stacking-amount: (get stacking-amount info), block-height: block-height })
-    (map-set prepare-pools-data (get pool info) (merge (get-prepare-pools-data (get pool info)) { stacking-amount: (get stacking-amount info), cycle-prepared-pool: (get-pox-cycle) }))
+    (map-set prepare-pools-data (get pool info) (merge (get-prepare-pools-data (get pool info)) { stacking-amount: (get stacking-amount info), cycle-prepared-pool: pox-cycle }))
   )
 )
 
@@ -137,6 +139,7 @@
 
 (define-public (prepare-delegates (pool principal))
   (let (
+    (pox-cycle (get-pox-cycle))
     (pool-info (get-prepare-pools-data pool))
     (stacking-per-delegate (contract-call? .strategy-v3-delegates-v1 calculate-stacking-per-delegate pool (get stacking-amount pool-info)))
   )
@@ -147,9 +150,9 @@
 
     (map map-delegate-stacking-amount stacking-per-delegate)
 
-    (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-prepared-delegates: (get-pox-cycle) }))
+    (map-set prepare-pools-data pool (merge pool-info { cycle-prepared-delegates: pox-cycle }))
 
-    (print { action: "prepare-delegates", pool: pool, cycle-prepared-delegates: (get-pox-cycle), block-height: block-height })
+    (print { action: "prepare-delegates", pool: pool, cycle-prepared-delegates: pox-cycle, block-height: block-height })
     (ok true)
   )
 )
@@ -167,6 +170,7 @@
 
 (define-public (execute (pool principal) (delegates (list 30 <stacking-delegate-trait>)) (reserve <reserve-trait>) (rewards-contract <rewards-trait>))
   (let (
+    (pox-cycle (get-pox-cycle))
     (saved-delegates (contract-call? .data-pools-v1 get-pool-delegates pool))
     (compare-errors (filter not (map compare-delegates saved-delegates delegates)))
 
@@ -186,9 +190,9 @@
     (asserts! (is-eq (len delegates) (len saved-delegates)) (err ERR_WRONG_DELEGATE_TRAIT))
     (asserts! (is-eq helper-error none) (unwrap-panic helper-error))
 
-    (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-executed-pool: (get-pox-cycle) }))
+    (map-set prepare-pools-data pool (merge (get-prepare-pools-data pool) { cycle-executed-pool: pox-cycle }))
 
-    (print { action: "execute", pool: pool, cycle-executed-pool: (get-pox-cycle), block-height: block-height })
+    (print { action: "execute", pool: pool, cycle-executed-pool: pox-cycle, block-height: block-height })
     (ok true)
   )
 )
@@ -229,16 +233,14 @@
 
 (define-read-only (get-pox-cycle)
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 current-pox-reward-cycle)
     (contract-call? .pox-4-mock current-pox-reward-cycle)
   )
 )
 
 (define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 reward-cycle-to-burn-height cycle-id)
     (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
   )
 )

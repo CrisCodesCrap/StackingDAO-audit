@@ -274,24 +274,21 @@
 
 (define-read-only (current-pox-reward-cycle) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 current-pox-reward-cycle)
     (contract-call? .pox-4-mock current-pox-reward-cycle)
   )
 )
 
 (define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 reward-cycle-to-burn-height cycle-id)
     (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
   )
 )
 
 (define-read-only (get-reward-cycle-length)
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (get reward-cycle-length (unwrap-panic (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-pox-info)))
+    (get reward-cycle-length (unwrap-panic (contract-call? 'SP000000000000000000002Q6VF78.pox-4 get-pox-info)))
     (get reward-cycle-length (unwrap-panic (contract-call? .pox-4-mock get-pox-info)))
   )
 )

@@ -196,24 +196,21 @@
 
 (define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 reward-cycle-to-burn-height cycle-id)
     (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
   )
 )
 
 (define-read-only (get-reward-set-pox-address (cycle-id uint) (reward-index uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-reward-set-pox-address cycle-id reward-index)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 get-reward-set-pox-address cycle-id reward-index)
     (contract-call? .pox-4-mock get-reward-set-pox-address cycle-id reward-index)
   )
 )
 
 (define-read-only (get-stacker-info (delegate principal)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-stacker-info delegate)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 get-stacker-info delegate)
     (contract-call? .pox-4-mock get-stacker-info delegate)
   )
 )   

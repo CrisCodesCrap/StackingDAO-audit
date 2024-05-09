@@ -438,41 +438,36 @@
 
 (define-read-only (get-check-delegation (delegate principal))
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-check-delegation delegate)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 get-check-delegation delegate)
     (contract-call? .pox-4-mock get-check-delegation delegate)
   )
 )
 
 (define-read-only (current-pox-reward-cycle) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 current-pox-reward-cycle)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 current-pox-reward-cycle)
     (contract-call? .pox-4-mock current-pox-reward-cycle)
   )
 )
 
 (define-read-only (reward-cycle-to-burn-height (cycle-id uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 reward-cycle-to-burn-height cycle-id)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 reward-cycle-to-burn-height cycle-id)
     (contract-call? .pox-4-mock reward-cycle-to-burn-height cycle-id)
   )
 )
 
 (define-private (pox-delegate-stx (amount-ustx uint) (delegate-to principal) (until-burn-ht (optional uint))) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stx amount-ustx delegate-to until-burn-ht none)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stx amount-ustx delegate-to until-burn-ht none)
     (contract-call? .pox-4-mock delegate-stx amount-ustx delegate-to until-burn-ht none)
   )
 )
 
 (define-private (pox-revoke-delegate-stx) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (match (contract-call? 'SP000000000000000000002Q6VF78.pox-3 revoke-delegate-stx)
-      result (ok result)
+    (match (contract-call? 'SP000000000000000000002Q6VF78.pox-4 revoke-delegate-stx)
+      result (ok true)
       error (if (is-eq error 34) (ok true) (err (to-uint error)))
     )
     (match (contract-call? .pox-4-mock revoke-delegate-stx)
@@ -484,8 +479,7 @@
 
 (define-read-only (get-stacker-info (delegate principal)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 get-stacker-info delegate)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 get-stacker-info delegate)
     (contract-call? .pox-4-mock get-stacker-info delegate)
   )
 )   
@@ -498,8 +492,7 @@
   (lock-period uint)
 ) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-stx stacker amount-ustx pox-addr start-burn-ht lock-period)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stack-stx stacker amount-ustx pox-addr start-burn-ht lock-period)
     (contract-call? .pox-4-mock delegate-stack-stx stacker amount-ustx pox-addr start-burn-ht lock-period)
   )
 )
@@ -507,15 +500,14 @@
 (define-private (pox-delegate-stack-extend (stacker principal) (pox-addr { version: (buff 1), hashbytes: (buff 32) }) (extend-count uint)) 
   (if is-in-mainnet
     ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-extend stacker pox-addr extend-count)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stack-extend stacker pox-addr extend-count)
     (contract-call? .pox-4-mock delegate-stack-extend stacker pox-addr extend-count)
   )
 )
 
 (define-private (pox-delegate-stack-increase (stacker principal) (pox-addr { version: (buff 1), hashbytes: (buff 32) }) (increase-by uint)) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 delegate-stack-increase stacker pox-addr increase-by)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 delegate-stack-increase stacker pox-addr increase-by)
     (contract-call? .pox-4-mock delegate-stack-increase stacker pox-addr increase-by)
   )
 )
@@ -529,8 +521,7 @@
   (auth-id uint)
 ) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-commit-indexed pox-addr reward-cycle)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 stack-aggregation-commit-indexed pox-addr reward-cycle signer-sig signer-key max-amount auth-id)
     (contract-call? .pox-4-mock stack-aggregation-commit-indexed pox-addr reward-cycle signer-sig signer-key max-amount auth-id)
   )
 )
@@ -545,8 +536,7 @@
   (auth-id uint)
 ) 
   (if is-in-mainnet
-    ;; TODO: Update to pox-4
-    (contract-call? 'SP000000000000000000002Q6VF78.pox-3 stack-aggregation-increase pox-addr reward-cycle reward-cycle-index)
+    (contract-call? 'SP000000000000000000002Q6VF78.pox-4 stack-aggregation-increase pox-addr reward-cycle reward-cycle-index signer-sig signer-key max-amount auth-id)
     (contract-call? .pox-4-mock stack-aggregation-increase pox-addr reward-cycle reward-cycle-index signer-sig signer-key max-amount auth-id)
   )
 )

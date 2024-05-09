@@ -60,6 +60,9 @@ contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.token-ststx-earn-v1"
 [[project.requirements]]
 contract_id = "SPZA22A4D15RKH5G8XDGQ7BPC20Q5JNMH0VQKSR6.vault-ststx-earn-v1"
 
+[[project.requirements]]
+contract_id = "SP000000000000000000002Q6VF78.pox-4"
+
 # ------------------------------
 # Core
 # ------------------------------
