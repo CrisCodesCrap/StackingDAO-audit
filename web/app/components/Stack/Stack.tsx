@@ -177,18 +177,15 @@ export function Stack() {
             </div>
           </div>
 
+          <h4 className="mt-4 mb-3 font-headings text-sd-gray-darker">Choose a stacking partner</h4>
+
           <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <StackingPartner
-              name="Deposit with us"
+              name="Deposit with StackingDAO"
               logo="/sdao.svg"
               selected={stackingPartner === 'stackingdao'}
               onClick={() => setStackingPartner('stackingdao')}
               ratio={1 / parseFloat(stxRatio ?? '1')}
-              referral={
-                referralAddress
-                  ? `${referralAddress.slice(0, 4)}...${referralAddress.slice(-4)}`
-                  : undefined
-              }
             />
             <StackingPartner
               name="Swap with Bitflow"
@@ -235,11 +232,11 @@ export function Stack() {
           </div>
 
           {buttonState === 'insufficient' && (
-            <div className="flex items-center justify-center mt-4 mb-2 py-2 px-4 w-full rounded-lg bg-red-400 text-left md:text-center font-medium text-sm text-white">
+            <div className="flex items-center justify-center mt-4 mb-2 py-2 px-4 w-full rounded-lg bg-red-400 font-medium text-sm text-white">
               <span>⚠️</span>
-              <p className="ml-2">
-                Please make sure to leave enough STX (currently{' '}
-                {currency.long.format(gasFeeTolerance)} STX) for transaction gas
+              <p className="ml-3">
+                Please make sure to leave enough STX for transaction gas (currently{' '}
+                {currency.long.format(gasFeeTolerance)} STX)
               </p>
             </div>
           )}
@@ -267,7 +264,6 @@ interface StackingPartnerProps {
   onClick: VoidFunction;
   recommended?: boolean;
   ratio?: number;
-  referral?: string;
 }
 
 function StackingPartner({
@@ -277,25 +273,27 @@ function StackingPartner({
   onClick,
   recommended,
   ratio,
-  referral,
 }: StackingPartnerProps) {
   return (
     <div
+      role="button"
       onClick={onClick}
       className={cn(
-        'relative mt-4 w-full cursor-pointer grid gap-4 rounded-lg border-2 bg-sd-gray-light p-6 font-medium hover:bg-sd-gray-dark',
-        selected ? 'border-dark-green-600' : 'border-transparent'
+        'relative w-full cursor-pointer grid gap-4 rounded-lg border-2 p-6 font-medium',
+        selected
+          ? 'bg-fluor-green-500/10 border-dark-green-600'
+          : 'bg-sd-gray-light border-transparent'
       )}
     >
-      <div className="flex flex-row items-center justify-between">
-        <p className="mr-2 text-sm">{name}</p>
-        {/*<Image
+      <div className="flex flex-row items-center">
+        <p className="text-sm text-dark-green-800">{name}</p>
+        <Image
           src={logo}
           alt=""
-          className="h-6 w-6 rounded-full bg-dark-green-600"
+          className="absolute top-1/2 -translate-y-1/2 left-2 h-20 w-20 rounded-full bg-dark-green-600 opacity-[0.05] grayscale"
           width={100}
           height={100}
-        />*/}
+        />
       </div>
       {recommended && (
         <Badge
@@ -313,15 +311,16 @@ function StackingPartner({
         />
       )}
       {selected && (
-        <Badge
+        <div
           id="selected"
-          text="Selected"
-          className="absolute -top-3 left-2 max-w-fit"
-          suffixIcon={<CheckCircleIcon width={12} height={12} />}
-        />
+          className="absolute -bottom-2 -right-2 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-dark-green-500"
+          title="Selected"
+        >
+          <CheckCircleIcon className="text-fluor-green-500 w-6 h-6" />
+        </div>
       )}
       <div className="flex flex-row justify-between">
-        <p className="text-left text-sm text-gray-600">Ratio:</p>
+        <p className="text-left text-sm text-gray-600">Ratio</p>
         <p className="flex flex-row text-right text-sm font-semibold gap-1 items-center">
           {!!ratio ? (
             <>
@@ -329,18 +328,10 @@ function StackingPartner({
               <StSTXIcon width={16} height={16} />
             </>
           ) : (
-            '-'
+            '—'
           )}
         </p>
       </div>
-      {!!referral && (
-        <div className="flex flex-row justify-between">
-          <p className="text-left text-sm text-gray-600">Referral:</p>
-          <p className="flex flex-row text-right text-sm font-semibold gap-1 items-center">
-            {referral}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
