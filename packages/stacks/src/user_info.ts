@@ -1,6 +1,7 @@
 import * as tx from '@stacks/transactions';
 import { StacksMainnet } from '@stacks/network';
 import { coreApiUrl } from './constants';
+import { Balances } from '@repo/database/src/models';
 //
 // Constants
 //
@@ -80,7 +81,16 @@ async function userBalance(
   }
 }
 
-export async function userInfoAtBlock(address: string, blockHeight: number) {
+interface Totals {
+  lp_balance: number;
+  defi_balance: number;
+  total: number;
+}
+
+export async function userInfoAtBlock(
+  address: string,
+  blockHeight: number
+): Promise<[Balances, Totals]> {
   const [wallet, bitflow, zest, arkadiko, velar, hermetica] = await Promise.all([
     userBalance(pointsContract.queries.userWallet, address, blockHeight),
     userBalance(pointsContract.queries.bitflow, address, blockHeight),
@@ -90,15 +100,23 @@ export async function userInfoAtBlock(address: string, blockHeight: number) {
     userBalance(pointsContract.queries.hermetica, address, blockHeight),
   ]);
 
-  return {
-    total: wallet + zest + arkadiko + velar + hermetica + bitflow,
-    ststx_balance: wallet,
-    defi_balance: zest + arkadiko + velar + hermetica,
-    lp_balance: bitflow,
-    bitflow: bitflow * 1_000_000,
-    zest: zest * 1_000_000,
-    arkadiko: arkadiko * 1_000_000,
-    velar: velar * 1_000_000,
-    hermetica: hermetica * 1_000_000,
-  };
+  return [
+    // Individual balances
+    {
+      blockHeight,
+      wallet: address,
+      ststx: wallet * 1_000_000,
+      bitflow: bitflow * 1_000_000,
+      zest: zest * 1_000_000,
+      arkadiko: arkadiko * 1_000_000,
+      velar: velar * 1_000_000,
+      hermetica: hermetica * 1_000_000,
+    },
+    // Totals
+    {
+      lp_balance: bitflow,
+      defi_balance: zest + arkadiko + velar + hermetica,
+      total: wallet + zest + arkadiko + velar + hermetica + bitflow,
+    },
+  ];
 }

@@ -5,30 +5,28 @@ import {
   integer,
   timestamp,
   real,
-  numeric,
   varchar,
   index,
   unique,
+  primaryKey,
+  customType,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+
+const currency = customType<{ data: number }>({
+  dataType() {
+    return 'numeric(16, 0)';
+  },
+  fromDriver(value) {
+    return Number(value);
+  },
+});
 
 export const wallets = pgTable(
   'wallets',
   {
     address: varchar('address', { length: 64 }).primaryKey(),
     firstSeenAtBlock: varchar('first_seen_at_block', { length: 128 }),
-    snapshotBalance: numeric('snapshot_balance', {
-      precision: 128,
-      scale: 0,
-    })
-      .notNull()
-      .default('0'),
-    currentBalance: numeric('ststx_balance', {
-      precision: 128,
-      scale: 0,
-    })
-      .notNull()
-      .default('0'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   table => {
@@ -40,6 +38,7 @@ export const wallets = pgTable(
 
 export const pointsSourceEnum = pgEnum('points_source', [
   'migration',
+  'boost',
   'referral',
   'ststx',
   'bitflow',
@@ -48,6 +47,25 @@ export const pointsSourceEnum = pgEnum('points_source', [
   'velar',
   'hermetica',
 ]);
+
+export const balances = pgTable(
+  'balances',
+  {
+    wallet: varchar('wallet')
+      .references(() => wallets.address)
+      .notNull(),
+    blockHeight: integer('block_height').notNull(),
+    ststx: currency('ststx').notNull().default(0),
+    bitflow: currency('bitflow').notNull().default(0),
+    zest: currency('zest').notNull().default(0),
+    arkadiko: currency('arkadiko').notNull().default(0),
+    velar: currency('velar').notNull().default(0),
+    hermetica: currency('hermetica').notNull().default(0),
+  },
+  table => ({
+    pk: primaryKey({ columns: [table.wallet, table.blockHeight] }),
+  })
+);
 
 export const pointsEarned = pgTable(
   'points_earned',
@@ -58,9 +76,10 @@ export const pointsEarned = pgTable(
       .notNull(),
     timestamp: timestamp('timestamp').notNull().defaultNow(),
     source: pointsSourceEnum('source').notNull(),
-    amount: numeric('amount', { precision: 128, scale: 0 }).notNull(),
+    amount: currency('amount').notNull(),
     multiplier: real('multiplier').default(1.0).notNull(),
     block: varchar('block_hash', { length: 128 }).notNull(),
+    campaign: varchar('boost'),
   },
   table => ({
     sourceIdx: index('wallet_source_idx').on(table.wallet).asc(),
@@ -92,9 +111,9 @@ export const leaderboard = pgTable(
     wallet: varchar('wallet')
       .references(() => wallets.address)
       .notNull(),
-    dailyPoints: numeric('points_daily', { precision: 128, scale: 0 }).notNull().default('0'),
-    referralPoints: numeric('points_referral', { precision: 128, scale: 0 }).notNull().default('0'),
-    bonusPoints: numeric('points_bonus', { precision: 128, scale: 0 }).notNull().default('0'),
+    dailyPoints: currency('points_daily').notNull().default(0),
+    referralPoints: currency('points_referral').notNull().default(0),
+    bonusPoints: currency('points_bonus').notNull().default(0),
   },
   table => ({
     walletIdx: index('wallet_idx').on(table.wallet).asc(),
