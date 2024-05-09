@@ -280,7 +280,7 @@
 ;; In case something goes wrong
 (define-public (update-amounts (delegate principal) (target-locked uint) (last-locked uint) (last-unlocked uint))
   (begin
-    (try! (contract-call? .dao check-is-protocol contract-caller))
+    (try! (contract-call? .dao check-is-admin tx-sender))
 
     (map-set target-locked-amount delegate target-locked)
     (map-set last-locked-amount delegate last-locked)

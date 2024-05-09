@@ -399,7 +399,7 @@ Clarinet.test({
     let delegatesHandler = new DelegatesHandler(chain, deployer);
 
     let result = await delegatesHandler.updateAmounts(wallet_1, qualifiedName("stacking-delegate-1-1"), 100, 150, 50);
-    result.expectErr().expectUint(20003);
+    result.expectErr().expectUint(20001);
 
     result = await delegatesHandler.revokeAndDelegate(wallet_1, qualifiedName("stacking-delegate-1-1"), 200000, qualifiedName("stacking-pool-v1"), 50);
     result.expectErr().expectUint(20003);
