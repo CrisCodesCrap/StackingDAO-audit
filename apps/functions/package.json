@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {
+    "dev:daily-points": "sam local invoke Points-WalletTracker --env-vars .env.json -e events/sqs_block.json -t ../../cdk.out/PointsStack.template.json",
     "start:daily-points": "npx ts-node --transpile-only src/daily-points.ts",
     "start:leaderboard": "npx ts-node --transpile-only src/leaderboard.ts",
     "start:wallet-tracker": "npx ts-node --transpile-only src/wallet-tracker.ts"

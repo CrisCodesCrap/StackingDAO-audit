@@ -1,0 +1,364 @@
+{
+  "id": "26153978-9f12-4886-ad22-9a608b7fd960",
+  "prevId": "a9738d20-68a5-4278-b8de-6bbe59cc1a82",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "balances": {
+      "name": "balances",
+      "schema": "",
+      "columns": {
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block_height": {
+          "name": "block_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ststx": {
+          "name": "ststx",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "bitflow": {
+          "name": "bitflow",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "zest": {
+          "name": "zest",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "arkadiko": {
+          "name": "arkadiko",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "velar": {
+          "name": "velar",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "hermetica": {
+          "name": "hermetica",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "block_height_idx": {
+          "name": "block_height_idx",
+          "columns": [
+            "block_height",
+            "wallet"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "balances_wallet_wallets_address_fk": {
+          "name": "balances_wallet_wallets_address_fk",
+          "tableFrom": "balances",
+          "tableTo": "wallets",
+          "columnsFrom": [
+            "wallet"
+          ],
+          "columnsTo": [
+            "address"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "balances_wallet_block_height_pk": {
+          "name": "balances_wallet_block_height_pk",
+          "columns": [
+            "wallet",
+            "block_height"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "leaderboard": {
+      "name": "leaderboard",
+      "schema": "",
+      "columns": {
+        "rank": {
+          "name": "rank",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points_daily": {
+          "name": "points_daily",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "points_referral": {
+          "name": "points_referral",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "points_bonus": {
+          "name": "points_bonus",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "wallet_idx": {
+          "name": "wallet_idx",
+          "columns": [
+            "wallet"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "leaderboard_wallet_wallets_address_fk": {
+          "name": "leaderboard_wallet_wallets_address_fk",
+          "tableFrom": "leaderboard",
+          "tableTo": "wallets",
+          "columnsFrom": [
+            "wallet"
+          ],
+          "columnsTo": [
+            "address"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "points_earned": {
+      "name": "points_earned",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "wallet": {
+          "name": "wallet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "source": {
+          "name": "source",
+          "type": "points_source",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(16, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "multiplier": {
+          "name": "multiplier",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "block_hash": {
+          "name": "block_hash",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "boost": {
+          "name": "boost",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "wallet_source_idx": {
+          "name": "wallet_source_idx",
+          "columns": [
+            "wallet"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "points_earned_wallet_wallets_address_fk": {
+          "name": "points_earned_wallet_wallets_address_fk",
+          "tableFrom": "points_earned",
+          "tableTo": "wallets",
+          "columnsFrom": [
+            "wallet"
+          ],
+          "columnsTo": [
+            "address"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "points_earned_wallet_block_hash_source_unique": {
+          "name": "points_earned_wallet_block_hash_source_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "wallet",
+            "block_hash",
+            "source"
+          ]
+        },
+        "points_earned_wallet_source_boost_unique": {
+          "name": "points_earned_wallet_source_boost_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "wallet",
+            "source",
+            "boost"
+          ]
+        }
+      }
+    },
+    "referrals": {
+      "name": "referrals",
+      "schema": "",
+      "columns": {
+        "referrer": {
+          "name": "referrer",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stacker": {
+          "name": "stacker",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "block_height": {
+          "name": "block_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "referrals_referrer_stacker_pk": {
+          "name": "referrals_referrer_stacker_pk",
+          "columns": [
+            "referrer",
+            "stacker"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "wallets": {
+      "name": "wallets",
+      "schema": "",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "varchar(64)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_seen_at_block": {
+          "name": "first_seen_at_block",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "created_at_idx": {
+          "name": "created_at_idx",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {
+    "points_source": {
+      "name": "points_source",
+      "values": {
+        "migration": "migration",
+        "boost": "boost",
+        "referral": "referral",
+        "ststx": "ststx",
+        "bitflow": "bitflow",
+        "zest": "zest",
+        "arkadiko": "arkadiko",
+        "velar": "velar",
+        "hermetica": "hermetica"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

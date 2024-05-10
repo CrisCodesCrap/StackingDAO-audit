@@ -46,7 +46,7 @@ export class PointsStack extends cdk.Stack {
 
     const stacks_listener = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, "SDAO-StacksListener-Service", {
       cluster,
-      memoryReservationMiB: 1024,
+      memoryReservationMiB: 512,
       taskImageOptions: {
         image: ecs.ContainerImage.fromAsset("."),
         containerPort: 3000,
@@ -58,6 +58,8 @@ export class PointsStack extends cdk.Stack {
       healthCheckGracePeriod: cdk.Duration.seconds(60), // Grace period before health checks start
       circuitBreaker: { enable: true, rollback: true },
     });
+
+    queue.grantSendMessages(stacks_listener.taskDefinition.taskRole);
 
     // Configure health check settings
     stacks_listener.targetGroup.configureHealthCheck({

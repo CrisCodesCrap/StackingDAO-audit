@@ -1,8 +1,5 @@
-import {
-    SmartContractsApi,
-    TransactionEventsResponse,
-} from "@stacks/blockchain-api-client";
-import { TransactionEvent } from "@stacks/stacks-blockchain-api-types";
+import {SmartContractsApi, TransactionEventsResponse,} from "@stacks/blockchain-api-client";
+import {TransactionEvent} from "@stacks/stacks-blockchain-api-types";
 
 const contracts = new SmartContractsApi();
 
@@ -50,7 +47,7 @@ export interface ParsedAction {
 
 export interface Data {
     amount: CV<number>;
-    referrer?: CV<string>;
+    referrer: CV<CV<string>>;
     stacker?: CV<string>;
     recipient?: CV<string>;
     sender?: CV<string>;
