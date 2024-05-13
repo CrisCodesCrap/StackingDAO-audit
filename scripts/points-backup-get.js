@@ -15,9 +15,9 @@ async function backupFile(backupFolder, fileName) {
 
 async function start() {
 
-  const backupFolder = "points-backup-2024-04-15"
+  const backupFolder = "points-backup-2024-05-13"
 
-  const fileNames = ['points-last-block-8', 'points-last-block-addresses-8', 'points-addresses-8', 'points-referrals-8', 'points-aggregate-8'];
+  const fileNames = ['points-last-block-11', 'points-last-block-addresses-11', 'points-addresses-11', 'points-referrals-11', 'points-aggregate-11'];
 
   for (const fileName of fileNames) {
     await backupFile(backupFolder, fileName);

@@ -6,7 +6,8 @@ const utils = require('./utils.js');
 // Constants
 //
 
-const coreContract = `${process.env.CONTRACT_ADDRESS}.stacking-dao-core-v1`;
+const coreContractV1 = `${process.env.CONTRACT_ADDRESS}.stacking-dao-core-v1`;
+const coreContractV2 = `${process.env.CONTRACT_ADDRESS}.stacking-dao-core-v2`;
 const tokenContract = `${process.env.CONTRACT_ADDRESS}.ststx-token`;
 const swap1Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-1`;
 const swap2Contract = `SPQC38PW542EQJ5M11CR25P7BS1CA6QT4TBXGB3M.stableswap-stx-ststx-v-1-2`;
@@ -24,7 +25,7 @@ function parseAllEventsForAddresses(allEvents) {
       const logJson = tx.cvToValue(tx.hexToCV(event.contract_log.value.hex));
 
       // Deposit and mint stSTX
-      if (event.contract_log.contract_id == coreContract && logJson.action.value == "deposit") {
+      if ((event.contract_log.contract_id == coreContractV1 || event.contract_log.contract_id == coreContractV2) && logJson.action.value == "deposit") {
         const stacker = logJson.data.value.stacker.value;
         if (!stacker.includes(".")) {
           addresses.push(stacker);
@@ -62,7 +63,7 @@ function parseAllEventsForReferrers(allEvents) {
       const logJson = tx.cvToValue(tx.hexToCV(event.contract_log.value.hex));
 
       // Deposit and mint stSTX
-      if (event.contract_log.contract_id == coreContract && logJson.action.value == "deposit") {
+      if ((event.contract_log.contract_id == coreContractV1 || event.contract_log.contract_id == coreContractV2) && logJson.action.value == "deposit") {
         const stacker = logJson.data.value.stacker.value;
         const referrer = logJson.data.value.referrer.value;
         const blockHeight = logJson.data.value['block-height'].value;
@@ -115,7 +116,8 @@ async function start() {
 
   const currentBlockHeight = await utils.getBlockHeight();
 
-  const coreContractEvents = await utils.getAllEvents(coreContract);
+  const coreContractV1Events = await utils.getAllEvents(coreContractV1);
+  const coreContractV2Events = await utils.getAllEvents(coreContractV2);
   const tokenContractEvents = await utils.getAllEvents(tokenContract);
   const arkadikoContractEvents = await utils.getAllEvents(arkadikoVaultsContract);
 
@@ -123,7 +125,7 @@ async function start() {
   const swap2ContractTransactions = await utils.getAllTransactions(swap2Contract);
 
 
-  const allEvents = coreContractEvents.concat(tokenContractEvents).concat(arkadikoContractEvents);
+  const allEvents = coreContractV1Events.concat(coreContractV2Events).concat(tokenContractEvents).concat(arkadikoContractEvents);
   const addressesFromEvents = parseAllEventsForAddresses(allEvents);
 
   const allTransactions = swap1ContractTransactions.concat(swap2ContractTransactions);
