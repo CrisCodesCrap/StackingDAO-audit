@@ -29,6 +29,8 @@ type StackingPartner = 'stackingdao' | 'bitflow';
 type ButtonState = 'stack' | 'insufficient' | 'disabled';
 
 interface StackingActions extends StackingInput {
+  gasFeeTolerance: number;
+  referral?: string | null;
   stackingPartner: StackingPartner;
   buttonState: ButtonState;
   setStackingPartner: Dispatch<SetStateAction<StackingPartner>>;
@@ -126,21 +128,6 @@ export function useStackingInput(): StackingInput {
     updateRequestedAmount: updateAmount,
     resetInput: () => setInternalValue(undefined),
   };
-}
-
-type StackingPartner = 'stackingdao' | 'bitflow';
-
-type ButtonState = 'stack' | 'insufficient' | 'disabled';
-
-interface StackingActions extends StackingInput {
-  gasFeeTolerance: number;
-  referral?: string | null;
-  stackingPartner: StackingPartner;
-  buttonState: ButtonState;
-  setStackingPartner: Dispatch<SetStateAction<StackingPartner>>;
-  onValidateAmount: (amount: number | undefined) => boolean;
-  onMaxClicked: VoidFunction;
-  stackStx: VoidFunction;
 }
 
 export function useStackingActions(stxAddress?: string): StackingActions {
