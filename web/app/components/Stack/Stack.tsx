@@ -24,6 +24,7 @@ import { currency } from '@/app/common/utils';
 
 export function Stack() {
   const stxAddress = useSTXAddress();
+  const bitflowEnabled = process.env.NEXT_PUBLIC_FF_ENABLE_BITFLOW === 'true';
 
   const [showApyInfo, setShowApyInfo] = useState<boolean>(false);
 
@@ -177,25 +178,29 @@ export function Stack() {
             </div>
           </div>
 
-          <h4 className="mt-4 mb-3 font-headings text-sd-gray-darker">Choose a stacking partner</h4>
+          {bitflowEnabled && (
+            <>
+              <h4 className="mt-4 mb-3 font-headings text-sd-gray-darker">Choose a stacking partner</h4>
 
-          <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <StackingPartner
-              name="Deposit with StackingDAO"
-              logo="/sdao.svg"
-              selected={stackingPartner === 'stackingdao'}
-              onClick={() => setStackingPartner('stackingdao')}
-              ratio={1 / parseFloat(stxRatio ?? '1')}
-            />
-            <StackingPartner
-              name="Swap with Bitflow"
-              logo="/bitflow-logo.png"
-              selected={stackingPartner === 'bitflow'}
-              onClick={() => setStackingPartner('bitflow')}
-              recommended={(bitflow?.ratio ?? 0) > 1 / parseFloat(stxRatio ?? '0')}
-              ratio={bitflow.ratio}
-            />
-          </div>
+              <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <StackingPartner
+                  name="Deposit with StackingDAO"
+                  logo="/sdao.svg"
+                  selected={stackingPartner === 'stackingdao'}
+                  onClick={() => setStackingPartner('stackingdao')}
+                  ratio={1 / parseFloat(stxRatio ?? '1')}
+                />
+                <StackingPartner
+                  name="Swap with Bitflow"
+                  logo="/bitflow-logo.png"
+                  selected={stackingPartner === 'bitflow'}
+                  onClick={() => setStackingPartner('bitflow')}
+                  recommended={(bitflow?.ratio ?? 0) > 1 / parseFloat(stxRatio ?? '0')}
+                  ratio={bitflow.ratio}
+                />
+              </div>
+            </>
+          )}
 
           <div className="my-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
             <div className="flex flex-row justify-center gap-1">
