@@ -12,7 +12,7 @@ export function Badge({ text, className, prefixIcon, suffixIcon, ...props }: Bad
     <span
       {...props}
       className={cn(
-        'inline-flex items-center justify-center gap-1 rounded-md bg-dark-green-600 px-2.5 py-0.5 text-white/70',
+        'inline-flex items-center justify-center gap-1 rounded-md bg-dark-green-600 px-2.5 py-0.5 text-white',
         className
       )}
     >
