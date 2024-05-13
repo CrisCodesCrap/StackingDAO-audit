@@ -106,8 +106,10 @@ export default function Cycles() {
 
       if (cycle != nextCycle.cycle) {
         // Get stacks block height from burn height
-        const stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
-
+        let stacksBlock = await getBlockHeightFromBurnHeight(startBlock);
+        if (stacksBlock == 0) {
+          stacksBlock = await getBlockHeightFromBurnHeight(startBlock+1);
+        }
         // Get amount stacked at given stacks block
         let stacked = 0;
         if (stacksBlock != 0) {
