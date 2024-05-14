@@ -46,8 +46,8 @@ export function Stack() {
 
   return (
     <div className="flex items-center justify-center rounded-xl bg-white p-8 shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A] md:p-12">
-      <div className="flex min-h-full w-full flex-col md:max-w-xl">
-        <div className="flex w-full items-center justify-start gap-2 text-2xl md:text-2xl">
+      <div className="flex flex-col w-full min-h-full md:max-w-xl">
+        <div className="flex items-center justify-start w-full gap-2 text-2xl md:text-2xl">
           <Link href="/">
             <ArrowLeftIcon width={24} height={24} className="text-dark-green-600" strokeWidth={3} />
           </Link>
@@ -130,8 +130,8 @@ export function Stack() {
             </div>
           )}
         </div>
-        <div className="mt-6 w-full">
-          <div className="w-full overflow-x-hidden rounded-lg bg-sd-gray-light p-6 font-medium">
+        <div className="w-full mt-6">
+          <div className="w-full p-6 overflow-x-hidden font-medium rounded-lg bg-sd-gray-light">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <span className="block text-sm text-sd-gray">Balance</span>
@@ -146,16 +146,16 @@ export function Stack() {
               <div className="">
                 <button
                   type="button"
-                  className="rounded-md bg-dark-green-600 px-4 py-2 text-fluor-green-500"
+                  className="px-4 py-2 rounded-md bg-dark-green-600 text-fluor-green-500"
                   onClick={onMaxClicked}
                 >
                   Max
                 </button>
               </div>
             </div>
-            <div className="relative mb-5 mt-6 flex max-w-full flex-col items-center overflow-x-clip">
+            <div className="relative flex flex-col items-center max-w-full mt-6 mb-5 overflow-x-clip">
               <div className="relative">
-                <div className="inline-block w-full text-center text-5xl">
+                <div className="inline-block w-full text-5xl text-center">
                   <NumericFormat
                     autoFocus
                     placeholder="0.0"
@@ -180,9 +180,11 @@ export function Stack() {
 
           {bitflowEnabled && (
             <>
-              <h4 className="mt-4 mb-3 font-headings text-sd-gray-darker">Choose a stacking partner</h4>
+              <h4 className="mt-4 mb-3 font-headings text-sd-gray-darker">
+                Choose a stacking partner
+              </h4>
 
-              <div className="grid gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 <StackingPartner
                   name="Deposit with StackingDAO"
                   logo="/sdao.svg"
@@ -202,46 +204,52 @@ export function Stack() {
             </>
           )}
 
-          <div className="my-4 flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-sd-gray-light p-6 text-center font-medium">
-            <div className="flex flex-row justify-center gap-1">
-              <span className="text-gray-600">
-                {stackingPartner === 'stackingdao'
-                  ? 'You receive:'
-                  : "You're expected to receive: "}
-              </span>
-              {Number.isNaN(amount.stx) ? (
-                <span> - </span>
-              ) : (
-                <span className="flex flex-row gap-1">
-                  ~
-                  {currency.short.format(
-                    stackingPartner === 'stackingdao' ? amount.ststx : bitflow.ststx
-                  )}
-                  <StSTXIcon width={20} height={20} />
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-row justify-center gap-1 text-sm">
-                <span className="text-gray-600">Projected yield:</span>~{stackingApy}% APY
+          <div className="w-full p-6 mt-4 rounded-lg bg-sd-gray-light">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sd-gray">
+                {stackingPartner === 'stackingdao' ? 'You receive' : "You're expected to receive"}
               </div>
-              <button
-                type="button"
-                onClick={() => setShowApyInfo(true)}
-                className="flex w-fit items-center gap-1 rounded border border-transparent bg-sd-gray/[.08] px-1.5 py-1 text-xs text-sd-gray hover:border-sd-gray/20"
-              >
-                Includes a 5% performance fee
-                <QuestionMarkCircleIcon width={14} height={14} />
-              </button>
+              <div className="flex items-center mt-0 place-content-start sm:place-content-end sm:mt-0">
+                {Number.isNaN(amount.stx) ? (
+                  <span> - </span>
+                ) : (
+                  <span className="flex flex-row items-center gap-1 font-semibold">
+                    ~
+                    {(stackingPartner === 'stackingdao'
+                      ? amount.ststx
+                      : bitflow.ststx
+                    ).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    <StSTXIcon width={20} height={20} />
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sd-gray">Projected yield</div>
+              <div className="flex flex-col items-end mt-0 place-content-start sm:place-content-end sm:mt-0">
+                <div className="font-semibold">~{stackingApy}% APY</div>
+                <button
+                  type="button"
+                  onClick={() => setShowApyInfo(true)}
+                  className="flex w-fit items-center gap-1 rounded border border-transparent bg-sd-gray/[.08] px-1.5 py-1 text-xs text-sd-gray hover:border-sd-gray/20"
+                >
+                  Includes a 5% performance fee
+                  <QuestionMarkCircleIcon width={14} height={14} />
+                </button>
+              </div>
             </div>
           </div>
 
           {buttonState === 'insufficient' && (
-            <div className="flex items-center justify-center mt-4 mb-2 py-2 px-4 w-full rounded-lg bg-red-400 font-medium text-sm text-white">
+            <div className="flex items-center justify-center w-full px-4 py-2 mt-4 mb-2 text-sm font-medium text-left text-white bg-red-400 rounded-lg md:text-center">
               <span>⚠️</span>
-              <p className="ml-3">
-                Please make sure to leave enough STX for transaction gas (currently{' '}
-                {currency.long.format(gasFeeTolerance)} STX)
+              <p className="ml-2">
+                Please make sure to leave enough STX (currently{' '}
+                {currency.long.format(gasFeeTolerance)} STX) for transaction gas
               </p>
             </div>
           )}
@@ -318,15 +326,15 @@ function StackingPartner({
       {selected && (
         <div
           id="selected"
-          className="absolute -bottom-2 -right-2 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-dark-green-500"
+          className="absolute z-10 flex items-center justify-center w-8 h-8 rounded-full -bottom-2 -right-2 bg-dark-green-500"
           title="Selected"
         >
-          <CheckCircleIcon className="text-fluor-green-500 w-6 h-6" />
+          <CheckCircleIcon className="w-6 h-6 text-fluor-green-500" />
         </div>
       )}
       <div className="flex flex-row justify-between">
-        <p className="text-left text-sm text-gray-600">Ratio</p>
-        <p className="flex flex-row text-right text-sm font-semibold gap-1 items-center">
+        <p className="text-sm text-left text-gray-600">Ratio</p>
+        <p className="flex flex-row items-center gap-1 text-sm font-semibold text-right">
           {!!ratio ? (
             <>
               <STXIcon width={16} height={16} />1 = {currency.long.format(ratio)}
