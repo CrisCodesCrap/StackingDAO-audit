@@ -1,0 +1,1 @@
+# QA: Different `NOT_AUTHORIZED` error codes in `./core/ststx-token.clar` vs `./core/ststx-withdraw-nft.clar`.

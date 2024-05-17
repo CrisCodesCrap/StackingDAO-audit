@@ -35,13 +35,22 @@ Once remediated, please fill the *Fix Commit* column with the commit link.
 [https://github.com/StackingDAO/StackingDAO/tree/nf/coinfabrik-audit-2-fixes](https://github.com/StackingDAO/StackingDAO/tree/nf/coinfabrik-audit-2-fixes)
 
 ```markdown
-/core/dao
-/core/ststx-token
-/core/ststx-withdraw-nft
 
-/version-1/commission-trait-v1
-/version-1/reserve-trait-v1
-/version-1/reserve-v1
+----------------------------------------------------------------------------------
+*lines*: 312
+
+/core/dao ✅ 💅🏻
+/core/ststx-token ✅ 🚧 🕵️ 💅🏻
+/core/ststx-withdraw-nft ✅ 🚧 🕵️ 💅🏻 :REENTRANCY: :MEV:
+----------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------
+*lines:* -
+/version-1/commission-trait-v1 ✅
+/version-1/reserve-trait-v1 ✅
+/version-1/reserve-v1 ✅ 🚧 🕵️ 💅🏻
+----------------------------------------------------------------------------------
+
 
 /version-2/commission-v2
 /version-2/data-core-v1
@@ -65,6 +74,9 @@ Once remediated, please fill the *Fix Commit* column with the commit link.
 /version-2/strategy-v3-pools-v1
 /version-2/strategy-v3
 
+/version-3/sdao-token
+/version-3/staking-v1
+
 ----------------------------------------------------------------------------------
 Language                        files          blank        comment           code
 ----------------------------------------------------------------------------------
@@ -72,3 +84,27 @@ Clarity                            37            921            940           35
 ```
 
 ## [Notion Page](https://kris-apostolov.notion.site/StackingDAO-Engagement-1fc7edb9be1248c29d487f0b3cb7209c)
+
+
+
+### Glosary:
+
+```markdown
+DONE: ✅
+NOT DONE: ❌
+IN PROGRESS: 🚧
+QA: 💅🏻
+FINDINGS: 🐞
+PoC: 🛠
+LEADS: 🕵️
+```
+
+```markdown
+:MEV:
+:REENTRANCY:
+:OVERFLOW:
+:REQUIRE:
+:PRECISION:
+:AUTH:
+:BUSINESS-LOGIC:
+```
