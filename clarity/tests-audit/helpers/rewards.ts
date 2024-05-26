@@ -1,11 +1,11 @@
 import { ParsedTransactionResult } from "@hirosystems/clarinet-sdk";
-import { ClarityType, contractPrincipalCV, principalCV, uintCV } from "@stacks/transactions";
+import { ClarityType, contractPrincipalCV, uintCV } from "@stacks/transactions";
 
 import Base from "./base";
-import { RewardsContract } from "./interfaces";
+import { IRewards } from "./interfaces";
 
 
-export default class Rewards extends Base implements RewardsContract {
+export default class Rewards extends Base implements IRewards {
     getTotalCommission(): bigint {
         const tx: ParsedTransactionResult =
             this.chain.callReadOnlyFn(
@@ -36,7 +36,7 @@ export default class Rewards extends Base implements RewardsContract {
                 [],
                 this.deployer
             );
-        return (tx.result as any)["value"];
+        return (tx.result as any)["data"];
     }
 
     getNextRewardsUnlock(): bigint { 
@@ -47,10 +47,10 @@ export default class Rewards extends Base implements RewardsContract {
                 [],
                 this.deployer
             );
-        return (tx.result as any)["value"];
+        return (tx.result as any)["data"];
     }
 
-    addRewards(pool: string, amount: bigint, caller: string = this.deployer): boolean {
+    addRewards(pool: string, amount: bigint, caller?: string): boolean {
         const tx: ParsedTransactionResult =
             this.chain.callPublicFn(
                 this.principal,
@@ -59,12 +59,12 @@ export default class Rewards extends Base implements RewardsContract {
                     contractPrincipalCV(this.deployer, pool),
                     uintCV(amount)
                 ],
-                caller
+                caller ? caller : this.deployer
             );
         return tx.result.type === ClarityType.ResponseOk;
     }
 
-    processRewards(commission: string = "commission-v2", staking: string = "staking-v1", reserve: string = "reserve-v1", caller: string = this.deployer): boolean {
+    processRewards(commission: string = "commission-v2", staking: string = "staking-v1", reserve: string = "reserve-v1", caller?: string): boolean {
         const tx: ParsedTransactionResult =
             this.chain.callPublicFn(
                 this.principal,
@@ -74,7 +74,7 @@ export default class Rewards extends Base implements RewardsContract {
                     contractPrincipalCV(this.deployer, staking),
                     contractPrincipalCV(this.deployer, reserve)
                 ],
-                caller
+                caller ? caller : this.deployer
             );
         return tx.result.type === ClarityType.ResponseOk;
     }

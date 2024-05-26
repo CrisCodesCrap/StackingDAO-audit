@@ -1,9 +1,9 @@
 import { Simnet } from "@hirosystems/clarinet-sdk";
 import { ClarityValue, contractPrincipalCV } from "@stacks/transactions";
 
-import { BaseContract } from "./interfaces";
+import { IBase } from "./interfaces";
 
-export default class Base implements BaseContract {
+export default class Base implements IBase {
     chain: Simnet;
     name: string;
     deployer: string;
